@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+
+  backend:
+    container_name: backend
+    build: ./app/backend/
+    ports:
+      - "3000:3000"
+    networks:
+      - network
+    restart: on-failure
+
+networks:
+  network:
