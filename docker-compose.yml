@@ -3,13 +3,28 @@ version: '3.8'
 services:
 
   backend:
-    container_name: backend
-    build: ./app/backend/
-    ports:
-      - "3000:3000"
+    container_name: "backend"
+    build: app/backend/
     networks:
-      - network
-    restart: on-failure
+      - server-side
+    ports:
+      - "8080:3000"
+    env_file: app/backend/.env
+    volumes:
+      - ./app/backend/srcs:/backend
+    depends_on:
+      - database
+    restart: always
+
+  database:
+    container_name: "database"
+    image: postgres:15.1-alpine
+    networks:
+      - server-side
+    ports:
+      - "5432:5432"
+    env_file: app/database/.env
+    restart: always
 
 networks:
-  network:
+  server-side:
