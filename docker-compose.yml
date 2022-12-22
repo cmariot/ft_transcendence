@@ -7,6 +7,7 @@ services:
     build: app/backend/
     networks:
       - server-side
+      - client-side
     ports:
       - "8080:3000"
     env_file: app/backend/.env
@@ -21,10 +22,21 @@ services:
     image: postgres:15.1-alpine
     networks:
       - server-side
-    ports:
-      - "5432:5432"
+    volumes:
+      - ./app/database/data:/var/lib/postgresql/data
     env_file: app/database/.env
     restart: always
 
+  adminer:
+    image: adminer
+    networks:
+      - server-side
+    ports:
+      - "8081:8080"
+    restart: always
+
+#  frontend:
+
 networks:
-  server-side:
+  server-side: {}
+  client-side: {}

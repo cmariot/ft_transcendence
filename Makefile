@@ -34,6 +34,15 @@ log_backend:
 top_backend:
 	docker top backend
 
+sh_database:
+	docker compose exec database sh
+
+log_database:
+	docker compose logs --follow database
+
+top_database:
+	docker top database
+
 ps:
 	docker compose ps
 
