@@ -6,23 +6,23 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [
+	imports: [
 
-	// Module for the env variables
-	ConfigModule.forRoot({isGlobal: true}),
+		// Module for the env variables
+		ConfigModule.forRoot({ isGlobal: true }),
 
-	// Module to connect the backend to postgres database
-	TypeOrmModule.forRoot({
-		type: 'postgres',
-		url: process.env.DATABASE_URL,
-		autoLoadEntities: true,
-		synchronize: true
-	}),
+		// Module to connect the backend to postgres database
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			url: process.env.DATABASE_URL,
+			autoLoadEntities: true,
+			synchronize: true
+		}),
 
-	UserModule
+		UserModule
 
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	],
+	controllers: [AppController],
+	providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

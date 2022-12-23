@@ -17,7 +17,7 @@ services:
     networks:
       - server-side
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - database
     restart: always
@@ -27,9 +27,6 @@ services:
     build: app/backend/
     networks:
       - server-side
-      - client-side
-    ports:
-      - "8080:3000"
     env_file: app/backend/.env
     volumes:
       - ./app/backend/srcs:/backend
@@ -41,7 +38,7 @@ services:
     container_name: "frontend"
     build: app/frontend/
     networks:
-      - client-side
+      - server-side
     ports:
       - "3000:3000"
     env_file: app/frontend/.env
@@ -53,4 +50,3 @@ services:
 
 networks:
   server-side: {}
-  client-side: {}

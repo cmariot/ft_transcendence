@@ -43,6 +43,15 @@ log_database:
 top_database:
 	docker top database
 
+sh_frontend:
+	docker compose exec frontend sh
+
+log_frontend:
+	docker compose logs --follow frontend
+
+top_frontend:
+	docker top frontend
+
 ps:
 	docker compose ps
 
