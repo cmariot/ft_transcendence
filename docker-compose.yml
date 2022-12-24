@@ -1,52 +1,56 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
   database:
     container_name: "database"
-    image: postgres:15.1-alpine
-    networks:
-      - server-side
+    image: postgres:15-alpine
+    env_file: app/database/.env
     volumes:
       - ./app/database/data:/var/lib/postgresql/data
-    env_file: app/database/.env
-    restart: always
-
-  adminer:
-    image: adminer
-    networks:
-      - server-side
     ports:
-      - "8080:8080"
-    depends_on:
-      - database
-    restart: always
+      - "5432:5432"
+    networks:
+      - network
+    restart: unless-stopped
 
   backend:
     container_name: "backend"
     build: app/backend/
-    networks:
-      - server-side
     env_file: app/backend/.env
-    volumes:
-      - ./app/backend/srcs:/backend
     depends_on:
       - database
-    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app/backend/srcs:/backend
+    networks:
+      - network
+    restart: unless-stopped
 
   frontend:
     container_name: "frontend"
     build: app/frontend/
-    networks:
-      - server-side
-    ports:
-      - "3000:3000"
     env_file: app/frontend/.env
-    volumes:
-      - ./app/frontend/srcs:/frontend
     depends_on:
       - backend
-    restart: always
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./app/frontend/srcs:/frontend
+    networks:
+      - network
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: "pgadmin"
+    image: dpage/pgadmin4
+    env_file: app/pgadmin/.env
+    ports:
+      - "5000:5000"
+    networks:
+      - network
+    restart: unless-stopped
 
 networks:
-  server-side: {}
+  network: {}

@@ -2,3 +2,4 @@ app/backend/.env
 app/database/.env
 app/database/data/
 app/frontend/.env
+app/pgadmin/.env
