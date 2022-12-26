@@ -1,27 +1,23 @@
 import React from 'react';
-//import ReactDOM from 'react-dom';
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+	const [data, setData] = React.useState("");
+
+	React.useEffect(() => {
+		axios.get("http://0.0.0.0:3000")
+			.then((response) => {setData(response);
+		});
+	}, []);
+
+
+	return (
+		<div>
+			<h1>ft_transcendence</h1>
+			<h2>{data.data}</h2>
+		</div>
+	);
 }
 
 export default App;
