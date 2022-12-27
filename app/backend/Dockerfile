@@ -19,7 +19,7 @@ WORKDIR /backend
 # Install dependencies
 RUN npm install
 
-EXPOSE 4000
+EXPOSE 3000
 
 # Launch the Nest.js backend
 ENTRYPOINT ["npm"]

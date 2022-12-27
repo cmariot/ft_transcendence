@@ -14,8 +14,9 @@ function App() {
 
 	return (
 		<div>
-			<h1>ft_transcendence</h1>
 			<h2>{data.data}</h2>
+			<button>Login</button>
+			<button>Sign up</button>
 		</div>
 	);
 }

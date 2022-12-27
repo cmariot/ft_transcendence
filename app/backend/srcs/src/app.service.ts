@@ -6,7 +6,7 @@ export class AppService
 
 	getHello() : string
 	{
-		return ("Hello World!");
+		return ("ft_transcendence");
 	}
 
 }
