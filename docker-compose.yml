@@ -7,11 +7,13 @@ services:
     image: postgres:15-alpine
     env_file: app/database/.env
     volumes:
-      - ./app/database/data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - type: bind
+        source: "./app/database/data"
+        target: "/var/lib/postgresql/data"
     networks:
       - network
+    ports:
+      - "5432:5432"
     restart: unless-stopped
 
   backend:
@@ -20,12 +22,14 @@ services:
     env_file: app/backend/.env
     depends_on:
       - database
-    ports:
-      - "3000:3000"
     volumes:
-      - ./app/backend/srcs:/backend
+      - type: bind
+        source: "./app/backend/srcs"
+        target: "/backend"
     networks:
       - network
+    ports:
+      - "3000:3000"
     restart: unless-stopped
 
   frontend:
@@ -34,22 +38,36 @@ services:
     env_file: app/frontend/.env
     depends_on:
       - backend
-    ports:
-      - "4000:4000"
     volumes:
-      - ./app/frontend/srcs:/frontend
+      - type: bind
+        source: "./app/frontend/srcs"
+        target: "/frontend"
     networks:
       - network
+    ports:
+      - "4000:4000"
     restart: unless-stopped
 
   pgadmin:
     container_name: "pgadmin"
     image: dpage/pgadmin4
     env_file: app/pgadmin/.env
-    ports:
-      - "5000:5000"
     networks:
       - network
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  nginx:
+    container_name: "nginx"
+    build: app/nginx/
+    env_file: app/nginx/.env
+    depends_on:
+      - frontend
+    networks:
+      - network
+    ports:
+      - "443:443"
     restart: unless-stopped
 
 networks:
