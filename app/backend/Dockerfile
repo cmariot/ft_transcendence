@@ -1,25 +1,21 @@
 # syntax=docker/dockerfile:1
 
 # Get the container image
-FROM alpine:3.16
-
-# Update the index of available packages,
-# Upgrade the currently installed packages,
-# Install Node.js and npm (the Node.js package manager)
-RUN apk update && apk upgrade && apk add --no-cache\
-	nodejs\
-	npm
-
-# Copy the Nest.js srcs files in the container
-COPY ./srcs /backend
+FROM node:13.12.0-alpine
 
 # Change directory to the project directory
 WORKDIR /backend
 
-# Install dependencies
-RUN npm install
+# add '/frontend/node_modules/.bin' to $PATH
+ENV PATH /backend/node_modules/.bin:$PATH
 
-EXPOSE 3000
+# install app dependencies
+COPY ./srcs/package.json ./
+COPY ./srcs/package-lock.json ./
+RUN npm install --silent
+
+# add app
+COPY ./srcs .
 
 # Launch the Nest.js backend
 ENTRYPOINT ["npm"]
