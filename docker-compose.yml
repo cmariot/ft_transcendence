@@ -11,6 +11,31 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+  
+  database:
+    container_name: "database"
+    image : postgres:15.1-alpine
+    env_file : app/database/.env
+    volumes:
+      - ./app/database/data:/var/lib/postgresql/data/pong
+    networks:
+      - network
+    ports:
+      - "5432:5432"
+
+########################
+# database  visualizer #
+########################
+
+  pgadmin:
+    container_name: "pgadmin"
+    image: dpage/pgadmin4
+    env_file: app/pgadmin/.env
+    ports:
+      - 8080:8080
+    networks:
+      - network
+    restart: always
 
 networks:
   network: {}
