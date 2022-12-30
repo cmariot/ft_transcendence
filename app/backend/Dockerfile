@@ -3,15 +3,15 @@
 # Get the container image
 FROM node:19-alpine3.16
 
-# Change directory to the project directory
+# Create the project directory
 WORKDIR /backend
 
-# install app dependencies
+# Install app dependencies
 COPY ./srcs/package.json ./
 COPY ./srcs/package-lock.json ./
 RUN npm install
 
-# add app
+# Add backend files
 COPY ./srcs .
 
 # Launch the Nest.js backend
