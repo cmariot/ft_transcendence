@@ -52,14 +52,14 @@ services:
       - "database"
     restart: unless-stopped
 
-      #  proxy:
-      #    container_name: proxy
-      #    build: app/proxy/
-      #    networks:
-      #      - network
-      #    ports:
-      #      - "3001:3001"
-      #    restart: unless-stopped
+  proxy:
+    container_name: proxy
+    build: app/proxy/
+    networks:
+      - network
+    ports:
+      - "443:443"
+    restart: unless-stopped
 
 networks:
   network: {}
