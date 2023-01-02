@@ -36,7 +36,7 @@ create_backend()
 	echo "DATABASE_URL=\"\${DATABASE_CONTAINER}://\${DATABASE_USER}:\${DATABASE_PASSWORD}@\${DATABASE_CONTAINER}:\${DATABASE_PORT}/\${DATABASE_NAME}\"" >> ./app/backend/.env
 }
 
-crate_frontend()
+create_frontend()
 {
 	echo "PORT=\"${PORT}\"" > ./app/frontend/.env
 }
