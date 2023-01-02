@@ -38,7 +38,7 @@ create_backend()
 
 create_frontend()
 {
-	echo "PORT=\"${PORT}\"" > ./app/frontend/.env
+	echo "PORT=\"${FRONTEND_PORT}\"" > ./app/frontend/.env
 }
 
 create_pgadmin()
