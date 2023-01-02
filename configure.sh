@@ -13,7 +13,7 @@ PGADMIN_CONFIG_SERVER_MODE="False"
 create_database()
 {
 	echo "Database initialization : "
-	mkdir -p app/database/data
+	mkdir -p app/database
 	echo -n "Please enter the POSTGRES_USER : "
 	read database_user
 	echo -n "Please enter the POSTGRES_PASSWORD : "
