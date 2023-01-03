@@ -16,6 +16,4 @@ COPY ./srcs .
 
 # Launch the Nest.js backend
 ENTRYPOINT ["npm"]
-CMD ["run", "start:dev"]
-
-#CMD ["run", "start"]
+CMD ["run", "start"]

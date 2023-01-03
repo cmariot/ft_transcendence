@@ -1,8 +1,8 @@
 #!/bin/bash
 
 DATABASE_PORT="5432"
-
 DATABASE_CONTAINER="database"
+
 NODE_ENV="developpment"
 
 FRONTEND_PORT="4000"
