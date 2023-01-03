@@ -6,12 +6,12 @@ FROM node:19-alpine3.16
 # Change directory to the project directory
 WORKDIR /frontend
 
-# install app dependencies
+# Install app dependencies
 COPY ./srcs/package.json ./
 COPY ./srcs/package-lock.json ./
 RUN npm install
 
-# add app
+# Add app
 COPY ./srcs .
 
 # Launch the React.js frontend

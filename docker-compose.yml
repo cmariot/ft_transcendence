@@ -57,6 +57,8 @@ services:
       - network
     ports:
       - "8080:443"
+    depends_on:
+      - "frontend"
     restart: unless-stopped
 
 networks:

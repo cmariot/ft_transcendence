@@ -6,6 +6,7 @@ DATABASE_CONTAINER="database"
 NODE_ENV="developpment"
 
 FRONTEND_PORT="4000"
+NODE_OPTIONS="--openssl-legacy-provider"
 
 PGADMIN_PORT="5000"
 PGADMIN_CONFIG_SERVER_MODE="False"
@@ -33,12 +34,14 @@ create_backend()
 	echo "DATABASE_NAME=\"$database_db\""				>> ./app/backend/.env
 	echo "DATABASE_CONTAINER=\"${DATABASE_CONTAINER}\""	>> ./app/backend/.env
 	echo "DATABASE_PORT=\"${DATABASE_PORT}\""			>> ./app/backend/.env
+	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""				>> ./app/backend/.env
 	echo "DATABASE_URL=\"\${DATABASE_CONTAINER}://\${DATABASE_USER}:\${DATABASE_PASSWORD}@\${DATABASE_CONTAINER}:\${DATABASE_PORT}/\${DATABASE_NAME}\"" >> ./app/backend/.env
 }
 
 create_frontend()
 {
-	echo "PORT=\"${FRONTEND_PORT}\"" > ./app/frontend/.env
+	echo "PORT=\"${FRONTEND_PORT}\""		> ./app/frontend/.env
+	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""	>> ./app/frontend/.env
 }
 
 create_pgadmin()
