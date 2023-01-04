@@ -15,5 +15,6 @@ RUN npm install
 COPY ./srcs .
 
 # Launch the React.js frontend
+#CMD ["ping", "0.0.0.0"]
 ENTRYPOINT ["npm"]
 CMD ["run", "start"]

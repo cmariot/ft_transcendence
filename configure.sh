@@ -36,6 +36,13 @@ create_backend()
 	echo "DATABASE_PORT=\"${DATABASE_PORT}\""			>> ./app/backend/.env
 	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""				>> ./app/backend/.env
 	echo "DATABASE_URL=\"\${DATABASE_CONTAINER}://\${DATABASE_USER}:\${DATABASE_PASSWORD}@\${DATABASE_CONTAINER}:\${DATABASE_PORT}/\${DATABASE_NAME}\"" >> ./app/backend/.env
+
+	echo -n "Please enter the UID_42_SECRET : "
+	read uid_42_secret
+	echo "UID_42_SECRET=\"$uid_42_secret\""		>> ./app/backend/.env
+	echo -n "Please enter the PASSWORD_SECRET_42 : "
+	read password_secret_42
+	echo "PASSWORD_SECRET_42=\"$password_secret_42\""	>> ./app/backend/.env
 }
 
 create_frontend()
