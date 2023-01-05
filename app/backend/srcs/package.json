@@ -1,6 +1,7 @@
 {
   "name": "project-name",
   "version": "0.0.1",
+  "proxy": "http://frontend:3000",
   "description": "",
   "author": "",
   "private": true,

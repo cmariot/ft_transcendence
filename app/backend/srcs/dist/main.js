@@ -7,8 +7,9 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.enableCors({
-        "origin": "http://frontend",
-        "methods": "GET,POST,DELETE"
+        origin: "*",
+        methods: "GET,POST,DELETE",
+        credentials: true,
     });
     await app.listen(process.env.BACKEND_PORT);
 }

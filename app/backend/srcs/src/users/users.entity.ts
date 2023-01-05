@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { IsEmail, IsNotEmpty, IsDefined} from 'class-validator';
 
 @Entity()
 export class Users

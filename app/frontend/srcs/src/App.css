@@ -36,3 +36,45 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Inline #0 | http://localhost:4000/ */
+
+body {
+  background-color: #1B1B1B;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+/* Element | http://localhost:4000/ */
+
+#root > div:nth-child(1) > button:nth-child(3) {
+  background-color: #F3C637;
+  padding: 10px;
+  border: 1px #fff;
+  font-weight: bold;
+  font-style: ;
+  text-decoration: underline;
+}
+
+/* Element | http://localhost:4000/ */
+
+#root > div:nth-child(1) > h1:nth-child(1) {
+  font-style: ;
+  font-weight: bold;
+}
+
+/* Element | http://localhost:4000/ */
+
+#root > div:nth-child(1) > h2:nth-child(2) {
+  font-style: oblique;
+}

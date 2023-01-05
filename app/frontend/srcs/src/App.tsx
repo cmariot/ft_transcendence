@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
-function App() {
+function Home() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Home</h1>
     </div>
   );
+}
+
+function App() {
+
+  const [isLogged, setIsLogged] = useState(false);
+
+  let title: string = "ft_transcendence";
+  let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
+
+  function handleClick() {
+    setIsLogged(true);
+  }
+
+  if (isLogged === false) {
+    return (
+      <div>
+        <h1>{title}</h1>
+        <h2>{description}</h2>
+        <button onClick={handleClick}>Connect</button>
+      </div>
+    );
+  }
+  else {
+    return (
+      <div>
+        <Home />
+      </div>
+    );
+  }
+
 }
 
 export default App;

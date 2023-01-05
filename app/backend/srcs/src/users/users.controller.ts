@@ -10,13 +10,13 @@ export class UsersController
 	{}
 
 	@Get()
-	get_users()
+	get_users() : Promise<Users[]>
 	{
 		return (this.userService.get_users());
 	}
 
 	@Post()
-	add_user(@Body() user : Users)
+	add_user(@Body() user : Users) : Promise<Users>
 	{
 		return (this.userService.add_user(user));
 	}

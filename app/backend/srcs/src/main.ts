@@ -8,8 +8,9 @@ async function bootstrap()
 	app.useGlobalPipes(new ValidationPipe());
 	app.enableCors(
 		{
-			"origin": "http://frontend",
-			"methods": "GET,POST,DELETE"
+			origin: "*",
+			methods: "GET,POST,DELETE",
+			credentials: true,
 		}
 	);
 	await app.listen(process.env.BACKEND_PORT);

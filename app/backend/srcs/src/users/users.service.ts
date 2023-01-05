@@ -12,12 +12,12 @@ export class UsersService
 	)
 	{}
 
-	add_user(user: Users)
+	add_user(user: Users) : Promise<Users>
 	{
 		return (this.usersRepository.save(user));
 	}
 
-	get_users()
+	get_users() : Promise<Users[]>
 	{
 		return (this.usersRepository.find());
 	}
