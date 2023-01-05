@@ -18,5 +18,6 @@ RUN npm install
 COPY ./srcs .
 
 # Launch the Nest.js backend
+#CMD ["ping", "0.0.0.0"]
 ENTRYPOINT ["npm"]
 CMD ["run", "start:dev"]
