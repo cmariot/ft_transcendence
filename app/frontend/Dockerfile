@@ -9,6 +9,9 @@ WORKDIR /frontend
 # Install app dependencies
 COPY ./srcs/package.json ./
 COPY ./srcs/package-lock.json ./
+
+RUN npm install react-scripts
+
 RUN npm install
 
 # Add app

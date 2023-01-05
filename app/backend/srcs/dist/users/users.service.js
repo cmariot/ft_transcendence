@@ -22,10 +22,10 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     add_user(user) {
-        return (this.usersRepository.save(user));
+        return this.usersRepository.save(user);
     }
     get_users() {
-        return (this.usersRepository.find());
+        return this.usersRepository.find();
     }
 };
 UsersService = __decorate([

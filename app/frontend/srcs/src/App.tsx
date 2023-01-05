@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import axios from 'axios';
 
 function Home() {
 
@@ -17,8 +18,16 @@ function App() {
   let title: string = "ft_transcendence";
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
-  function handleClick() {
-    setIsLogged(true);
+  async function handleClick() {
+    try {
+      const res = await axios.get('http://localhost:3000/users');   // get login
+      await console.log(res.data[0]);
+      if (res.data[0].username === "toto") {
+        setIsLogged(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   if (isLogged === false) {
@@ -26,7 +35,7 @@ function App() {
       <div>
         <h1>{title}</h1>
         <h2>{description}</h2>
-        <button onClick={handleClick}>Connect</button>
+        <button onClick={handleClick}>Login</button>
       </div>
     );
   }

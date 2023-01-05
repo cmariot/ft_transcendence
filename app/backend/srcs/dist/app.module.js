@@ -20,23 +20,19 @@ AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot(),
             typeorm_1.TypeOrmModule.forRoot({
-                type: 'postgres',
+                type: "postgres",
                 host: process.env.DATABASE_CONTAINER,
                 port: parseInt(process.env.DATABASE_PORT),
                 username: process.env.DATABASE_USER,
                 password: process.env.DATABASE_PASSWORD,
                 database: process.env.DATABASE_NAME,
                 autoLoadEntities: true,
-                synchronize: true
+                synchronize: true,
             }),
-            users_module_1.UsersModule
+            users_module_1.UsersModule,
         ],
-        controllers: [
-            users_controller_1.UsersController
-        ],
-        providers: [
-            users_service_1.UsersService
-        ]
+        controllers: [users_controller_1.UsersController],
+        providers: [users_service_1.UsersService],
     })
 ], AppModule);
 exports.AppModule = AppModule;

@@ -21,10 +21,10 @@ let UsersController = class UsersController {
         this.userService = userService;
     }
     get_users() {
-        return (this.userService.get_users());
+        return this.userService.get_users();
     }
     add_user(user) {
-        return (this.userService.add_user(user));
+        return this.userService.add_user(user);
     }
 };
 __decorate([
@@ -41,7 +41,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "add_user", null);
 UsersController = __decorate([
-    (0, common_1.Controller)('users'),
+    (0, common_1.Controller)("users"),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 exports.UsersController = UsersController;
