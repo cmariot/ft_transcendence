@@ -15,5 +15,4 @@ export class UsersController {
   add_user(@Body() user: Users): Promise<Users> {
     return this.userService.add_user(user);
   }
-
 }

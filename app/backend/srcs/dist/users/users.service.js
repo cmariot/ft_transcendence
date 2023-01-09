@@ -27,6 +27,14 @@ let UsersService = class UsersService {
     get_users() {
         return this.usersRepository.find();
     }
+    async findById(id) {
+        const users = await this.get_users();
+        return users.find((user) => user.uuid == id);
+    }
+    async findByUsername(username) {
+        const users = await this.get_users();
+        return users.find((user) => user.username === username);
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),

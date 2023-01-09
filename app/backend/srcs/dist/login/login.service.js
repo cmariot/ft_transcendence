@@ -9,27 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Users = void 0;
-const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
-let Users = class Users {
+exports.LoginService = void 0;
+const common_1 = require("@nestjs/common");
+const users_service_1 = require("../users/users.service");
+let LoginService = class LoginService {
+    constructor(usersService) {
+        this.usersService = usersService;
+    }
+    async validateUser(token) {
+        console.log("test 1");
+        return { token: token };
+    }
 };
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
-    __metadata("design:type", String)
-], Users.prototype, "uuid", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], Users.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], Users.prototype, "email", void 0);
-Users = __decorate([
-    (0, typeorm_1.Entity)()
-], Users);
-exports.Users = Users;
-//# sourceMappingURL=users.entity.js.map
+LoginService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [users_service_1.UsersService])
+], LoginService);
+exports.LoginService = LoginService;
+//# sourceMappingURL=login.service.js.map

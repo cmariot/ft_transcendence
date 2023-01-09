@@ -18,4 +18,13 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
+  async findById(id: string): Promise<Users | undefined> {
+    const users = await this.get_users();
+    return users.find((user) => user.uuid == id);
+  }
+
+  async findByUsername(username: string): Promise<Users | undefined> {
+    const users = await this.get_users();
+    return users.find((user) => user.username === username);
+  }
 }

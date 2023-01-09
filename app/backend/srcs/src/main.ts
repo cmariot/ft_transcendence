@@ -5,8 +5,13 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors({ origin: "http://localhost:4000", credentials: true });
+  app.enableCors({
+    origin: [
+      "https://localhost:8080",
+      "https://api.intra.42.fr",
+      "https://signin.intra.42.fr",
+    ],
+  });
   await app.listen(process.env.BACKEND_PORT);
 }
-
 bootstrap();

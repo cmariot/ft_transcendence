@@ -13,6 +13,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const users_controller_1 = require("./users/users.controller");
 const users_service_1 = require("./users/users.service");
 const users_module_1 = require("./users/users.module");
+const login_module_1 = require("./login/login.module");
+const app_gateway_1 = require("./app.gateway");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -30,9 +32,10 @@ AppModule = __decorate([
                 synchronize: true,
             }),
             users_module_1.UsersModule,
+            login_module_1.LoginModule,
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
+        providers: [users_service_1.UsersService, app_gateway_1.AppGateway],
     })
 ], AppModule);
 exports.AppModule = AppModule;

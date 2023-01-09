@@ -5,7 +5,7 @@ import { IsEmail, IsNotEmpty, IsDefined} from 'class-validator';
 export class Users
 {
 	@PrimaryGeneratedColumn("uuid")
-	uuid: number;
+	uuid: string;
 
 	@Column()
 	@IsNotEmpty()
