@@ -4,7 +4,7 @@
 FROM node:19-alpine3.16
 
 # Create the project directory
-WORKDIR /backend
+WORKDIR /app
 
 # Install nest
 RUN npm i -g @nestjs/cli

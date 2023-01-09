@@ -2,14 +2,6 @@ version: '3.9'
 
 services:
 
-  database:
-    container_name: "database"
-    image: postgres:alpine
-    env_file : app/database/.env
-    networks:
-      - network
-    restart: unless-stopped
-
   backend:
     container_name: "backend"
     build: app/backend/
@@ -37,6 +29,18 @@ services:
     depends_on:
       - "backend"
     restart: unless-stopped
+  
+  database:
+    container_name: "database"
+    image: postgres:alpine
+    env_file : app/database/.env
+    volumes:
+       - postgres:/data/postgres
+    networks:
+      - network
+    ports:
+      - 5432:5432
+    restart: unless-stopped
 
   pgadmin:
     container_name: "pgadmin"
@@ -45,9 +49,11 @@ services:
     networks:
       - network
     ports:
-      - "5000:5000"
+      - "5050:5050"
     depends_on:
       - "database"
+    volumes:
+       - pgadmin:/var/lib/pgadmin
     restart: unless-stopped
 
   proxy:
@@ -60,6 +66,10 @@ services:
     depends_on:
       - "frontend"
     restart: unless-stopped
+
+volumes:
+    postgres:
+    pgadmin:
 
 networks:
   network: {}

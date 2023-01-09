@@ -4,7 +4,7 @@
 FROM node:19-alpine3.16
 
 # Change directory to the project directory
-WORKDIR /frontend
+WORKDIR /app
 
 # Install app dependencies
 COPY ./srcs/package.json ./
