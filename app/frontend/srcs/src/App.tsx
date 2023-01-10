@@ -22,7 +22,7 @@ function App() {
     try {
       const res = await axios({
         method: 'get',
-		  url: "https://localhost:8080/api/login",
+        url: "http://localhost:3000/login/",
       })
       await console.log(res.data);
     } catch (err) {

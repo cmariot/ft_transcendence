@@ -9,27 +9,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Users = void 0;
-const typeorm_1 = require("typeorm");
-const class_validator_1 = require("class-validator");
-let Users = class Users {
+exports.SessionSerializer = void 0;
+const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
+let SessionSerializer = class SessionSerializer extends passport_1.PassportSerializer {
+    constructor() {
+        super();
+    }
+    serializeUser(user, done) {
+        done(null, user);
+    }
+    deserializeUser(payload, done) {
+        return done(null, payload);
+    }
 };
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
-    __metadata("design:type", String)
-], Users.prototype, "uuid", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], Users.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], Users.prototype, "email", void 0);
-Users = __decorate([
-    (0, typeorm_1.Entity)()
-], Users);
-exports.Users = Users;
-//# sourceMappingURL=users.entity.js.map
+SessionSerializer = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], SessionSerializer);
+exports.SessionSerializer = SessionSerializer;
+//# sourceMappingURL=session.serializer.js.map

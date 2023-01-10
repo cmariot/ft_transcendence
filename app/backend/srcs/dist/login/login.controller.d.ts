@@ -1,4 +1,4 @@
 export declare class LoginController {
-    ftAuth(): void;
-    ftAuthCallback(): void;
+    login(): void;
+    callback(): void;
 }

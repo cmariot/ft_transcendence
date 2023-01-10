@@ -1,17 +1,27 @@
 import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import { AppModule } from "./app.module";
+import * as passport from "passport";
+import * as session from "express-session";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   app.enableCors({
-    origin: [
-      "https://localhost:8080",
-      "https://api.intra.42.fr",
-      "https://signin.intra.42.fr",
-    ],
+    origin: "*",
+    credentials: true,
   });
+
+  app.use(
+    session({
+      secret: process.env.SESSION_PASSWORD,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   await app.listen(process.env.BACKEND_PORT);
 }
 bootstrap();

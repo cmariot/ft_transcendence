@@ -13,10 +13,10 @@ exports.LoginController = void 0;
 const common_1 = require("@nestjs/common");
 const ft_oauth_guard_1 = require("./guards/ft-oauth.guard");
 let LoginController = class LoginController {
-    ftAuth() {
+    login() {
         return;
     }
-    ftAuthCallback() {
+    callback() {
         return;
     }
 };
@@ -26,14 +26,15 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], LoginController.prototype, "ftAuth", null);
+], LoginController.prototype, "login", null);
 __decorate([
     (0, common_1.Get)("callback"),
-    (0, common_1.Redirect)("https://localhost:8080/"),
+    (0, common_1.UseGuards)(ft_oauth_guard_1.FtOauthGuard),
+    (0, common_1.Redirect)("/"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], LoginController.prototype, "ftAuthCallback", null);
+], LoginController.prototype, "callback", null);
 LoginController = __decorate([
     (0, common_1.Controller)("login")
 ], LoginController);

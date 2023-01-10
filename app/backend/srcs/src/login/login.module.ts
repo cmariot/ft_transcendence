@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { LocalStrategy } from "./local.strategy";
-import { LoginController } from "./login.controller";
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FtStrategy } from './ft.strategy';
+import { LoginController } from './login.controller';
+import { SessionSerializer } from './session.serializer';
 
 @Module({
   controllers: [LoginController],
-  providers: [ConfigService, LocalStrategy],
+  providers: [ConfigService, FtStrategy, SessionSerializer],
 })
 export class LoginModule {}

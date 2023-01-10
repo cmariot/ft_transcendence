@@ -11,35 +11,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersService = void 0;
+exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
-const users_entity_1 = require("./users.entity");
-let UsersService = class UsersService {
-    constructor(usersRepository) {
-        this.usersRepository = usersRepository;
-    }
-    add_user(user) {
-        return this.usersRepository.save(user);
-    }
-    get_users() {
-        return this.usersRepository.find();
-    }
-    async findById(id) {
-        const users = await this.get_users();
-        return users.find((user) => user.uuid == id);
-    }
-    async findByUsername(username) {
-        const users = await this.get_users();
-        return users.find((user) => user.username === username);
+const user_decorator_1 = require("./login/user.decorator");
+const passport_42_1 = require("passport-42");
+let AppController = class AppController {
+    home(user) {
+        return { user };
     }
 };
-UsersService = __decorate([
-    (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(users_entity_1.Users)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
-], UsersService);
-exports.UsersService = UsersService;
-//# sourceMappingURL=users.service.js.map
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, user_decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_a = typeof passport_42_1.default !== "undefined" && passport_42_1.default) === "function" ? _a : Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "home", null);
+AppController = __decorate([
+    (0, common_1.Controller)()
+], AppController);
+exports.AppController = AppController;
+//# sourceMappingURL=app.controller.js.map

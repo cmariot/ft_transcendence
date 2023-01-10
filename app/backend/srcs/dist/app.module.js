@@ -9,33 +9,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const typeorm_1 = require("@nestjs/typeorm");
-const users_controller_1 = require("./users/users.controller");
-const users_service_1 = require("./users/users.service");
-const users_module_1 = require("./users/users.module");
 const login_module_1 = require("./login/login.module");
-const app_gateway_1 = require("./app.gateway");
+const axios_1 = require("@nestjs/axios");
+const app_controller_1 = require("./app.controller");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot(),
-            typeorm_1.TypeOrmModule.forRoot({
-                type: "postgres",
-                host: process.env.DATABASE_CONTAINER,
-                port: parseInt(process.env.DATABASE_PORT),
-                username: process.env.DATABASE_USER,
-                password: process.env.DATABASE_PASSWORD,
-                database: process.env.DATABASE_NAME,
-                autoLoadEntities: true,
-                synchronize: true,
-            }),
-            users_module_1.UsersModule,
-            login_module_1.LoginModule,
-        ],
-        controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService, app_gateway_1.AppGateway],
+        imports: [config_1.ConfigModule.forRoot(), axios_1.HttpModule, login_module_1.LoginModule],
+        controllers: [app_controller_1.AppController],
     })
 ], AppModule);
 exports.AppModule = AppModule;

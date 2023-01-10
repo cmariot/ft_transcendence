@@ -9,16 +9,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocalStrategy = void 0;
+exports.FtStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_42_1 = require("passport-42");
-let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, "42") {
+let FtStrategy = class FtStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, "42") {
     constructor(configService) {
         super({
             clientID: configService.get("UID_42_SECRET"),
-            clientSecret: configService.get("PASSWORD_42_SECRET"),
+            clientSecret: configService.get("PASSWORD_SECRET_42"),
             callbackURL: "http://localhost:3000/login/callback",
             passReqToCallback: true,
         });
@@ -27,12 +27,14 @@ let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)
     async validate(request, accessToken, refreshToken, profile, cb) {
         request.session.accessToken = accessToken;
         console.log("accessToken", accessToken, "refreshToken", refreshToken);
+        console.log(profile.username);
+        console.log(profile.emails[0].value);
         return cb(null, profile);
     }
 };
-LocalStrategy = __decorate([
+FtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService])
-], LocalStrategy);
-exports.LocalStrategy = LocalStrategy;
-//# sourceMappingURL=local.strategy.js.map
+], FtStrategy);
+exports.FtStrategy = FtStrategy;
+//# sourceMappingURL=ft.strategy.js.map
