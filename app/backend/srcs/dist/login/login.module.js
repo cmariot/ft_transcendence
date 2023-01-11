@@ -12,12 +12,15 @@ const config_1 = require("@nestjs/config");
 const ft_strategy_1 = require("./ft.strategy");
 const login_controller_1 = require("./login.controller");
 const session_serializer_1 = require("./session.serializer");
+const login_service_1 = require("./login.service");
+const users_module_1 = require("../users/users.module");
 let LoginModule = class LoginModule {
 };
 LoginModule = __decorate([
     (0, common_1.Module)({
+        imports: [users_module_1.UsersModule],
         controllers: [login_controller_1.LoginController],
-        providers: [config_1.ConfigService, ft_strategy_1.FtStrategy, session_serializer_1.SessionSerializer],
+        providers: [config_1.ConfigService, ft_strategy_1.FortyTwoStrategy, session_serializer_1.SessionSerializer, login_service_1.LoginService],
     })
 ], LoginModule);
 exports.LoginModule = LoginModule;

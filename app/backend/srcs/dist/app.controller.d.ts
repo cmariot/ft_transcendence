@@ -3,4 +3,5 @@ export declare class AppController {
     home(user: Profile): {
         user: Profile;
     };
+    test(): string;
 }

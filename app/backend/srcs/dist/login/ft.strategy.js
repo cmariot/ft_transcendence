@@ -9,32 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FtStrategy = void 0;
+exports.FortyTwoStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_42_1 = require("passport-42");
-let FtStrategy = class FtStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, "42") {
-    constructor(configService) {
+const login_service_1 = require("./login.service");
+let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, "42") {
+    constructor(configService, loginService) {
         super({
             clientID: configService.get("UID_42_SECRET"),
             clientSecret: configService.get("PASSWORD_SECRET_42"),
-            callbackURL: "http://localhost:3000/login/callback",
-            passReqToCallback: true,
+            callbackURL: configService.get("CALLBACK_ADDRESS"),
         });
         this.configService = configService;
+        this.loginService = loginService;
     }
-    async validate(request, accessToken, refreshToken, profile, cb) {
-        request.session.accessToken = accessToken;
-        console.log("accessToken", accessToken, "refreshToken", refreshToken);
+    async validate(accessToken, refreshToken, profile, cb) {
+        console.log(accessToken);
+        console.log(refreshToken);
         console.log(profile.username);
         console.log(profile.emails[0].value);
-        return cb(null, profile);
+        const user = await this.loginService.validateUser(profile.username);
+        if (user) {
+            return user;
+        }
+        else if (!user) {
+            throw new common_1.UnauthorizedException();
+        }
+        return cb(null, user);
     }
 };
-FtStrategy = __decorate([
+FortyTwoStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
-], FtStrategy);
-exports.FtStrategy = FtStrategy;
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        login_service_1.LoginService])
+], FortyTwoStrategy);
+exports.FortyTwoStrategy = FortyTwoStrategy;
 //# sourceMappingURL=ft.strategy.js.map

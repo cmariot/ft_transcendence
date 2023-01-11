@@ -1,5 +1,6 @@
 app/backend/.env
+app/backend/srcs/node_modules
 app/database/.env
-app/database/data/
 app/frontend/.env
+app/frontend/srcs/node_modules
 app/pgadmin/.env

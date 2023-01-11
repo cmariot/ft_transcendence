@@ -1,13 +1,11 @@
 import { ConfigService } from "@nestjs/config";
 import { Profile, VerifyCallback } from "passport-42";
-declare const FtStrategy_base: new (...args: any[]) => any;
-export declare class FtStrategy extends FtStrategy_base {
+import { LoginService } from "./login.service";
+declare const FortyTwoStrategy_base: new (...args: any[]) => any;
+export declare class FortyTwoStrategy extends FortyTwoStrategy_base {
     private readonly configService;
-    constructor(configService: ConfigService);
-    validate(request: {
-        session: {
-            accessToken: string;
-        };
-    }, accessToken: string, refreshToken: string, profile: Profile, cb: VerifyCallback): Promise<any>;
+    private loginService;
+    constructor(configService: ConfigService, loginService: LoginService);
+    validate(accessToken: string, refreshToken: string, profile: Profile, cb: VerifyCallback): Promise<any>;
 }
 export {};

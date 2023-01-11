@@ -6,10 +6,6 @@ const passport = require("passport");
 const session = require("express-session");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors({
-        origin: "*",
-        credentials: true,
-    });
     app.use(session({
         secret: process.env.SESSION_PASSWORD,
         resave: false,

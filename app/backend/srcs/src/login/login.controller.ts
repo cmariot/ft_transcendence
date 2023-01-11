@@ -5,14 +5,14 @@ import { FtOauthGuard } from "./guards/ft-oauth.guard";
 export class LoginController {
   @Get()
   @UseGuards(FtOauthGuard)
-  login() {
+  login(): void {
     return;
   }
 
   @Get("callback")
   @UseGuards(FtOauthGuard)
   @Redirect("/")
-  callback() {
+  callback(): void {
     return;
   }
 }

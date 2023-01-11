@@ -17,9 +17,13 @@ exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const user_decorator_1 = require("./login/user.decorator");
 const passport_42_1 = require("passport-42");
+const passport_1 = require("@nestjs/passport");
 let AppController = class AppController {
     home(user) {
         return { user };
+    }
+    test() {
+        return "Hello World!";
     }
 };
 __decorate([
@@ -29,6 +33,13 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_a = typeof passport_42_1.default !== "undefined" && passport_42_1.default) === "function" ? _a : Object]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "home", null);
+__decorate([
+    (0, common_1.Get)("test"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("42")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "test", null);
 AppController = __decorate([
     (0, common_1.Controller)()
 ], AppController);
