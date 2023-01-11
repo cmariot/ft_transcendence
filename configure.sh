@@ -6,11 +6,10 @@ NODE_ENV="developpment"
 FRONTEND_PORT="4000"
 NODE_OPTIONS="--openssl-legacy-provider"
 
-PGADMIN_PORT="5000"
+PGADMIN_PORT="5050"
 PGADMIN_CONFIG_SERVER_MODE="False"
 
 DATABASE_PORT="5432"
-DATABASE_HOST="magie_land.com"
 DATABASE_CONTAINER="database"
 
 create_database()
