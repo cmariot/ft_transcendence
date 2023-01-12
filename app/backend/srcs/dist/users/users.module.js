@@ -6,24 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthService = void 0;
+exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
-let AuthService = class AuthService {
-    login_success() {
-        return "";
-    }
-    login_failure() {
-        return "";
-    }
-    forty_two() {
-        return "";
-    }
-    forty_two_redirection() {
-        return "";
-    }
+const users_controller_1 = require("./controllers/users/users.controller");
+const users_service_1 = require("./services/users/users.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const database_1 = require("../database");
+let UsersModule = class UsersModule {
 };
-AuthService = __decorate([
-    (0, common_1.Injectable)()
-], AuthService);
-exports.AuthService = AuthService;
-//# sourceMappingURL=service.service.js.map
+UsersModule = __decorate([
+    (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([database_1.User])],
+        controllers: [users_controller_1.UsersController],
+        providers: [users_service_1.UsersService]
+    })
+], UsersModule);
+exports.UsersModule = UsersModule;
+//# sourceMappingURL=users.module.js.map
