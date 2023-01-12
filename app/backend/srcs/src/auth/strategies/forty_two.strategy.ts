@@ -32,16 +32,19 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
 
     let user = {
       username: profile.username,
+      displayName: profile.displayName,
+      email: profile.emails[0].value,
     };
 
-    console.log(user);
+    let created_user = this.usersService.createUser(user);
+    console.log(created_user);
     // In this example, the user's 42 profile is supplied as the user
     // record.  In a production-quality application, the 42 profile should
     // be associated with a user record in the application's database, which
     // allows for account linking and authentication with other identity
     // providers.
-    //return cb(null, profile);
-    return cb(null, profile);
+    return created_user;
+    //return cb(null, );
   }
 }
 

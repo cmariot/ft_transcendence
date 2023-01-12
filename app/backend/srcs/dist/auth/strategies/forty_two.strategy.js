@@ -32,9 +32,12 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
         console.log("profile", profile);
         let user = {
             username: profile.username,
+            displayName: profile.displayName,
+            email: profile.emails[0].value,
         };
-        console.log(user);
-        return cb(null, profile);
+        let created_user = this.usersService.createUser(user);
+        console.log(created_user);
+        return created_user;
     }
 };
 FortyTwoStrategy = __decorate([

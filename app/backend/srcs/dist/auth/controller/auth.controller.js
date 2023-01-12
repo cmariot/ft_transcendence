@@ -60,6 +60,7 @@ __decorate([
 ], AuthController.prototype, "forty_two", null);
 __decorate([
     (0, common_1.Get)("42/redirect"),
+    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)

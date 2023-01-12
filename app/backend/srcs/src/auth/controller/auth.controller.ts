@@ -28,6 +28,7 @@ export class AuthController {
   }
 
   @Get("42/redirect")
+  @UseGuards(FortyTwoOauthGuard)
   forty_two_redirect(): string {
     return this.authService.forty_two_redirection();
   }
