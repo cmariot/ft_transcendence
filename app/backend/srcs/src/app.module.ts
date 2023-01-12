@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -10,7 +9,6 @@ import { UsersModule } from "./users/users.module";
   imports: [
     AuthModule,
     ConfigModule,
-
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -27,6 +25,5 @@ import { UsersModule } from "./users/users.module";
     }),
     UsersModule,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

@@ -33,7 +33,7 @@ __decorate([
         default: '',
     }),
     __metadata("design:type", String)
-], User.prototype, "DisplayName", void 0);
+], User.prototype, "displayName", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         name: 'email_address',

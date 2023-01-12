@@ -6,12 +6,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppController = void 0;
+exports.FortyTwoOauthGuard = void 0;
 const common_1 = require("@nestjs/common");
-let AppController = class AppController {
+const passport_1 = require("@nestjs/passport");
+let FortyTwoOauthGuard = class FortyTwoOauthGuard extends (0, passport_1.AuthGuard)('42') {
+    async canActivate(context) {
+        console.log("canActivate");
+        console.log(context);
+        const activate = (await super.canActivate(context));
+        await super.logIn(context.switchToHttp().getRequest());
+        console.log(activate);
+        return activate;
+    }
 };
-AppController = __decorate([
-    (0, common_1.Controller)()
-], AppController);
-exports.AppController = AppController;
-//# sourceMappingURL=app.controller.js.map
+FortyTwoOauthGuard = __decorate([
+    (0, common_1.Injectable)()
+], FortyTwoOauthGuard);
+exports.FortyTwoOauthGuard = FortyTwoOauthGuard;
+//# sourceMappingURL=forty_two_oauth.guards.js.map

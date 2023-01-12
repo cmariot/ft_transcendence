@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const forty_two_oauth_guards_1 = require("../guards/forty_two_oauth.guards");
 const auth_service_1 = require("../service/auth.service");
 let AuthController = class AuthController {
     constructor(authService) {
@@ -52,6 +53,7 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 __decorate([
     (0, common_1.Get)("42"),
+    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)

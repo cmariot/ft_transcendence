@@ -22,7 +22,7 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(3),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "DisplayName", void 0);
+], CreateUserDto.prototype, "displayName", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsEmail)(),
