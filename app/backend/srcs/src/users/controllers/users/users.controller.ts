@@ -15,14 +15,19 @@ import {
 	export class UsersController {
 	  constructor(private readonly userService: UsersService) {}
 	  
-	  @Get()
-	  getUsers() {
+	@Get()
+	getUsers() {
 		return this.userService.getUsers();
-	  }
-	  
-	  @Post('create')
-	  @UsePipes(ValidationPipe)
-	  createUsers(@Body() createUserDto: CreateUserDto) {
-		return this.userService.createUser(createUserDto);
-	  }
 	}
+	
+	@Get('id/:id')
+  	findUsersById(@Param('id', ParseIntPipe) id: number) {
+    	return this.userService.findUsersById(id);
+  }
+	
+	@Post('create')
+	@UsePipes(ValidationPipe)
+	createUsers(@Body() createUserDto: CreateUserDto) {
+		return this.userService.createUser(createUserDto);
+	}
+}

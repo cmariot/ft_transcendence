@@ -1,16 +1,16 @@
 #!/bin/bash
 
-BACKEND_PORT="3000"
-NODE_ENV="developpment"
+export BACKEND_PORT="3000"
+export NODE_ENV="developpment"
 
-FRONTEND_PORT="4000"
-NODE_OPTIONS="--openssl-legacy-provider"
+export FRONTEND_PORT="4000"
+export NODE_OPTIONS="--openssl-legacy-provider"
 
-PGADMIN_PORT="5050"
-PGADMIN_CONFIG_SERVER_MODE="False"
+export PGADMIN_PORT="5000"
+export PGADMIN_CONFIG_SERVER_MODE="False"
 
-DATABASE_PORT="5432"
-DATABASE_CONTAINER="database"
+export DATABASE_PORT="5432"
+export DATABASE_CONTAINER="database"
 
 create_database()
 {
@@ -29,16 +29,16 @@ create_database()
 
 create_backend()
 {
-	echo "NODE_ENV=\"${NODE_ENV}\""						>  ./app/backend/.env
-	echo "DATABASE_USER=\"$database_user\""				>> ./app/backend/.env
-	echo "DATABASE_PASSWORD=\"$database_password\""		>> ./app/backend/.env
-	echo "DATABASE_NAME=\"$database_db\""				>> ./app/backend/.env
-	echo "DATABASE_CONTAINER=\"${DATABASE_CONTAINER}\""	>> ./app/backend/.env
-	echo "DATABASE_HOST=\"$DATABASE_HOST\""				>> ./app/backend/.env
-	echo "DATABASE_PORT=\"${DATABASE_PORT}\""			>> ./app/backend/.env
-	echo "BACKEND_PORT=\"${BACKEND_PORT}\""				>> ./app/backend/.env
-	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""				>> ./app/backend/.env
-	echo "DATABASE_URL=\"\${DATABASE_CONTAINER}://\${DATABASE_USER}:\${DATABASE_PASSWORD}@\${DATABASE_CONTAINER}:\${DATABASE_PORT}/\${DATABASE_NAME}\"" >> ./app/backend/.env
+	echo "NODE_ENV=\"${NODE_ENV}\""							>  ./app/backend/.env
+	echo "DB_USER=\"$database_user\""						>> ./app/backend/.env
+	echo "DB_PASS=\"$database_password\""					>> ./app/backend/.env
+	echo "DB_SCHEMA=\"$database_db\""						>> ./app/backend/.env
+	echo "DB_HOST=\"${DATABASE_CONTAINER}\""				>> ./app/backend/.env
+	echo "DB_PORT=\"${DATABASE_PORT}\""						>> ./app/backend/.env
+	echo "BACKEND_PORT=\"${BACKEND_PORT}\""					>> ./app/backend/.env
+	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""					>> ./app/backend/.env
+	echo "SESSION_PASSWORD=\"$database_password\""			>> ./app/backend/.env
+	echo "DATABASE_URL=\"\${DB_HOST}://\${DB_USER}:\${DB_PASS}@\${DB_HOST}:\${DB_PORT}/\${DB_SCHEMA}\"" >> ./app/backend/.env
 
 	echo -n "Please enter the UID_42_SECRET : "
 	read uid_42_secret
