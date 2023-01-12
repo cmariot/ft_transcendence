@@ -6,7 +6,7 @@ export NODE_ENV="developpment"
 export FRONTEND_PORT="4000"
 export NODE_OPTIONS="--openssl-legacy-provider"
 
-export PGADMIN_PORT="5000"
+export PGADMIN_PORT="5050"
 export PGADMIN_CONFIG_SERVER_MODE="False"
 
 export DATABASE_PORT="5432"
