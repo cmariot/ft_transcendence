@@ -16,23 +16,25 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../service/auth.service");
 const config_1 = require("@nestjs/config");
 const users_service_1 = require("../../users/services/users/users.service");
-let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, '42') {
+let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, "42") {
     constructor(authService, usersService, configService) {
         super({
-            clientID: configService.get('UID_42_SECRET'),
-            clientSecret: configService.get('PASSWORD_SECRET_42'),
-            callbackURL: configService.get('CALLBACK_URL'),
-            passReqToCallback: true,
+            clientID: configService.get("UID_42_SECRET"),
+            clientSecret: configService.get("PASSWORD_SECRET_42"),
+            callbackURL: configService.get("CALLBACK_URL"),
         });
         this.authService = authService;
         this.usersService = usersService;
         this.configService = configService;
     }
-    async validate(request, accessToken, refreshToken, profile, cb) {
-        request.session.accessToken = accessToken;
-        console.log('accessToken', accessToken, 'refreshToken', refreshToken);
-        console.log('profile', profile);
-        return (null);
+    async validate(accessToken, refreshToken, profile, cb) {
+        console.log("accessToken", accessToken, "refreshToken", refreshToken);
+        console.log("profile", profile);
+        let user = {
+            username: profile.username,
+        };
+        console.log(user);
+        return cb(null, profile);
     }
 };
 FortyTwoStrategy = __decorate([
