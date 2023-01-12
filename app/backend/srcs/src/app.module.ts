@@ -1,12 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { LoginModule } from "./login/login.module";
-import { HttpModule } from "@nestjs/axios";
 import { AppController } from "./app.controller";
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, LoginModule, UsersModule],
   controllers: [AppController],
+  imports: [AuthModule],
 })
 export class AppModule {}

@@ -9,21 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppController = void 0;
+exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-let AppController = class AppController {
-    home() {
-        return "Backend's home";
+let AuthService = class AuthService {
+    constructor() { }
+    login_success() {
+        return "login success + user informations";
+    }
+    login_failure() {
+        return "login failure";
+    }
+    logout() {
+        return "logout";
+    }
+    forty_two() {
+        return "authenticate via passport-42";
+    }
+    forty_two_redirection() {
+        return "redirect to home page if login succeeded or redirect to /auth/login/failed if failed";
     }
 };
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "home", null);
-AppController = __decorate([
-    (0, common_1.Controller)()
-], AppController);
-exports.AppController = AppController;
-//# sourceMappingURL=app.controller.js.map
+AuthService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], AuthService);
+exports.AuthService = AuthService;
+//# sourceMappingURL=auth.service.js.map
