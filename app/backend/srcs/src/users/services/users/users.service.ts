@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/database";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "src/users/dto/CreateUser.dto";
+import { UserDto } from "src/users/dto/user.dto";
 import { Observable, from } from "rxjs";
 
 @Injectable()
@@ -11,16 +11,15 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>
   ) {}
 
-  createUser(createUserDto: CreateUserDto) {
-    const newUser = this.userRepository.create(createUserDto);
-    return this.userRepository.save(newUser);
+  createUser(UserDto: UserDto) {
+    return this.userRepository.save(UserDto);
   }
 
   getUsers(): Observable<User[]> {
     return from(this.userRepository.find());
   }
 
-  async findOne(username: string): Promise<User | undefined> {
+  async findByUsername(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { username: username } });
   }
 }

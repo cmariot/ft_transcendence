@@ -28,15 +28,15 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
         this.configService = configService;
     }
     async validate(accessToken, refreshToken, profile, cb) {
-        console.log("accessToken", accessToken, "refreshToken", refreshToken);
-        console.log("profile", profile);
         let user = {
             username: profile.username,
             displayName: profile.displayName,
             email: profile.emails[0].value,
         };
-        let created_user = this.usersService.createUser(user);
-        console.log(created_user);
+        let created_user = this.authService.validateUser(user, accessToken);
+        if (!created_user) {
+            throw new common_1.UnauthorizedException();
+        }
         return created_user;
     }
 };

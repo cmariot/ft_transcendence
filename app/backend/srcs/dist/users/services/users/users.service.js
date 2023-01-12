@@ -22,14 +22,13 @@ let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    createUser(createUserDto) {
-        const newUser = this.userRepository.create(createUserDto);
-        return this.userRepository.save(newUser);
+    createUser(UserDto) {
+        return this.userRepository.save(UserDto);
     }
     getUsers() {
         return (0, rxjs_1.from)(this.userRepository.find());
     }
-    async findOne(username) {
+    async findByUsername(username) {
         return this.userRepository.findOne({ where: { username: username } });
     }
 };

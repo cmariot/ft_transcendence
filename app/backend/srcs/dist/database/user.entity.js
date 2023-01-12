@@ -15,30 +15,30 @@ let User = class User {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)({
-        type: 'bigint',
-        name: 'user_id',
+        type: "bigint",
+        name: "user_id",
     }),
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         nullable: false,
-        default: '',
+        default: "",
     }),
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         nullable: false,
-        default: '',
+        default: "",
     }),
     __metadata("design:type", String)
 ], User.prototype, "displayName", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'email_address',
+        name: "email_address",
         nullable: false,
-        default: '',
+        default: "",
     }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);

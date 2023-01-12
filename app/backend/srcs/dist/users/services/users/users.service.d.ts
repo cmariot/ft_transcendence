@@ -1,11 +1,11 @@
 import { User } from "src/database";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "src/users/dto/CreateUser.dto";
+import { UserDto } from "src/users/dto/user.dto";
 import { Observable } from "rxjs";
 export declare class UsersService {
     private readonly userRepository;
     constructor(userRepository: Repository<User>);
-    createUser(createUserDto: CreateUserDto): Promise<User>;
+    createUser(UserDto: UserDto): Promise<UserDto & User>;
     getUsers(): Observable<User[]>;
-    findOne(username: string): Promise<User | undefined>;
+    findByUsername(username: string): Promise<User | undefined>;
 }

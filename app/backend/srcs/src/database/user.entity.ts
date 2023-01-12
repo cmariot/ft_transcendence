@@ -1,29 +1,29 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn({
-    type: 'bigint',
-    name: 'user_id',
+    type: "bigint",
+    name: "user_id",
   })
   id: number;
-  
+
   @Column({
     nullable: false,
-    default: '',
+    default: "",
   })
   username: string;
 
   @Column({
     nullable: false,
-    default: '',
+    default: "",
   })
   displayName: string;
 
   @Column({
-    name: 'email_address',
+    name: "email_address",
     nullable: false,
-    default: '',
+    default: "",
   })
   email: string;
 }
