@@ -19,16 +19,10 @@ function App() {
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
   async function handleClick() {
-    try {
-      const res = await axios({
-        method: 'get',
-        url: "http://localhost:3000/login/",
-      })
-      await console.log(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    window.open("http://localhost:3000/auth/42");
+    setIsLogged(true);
   }
+
 
   if (isLogged === false) {
     return (
