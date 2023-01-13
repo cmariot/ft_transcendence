@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../services/users.service");
+const jwt_auth_guards_1 = require("../../auth/guards/jwt_auth.guards");
 let UsersController = class UsersController {
     constructor(userService) {
         this.userService = userService;
@@ -22,9 +23,10 @@ let UsersController = class UsersController {
 };
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(jwt_auth_guards_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUsers", null);
 UsersController = __decorate([
     (0, common_1.Controller)("users"),

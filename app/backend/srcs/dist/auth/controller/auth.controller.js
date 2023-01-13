@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,16 +21,10 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     forty_two() {
-        console.log("forty_two");
         return;
     }
-    forty_two_redirect() {
-        console.log("forty_two_redirect");
-        return;
-    }
-    login_success() {
-        console.log("login_success");
-        return this.authService.login_success();
+    forty_two_redirect(req) {
+        return this.authService.login(req.user);
     }
 };
 __decorate([
@@ -40,17 +37,11 @@ __decorate([
 __decorate([
     (0, common_1.Get)("42/redirect"),
     (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
-    (0, common_1.Redirect)("/auth/login/success"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "forty_two_redirect", null);
-__decorate([
-    (0, common_1.Get)("login/success"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "login_success", null);
 AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

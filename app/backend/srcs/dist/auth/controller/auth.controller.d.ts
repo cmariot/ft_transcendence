@@ -3,6 +3,7 @@ export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
     forty_two(): void;
-    forty_two_redirect(): void;
-    login_success(): string;
+    forty_two_redirect(req: any): Promise<{
+        access_token: string;
+    }>;
 }

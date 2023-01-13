@@ -11,10 +11,13 @@ const auth_controller_1 = require("./controller/auth.controller");
 const auth_service_1 = require("./service/auth.service");
 const forty_two_strategy_1 = require("./strategies/forty_two.strategy");
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../users/entity/user.entity");
-const users_service_1 = require("../users/services/users.service");
+const users_module_1 = require("../users/users.module");
+const jwt_constants_1 = require("./constants/jwt.constants");
+const jwt_strategy_1 = require("./strategies/jwt.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -22,12 +25,13 @@ AuthModule = __decorate([
         imports: [
             passport_1.PassportModule,
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity]),
+            jwt_1.JwtModule.register({
+                secret: jwt_constants_1.jwtConstants.secret,
+                signOptions: { expiresIn: "1h" },
+            }),
+            users_module_1.UsersModule,
         ],
-        providers: [
-            auth_service_1.AuthService,
-            forty_two_strategy_1.FortyTwoStrategy,
-            users_service_1.UsersService,
-        ],
+        providers: [auth_service_1.AuthService, forty_two_strategy_1.FortyTwoStrategy, jwt_strategy_1.JwtStrategy],
         controllers: [auth_controller_1.AuthController],
     })
 ], AuthModule);

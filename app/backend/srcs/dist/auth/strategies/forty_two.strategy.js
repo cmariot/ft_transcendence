@@ -24,14 +24,15 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
         this.authService = authService;
     }
     async validate(accessToken, refreshToken, profile) {
-        console.log("validate");
-        let user = {
-            uuid: parseInt(profile.id),
+        let user = await this.authService.validateUser({
             username: profile.username,
             displayName: profile.displayName,
             email: profile.emails[0].value,
-        };
-        return this.authService.validateUser(user);
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException();
+        }
+        return user;
     }
 };
 FortyTwoStrategy = __decorate([

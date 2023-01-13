@@ -9,25 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SessionSerializer = void 0;
-const common_1 = require("@nestjs/common");
+exports.JwtStrategy = void 0;
+const passport_jwt_1 = require("passport-jwt");
 const passport_1 = require("@nestjs/passport");
-let SessionSerializer = class SessionSerializer extends passport_1.PassportSerializer {
+const common_1 = require("@nestjs/common");
+const jwt_constants_1 = require("../constants/jwt.constants");
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor() {
-        super();
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: jwt_constants_1.jwtConstants.secret,
+        });
     }
-    serializeUser(user, done) {
-        console.log("serializeUser");
-        done(null, user);
-    }
-    deserializeUser(payload, done) {
-        console.log("deserializeUser");
-        return done(null, payload);
+    async validate(payload) {
+        return { uuid: payload.sub, username: payload.username };
     }
 };
-SessionSerializer = __decorate([
+JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
-], SessionSerializer);
-exports.SessionSerializer = SessionSerializer;
-//# sourceMappingURL=session.serializer.js.map
+], JwtStrategy);
+exports.JwtStrategy = JwtStrategy;
+//# sourceMappingURL=jwt.strategy.js.map

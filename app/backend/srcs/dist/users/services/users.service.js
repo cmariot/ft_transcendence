@@ -27,8 +27,8 @@ let UsersService = class UsersService {
     getUsers() {
         return this.userRepository.find();
     }
-    findById(uuid) {
-        return this.userRepository.findOneBy({ uuid: uuid });
+    getByUsername(username) {
+        return this.userRepository.findOneBy({ username: username });
     }
 };
 UsersService = __decorate([

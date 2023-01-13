@@ -11,7 +11,7 @@ export class UsersService {
   ) {}
 
   // Add an UserEntity into the database
-  async saveUser(user: UserEntity): Promise<UserEntity> {
+  async saveUser(user): Promise<UserEntity> {
     return this.userRepository.save(user);
   }
 
@@ -20,8 +20,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  // Return the user by it's uuid, or null if not found
-  findById(uuid: number): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ uuid: uuid });
+  getByUsername(username: string): Promise<UserEntity | undefined> {
+    return this.userRepository.findOneBy({ username: username });
   }
 }
