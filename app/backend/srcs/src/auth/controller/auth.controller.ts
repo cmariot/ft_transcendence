@@ -9,27 +9,22 @@ export class AuthController {
   @Get("42")
   @UseGuards(FortyTwoOauthGuard)
   forty_two(): void {
-    return this.authService.forty_two();
+    console.log("forty_two");
+    return;
   }
 
   @Get("42/redirect")
   @UseGuards(FortyTwoOauthGuard)
+  @Redirect("/auth/login/success")
   forty_two_redirect(): void {
-    return this.authService.forty_two_redirection();
+    console.log("forty_two_redirect");
+    return;
   }
 
   @Get("login/success")
   login_success(): string {
+    console.log("login_success");
     return this.authService.login_success();
   }
 
-  @Get("login/failure")
-  login_failure(): string {
-    return this.authService.login_failure();
-  }
-
-  @Get("logout")
-  logout(): string {
-    return this.authService.logout();
-  }
 }

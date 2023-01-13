@@ -1,5 +1,5 @@
-export declare class User {
-    id: number;
+export declare class UserEntity {
+    uuid: number;
     username: string;
     displayName: string;
     email: string;

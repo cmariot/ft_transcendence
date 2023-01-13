@@ -9,41 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.UserEntity = void 0;
 const typeorm_1 = require("typeorm");
-let User = class User {
+let UserEntity = class UserEntity {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)({
-        type: "bigint",
-        name: "user_id",
-    }),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Number)
-], User.prototype, "id", void 0);
+], UserEntity.prototype, "uuid", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        nullable: false,
-        default: "",
-    }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "username", void 0);
+], UserEntity.prototype, "username", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        nullable: false,
-        default: "",
-    }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "displayName", void 0);
+], UserEntity.prototype, "displayName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        name: "email_address",
-        nullable: false,
-        default: "",
-    }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
-User = __decorate([
+], UserEntity.prototype, "email", void 0);
+UserEntity = __decorate([
     (0, typeorm_1.Entity)()
-], User);
-exports.User = User;
+], UserEntity);
+exports.UserEntity = UserEntity;
 //# sourceMappingURL=user.entity.js.map

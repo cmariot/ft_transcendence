@@ -5,6 +5,4 @@ export declare class AuthController {
     forty_two(): void;
     forty_two_redirect(): void;
     login_success(): string;
-    login_failure(): string;
-    logout(): string;
 }

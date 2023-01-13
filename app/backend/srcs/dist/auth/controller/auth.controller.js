@@ -18,19 +18,16 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     forty_two() {
-        return this.authService.forty_two();
+        console.log("forty_two");
+        return;
     }
     forty_two_redirect() {
-        return this.authService.forty_two_redirection();
+        console.log("forty_two_redirect");
+        return;
     }
     login_success() {
+        console.log("login_success");
         return this.authService.login_success();
-    }
-    login_failure() {
-        return this.authService.login_failure();
-    }
-    logout() {
-        return this.authService.logout();
     }
 };
 __decorate([
@@ -43,6 +40,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)("42/redirect"),
     (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
+    (0, common_1.Redirect)("/auth/login/success"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -53,18 +51,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AuthController.prototype, "login_success", null);
-__decorate([
-    (0, common_1.Get)("login/failure"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "login_failure", null);
-__decorate([
-    (0, common_1.Get)("logout"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "logout", null);
 AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
