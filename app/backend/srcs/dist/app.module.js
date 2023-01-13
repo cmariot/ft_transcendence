@@ -8,31 +8,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const auth_module_1 = require("./auth/auth.module");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
-const users_controller_1 = require("./users/users.controller");
-const users_service_1 = require("./users/users.service");
 const users_module_1 = require("./users/users.module");
+const user_entity_1 = require("./users/entity/user.entity");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot(),
+            auth_module_1.AuthModule,
+            config_1.ConfigModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: "postgres",
-                host: process.env.DATABASE_CONTAINER,
-                port: parseInt(process.env.DATABASE_PORT),
-                username: process.env.DATABASE_USER,
-                password: process.env.DATABASE_PASSWORD,
-                database: process.env.DATABASE_NAME,
-                autoLoadEntities: true,
+                host: process.env.DB_HOST,
+                port: parseInt(process.env.DB_PORT),
+                username: process.env.DB_USER,
+                password: process.env.DB_PASS,
+                database: process.env.DB_SCHEMA,
+                entities: [user_entity_1.UserEntity],
                 synchronize: true,
             }),
             users_module_1.UsersModule,
         ],
-        controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
     })
 ], AppModule);
 exports.AppModule = AppModule;

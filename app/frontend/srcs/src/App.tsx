@@ -20,11 +20,11 @@ function App() {
 
   async function handleClick() {
     try {
-      const res = await axios.get('http://localhost:3000/users');   // get login
-      await console.log(res.data[0]);
-      if (res.data[0].username === "toto") {
-        setIsLogged(true);
-      }
+      const res = await axios({
+        method: 'get',
+        url: "http://localhost:3000/login/",
+      })
+      await console.log(res.data);
     } catch (err) {
       console.error(err);
     }
