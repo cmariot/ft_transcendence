@@ -1,10 +1,22 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Redirect, UseGuards } from "@nestjs/common";
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
 import { AuthService } from "../service/auth.service";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get("42")
+  @UseGuards(FortyTwoOauthGuard)
+  forty_two(): void {
+    return this.authService.forty_two();
+  }
+
+  @Get("42/redirect")
+  @UseGuards(FortyTwoOauthGuard)
+  forty_two_redirect(): void {
+    return this.authService.forty_two_redirection();
+  }
 
   @Get("login/success")
   login_success(): string {
@@ -19,17 +31,5 @@ export class AuthController {
   @Get("logout")
   logout(): string {
     return this.authService.logout();
-  }
-
-  @Get("42")
-  @UseGuards(FortyTwoOauthGuard)
-  forty_two(): string {
-    return this.authService.forty_two();
-  }
-
-  @Get("42/redirect")
-  @UseGuards(FortyTwoOauthGuard)
-  forty_two_redirect(): string {
-    return this.authService.forty_two_redirection();
   }
 }

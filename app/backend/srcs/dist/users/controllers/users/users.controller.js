@@ -8,13 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
-const user_dto_1 = require("../../dto/user.dto");
 const users_service_1 = require("../../services/users/users.service");
 let UsersController = class UsersController {
     constructor(userService) {
@@ -23,9 +19,6 @@ let UsersController = class UsersController {
     getUsers() {
         return this.userService.getUsers();
     }
-    createUsers(UserDto) {
-        return this.userService.createUser(UserDto);
-    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -33,14 +26,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getUsers", null);
-__decorate([
-    (0, common_1.Post)("create"),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_dto_1.UserDto]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "createUsers", null);
 UsersController = __decorate([
     (0, common_1.Controller)("users"),
     __metadata("design:paramtypes", [users_service_1.UsersService])

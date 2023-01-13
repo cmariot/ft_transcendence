@@ -17,6 +17,12 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
+    forty_two() {
+        return this.authService.forty_two();
+    }
+    forty_two_redirect() {
+        return this.authService.forty_two_redirection();
+    }
     login_success() {
         return this.authService.login_success();
     }
@@ -26,13 +32,21 @@ let AuthController = class AuthController {
     logout() {
         return this.authService.logout();
     }
-    forty_two() {
-        return this.authService.forty_two();
-    }
-    forty_two_redirect() {
-        return this.authService.forty_two_redirection();
-    }
 };
+__decorate([
+    (0, common_1.Get)("42"),
+    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "forty_two", null);
+__decorate([
+    (0, common_1.Get)("42/redirect"),
+    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "forty_two_redirect", null);
 __decorate([
     (0, common_1.Get)("login/success"),
     __metadata("design:type", Function),
@@ -51,20 +65,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AuthController.prototype, "logout", null);
-__decorate([
-    (0, common_1.Get)("42"),
-    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "forty_two", null);
-__decorate([
-    (0, common_1.Get)("42/redirect"),
-    (0, common_1.UseGuards)(forty_two_oauth_guards_1.FortyTwoOauthGuard),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "forty_two_redirect", null);
 AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

@@ -15,18 +15,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const database_1 = require("../../../database");
 const typeorm_2 = require("typeorm");
-const rxjs_1 = require("rxjs");
+const user_entity_1 = require("../../entity/user.entity");
 let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    createUser(UserDto) {
-        return this.userRepository.save(UserDto);
+    async saveUser(user) {
+        return this.userRepository.save(user);
     }
     getUsers() {
-        return (0, rxjs_1.from)(this.userRepository.find());
+        return this.userRepository.find();
+    }
+    getUserById(id) {
+        return this.userRepository.findOneBy({ id });
+    }
+    async remove(id) {
+        await this.userRepository.delete(id);
     }
     async findByUsername(username) {
         return this.userRepository.findOne({ where: { username: username } });
@@ -34,7 +39,7 @@ let UsersService = class UsersService {
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(database_1.User)),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UsersService);
 exports.UsersService = UsersService;

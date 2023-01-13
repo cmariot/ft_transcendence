@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
-import { Profile } from "passport-42";
+import { User } from "src/users/entity/user.entity"
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -8,11 +8,11 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: Profile, done: (err: Error, user: Profile) => void): any {
+  serializeUser(user: User, done: (err: Error, user: User) => void): any {
     done(null, user);
   }
 
-  deserializeUser(payload: Profile, done: (err: Error, user: Profile) => void) {
+  deserializeUser(payload: User, done: (err: Error, user: User) => void) {
     return done(null, payload);
   }
 }

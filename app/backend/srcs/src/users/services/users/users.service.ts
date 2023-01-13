@@ -1,25 +1,34 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/database";
 import { Repository } from "typeorm";
-import { UserDto } from "src/users/dto/user.dto";
-import { Observable, from } from "rxjs";
+import { User } from "src/users/entity/user.entity";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(User)
+    private userRepository: Repository<User>
   ) {}
 
-  createUser(UserDto: UserDto) {
-    return this.userRepository.save(UserDto);
+  async saveUser(user: User): Promise<User> {
+    return this.userRepository.save(user);
   }
 
-  getUsers(): Observable<User[]> {
-    return from(this.userRepository.find());
+  // Get all the users in the database
+  getUsers(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
-  async findByUsername(username: string): Promise<User | undefined> {
+  //
+  getUserById(id: number): Promise<User> {
+    return this.userRepository.findOneBy({ id });
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.userRepository.delete(id);
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { username: username } });
   }
 }

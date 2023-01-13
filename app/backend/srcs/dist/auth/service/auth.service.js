@@ -16,8 +16,14 @@ let AuthService = class AuthService {
     constructor(usersService) {
         this.usersService = usersService;
     }
+    forty_two() {
+        return;
+    }
+    forty_two_redirection() {
+        return;
+    }
     login_success() {
-        return "login success + user informations";
+        return "login success" + "user infos";
     }
     login_failure() {
         return "login failure";
@@ -25,21 +31,16 @@ let AuthService = class AuthService {
     logout() {
         return "logout";
     }
-    forty_two() {
-        return "authenticate via passport-42";
-    }
-    forty_two_redirection() {
-        return "redirect to home page if login succeeded or redirect to /auth/login/failed if failed";
-    }
     async validateUser(user, access_token) {
-        const updated_user = await this.usersService.createUser(user);
-        if (updated_user && access_token) {
-            console.log(access_token);
-            return updated_user;
-        }
-        return null;
+        return this.usersService.saveUser(user);
     }
 };
+__decorate([
+    (0, common_1.Redirect)("/auth/login/success"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AuthService.prototype, "forty_two_redirection", null);
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService])

@@ -1,11 +1,11 @@
-import { User } from "src/database";
 import { Repository } from "typeorm";
-import { UserDto } from "src/users/dto/user.dto";
-import { Observable } from "rxjs";
+import { User } from "src/users/entity/user.entity";
 export declare class UsersService {
-    private readonly userRepository;
+    private userRepository;
     constructor(userRepository: Repository<User>);
-    createUser(UserDto: UserDto): Promise<UserDto & User>;
-    getUsers(): Observable<User[]>;
-    findByUsername(username: string): Promise<User | undefined>;
+    saveUser(user: User): Promise<User>;
+    getUsers(): Promise<User[]>;
+    getUserById(id: number): Promise<User>;
+    remove(id: string): Promise<void>;
+    findByUsername(username: string): Promise<User | null>;
 }
