@@ -57,13 +57,13 @@ body {
 
 /* Element | http://localhost:4000/ */
 
-#root > div:nth-child(1) > button:nth-child(3) {
+button {
   background-color: #F3C637;
   padding: 10px;
   border: 1px #fff;
   font-weight: bold;
-  font-style: ;
   text-decoration: underline;
+  margin: 5px;
 }
 
 /* Element | http://localhost:4000/ */

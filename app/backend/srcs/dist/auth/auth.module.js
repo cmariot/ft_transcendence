@@ -23,12 +23,14 @@ let AuthModule = class AuthModule {
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            passport_1.PassportModule,
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity]),
             jwt_1.JwtModule.register({
                 secret: jwt_constants_1.jwtConstants.secret,
                 signOptions: { expiresIn: "1h" },
             }),
+            passport_1.PassportModule.register({
+                session: false,
+            }),
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity]),
             users_module_1.UsersModule,
         ],
         providers: [auth_service_1.AuthService, forty_two_strategy_1.FortyTwoStrategy, jwt_strategy_1.JwtStrategy],

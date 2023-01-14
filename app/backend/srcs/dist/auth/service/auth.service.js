@@ -20,16 +20,15 @@ let AuthService = class AuthService {
     }
     async validateUser(user) {
         let db_user = await this.usersService.getByUsername(user.username);
-        if (db_user && user.email === db_user.email) {
+        if (db_user && user.displayName === db_user.displayName) {
             return db_user;
         }
         return this.usersService.saveUser(user);
     }
-    async login(user) {
+    login(user) {
         const payload = { username: user.username, sub: user.uuid };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        let token = this.jwtService.sign(payload);
+        return token;
     }
 };
 AuthService = __decorate([

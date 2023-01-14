@@ -10,7 +10,5 @@ export declare class AuthService {
         displayName: string;
         email: string;
     }): Promise<UserEntity>;
-    login(user: UserEntity): Promise<{
-        access_token: string;
-    }>;
+    login(user: UserEntity): string;
 }

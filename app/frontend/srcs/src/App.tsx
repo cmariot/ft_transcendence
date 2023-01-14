@@ -1,45 +1,31 @@
-import React, { useState } from 'react';
-import './App.css';
+import React from 'react';
 import axios from 'axios';
-
-function Home() {
-
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  );
-}
+import './App.css';
 
 function App() {
-
-  const [isLogged, setIsLogged] = useState(false);
 
   let title: string = "ft_transcendence";
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
   async function handleClick() {
-    window.open("http://localhost:3000/auth/42");
-    setIsLogged(true);
+    window.open("https://localhost:8080/api/auth/42", "_self");
+  }
+  async function testLogin() {
+    await console.log(axios.get('https://localhost:8080/api/auth/test'));
+  }
+  async function testLogout() {
+    console.log(axios.get('https://localhost:8080/api/auth/logout'));
   }
 
-
-  if (isLogged === false) {
-    return (
-      <div>
-        <h1>{title}</h1>
-        <h2>{description}</h2>
-        <button onClick={handleClick}>Login</button>
-      </div>
-    );
-  }
-  else {
-    return (
-      <div>
-        <Home />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h1>{title}</h1>
+      <h2>{description}</h2>
+      <button onClick={handleClick}>Login</button>
+      <button onClick={testLogin}>test login</button>
+      <button onClick={testLogout}>Logout</button>
+    </div>
+  );
 
 }
 
