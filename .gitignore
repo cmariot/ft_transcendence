@@ -1,3 +1,4 @@
+.vscode
 app/backend/.env
 app/backend/srcs/node_modules
 app/database/.env
