@@ -34,7 +34,7 @@ export class AuthController {
         sameSite: "none",
         secure: true,
       })
-      .redirect("https://localhost:8080/");
+      .redirect("https://localhost:4242/");
     return;
   }
 
@@ -48,6 +48,6 @@ export class AuthController {
   @Get("logout")
   @UseGuards(JwtAuthGuard)
   logout(@Res() res): void {
-    res.clearCookie("jwt_token").redirect("https://localhost:8080/");
+    res.clearCookie("jwt_token").redirect("https://localhost:4242/");
   }
 }

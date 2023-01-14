@@ -5,7 +5,7 @@ services:
   database:
     container_name: "database"
     image: postgres:alpine
-    env_file : app/database/.env
+    env_file: app/database/.env
     networks:
       - network
     restart: unless-stopped
@@ -56,7 +56,7 @@ services:
     networks:
       - network
     ports:
-      - "8080:443"
+      - "4242:443"
     depends_on:
       - "frontend"
     restart: unless-stopped

@@ -33,14 +33,14 @@ let AuthController = class AuthController {
             sameSite: "none",
             secure: true,
         })
-            .redirect("https://localhost:8080/");
+            .redirect("https://localhost:4242/");
         return;
     }
     test() {
         return "You see that because you're logged in !";
     }
     logout(res) {
-        res.clearCookie("jwt_token").redirect("https://localhost:8080/");
+        res.clearCookie("jwt_token").redirect("https://localhost:4242/");
     }
 };
 __decorate([

@@ -8,13 +8,13 @@ function App() {
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
   async function handleClick() {
-    window.open("https://localhost:8080/api/auth/42", "_self");
+    window.open("https://localhost:4242/api/auth/42", "_self");
   }
   async function testLogin() {
-    await console.log(axios.get('https://localhost:8080/api/auth/test'));
+    await console.log(axios.get('https://localhost:4242/api/auth/test'));
   }
   async function testLogout() {
-    console.log(axios.get('https://localhost:8080/api/auth/logout'));
+    console.log(axios.get('https://localhost:4242/api/auth/logout'));
   }
 
   return (

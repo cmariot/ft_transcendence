@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(cookieParser());
-    app.enableCors({ origin: "https://localhost:8080", credentials: true });
+    app.enableCors({ origin: "https://localhost:4242", credentials: true });
     await app.listen(process.env.BACKEND_PORT);
 }
 bootstrap();
