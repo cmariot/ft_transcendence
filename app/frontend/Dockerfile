@@ -9,7 +9,6 @@ WORKDIR /frontend
 # Install app dependencies
 COPY ./srcs/package.json ./
 COPY ./srcs/package-lock.json ./
-
 RUN npm install
 
 # Add app
