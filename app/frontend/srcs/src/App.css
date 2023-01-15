@@ -2,44 +2,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-/* Inline #0 | http://localhost:4000/ */
-
 body {
   background-color: #1B1B1B;
   display: flex;
@@ -55,8 +17,6 @@ body {
   color: #FFFFFF;
 }
 
-/* Element | http://localhost:4000/ */
-
 button {
   background-color: #F3C637;
   padding: 10px;
@@ -66,15 +26,10 @@ button {
   margin: 5px;
 }
 
-/* Element | http://localhost:4000/ */
-
-#root > div:nth-child(1) > h1:nth-child(1) {
-  font-style: ;
+h1 {
   font-weight: bold;
 }
 
-/* Element | http://localhost:4000/ */
-
-#root > div:nth-child(1) > h2:nth-child(2) {
+h2 {
   font-style: oblique;
 }

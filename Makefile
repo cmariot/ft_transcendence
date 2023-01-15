@@ -11,11 +11,20 @@
 #                                                                              #
 # **************************************************************************** #
 
-detach:
-	docker compose up --detach --build
-
 up:
 	docker compose up --build
+
+configure:
+	./configure.sh
+
+build:
+	docker compose build
+
+run:
+	docker compose up
+
+detach:
+	docker compose up --detach --build
 
 clean: stop
 	docker system prune -a --force

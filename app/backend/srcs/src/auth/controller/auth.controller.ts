@@ -9,7 +9,6 @@ import {
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
 import { AuthService } from "../service/auth.service";
 import { JwtAuthGuard } from "../guards/jwt_auth.guards";
-import { jwtConstants } from "../constants/jwt.constants";
 
 @Controller("auth")
 export class AuthController {
@@ -25,7 +24,7 @@ export class AuthController {
   // 42 Strategy redirects here, create a connexion cookie
   @Get("42/redirect")
   @UseGuards(FortyTwoOauthGuard)
-  async forty_two_redirect(@Request() req, @Response() res) {
+  forty_two_redirect(@Request() req, @Response() res) {
     let jwt_token_value: string = this.authService.login(req.user);
     res
       .cookie("jwt_token", jwt_token_value, {

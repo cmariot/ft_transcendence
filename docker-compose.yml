@@ -1,7 +1,6 @@
-version: '3.9'
+version: "3.9"
 
 services:
-
   database:
     container_name: "database"
     image: postgres:alpine
@@ -32,8 +31,8 @@ services:
       - ./app/frontend/srcs:/frontend
     networks:
       - network
-    ports:
-      - "4000:4000"
+    expose:
+      - 4000
     depends_on:
       - "backend"
     restart: unless-stopped

@@ -24,7 +24,7 @@ let AuthController = class AuthController {
     forty_two() {
         return;
     }
-    async forty_two_redirect(req, res) {
+    forty_two_redirect(req, res) {
         let jwt_token_value = this.authService.login(req.user);
         res
             .cookie("jwt_token", jwt_token_value, {
@@ -57,7 +57,7 @@ __decorate([
     __param(1, (0, common_1.Response)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], AuthController.prototype, "forty_two_redirect", null);
 __decorate([
     (0, common_1.Get)("test"),
