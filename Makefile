@@ -20,7 +20,7 @@ configure:
 build:
 	docker compose build
 
-run:
+launch:
 	docker compose up
 
 detach:

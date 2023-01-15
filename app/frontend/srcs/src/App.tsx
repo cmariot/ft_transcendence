@@ -10,7 +10,7 @@ function App() {
     window.open("https://localhost:4242/api/auth/42", "_self");
   }
   function testRoute() {
-    axios.get('https://localhost:4242/api/auth/test');
+    axios.get('https://localhost:4242/api//auth/test');
   }
   function testLogout() {
     axios.get('https://localhost:4242/api/auth/logout');

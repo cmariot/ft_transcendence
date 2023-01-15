@@ -25,9 +25,9 @@ export class AuthController {
   @Get("42/redirect")
   @UseGuards(FortyTwoOauthGuard)
   forty_two_redirect(@Request() req, @Response() res) {
-    let jwt_token_value: string = this.authService.login(req.user);
+    let authentification_value: string = this.authService.login(req.user);
     res
-      .cookie("jwt_token", jwt_token_value, {
+      .cookie("authentification", authentification_value, {
         maxAge: 1000 * 60 * 60 * 1,
         httpOnly: true,
         sameSite: "none",
@@ -47,6 +47,6 @@ export class AuthController {
   @Get("logout")
   @UseGuards(JwtAuthGuard)
   logout(@Res() res): void {
-    res.clearCookie("jwt_token").redirect("https://localhost:4242/");
+    res.clearCookie("authentification").redirect("https://localhost:4242/");
   }
 }

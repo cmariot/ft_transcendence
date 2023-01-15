@@ -17,8 +17,8 @@ services:
       - ./app/backend/srcs:/backend
     networks:
       - network
-    ports:
-      - "3000:3000"
+    expose:
+      - 3000
     depends_on:
       - "database"
     restart: unless-stopped
