@@ -19,7 +19,6 @@ RUN mkdir /ssl\
 
 # Create the cache directory
 RUN mkdir -p /var/lib/nginx/cache\
-	&& chown www-data /var/lib/nginx/cache\
 	&& chmod 700 /var/lib/nginx/cache
 
 # Add the custom nginx configuration files
