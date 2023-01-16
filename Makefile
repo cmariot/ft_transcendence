@@ -61,8 +61,8 @@ log_frontend:
 top_frontend:
 	docker top frontend
 
-sh_proxy:
-	docker compose exec proxy sh
+sh_reverse_proxy:
+	docker compose exec reverse_proxy sh
 
 ps:
 	docker compose ps

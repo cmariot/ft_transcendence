@@ -49,9 +49,9 @@ services:
       - "database"
     restart: unless-stopped
 
-  proxy:
-    container_name: proxy
-    build: app/proxy/
+  reverse_proxy:
+    container_name: reverse_proxy
+    build: app/reverse_proxy/
     networks:
       - network
     ports:
