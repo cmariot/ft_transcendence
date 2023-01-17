@@ -14,13 +14,17 @@ export class AuthService {
     // Or add it's informations to the database
     async validateUser(user: {
         username: string;
-        displayName: string;
         email: string;
+        createdFrom: string;
     }): Promise<UserEntity> {
         let db_user: UserEntity = await this.usersService.getByUsername(
             user.username
         );
-        if (db_user && user.displayName === db_user.displayName) {
+        if (
+            db_user &&
+            user.createdFrom === "42" &&
+            user.email === db_user.email
+        ) {
             return db_user;
         }
         return this.usersService.saveUser(user);
@@ -36,10 +40,10 @@ export class AuthService {
     create_authentification_cookie(req, res) {
         let authentification_value: string = this.login(req.user);
         res.cookie("authentification", authentification_value, {
-            maxAge: 1000 * 60 * 60 * 1,
+            maxAge: 1000 * 60 * 60 * 2, // 2 hours
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).redirect("https://localhost:4242/");
+        }).redirect("https://localhost:8443/");
     }
 }

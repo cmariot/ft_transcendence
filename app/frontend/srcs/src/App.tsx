@@ -1,5 +1,6 @@
 import axios from 'axios';
 import './App.css';
+import RegistrationForm from './RegisterForm';
 
 function App() {
 
@@ -15,20 +16,6 @@ function App() {
   function testLogout() {
     axios.get('https://localhost:8443/api/auth/logout');
   }
-  function testLoginLocal() {
-    axios.post('https://localhost:8443/api/auth/login',
-      {
-        username: 'cmariot',
-        password: 'x'
-      }
-    )
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-  }
 
   return (
     <div>
@@ -39,6 +26,7 @@ function App() {
         <button onClick={testRoute}>Test</button>
         <button onClick={testLogout}>Logout</button>
       </div>
+        <RegistrationForm />
     </div>
   );
 
