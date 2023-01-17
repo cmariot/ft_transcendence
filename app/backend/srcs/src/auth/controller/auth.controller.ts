@@ -25,16 +25,7 @@ export class AuthController {
   @Get("42/redirect")
   @UseGuards(FortyTwoOauthGuard)
   forty_two_redirect(@Request() req, @Response() res) {
-    let authentification_value: string = this.authService.login(req.user);
-    res
-      .cookie("authentification", authentification_value, {
-        maxAge: 1000 * 60 * 60 * 1,
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      })
-      .redirect("https://localhost:4242/");
-    return;
+   return this.authService.create_authentification_cookie(req, res);
   }
 
   // Protected route, need to be connected to get this

@@ -55,7 +55,7 @@ services:
     networks:
       - network
     ports:
-      - "4242:443"
+      - "8443:443"
     depends_on:
       - "frontend"
     restart: unless-stopped

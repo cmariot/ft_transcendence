@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.0
 
 # Get the container image
 FROM node:19-alpine3.16

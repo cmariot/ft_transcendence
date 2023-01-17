@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.0
 
 # Get the container Image
 FROM nginx:alpine
@@ -11,15 +11,10 @@ RUN apk update && apk upgrade && apk add --no-cache\
 
 # Generate an auto-signed SSL key/certificate pair
 RUN mkdir /ssl\
-	&& openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
-	-out /ssl/ft_transcendence.pem \
-	-keyout /ssl/ft_transcendence.key \
-	-subj "/C=FR/ST=Paris/L=Paris/O=42/OU=student/CN=ft_transcendence"\
-	&& chmod 600 /ssl/ft_transcendence.pem /ssl/ft_transcendence.key
-
-# Create the cache directory
-RUN mkdir -p /var/lib/nginx/cache\
-	&& chmod 700 /var/lib/nginx/cache
+	&& openssl req -x509 -out /ssl/localhost.crt -keyout /ssl/localhost.key \
+	-newkey rsa:2048 -nodes -sha256 \
+	-subj '/CN=localhost' -extensions EXT -config <( \
+	printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 
 # Add the custom nginx configuration files
 COPY ./conf/ft_transcendence.conf /etc/nginx/nginx.conf
