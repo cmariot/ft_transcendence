@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -18,17 +18,18 @@ export class Auth42Service {
         createdFrom: string;
         password: string;
     }): Promise<UserEntity> {
-        let already_registered_user: UserEntity = await this.usersService.getByUsername(
-            tmp_user.username
-        );
+        let already_registered_user: UserEntity =
+            await this.usersService.getByUsername(tmp_user.username);
         if (
             already_registered_user &&
             tmp_user.createdFrom === "42" &&
             tmp_user.email === already_registered_user.email
         ) {
-            return already_registered_user;
+            return already_registered_user; // Il y a deja eu une connexion
+        } else if (already_registered_user) {
+            return null; // L'utilisateur existe mais register avec login/password : erreur
         }
-        return this.usersService.saveUser(tmp_user);
+        return this.usersService.saveUser(tmp_user); // Ajout a la BDD
     }
 
     // Returns a JWT token
@@ -38,8 +39,8 @@ export class Auth42Service {
         return token;
     }
 
-    create_authentification_cookie(req, res) {
-        let authentification_value: string = this.generate_jwt_token(req.user);
+    create_authentification_cookie(user, res) {
+        let authentification_value: string = this.generate_jwt_token(user);
         res.cookie("authentification", authentification_value, {
             maxAge: 1000 * 60 * 60 * 2, // 2 hours
             httpOnly: true,

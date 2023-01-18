@@ -20,18 +20,13 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
         refreshToken: string,
         profile: Profile
     ) {
-        let tmp_user = {
+        console.log("42Strat");
+        let user = {
             username: profile.username,
             email: profile.emails[0].value,
             createdFrom: CreatedFrom.OAUTH42,
             password: null,
         };
-        let user: UserEntity = await this.authService.register_42_user(
-            tmp_user
-        );
-        if (!user) {
-            return null;
-        }
         return user;
     }
 }

@@ -9,6 +9,7 @@ import {
 } from "@nestjs/common";
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
 import { Auth42Service } from "../services/auth.service";
+import { UserEntity } from "src/users/entity/user.entity";
 
 @Controller("auth")
 export class Auth42Controller {
@@ -17,16 +18,16 @@ export class Auth42Controller {
     // Use 42 strategy for Login
     @Get("42")
     @UseGuards(FortyTwoOauthGuard)
-    forty_two(): void {
-        return;
-    }
+    forty_two(): void {}
 
     // 42 Strategy redirects here, create a connexion cookie
     @Get("42/redirect")
     @UseGuards(FortyTwoOauthGuard)
-    forty_two_redirect(@Request() req, @Response() res) {
-        if (!req.user)
-            throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-        return this.authService.create_authentification_cookie(req, res);
+    async forty_two_redirect(@Request() req, @Response() res) {
+        let user = await this.authService.register_42_user(req.user);
+        if (user) {
+            return this.authService.create_authentification_cookie(user, res);
+        }
+        res.redirect("https://localhost:8443/");
     }
 }

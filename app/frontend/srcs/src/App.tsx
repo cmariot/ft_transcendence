@@ -14,6 +14,9 @@ function App() {
   function testLogout() {
     axios.get('https://localhost:8443/api/logout');
   }
+  function getProfile() {
+    axios.get('https://localhost:8443/api/profile');
+  }
 
   return (
     <div>
@@ -27,6 +30,7 @@ function App() {
         <RegistrationForm />
         <LoginForm />
       </div>
+      <button onClick={getProfile}>Profile</button>
     </div>
   );
 

@@ -6,7 +6,7 @@ FROM node:19-alpine3.16
 RUN npm install -g @nestjs/cli
 
 # Create the project directory
-WORKDIR /backend
+WORKDIR /srcs
 
 # Install app dependencies
 COPY ./srcs/package.json ./
@@ -17,7 +17,5 @@ RUN npm install
 COPY ./srcs .
 
 # Launch the Nest.js backend
-#ENTRYPOINT ["ping"]
-#CMD ["0.0.0.0"]
 ENTRYPOINT ["npm"]
-CMD ["run", "start"]
+CMD ["run", "start:debug"]
