@@ -36,8 +36,6 @@ create_backend()
 	echo "DB_PORT=\"${DATABASE_PORT}\""						>> ./app/backend/.env
 	echo "BACKEND_PORT=\"${BACKEND_PORT}\""					>> ./app/backend/.env
 	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""					>> ./app/backend/.env
-	echo "SESSION_PASSWORD=\"$database_password\""			>> ./app/backend/.env
-	echo "DATABASE_URL=\"\${DB_HOST}://\${DB_USER}:\${DB_PASS}@\${DB_HOST}:\${DB_PORT}/\${DB_SCHEMA}\"" >> ./app/backend/.env
 	echo "JWT_SECRET=\"$database_password\""				>> ./app/backend/.env
 	echo "TZ=\"Europe/Paris\""								>> ./app/backend/.env
 
@@ -55,6 +53,7 @@ create_backend()
 create_frontend()
 {
 	echo "PORT=\"${FRONTEND_PORT}\""						> ./app/frontend/.env
+	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
 }
 
 create_pgadmin()

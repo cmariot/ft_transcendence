@@ -33,3 +33,23 @@ h1 {
 h2 {
   font-style: oblique;
 }
+#register_login {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  margin-top: 30px;
+ }
+
+#register-form {
+  margin-right: 5px;
+}
+
+#login-form {
+  margin-left: 5px;
+}
+
+.form__label {
+  display: none;
+  }

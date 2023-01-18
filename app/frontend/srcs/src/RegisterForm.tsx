@@ -37,7 +37,7 @@ function RegistrationForm() {
     };
 
     return (
-        <div className="form">
+        <div id="register-form" className="form">
             <div className="form-body">
                 <div className="username">
                     <label className="form__label" htmlFor="username">

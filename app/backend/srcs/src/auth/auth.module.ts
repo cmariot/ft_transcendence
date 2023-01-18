@@ -1,5 +1,5 @@
-import { AuthController } from "./controller/auth.controller";
-import { AuthService } from "./service/auth.service";
+import { Auth42Controller } from "./controllers/auth42.controller";
+import { Auth42Service } from "./services/auth.service";
 import { FortyTwoStrategy } from "./strategies/forty_two.strategy";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
@@ -9,8 +9,11 @@ import { UserEntity } from "src/users/entity/user.entity";
 import { UsersModule } from "src/users/users.module";
 import { jwtConstants } from "./constants/jwt.constants";
 import { JwtStrategy } from "./strategies/jwt.strategy";
-import { RegisterController } from "./controller/register.controller";
-import { RegisterService } from "./service/register.service";
+import { RegisterController } from "./controllers/register.controller";
+import { RegisterService } from "./services/register.service";
+import { LogoutController } from "./controllers/logout.controller";
+import { LoginController } from "./controllers/login.controller";
+import { LoginService } from "./services/login.service";
 
 @Module({
     imports: [
@@ -24,7 +27,18 @@ import { RegisterService } from "./service/register.service";
         TypeOrmModule.forFeature([UserEntity]),
         UsersModule,
     ],
-    providers: [AuthService, FortyTwoStrategy, JwtStrategy, RegisterService],
-    controllers: [AuthController, RegisterController],
+    providers: [
+        Auth42Service,
+        FortyTwoStrategy,
+        JwtStrategy,
+        LoginService,
+        RegisterService,
+    ],
+    controllers: [
+        Auth42Controller,
+        LoginController,
+        LogoutController,
+        RegisterController,
+    ],
 })
 export class AuthModule {}
