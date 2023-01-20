@@ -4,11 +4,11 @@ navbar ul {
 	padding: 0;
 	overflow: hidden;
   }
-  
+
   .navbar li {
 	float: left;
   }
-  
+
   .navbar li a {
 	display: block;
 	padding: 8px;
@@ -61,13 +61,13 @@ navbar ul {
 	  background-position: 0% 82%;
 	}
   }
-  
+
   body {
-	animation: rainbow 10s ease infinite;
+	animation: rainbow 0.1s ease infinite;
 	background-image: linear-gradient(to right, red, orange, yellow, green, blue, purple);
 	background-size: 400% 400%;
   }
- 
+
   .navbar {
     background-color: transparent;
 }
