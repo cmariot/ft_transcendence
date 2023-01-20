@@ -6,16 +6,24 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/31 16:08:49 by cmariot           #+#    #+#              #
-#    Updated: 2023/01/20 17:13:07 by flee             ###   ########.fr        #
-#                                                                              #
+#    Updated: 2023/01/20 18:54:16 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-detach:
-	docker-compose up --detach --build
-
 up:
 	docker-compose up --build
+
+configure:
+	./configure.sh
+
+build:
+	docker-compose build
+
+launch:
+	docker-compose up
+
+detach:
+	docker-compose up --detach --build
 
 clean: stop
 	docker system prune -a --force
@@ -52,8 +60,8 @@ log_frontend:
 top_frontend:
 	docker top frontend
 
-sh_proxy:
-	docker-compose exec proxy sh
+sh_reverse_proxy:
+	docker-compose exec reverse_proxy sh
 
 ps:
 	docker-compose ps

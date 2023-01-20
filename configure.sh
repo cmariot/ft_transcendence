@@ -4,9 +4,8 @@ export BACKEND_PORT="3000"
 export NODE_ENV="developpment"
 
 export FRONTEND_PORT="4000"
-export NODE_OPTIONS="--openssl-legacy-provider"
 
-export PGADMIN_PORT="5050"
+export PGADMIN_PORT="5000"
 export PGADMIN_CONFIG_SERVER_MODE="False"
 
 export DATABASE_PORT="5432"
@@ -37,21 +36,24 @@ create_backend()
 	echo "DB_PORT=\"${DATABASE_PORT}\""						>> ./app/backend/.env
 	echo "BACKEND_PORT=\"${BACKEND_PORT}\""					>> ./app/backend/.env
 	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""					>> ./app/backend/.env
-	echo "SESSION_PASSWORD=\"$database_password\""			>> ./app/backend/.env
-	echo "DATABASE_URL=\"\${DB_HOST}://\${DB_USER}:\${DB_PASS}@\${DB_HOST}:\${DB_PORT}/\${DB_SCHEMA}\"" >> ./app/backend/.env
+	echo "JWT_SECRET=\"$database_password\""				>> ./app/backend/.env
+	echo "TZ=\"Europe/Paris\""								>> ./app/backend/.env
 
 	echo -n "Please enter the UID_42_SECRET : "
 	read uid_42_secret
-	echo "UID_42_SECRET=\"$uid_42_secret\""		>> ./app/backend/.env
+	echo "UID_42_SECRET=\"$uid_42_secret\""					>> ./app/backend/.env
 	echo -n "Please enter the PASSWORD_SECRET_42 : "
 	read password_secret_42
-	echo "PASSWORD_SECRET_42=\"$password_secret_42\""	>> ./app/backend/.env
+	echo "PASSWORD_SECRET_42=\"$password_secret_42\""		>> ./app/backend/.env
+	echo -n "Please enter the REDIRECT_URL : "
+	read redirect_secret_42
+	echo "CALLBACK_URL=\"$redirect_secret_42\""				>> ./app/backend/.env
 }
 
 create_frontend()
 {
-	echo "PORT=\"${FRONTEND_PORT}\""		> ./app/frontend/.env
-	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""	>> ./app/frontend/.env
+	echo "PORT=\"${FRONTEND_PORT}\""						> ./app/frontend/.env
+	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
 }
 
 create_pgadmin()

@@ -1,5 +1,14 @@
+.vscode
+docs/en.subject.pdf
+docs/fr.subject.pdf
+
 app/backend/.env
+app/backend/srcs/node_modules
+app/backend/srcs/dist
+
 app/database/.env
-app/database/data/
+
 app/frontend/.env
+app/frontend/srcs/node_modules
+
 app/pgadmin/.env
