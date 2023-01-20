@@ -6,17 +6,13 @@ FROM node:19-alpine3.16
 # Install NestJs cli
 RUN npm install -g @nestjs/cli
 
-# Create the project directory
+# Create the backend directory
 WORKDIR /srcs
 
-# Install app dependencies
-COPY ./srcs/package.json ./
-COPY ./srcs/package-lock.json ./
-RUN npm install
-
-# Add backend files
+# Copy the backend files
 COPY ./srcs .
+COPY ./entrypoint.sh /
 
-# Launch the Nest.js backend
-ENTRYPOINT ["npm"]
-CMD ["run", "start:debug"]
+# Launch the backend entrypoint script
+# (npm install + npm run start:debug)
+ENTRYPOINT ["sh", "/entrypoint.sh"]

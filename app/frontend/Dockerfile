@@ -3,17 +3,13 @@
 # Get the container image
 FROM node:19-alpine3.16
 
-# Change directory to the project directory
+# Create the frontend directory
 WORKDIR /srcs
 
-# Install app dependencies
-COPY ./srcs/package.json ./
-COPY ./srcs/package-lock.json ./
-RUN npm install
-
-# Add app
+# Copy the frontend files
 COPY ./srcs .
+COPY ./entrypoint.sh /
 
-# Launch the React.js frontend
-ENTRYPOINT ["npm"]
-CMD ["run", "start"]
+# Launch the frontend entrypoint script
+# (npm install + npm run start)
+ENTRYPOINT ["sh", "/entrypoint.sh"]
