@@ -9,7 +9,10 @@ function App() {
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
   function testLogin() {
-    window.open("https://localhost:8443/api/auth/42", "_self");
+    try {
+      // valeur de retour = username ?
+      window.open("https://localhost:8443/api/auth/42", "_self");
+    } catch (e) { console.error(e); }
   }
   function testLogout() {
     axios.get('https://localhost:8443/api/logout');

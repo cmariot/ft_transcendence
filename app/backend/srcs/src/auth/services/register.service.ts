@@ -15,6 +15,12 @@ export class RegisterService {
     }
 
     async register(registerDto: RegisterDto): Promise<UserEntity> {
+        let db_user = await this.usersService.getByUsername(
+            registerDto.username
+        );
+        if (db_user && db_user.username === registerDto.username) {
+            return null; // Username already registered
+        }
         let hashed_password = await this.encode_password(registerDto.password);
         let user = {
             createdFrom: CreatedFrom.REGISTER,
@@ -22,10 +28,6 @@ export class RegisterService {
             email: registerDto.email,
             password: hashed_password,
         };
-        let db_user = await this.usersService.getByUsername(user.username);
-        if (db_user) {
-            return null;
-        }
         return this.usersService.saveUser(user);
     }
 }

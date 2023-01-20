@@ -1,15 +1,13 @@
 import {
     Controller,
     Get,
-    HttpException,
-    HttpStatus,
+    Redirect,
     Request,
     Response,
     UseGuards,
 } from "@nestjs/common";
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
 import { Auth42Service } from "../services/auth.service";
-import { UserEntity } from "src/users/entity/user.entity";
 
 @Controller("auth")
 export class Auth42Controller {
@@ -23,11 +21,13 @@ export class Auth42Controller {
     // 42 Strategy redirects here, create a connexion cookie
     @Get("42/redirect")
     @UseGuards(FortyTwoOauthGuard)
+    @Redirect("https://localhost:8443/")
     async forty_two_redirect(@Request() req, @Response() res) {
-        let user = await this.authService.register_42_user(req.user);
-        if (user) {
-            return this.authService.create_authentification_cookie(user, res);
+        let user = await this.authService.signin_or_register_42_user(req.user);
+        if (user == null) {
+            console.log("Invalid username");
+            return null;
         }
-        res.redirect("https://localhost:8443/");
+        return this.authService.create_authentification_cookie(user, res);
     }
 }

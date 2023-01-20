@@ -1,5 +1,6 @@
 .vscode
-docs
+docs/en.subject.pdf
+docs/fr.subject.pdf
 
 app/backend/.env
 app/backend/srcs/node_modules

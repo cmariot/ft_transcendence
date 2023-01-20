@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UserEntity } from "../../users/entity/user.entity";
+import { Injectable, Redirect, UnauthorizedException } from "@nestjs/common";
+import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 
@@ -10,29 +10,27 @@ export class Auth42Service {
         private jwtService: JwtService
     ) {}
 
-    // Returns the user who try to connect if it's already signin,
-    // Or add it's informations to the database
-    async register_42_user(tmp_user: {
+    // 3 cas :
+    // - Username invalide (deja pris par quelqu'un qui s'est register avec Username + Password)
+    // - Deja enregistre dans la BDD : Connexion
+    // - Jamais enregistre dans la BDD : Enregistrement
+    async signin_or_register_42_user(user_42: {
         username: string;
         email: string;
         createdFrom: string;
         password: string;
     }): Promise<UserEntity> {
-        let already_registered_user: UserEntity =
-            await this.usersService.getByUsername(tmp_user.username);
-        if (
-            already_registered_user &&
-            tmp_user.createdFrom === "42" &&
-            tmp_user.email === already_registered_user.email
-        ) {
-            return already_registered_user; // Il y a deja eu une connexion
-        } else if (already_registered_user) {
-            return null; // L'utilisateur existe mais register avec login/password : erreur
+        let bdd_user = await this.usersService.getByUsername(user_42.username);
+        if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
+            return bdd_user;
+        } else if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
+            return null;
+        } else {
+            return this.usersService.saveUser(user_42);
         }
-        return this.usersService.saveUser(tmp_user); // Ajout a la BDD
     }
 
-    // Returns a JWT token
+    // Creacte a JWT token
     generate_jwt_token(user: UserEntity): string {
         const payload = { username: user.username, sub: user.uuid };
         let token = this.jwtService.sign(payload);
@@ -46,6 +44,7 @@ export class Auth42Service {
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).redirect("https://localhost:8443/");
+        });
+        return user;
     }
 }
