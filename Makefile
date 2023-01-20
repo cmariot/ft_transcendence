@@ -6,16 +6,16 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/31 16:08:49 by cmariot           #+#    #+#              #
-#    Updated: 2022/12/13 21:42:44 by cmariot          ###   ########.fr        #
+#    Updated: 2023/01/20 17:13:07 by flee             ###   ########.fr        #
 #                                                                              #
 #                                                                              #
 # **************************************************************************** #
 
 detach:
-	docker compose up --detach --build
+	docker-compose up --detach --build
 
 up:
-	docker compose up --build
+	docker-compose up --build
 
 clean: stop
 	docker system prune -a --force
@@ -26,37 +26,37 @@ fclean: stop
 re: fclean up
 
 sh_backend:
-	docker compose exec backend sh
+	docker-compose exec backend sh
 
 log_backend:
-	docker compose logs --follow backend
+	docker-compose logs --follow backend
 
 top_backend:
 	docker top backend
 
 sh_database:
-	docker compose exec database sh
+	docker-compose exec database sh
 
 log_database:
-	docker compose logs --follow database
+	docker-compose logs --follow database
 
 top_database:
 	docker top database
 
 sh_frontend:
-	docker compose exec frontend sh
+	docker-compose exec frontend sh
 
 log_frontend:
-	docker compose logs --follow frontend
+	docker-compose logs --follow frontend
 
 top_frontend:
 	docker top frontend
 
 sh_proxy:
-	docker compose exec proxy sh
+	docker-compose exec proxy sh
 
 ps:
-	docker compose ps
+	docker-compose ps
 
 list:
 	@printf "CONTAINERS LIST :\n"
@@ -69,19 +69,19 @@ list:
 	@docker network ls
 
 image:
-	docker compose images
+	docker-compose images
 
 pause:
-	docker compose pause
+	docker-compose pause
 
 unpause:
-	docker compose unpause
+	docker-compose unpause
 
 start:
-	docker compose start
+	docker-compose start
 
 stop:
-	docker compose stop
+	docker-compose stop
 
 restart:
-	docker compose restart
+	docker-compose restart
