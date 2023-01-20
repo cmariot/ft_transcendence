@@ -32,44 +32,57 @@ function Login() {
 			})
 	};
 
+	function login42() {
+		try {
+			window.open("https://localhost:8443/api/auth/42", "_self");
+		} catch (e) { console.error(e); }
+	}
+
 	return (
-		<div id="login-form" className="form">
-			<div className="form-body">
-				<div className="username">
-					<label className="form__label" htmlFor="username">
-						Username{" "}
-					</label>
-					<input
-						className="form__input"
-						type="text"
-						value={username}
-						onChange={(e) => handleInputChange(e)}
-						id="username"
-						placeholder="Username"
-					/>
-				</div>
-				<div className="password">
-					<label className="form__label" htmlFor="password">
-						Password{" "}
-					</label>
-					<input
-						className="form__input"
-						type="password"
-						id="password"
-						value={password}
-						onChange={(e) => handleInputChange(e)}
-						placeholder="Password"
-					/>
-				</div>
+		<div>
+
+			<div>
+				<button onClick={login42}>Login with 42</button>
 			</div>
-			<div className="footer">
-				<button
-					onClick={() => handleSubmit()}
-					type="submit"
-					className="btn"
-				>
-					Login
-				</button>
+
+			<div id="login-form" className="form">
+				<div className="form-body">
+					<div className="username">
+						<label className="form__label" htmlFor="username">
+							Username{" "}
+						</label>
+						<input
+							className="form__input"
+							type="text"
+							value={username}
+							onChange={(e) => handleInputChange(e)}
+							id="username"
+							placeholder="Username"
+						/>
+					</div>
+					<div className="password">
+						<label className="form__label" htmlFor="password">
+							Password{" "}
+						</label>
+						<input
+							className="form__input"
+							type="password"
+							id="password"
+							value={password}
+							onChange={(e) => handleInputChange(e)}
+							placeholder="Password"
+						/>
+					</div>
+				</div>
+				<div className="footer">
+					<button
+						onClick={() => handleSubmit()}
+						type="submit"
+						className="btn"
+					>
+						Login
+					</button>
+				</div>
 			</div>
 		</div>
 	);
