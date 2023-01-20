@@ -44,7 +44,6 @@ export class Auth42Service {
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        });
-        return user;
+        }).send(user.username);
     }
 }

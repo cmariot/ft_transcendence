@@ -26,7 +26,8 @@ function RegistrationForm() {
                 username: username,
                 email: email,
                 password: password
-            }
+            },
+            {withCredentials: true}
         )
             .then(function (response) {
                 console.log(response);

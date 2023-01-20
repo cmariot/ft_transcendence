@@ -8,12 +8,15 @@ import * as bcrypt from "bcrypt";
 export class LoginService {
     constructor(private usersService: UsersService) {}
 
-    async signin_local_user(loginDto: LoginDto): Promise<UserEntity> {
-        const user = await this.usersService.getByUsername(loginDto.username);
+    async signin_local_user(
+        username: string,
+        password: string
+    ): Promise<UserEntity> {
+        const user = await this.usersService.getByUsername(username);
         if (
             user &&
             user.createdFrom === CreatedFrom.REGISTER &&
-            (await bcrypt.compare(loginDto.password, user.password)) === true
+            (await bcrypt.compare(password, user.password)) === true
         ) {
             return user;
         }

@@ -1,8 +1,15 @@
-import { Body, Controller, Post, Req, Res } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Post,
+    Req,
+    Res,
+    UnauthorizedException,
+} from "@nestjs/common";
 import { LoginDto } from "../dtos/login.dto";
 import { LoginService } from "../services/login.service";
-import { Auth42Service } from "../services/auth.service";
 import { UserEntity } from "src/users/entity/user.entity";
+import { Auth42Service } from "../services/auth.service";
 
 @Controller("login")
 export class LoginController {
@@ -12,13 +19,20 @@ export class LoginController {
     ) {}
 
     @Post()
-    async login(@Body() loginDto: LoginDto, @Req() req, @Res() res) {
+    async login(@Body() loginDto: LoginDto, @Res() res) {
         let user: UserEntity = await this.loginService.signin_local_user(
-            loginDto
+            loginDto.username,
+            loginDto.password
         );
         if (user === null) {
-            return null;
+            throw new UnauthorizedException();
         }
-        return this.authService.create_authentification_cookie(req.user, res);
+        let authentification_value: string = this.authService.generate_jwt_token(user);
+        res.cookie("authentification", authentification_value, {
+            maxAge: 1000 * 60 * 60 * 2, // 2 hours
+            httpOnly: true,
+            sameSite: "none",
+            secure: true,
+        }).send(user.username);
     }
 }
