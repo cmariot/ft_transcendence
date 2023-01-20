@@ -1,51 +1,41 @@
-import React, { useState } from 'react';
-import './App.css';
 import axios from 'axios';
-
-function Home() {
-
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  );
-}
+import './App.css';
+import RegistrationForm from './RegisterForm';
+import LoginForm from './LoginForm';
 
 function App() {
-
-  const [isLogged, setIsLogged] = useState(false);
 
   let title: string = "ft_transcendence";
   let description: string = "Connect to play Pong versus other players and show everyone how good you are !";
 
-  async function handleClick() {
+  function testLogin() {
     try {
-      const res = await axios({
-        method: 'get',
-        url: "http://localhost:3000/login/",
-      })
-      await console.log(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+      // valeur de retour = username ?
+      window.open("https://localhost:8443/api/auth/42", "_self");
+    } catch (e) { console.error(e); }
+  }
+  function testLogout() {
+    axios.get('https://localhost:8443/api/logout');
+  }
+  function getProfile() {
+    axios.get('https://localhost:8443/api/profile');
   }
 
-  if (isLogged === false) {
-    return (
+  return (
+    <div>
+      <h1>{title}</h1>
+      <h2>{description}</h2>
       <div>
-        <h1>{title}</h1>
-        <h2>{description}</h2>
-        <button onClick={handleClick}>Login</button>
+        <button onClick={testLogin}>Login with 42</button>
+        <button onClick={testLogout}>Logout</button>
       </div>
-    );
-  }
-  else {
-    return (
-      <div>
-        <Home />
+      <div id="register_login">
+        <RegistrationForm />
+        <LoginForm />
       </div>
-    );
-  }
+      <button onClick={getProfile}>Profile</button>
+    </div>
+  );
 
 }
 

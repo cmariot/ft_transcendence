@@ -3,11 +3,10 @@
 # Get the container image
 FROM node:19-alpine3.16
 
-# Create the project directory
-WORKDIR /backend
+RUN npm install -g @nestjs/cli
 
-# Install nest
-RUN npm i -g @nestjs/cli
+# Create the project directory
+WORKDIR /srcs
 
 # Install app dependencies
 COPY ./srcs/package.json ./
@@ -18,6 +17,5 @@ RUN npm install
 COPY ./srcs .
 
 # Launch the Nest.js backend
-#CMD ["ping", "0.0.0.0"]
 ENTRYPOINT ["npm"]
-CMD ["run", "start:dev"]
+CMD ["run", "start:debug"]

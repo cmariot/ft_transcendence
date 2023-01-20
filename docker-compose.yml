@@ -1,65 +1,64 @@
-version: '3.9'
+version: "3.9"
 
 services:
+    database:
+        container_name: "database"
+        image: postgres:alpine
+        env_file: app/database/.env
+        networks:
+            - network
+        restart: unless-stopped
 
-  database:
-    container_name: "database"
-    image: postgres:alpine
-    env_file : app/database/.env
-    networks:
-      - network
-    restart: unless-stopped
+    backend:
+        container_name: "backend"
+        build: app/backend/
+        env_file: app/backend/.env
+        volumes:
+            - ./app/backend/srcs:/srcs
+        networks:
+            - network
+        expose:
+            - 3000
+        depends_on:
+            - "database"
+        restart: unless-stopped
 
-  backend:
-    container_name: "backend"
-    build: app/backend/
-    env_file: app/backend/.env
-    volumes:
-      - ./app/backend/srcs:/backend
-    networks:
-      - network
-    ports:
-      - "3000:3000"
-    depends_on:
-      - "database"
-    restart: unless-stopped
+    frontend:
+        container_name: "frontend"
+        build: app/frontend/
+        env_file: app/frontend/.env
+        volumes:
+            - ./app/frontend/srcs:/srcs
+        networks:
+            - network
+        expose:
+            - 4000
+        depends_on:
+            - "backend"
+        restart: unless-stopped
 
-  frontend:
-    container_name: "frontend"
-    build: app/frontend/
-    env_file: app/frontend/.env
-    volumes:
-      - ./app/frontend/srcs:/frontend
-    networks:
-      - network
-    ports:
-      - "4000:4000"
-    depends_on:
-      - "backend"
-    restart: unless-stopped
+    pgadmin:
+        container_name: "pgadmin"
+        image: dpage/pgadmin4
+        env_file: app/pgadmin/.env
+        networks:
+            - network
+        ports:
+            - "5000:5000"
+        depends_on:
+            - "database"
+        restart: unless-stopped
 
-  pgadmin:
-    container_name: "pgadmin"
-    image: dpage/pgadmin4
-    env_file: app/pgadmin/.env
-    networks:
-      - network
-    ports:
-      - "5000:5000"
-    depends_on:
-      - "database"
-    restart: unless-stopped
-
-  proxy:
-    container_name: proxy
-    build: app/proxy/
-    networks:
-      - network
-    ports:
-      - "8080:443"
-    depends_on:
-      - "frontend"
-    restart: unless-stopped
+    reverse_proxy:
+        container_name: reverse_proxy
+        build: app/reverse_proxy/
+        networks:
+            - network
+        ports:
+            - "8443:443"
+        depends_on:
+            - "frontend"
+        restart: unless-stopped
 
 networks:
-  network: {}
+    network: {}

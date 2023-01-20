@@ -1,12 +1,11 @@
-import { Controller, Get } from "@nestjs/common";
-import { UsersService } from "../services/users.service";
+import { Controller, Get, Request, UseGuards } from "@nestjs/common";
+import { isLogged } from "src/auth/guards/is_logged.guards";
 
-@Controller("users")
+@Controller("")
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
-
-  @Get()
-  getUsers() {
-    return this.userService.getUsers();
-  }
+    @UseGuards(isLogged)
+    @Get("profile")
+    profile(@Request() req) {
+        return req.user;
+    }
 }
