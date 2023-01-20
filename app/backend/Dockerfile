@@ -3,6 +3,7 @@
 # Get the container image
 FROM node:19-alpine3.16
 
+# Install NestJs cli
 RUN npm install -g @nestjs/cli
 
 # Create the project directory
