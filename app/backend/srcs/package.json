@@ -13,6 +13,8 @@
     "start:prod": "node dist/main"
   },
   "dependencies": {
+    "@jridgewell/sourcemap-codec": "^1.4.14",
+    "@nestjs/cli": "^9.1.8",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.2.1",
     "@nestjs/jwt": "^10.0.1",
@@ -23,6 +25,7 @@
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "helmet": "^6.0.1",
+    "npm": "^9.3.1",
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
     "passport-jwt": "^4.0.1",
