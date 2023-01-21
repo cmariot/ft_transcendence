@@ -1,5 +1,5 @@
 ### ft_transcendence :
 
-./configure.sh
-make
-https://localhost:8443/
+#### ./configure.sh
+#### make
+#### https://localhost:8443/
