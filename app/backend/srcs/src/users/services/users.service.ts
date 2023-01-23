@@ -29,7 +29,6 @@ export class UsersService {
   async encode_password(rawPassword: string): Promise<string> {
     const saltRounds: number = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
-    console.log('SALT = ', salt);
     return bcrypt.hashSync(rawPassword, salt);
   }
 
@@ -39,8 +38,6 @@ export class UsersService {
       return null;
     }
     let hashed_password = await this.encode_password(registerDto.password);
-    console.log('PASS = ', registerDto.password);
-    console.log('HASH = ', hashed_password);
     let user = {
       createdFrom: CreatedFrom.REGISTER,
       username: registerDto.username,

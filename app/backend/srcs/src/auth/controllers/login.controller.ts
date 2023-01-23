@@ -2,7 +2,6 @@ import {
     Body,
     Controller,
     Post,
-    Req,
     Res,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -33,6 +32,6 @@ export class LoginController {
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).send(user.username);
+        }).send("OK");
     }
 }

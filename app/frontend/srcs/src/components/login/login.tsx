@@ -17,7 +17,6 @@ function Login() {
 	};
 
 	const handleSubmit = () => {
-		console.log(username, password);
 		axios.post('https://localhost:8443/api/login',
 			{
 				username: username,
@@ -30,21 +29,12 @@ function Login() {
 			.catch(function (error) {
 				console.log(error);
 			})
+		setUsername("")
+		setPassword("")
 	};
-
-	function login42() {
-		try {
-			window.open("https://localhost:8443/api/auth/42", "_self");
-		} catch (e) { console.error(e); }
-	}
 
 	return (
 		<div>
-
-			<div>
-				<button onClick={login42}>Login with 42</button>
-			</div>
-
 			<div id="login-form" className="form">
 				<div className="form-body">
 					<div className="username">

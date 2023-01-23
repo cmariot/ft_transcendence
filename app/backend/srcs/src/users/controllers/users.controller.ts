@@ -3,8 +3,8 @@ import { isLogged } from "src/auth/guards/is_logged.guards";
 
 @Controller("")
 export class UsersController {
-    @UseGuards(isLogged)
     @Get("profile")
+    @UseGuards(isLogged)
     profile(@Request() req) {
         return req.user;
     }

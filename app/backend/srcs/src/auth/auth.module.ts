@@ -10,7 +10,6 @@ import { UsersModule } from "src/users/users.module";
 import { jwtConstants } from "./constants/jwt.constants";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RegisterController } from "./controllers/register.controller";
-import { RegisterService } from "./services/register.service";
 import { LogoutController } from "./controllers/logout.controller";
 import { LoginController } from "./controllers/login.controller";
 import { LoginService } from "./services/login.service";
@@ -32,7 +31,6 @@ import { LoginService } from "./services/login.service";
         FortyTwoStrategy,
         JwtStrategy,
         LoginService,
-        RegisterService,
     ],
     controllers: [
         Auth42Controller,

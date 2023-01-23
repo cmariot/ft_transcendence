@@ -2,7 +2,7 @@ import axios from "axios";
 import { ChangeEvent, useState } from "react";
 
 function Register() {
-	const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -20,7 +20,6 @@ function Register() {
     };
 
     const handleSubmit = () => {
-        console.log(username, email, password);
         axios.post('https://localhost:8443/api/register',
             {
                 username: username,
@@ -29,11 +28,14 @@ function Register() {
             }
         )
             .then(function (response) {
-                console.log(response);
+               // console.log(response);
             })
             .catch(function (error) {
                 console.log(error);
             })
+        setUsername("");
+        setEmail("");
+        setPassword("");
     };
 
     return (
