@@ -77,4 +77,13 @@ export class UsersService {
         console.log(value);
         return value;
     }
+
+    async updateProfileImage(uuid: string, imageName: string) {
+        let value = await this.userRepository.update(
+            { uuid: uuid },
+            { profileImage: imageName }
+        );
+        console.log(value);
+        return value;
+    }
 }

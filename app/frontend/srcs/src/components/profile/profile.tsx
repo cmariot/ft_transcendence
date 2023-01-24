@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
-import { getParsedCommandLineOfConfigFile } from "typescript";
 
 function Profile() {
 
@@ -42,20 +41,25 @@ function Profile() {
 
 	};
 
-	const handleUpload = async () => {
-		await axios.post(
-			'https://localhost:8443/api/profile/update/image',
-			{ username: newUsername },
-			{ headers: { 'Content-Type': 'multipart/form-data' } }
-		)
-			.then(async function (response) {
-				console.log(response);
-			})
-			.catch(function (error) {
-				console.log(error);
-			})
+	const [file, setFile] = useState()
+	function handleChange(event) {
+		setFile(event.target.files[0])
+	}
+	function handleUpload(event) {
+		event.preventDefault()
+		const url = 'https://localhost:8443/api/profile/update/image';
+		const formData = new FormData();
+		formData.append('file', file);
+		const config = {
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+		};
+		axios.post(url, formData, config).then((response) => {
+			console.log(response.data);
+		});
 
-	};
+	}
 
 	return (
 		<div>
@@ -64,15 +68,9 @@ function Profile() {
 			<div>
 
 				<p>Profile picture</p>
-				<form method="post" encType="multipart/form-data">
-					<input type="file" />
-					<button
-						onClick={() => handleUpload()}
-						type="submit"
-						className="btn"
-					>
-						Change Image
-					</button>
+				<form onSubmit={handleUpload}>
+					<input type="file" onChange={handleChange} />
+					<button type="submit">Upload</button>
 				</form>
 
 				<p>username : {username}</p>

@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Post,
+    Req,
     Request,
     UploadedFile,
     UseGuards,
@@ -12,6 +13,24 @@ import { isLogged } from "src/auth/guards/is_logged.guards";
 import { UsersService } from "../services/users.service";
 import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { v4 as uuidv4 } from "uuid";
+import * as path from "path";
+import { Observable, of } from "rxjs";
+
+// Storage for the upload images
+export const storage = {
+    storage: diskStorage({
+        destination: "./uploads/profile_pictures",
+        filename: (req, file, cb) => {
+            const filename: string =
+                path.parse(file.originalname).name.replace(/\s/g, "") +
+                uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${filename}${extension}`);
+        },
+    }),
+};
 
 @Controller("profile")
 export class UsersController {
@@ -38,9 +57,18 @@ export class UsersController {
 
     @Post("update/image")
     @UseGuards(isLogged)
-    @UseInterceptors(FileInterceptor("file"))
-    async updateImage(@UploadedFile() file: Express.Multer.File) {
+    @UseInterceptors(FileInterceptor("file", storage))
+    async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req) {
         console.log("Updating image");
-        console.log(file);
+        return this.userService.updateProfileImage(
+            req.user.uuid,
+            file.filename
+        );
+    }
+
+    @Get("image")
+    @UseGuards(isLogged)
+    async getProfileImage() {
+        return "Profile image";
     }
 }
