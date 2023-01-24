@@ -26,7 +26,7 @@ export class Auth42Controller {
     @UseGuards(FortyTwoOauthGuard)
     async forty_two_redirect(@Request() req, @Response() res) {
         let user = await this.authService.signin_or_register_42_user(req.user);
-        if (user == null) {
+        if (user === null) {
             throw new UnauthorizedException();
         }
         let authentification_value: string =
@@ -36,6 +36,6 @@ export class Auth42Controller {
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).redirect("https://localhost:8443/");
+        }).redirect("https://localhost:8443/profile");
     }
 }

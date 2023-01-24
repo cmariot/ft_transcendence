@@ -1,6 +1,5 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UsersService } from "src/users/services/users.service";
-import { LoginDto } from "../dtos/login.dto";
 import { CreatedFrom, UserEntity } from "src/users/entity/user.entity";
 import * as bcrypt from "bcrypt";
 
@@ -18,8 +17,10 @@ export class LoginService {
             user.createdFrom === CreatedFrom.REGISTER &&
             (await bcrypt.compare(password, user.password)) === true
         ) {
+            console.log("Logged as ", user.username);
             return user;
         }
+        console.log("Login failed")
         return null;
     }
 }

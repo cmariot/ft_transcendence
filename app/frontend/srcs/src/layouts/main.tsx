@@ -7,6 +7,7 @@ import Register from '../components/register/register'
 import About from '../components/about/about'
 import LoginFortyTwo from '../components/login42/login42';
 import Profile from '../components/profile/profile';
+import Logout from '../components/logout/logout';
 
 function Main() {
 
@@ -21,6 +22,7 @@ function Main() {
 					<Route path="Register" element={<Register />} />
 					<Route path="About" element={<About />} />
 					<Route path="Profile" element={<Profile />} />
+					<Route path="Logout" element={<Logout />} />
 				</Routes>
 			</div>
 		</div>

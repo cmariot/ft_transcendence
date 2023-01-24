@@ -11,6 +11,9 @@ export class UserEntity {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
+    @Column({ default: 0 })
+    id42: number;
+
     @Column({
         type: "enum",
         enum: CreatedFrom,

@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 up:
-	docker-compose up --build
+	docker-compose up --build --no-attach pgadmin
 
 configure:
 	./configure.sh

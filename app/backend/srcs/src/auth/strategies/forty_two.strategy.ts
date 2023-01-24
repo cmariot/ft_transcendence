@@ -21,6 +21,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
         profile: Profile
     ) {
         let user = {
+            id42: profile.id,
             username: profile.username,
             email: profile.emails[0].value,
             createdFrom: CreatedFrom.OAUTH42,
