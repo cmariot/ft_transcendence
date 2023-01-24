@@ -43,6 +43,7 @@
     "@nestjs/platform-express": "^9.2.1",
     "@nestjs/typeorm": "^9.0.1",
     "@types/bcrypt": "^5.0.0",
+    "@types/multer": "^1.4.7",
     "@types/node": "^18.11.18",
     "@types/passport-local": "^1.0.35",
     "bcrypt": "^5.1.0",

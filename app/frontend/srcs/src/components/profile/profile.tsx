@@ -26,10 +26,10 @@ function Profile() {
 	};
 
 	const handleSubmit = async () => {
-		await axios.post('https://localhost:8443/api/profile/update/username',
-			{
-				username: newUsername
-			})
+		await axios.post(
+			'https://localhost:8443/api/profile/update/username',
+			{ username: newUsername }
+		)
 			.then(async function (response) {
 				console.log(response);
 				let newProfile = await axios.get("https://localhost:8443/api/profile");
@@ -42,11 +42,39 @@ function Profile() {
 
 	};
 
+	const handleUpload = async () => {
+		await axios.post(
+			'https://localhost:8443/api/profile/update/image',
+			{ username: newUsername },
+			{ headers: { 'Content-Type': 'multipart/form-data' } }
+		)
+			.then(async function (response) {
+				console.log(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+			})
+
+	};
+
 	return (
 		<div>
 			<h1>Welcome {username}</h1>
 
 			<div>
+
+				<p>Profile picture</p>
+				<form method="post" encType="multipart/form-data">
+					<input type="file" />
+					<button
+						onClick={() => handleUpload()}
+						type="submit"
+						className="btn"
+					>
+						Change Image
+					</button>
+				</form>
+
 				<p>username : {username}</p>
 				<div>
 					<div className="username">

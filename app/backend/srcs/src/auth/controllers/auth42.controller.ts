@@ -1,20 +1,17 @@
 import {
     Controller,
     Get,
-    Req,
     Request,
-    Res,
     Response,
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
-import { Auth42Service } from "../services/auth.service";
-import { isLogged } from "../guards/is_logged.guards";
+import { AuthService } from "../services/auth.service";
 
 @Controller("auth")
-export class Auth42Controller {
-    constructor(private authService: Auth42Service) {}
+export class AuthController {
+    constructor(private authService: AuthService) {}
 
     // Use 42 strategy for Login
     @Get("42")
@@ -25,17 +22,12 @@ export class Auth42Controller {
     @Get("42/redirect")
     @UseGuards(FortyTwoOauthGuard)
     async forty_two_redirect(@Request() req, @Response() res) {
-        let user = await this.authService.signin_or_register_42_user(req.user);
+        let user = await this.authService.signin_or_register_42_user(
+            req.user,
+            res
+        );
         if (user === null) {
             throw new UnauthorizedException();
         }
-        let authentification_value: string =
-            this.authService.generate_jwt_token(user);
-        res.cookie("authentification", authentification_value, {
-            maxAge: 1000 * 60 * 60 * 2, // 2 hours
-            httpOnly: true,
-            sameSite: "none",
-            secure: true,
-        }).redirect("https://localhost:8443/profile");
     }
 }

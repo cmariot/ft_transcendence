@@ -6,14 +6,14 @@ import {
     UnauthorizedException,
 } from "@nestjs/common";
 import { RegisterDto } from "../dtos/register.dto";
-import { Auth42Service } from "../services/auth.service";
+import { AuthService } from "../services/auth.service";
 import { UsersService } from "src/users/services/users.service";
 
 @Controller("register")
 export class RegisterController {
     constructor(
         private userService: UsersService,
-        private authService: Auth42Service
+        private authService: AuthService
     ) {}
 
     @Post()
@@ -22,13 +22,10 @@ export class RegisterController {
         if (!user) {
             throw new UnauthorizedException();
         }
-        let authentification_value: string =
-            this.authService.generate_jwt_token(user);
-        res.cookie("authentification", authentification_value, {
-            maxAge: 1000 * 60 * 60 * 2, // 2 hours
-            httpOnly: true,
-            sameSite: "none",
-            secure: true,
-        }).send("OK");
+        this.authService.create_authentification_cookie(
+            user,
+            res,
+            "https://localhost:8443/"
+        );
     }
 }

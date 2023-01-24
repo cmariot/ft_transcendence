@@ -1,40 +1,15 @@
-import { Injectable, Redirect, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
-export class Auth42Service {
+export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService
     ) {}
-
-    // 3 cas :
-    // - Username invalide (deja pris par quelqu'un qui s'est register avec Username + Password)
-    // - Deja enregistre dans la BDD : Connexion
-    // - Jamais enregistre dans la BDD : Enregistrement
-    async signin_or_register_42_user(user_42: {
-        id42: number;
-        username: string;
-        email: string;
-        createdFrom: string;
-        password: string;
-    }): Promise<UserEntity> {
-        let bdd_user = await this.usersService.getById42(user_42.id42);
-        if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
-            console.log("Sign in 42 user");
-            return bdd_user;
-        } else if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
-            console.log(
-                "Authentification failure, the username is already registered but from FORM"
-            );
-            return null;
-        } else {
-            console.log("Saving the user in the database.");
-            return this.usersService.saveUser(user_42);
-        }
-    }
 
     // Creacte a JWT token
     generate_jwt_token(user: UserEntity): string {
@@ -43,14 +18,77 @@ export class Auth42Service {
         return token;
     }
 
-    create_authentification_cookie(user, res) {
+    create_authentification_cookie(user, res, redirection_url: string) {
         let authentification_value: string = this.generate_jwt_token(user);
-        console.log("Authentification cookie")
+        console.log("Authentification cookie");
         res.cookie("authentification", authentification_value, {
             maxAge: 1000 * 60 * 60 * 2, // 2 hours
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).send(user.username);
+        }).redirect(redirection_url);
+    }
+
+    // 3 cas :
+    // - Username invalide (deja pris par quelqu'un qui s'est register avec Username + Password)
+    // - Deja enregistre dans la BDD : Connexion
+    // - Jamais enregistre dans la BDD : Enregistrement
+    async signin_or_register_42_user(
+        user_42: {
+            id42: number;
+            username: string;
+            email: string;
+            createdFrom: string;
+            password: string;
+        },
+        res
+    ): Promise<UserEntity> {
+        let bdd_user = await this.usersService.getById42(user_42.id42);
+        if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
+            console.log("The username is already registered but from FORM");
+            return null;
+        } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
+            console.log("Sign in 42 user");
+            this.create_authentification_cookie(
+                bdd_user,
+                res,
+                "https://localhost:8443/"
+            );
+            return bdd_user;
+        } else {
+            console.log("Saving the user in the database.");
+            let new_user: UserEntity = await this.usersService.saveUser(
+                user_42
+            );
+            this.create_authentification_cookie(
+                new_user,
+                res,
+                "https://localhost:8443/profile"
+            );
+            return new_user;
+        }
+    }
+
+    async signin_local_user(
+        username: string,
+        password: string,
+        res
+    ): Promise<UserEntity> {
+        const user = await this.usersService.getByUsername(username);
+        if (
+            user &&
+            user.createdFrom === CreatedFrom.REGISTER &&
+            (await bcrypt.compare(password, user.password)) === true
+        ) {
+            console.log("Logged as ", user.username);
+            this.create_authentification_cookie(
+                user,
+                res,
+                "https://localhost:8443/"
+            );
+            return user;
+        }
+        console.log("Login failed");
+        return null;
     }
 }

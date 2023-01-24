@@ -4,12 +4,14 @@ import {
     Get,
     Post,
     Request,
-    UnauthorizedException,
+    UploadedFile,
     UseGuards,
+    UseInterceptors,
 } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/is_logged.guards";
 import { UsersService } from "../services/users.service";
 import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("profile")
 export class UsersController {
@@ -32,5 +34,13 @@ export class UsersController {
         let previousUsername = previousProfile.username;
         let newUsername = newUsernameDto.username;
         return this.userService.updateUsername(previousUsername, newUsername);
+    }
+
+    @Post("update/image")
+    @UseGuards(isLogged)
+    @UseInterceptors(FileInterceptor("file"))
+    async updateImage(@UploadedFile() file: Express.Multer.File) {
+        console.log("Updating image");
+        console.log(file);
     }
 }
