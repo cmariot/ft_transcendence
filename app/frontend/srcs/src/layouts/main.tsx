@@ -1,13 +1,12 @@
 
 import Navbar from '../components/navbar/navbar'
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from '../components/home/home'
 import Login from '../components/login/login'
-import Register from '../components/register/register'
 import About from '../components/about/about'
-import LoginFortyTwo from '../components/login42/login42';
 import Profile from '../components/profile/profile';
 import Logout from '../components/logout/logout';
+import RegisterForm from '../components/register/register';
 
 function Main() {
 
@@ -18,8 +17,7 @@ function Main() {
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="Login" element={<Login />} />
-					<Route path="LoginFortyTwo" element={<LoginFortyTwo />} />
-					<Route path="Register" element={<Register />} />
+					<Route path="Register" element={<RegisterForm />} />
 					<Route path="About" element={<About />} />
 					<Route path="Profile" element={<Profile />} />
 					<Route path="Logout" element={<Logout />} />

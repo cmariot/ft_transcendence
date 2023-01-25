@@ -7,8 +7,6 @@ function Navbar() {
 			<h1>Navigation Bar du futuuuur</h1>
 			<ul style={{ listStyleType: 'none', margin: 0, padding: 0 }}>
 				<li><Link to="/">Home</Link></li>
-				<li><Link to="/LoginFortyTwo">Login 42</Link></li>
-				<li><Link to="/register">Register</Link></li>
 				<li><Link to="/login">Login</Link></li>
 				<li><Link to="/about">About</Link></li>
 				<li><Link to="/profile">Profile</Link></li>

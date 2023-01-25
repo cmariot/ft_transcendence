@@ -60,10 +60,12 @@ export class UsersController {
     @UseInterceptors(FileInterceptor("file", storage))
     async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req) {
         console.log("Updating image");
-        return this.userService.updateProfileImage(
-            req.user.uuid,
-            file.filename
-        );
+        let user = await this.userService.getByID(req.user.uuid);
+        if (user.profileImage != null) {
+            console.log("Delete the previous profile picture");
+        }
+        await this.userService.updateProfileImage(req.user.uuid, file.filename);
+        return "OK";
     }
 
     @Get("image")

@@ -14,6 +14,9 @@ ft_transcendence est une application web monopage sur laquelle il est possible d
 
 #### Todo list - Vendredi 20 Janvier 2023
 
--   [ ] Verifications Register 42
--   [ ] Verifications Login 42
--   [ ] Obtenir l'username de l'utilisateur connecte
+-   [ ] Frontend : Condition d'affichage en fonction d'un booleen isLogged
+-   [ ] Backend : Gestion d'erreur connexion
+-   [ ] Frontend + Backend : Mise en place connexion / register
+-   [ ] Backend : POST image de profil
+-   [ ] Backend : GET image de profil
+-   [ ] Backend : DELETE image de profil
