@@ -1,21 +1,23 @@
-import { useState, ChangeEvent } from 'react';
 import axios from "axios";
+import React, { useState } from 'react';
+import { ChangeEvent } from "react";
 
 export default function LoginForm() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { id, value } = e.target;
-		if (id === "login-username") {
+		if (id === "username") {
 			setUsername(value);
 		}
-		if (id === "login-password") {
+		if (id === "password") {
 			setPassword(value);
 		}
 	};
 
-	const handleLoginSubmit = () => {
+	const handleSubmit = () => {
+		console.log(username, password);
 		axios.post('https://localhost:8443/api/login',
 			{
 				username: username,
@@ -23,8 +25,6 @@ export default function LoginForm() {
 			}
 		)
 			.then(function (response) {
-				setUsername("")
-				setPassword("")
 				console.log(response);
 			})
 			.catch(function (error) {
@@ -33,43 +33,44 @@ export default function LoginForm() {
 	};
 
 	return (
-		<form id="login-form">
-			<h2>Login</h2>
-			<div>
-				<div>
-					<label htmlFor="username">
-						Username{""}
+		<div id="login-form" className="form">
+			<div className="form-body">
+				<div className="username">
+					<label className="form__label" htmlFor="username">
+						Username{" "}
 					</label>
 					<input
-						id="login-username"
+						className="form__input"
 						type="text"
 						value={username}
-						onChange={(e) => handleLoginInputChange(e)}
+						onChange={(e) => handleInputChange(e)}
+						id="username"
 						placeholder="Username"
 					/>
 				</div>
-				<div>
-					<label htmlFor="password">
-						Password{""}
+				<div className="password">
+					<label className="form__label" htmlFor="password">
+						Password{" "}
 					</label>
 					<input
-						id="login-password"
+						className="form__input"
 						type="password"
+						id="password"
 						value={password}
-						onChange={(e) => handleLoginInputChange(e)}
+						onChange={(e) => handleInputChange(e)}
 						placeholder="Password"
 					/>
 				</div>
 			</div>
-			<div>
+			<div className="footer">
 				<button
-					id="login-submit"
+					onClick={() => handleSubmit()}
 					type="submit"
-					onClick={handleLoginSubmit}
+					className="btn"
 				>
 					Login
 				</button>
 			</div>
-		</form>
+		</div>
 	);
 }
