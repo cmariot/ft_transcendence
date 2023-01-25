@@ -1,5 +1,7 @@
-import { ChangeEvent, useState } from "react";
 import axios from "axios";
+import { ChangeEvent, useState } from "react";
+import { getCookie } from "./login/LoginLocal";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
 	const [username, setUsername] = useState("");
@@ -10,6 +12,7 @@ export default function Register() {
 	const [error, setError] = useState(false);
 	const [msg, setMsg] = useState("");
 
+    const navigate = useNavigate();
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -24,25 +27,37 @@ export default function Register() {
         }
     };
 
-    const handleSubmit = () => {
-        let ret = axios.post('https://localhost:8443/api/register',
+    const submitRegisterForm = async (event) => {
+        event.preventDefault();
+        await axios.post('/api/register',
             {
                 username: username,
                 email: email,
                 password: password
             }
         )
-            .then(function (response) {
-				setSubmitted(true);
-				setError(false);
-            })
-            .catch(function (error) {
-				setSubmitted(false);
-				setError(true);
-				setMsg(error.response.data.message);
-            })
-    };
-
+        .then(function() {
+			setSubmitted(true);
+			setError(false);
+            const token = getCookie("authentification");
+            if (!token || token === 'undefined') {
+				setUsername("");
+				setPassword("");
+                alert('Unable to register. Please try again.');
+                return;
+            }
+            navigate('/');
+        })
+        .catch(function(error) {
+			setSubmitted(false);
+			setError(true);
+			setMsg(error.response.data.message);
+			setUsername("");
+			setPassword("");
+            alert("Oops! Some error occured.");
+        });
+    }
+    
 	const errorMessage = () => {
 		return (
 			<p style={{display: error ? 'inline' : 'none',}}>Error: {msg}</p>
@@ -101,7 +116,7 @@ export default function Register() {
             </div>
             <div className="footer">
                 <button
-                    onClick={() => handleSubmit()}
+                    onClick={(e) => submitRegisterForm(e)}
                     type="submit"
                     className="btn"
                 >

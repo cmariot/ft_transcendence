@@ -1,0 +1,10 @@
+#home-nav-bar {
+    border: 1px black solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#home-nav-bar-user {
+    display: flex;
+}

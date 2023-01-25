@@ -22,7 +22,6 @@ export class AuthService {
         let authentification_value: string = this.generate_jwt_token(user);
         res.cookie("authentification", authentification_value, {
             maxAge: 1000 * 60 * 60 * 2, // 2 hours
-            httpOnly: true,
             sameSite: "none",
             secure: true,
         }).redirect("https://localhost:8443/");

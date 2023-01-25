@@ -12,11 +12,15 @@ ft_transcendence est une application web monopage sur laquelle il est possible d
 -   [ ] Parties en ligne en temps reel
 -   [ ] Chat
 
-#### Todo list - Vendredi 20 Janvier 2023
+#### Todo list - Jeudi 26 Janvier 2023
 
--   [ ] Frontend : Condition d'affichage en fonction d'un booleen isLogged
--   [ ] Backend : Gestion d'erreur connexion
--   [ ] Frontend + Backend : Mise en place connexion / register
+-   [ ] Frontend : Autorisation en fonction d'un cookie d'authentification : Verifications + Simplifications
+-   [ ] Frontend + Backend : Mise en place register
+-   [ ] Frontend + Backend : Mise en place login 42
+-   [ ] CSS : Page de login
+-   [ ] Backend : Gestion d'erreur connexion + test avec Frontend
+
+
 -   [ ] Backend : POST image de profil
 -   [ ] Backend : GET image de profil
 -   [ ] Backend : DELETE image de profil
