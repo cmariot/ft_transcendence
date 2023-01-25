@@ -34,6 +34,8 @@ export default function LoginForm() {
 
 	return (
 		<div id="login-form" className="form">
+			<h3>or</h3>
+			<h2>Login</h2>
 			<div className="form-body">
 				<div className="username">
 					<label className="form__label" htmlFor="username">

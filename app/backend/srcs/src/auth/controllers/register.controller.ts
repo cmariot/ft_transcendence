@@ -1,6 +1,8 @@
 import {
     Body,
     Controller,
+    HttpException,
+    HttpStatus,
     Post,
     Res,
     UnauthorizedException,
@@ -20,7 +22,8 @@ export class RegisterController {
     async register(@Body() registerDto: RegisterDto, @Res() res) {
         let user = await this.userService.register(registerDto);
         if (!user) {
-            throw new UnauthorizedException();
+            throw new HttpException
+            ('This username is already registered.', HttpStatus.NOT_ACCEPTABLE);
         }
         this.authService.create_authentification_cookie(
             user,

@@ -26,7 +26,7 @@ export default function Register() {
 
     const handleSubmit = () => {
         console.log(username, email, password);
-        axios.post('https://localhost:8443/api/register',
+        let ret = axios.post('https://localhost:8443/api/register',
             {
                 username: username,
                 email: email,
@@ -35,45 +35,32 @@ export default function Register() {
         )
             .then(function (response) {
 				setSubmitted(true);
+				setError(false);
                 console.log(response);
             })
             .catch(function (error) {
+				setSubmitted(false);
 				setError(true);
-				setMsg(error);
-                console.log(error);
+				setMsg(error.response.data.message);
+				console.log(error);
             })
     };
 
 	const errorMessage = () => {
 		return (
-			<div
-			className="success"
-			style={{
-			  display: error ? '' : 'none',
-			}}>
-			<h1>Error : {error} </h1>
-		  </div>
+			<p style={{display: error ? 'inline' : 'none',}}>Error: {msg}</p>
 		);
 	};
 
 	const successMessage = () => {
 		return (
-		  <div
-			className="success"
-			style={{
-			  display: submitted ? '' : 'none',
-			}}>
-			<h1>User {username} successfully registered!!</h1>
-		  </div>
+			<p style={{display: submitted ? 'inline' : 'none',}}>Welcome {username}</p>
 		);
 	  };
 
     return (
         <div id="register-form" className="form">
-			 <div className="messages">
-        		{successMessage()}
-				{errorMessage()}
-      		</div>
+            <h2>Register</h2>
             <div className="form-body">
                 <div className="username">
                     <label className="form__label" htmlFor="username">
@@ -123,6 +110,10 @@ export default function Register() {
                 >
                     Register
                 </button>
+			    <div className="messages">
+             		{successMessage()}
+				    {errorMessage()}
+          		</div>
             </div>
         </div>
     );
