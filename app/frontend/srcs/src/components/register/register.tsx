@@ -25,7 +25,6 @@ export default function Register() {
     };
 
     const handleSubmit = () => {
-        console.log(username, email, password);
         let ret = axios.post('https://localhost:8443/api/register',
             {
                 username: username,
@@ -36,13 +35,11 @@ export default function Register() {
             .then(function (response) {
 				setSubmitted(true);
 				setError(false);
-                console.log(response);
             })
             .catch(function (error) {
 				setSubmitted(false);
 				setError(true);
 				setMsg(error.response.data.message);
-				console.log(error);
             })
     };
 

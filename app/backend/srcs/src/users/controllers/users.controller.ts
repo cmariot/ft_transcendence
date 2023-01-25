@@ -17,6 +17,7 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { Observable, of } from "rxjs";
+import { UserEntity } from "../entity/user.entity";
 
 // Storage for the upload images
 export const storage = {
@@ -49,9 +50,9 @@ export class UsersController {
         @Request() req
     ) {
         console.log("Updating username");
-        let previousProfile = await this.userService.getProfile(req.user.uuid);
-        let previousUsername = previousProfile.username;
-        let newUsername = newUsernameDto.username;
+        let previousProfile: UserEntity = await this.userService.getProfile(req.user.uuid);
+        let previousUsername: string = previousProfile.username;
+        let newUsername: string = newUsernameDto.username;
         return this.userService.updateUsername(previousUsername, newUsername);
     }
 

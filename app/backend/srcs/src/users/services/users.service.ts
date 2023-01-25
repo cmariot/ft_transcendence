@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreatedFrom, UserEntity } from "../entity/user.entity";
@@ -34,16 +34,15 @@ export class UsersService {
     }
 
     async encode_password(rawPassword: string): Promise<string> {
-        const saltRounds: number = 10;
+        const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);
         return bcrypt.hashSync(rawPassword, salt);
     }
 
     async register(registerDto: RegisterDto): Promise<UserEntity> {
-        let db_user = await this.getByUsername(registerDto.username);
+        let db_user: UserEntity = await this.getByUsername(registerDto.username);
         if (db_user && db_user.username === registerDto.username) {
-            console.log("Unavailable username");
-            return null;
+            throw new HttpException('This username is already registered.', HttpStatus.UNAUTHORIZED);
         }
         let hashed_password = await this.encode_password(registerDto.password);
         let user = {
@@ -58,7 +57,7 @@ export class UsersService {
     async getProfile(id: string) {
         let user = await this.getByID(id);
         if (user === undefined) {
-            return;
+            throw new HttpException('Invalid uuid.', HttpStatus.FORBIDDEN);
         }
         return user;
     }
@@ -66,24 +65,21 @@ export class UsersService {
     async updateUsername(previousUsername: string, newUsername: string) {
         let alreadyTaken = await this.getByUsername(newUsername);
         if (alreadyTaken) {
-            console.log("New username unavailable");
-            throw new UnauthorizedException();
+            throw new HttpException('This username is already registered.', HttpStatus.UNAUTHORIZED);
         }
-        console.log("New username available");
-        let value = await this.userRepository.update(
+        await this.userRepository.update(
             { username: previousUsername },
             { username: newUsername }
         );
-        console.log(value);
-        return value;
+        return "Username updated.";
     }
 
     async updateProfileImage(uuid: string, imageName: string) {
-        let value = await this.userRepository.update(
+        this.getProfile(uuid);
+        await this.userRepository.update(
             { uuid: uuid },
             { profileImage: imageName }
         );
-        console.log(value);
-        return value;
+        return "Image updated.";
     }
 }

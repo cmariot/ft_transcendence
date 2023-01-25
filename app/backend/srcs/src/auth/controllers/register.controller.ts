@@ -5,11 +5,11 @@ import {
     HttpStatus,
     Post,
     Res,
-    UnauthorizedException,
 } from "@nestjs/common";
 import { RegisterDto } from "../dtos/register.dto";
 import { AuthService } from "../services/auth.service";
 import { UsersService } from "src/users/services/users.service";
+import { UserEntity } from "src/users/entity/user.entity";
 
 @Controller("register")
 export class RegisterController {
@@ -20,11 +20,7 @@ export class RegisterController {
 
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res) {
-        let user = await this.userService.register(registerDto);
-        if (!user) {
-            throw new HttpException
-            ('This username is already registered.', HttpStatus.NOT_ACCEPTABLE);
-        }
+        let user : UserEntity = await this.userService.register(registerDto);
         this.authService.create_authentification_cookie(
             user,
             res,
