@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -18,14 +18,14 @@ export class AuthService {
         return token;
     }
 
-    create_authentification_cookie(user, res, redirection_url: string) {
+    create_authentification_cookie(user, res) {
         let authentification_value: string = this.generate_jwt_token(user);
         res.cookie("authentification", authentification_value, {
             maxAge: 1000 * 60 * 60 * 2, // 2 hours
             httpOnly: true,
             sameSite: "none",
             secure: true,
-        }).redirect(redirection_url);
+        }).redirect("https://localhost:8443/");
     }
 
     // 3 cas :
@@ -45,13 +45,12 @@ export class AuthService {
         let bdd_user = await this.usersService.getById42(user_42.id42);
         if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
             console.log("The username is already registered but from FORM");
-            return null;
+            throw new HttpException('The username is already registered but from FORM.', HttpStatus.FORBIDDEN);
         } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
             console.log("Sign in 42 user");
             this.create_authentification_cookie(
                 bdd_user,
-                res,
-                "https://localhost:8443/"
+                res
             );
             return bdd_user;
         } else {
@@ -61,8 +60,7 @@ export class AuthService {
             );
             this.create_authentification_cookie(
                 new_user,
-                res,
-                "https://localhost:8443/profile"
+                res
             );
             return new_user;
         }
@@ -72,7 +70,7 @@ export class AuthService {
         username: string,
         password: string,
         res
-    ): Promise<UserEntity> {
+    ) {
         const user = await this.usersService.getByUsername(username);
         if (
             user &&
@@ -80,14 +78,11 @@ export class AuthService {
             (await bcrypt.compare(password, user.password)) === true
         ) {
             console.log("Logged as ", user.username);
-            this.create_authentification_cookie(
+            return (this.create_authentification_cookie(
                 user,
-                res,
-                "https://localhost:8443/"
-            );
-            return user;
+                res
+            ));
         }
-        console.log("Login failed");
-        return null;
+        throw new HttpException('Login failed.', HttpStatus.FORBIDDEN);
     }
 }

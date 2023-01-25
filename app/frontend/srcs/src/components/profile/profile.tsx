@@ -63,7 +63,7 @@ function Profile() {
 
 	return (
 		<div>
-			<h1>Welcome {username}</h1>
+			<h2>{username} Profile</h2>
 
 			<div>
 

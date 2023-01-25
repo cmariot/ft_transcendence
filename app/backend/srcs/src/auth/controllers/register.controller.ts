@@ -21,10 +21,9 @@ export class RegisterController {
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res) {
         let user : UserEntity = await this.userService.register(registerDto);
-        this.authService.create_authentification_cookie(
+        return (this.authService.create_authentification_cookie(
             user,
-            res,
-            "https://localhost:8443/"
-        );
+            res
+        ));
     }
 }
