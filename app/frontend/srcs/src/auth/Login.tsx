@@ -12,7 +12,7 @@ const Login = () => {
             <main id="auth-choices">
                 <Login42 />
                 <h3>or</h3>
-                <LoginLocal />           
+                <LoginLocal />
                 <NoAccount />
             </main>
             <AuthFooter />

@@ -1,4 +1,4 @@
-import "./AuthNavbar.css"
+import "./AuthNavbar.css";
 
 const AuthNavbar = () => {
     return (
@@ -6,5 +6,5 @@ const AuthNavbar = () => {
             <h1>ft_transcendence</h1>
         </nav>
     );
-}
+};
 export default AuthNavbar;

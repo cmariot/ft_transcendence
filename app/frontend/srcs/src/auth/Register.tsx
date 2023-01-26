@@ -4,13 +4,12 @@ import { getCookie } from "./login/LoginLocal";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-	const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-	const [submitted, setSubmitted] = useState(false);
-	const [error, setError] = useState(false);
-	const [msg, setMsg] = useState("");
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
@@ -29,46 +28,37 @@ export default function Register() {
 
     const submitRegisterForm = async (event) => {
         event.preventDefault();
-        await axios.post('/api/register',
-            {
+        await axios
+            .post("/api/register", {
                 username: username,
                 email: email,
-                password: password
-            }
-        )
-        .then(function() {
-			setSubmitted(true);
-			setError(false);
-            const token = getCookie("authentification");
-            if (!token || token === 'undefined') {
-				setUsername("");
-				setPassword("");
-                alert('Unable to register. Please try again.');
-                return;
-            }
-            navigate('/');
-        })
-        .catch(function(error) {
-			setSubmitted(false);
-			setError(true);
-			setMsg(error.response.data.message);
-			setUsername("");
-			setPassword("");
-            alert("Oops! Some error occured.");
-        });
-    }
-    
-	const errorMessage = () => {
-		return (
-			<p style={{display: error ? 'inline' : 'none',}}>Error: {msg}</p>
-		);
-	};
+                password: password,
+            })
+            .then(function () {
+                setError(false);
+                setUsername("");
+                setPassword("");
+                const token = getCookie("authentification");
+                if (!token || token === "undefined") {
+                    alert("Unable to register. Please try again.");
+                    return;
+                }
+                navigate("/");
+            })
+            .catch(function (error) {
+                setError(true);
+                setErrorMessage(error.response.data.message);
+                alert(errorMessage);
+            });
+    };
 
-	const successMessage = () => {
-		return (
-			<p style={{display: submitted ? 'inline' : 'none',}}>Welcome {username}</p>
-		);
-	  };
+    const displayErrorMessage = () => {
+        return (
+            <p style={{ display: error ? "inline" : "none" }}>
+                Error: {errorMessage}
+            </p>
+        );
+    };
 
     return (
         <div id="register-form" className="form">
@@ -122,10 +112,7 @@ export default function Register() {
                 >
                     Register
                 </button>
-			    <div className="messages">
-             		{successMessage()}
-				    {errorMessage()}
-          		</div>
+                <div className="messages">{displayErrorMessage()}</div>
             </div>
         </div>
     );

@@ -8,7 +8,6 @@ export function getCookie(key: string): string {
 }
 
 const LoginLocal = () => {
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -16,78 +15,70 @@ const LoginLocal = () => {
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-		const { id, value } = event.target;
-		if (id === "username") {
-			setUsername(value);
-		}
-		if (id === "password") {
-			setPassword(value);
-		}
-	};
+        const { id, value } = event.target;
+        if (id === "username") {
+            setUsername(value);
+        }
+        if (id === "password") {
+            setPassword(value);
+        }
+    };
 
     const submitLoginForm = async (event) => {
         event.preventDefault();
-        await axios.post('/api/login',
-            {
+        await axios
+            .post("/api/login", {
                 username: username,
-                password: password
-            }
-        )
-        .then(() => {
-            const token = getCookie("authentification");
-            if (!token || token === 'undefined') {
-				setUsername("");
-				setPassword("");
-                alert('Unable to login. Please try again.');
-                return;
-            }
-            navigate('/');
-        })
-        .catch((error) => {
-			setUsername("");
-			setPassword("");
-            alert("Oops! Some error occured.");
-        });
-    }
+                password: password,
+            })
+            .then(() => {
+                const token = getCookie("authentification");
+                if (!token || token === "undefined") {
+                    setUsername("");
+                    setPassword("");
+                    alert("Unable to login. Please try again.");
+                    return;
+                }
+                navigate("/");
+            })
+            .catch((error) => {
+                setUsername("");
+                setPassword("");
+                alert("Oops! Some error occured.");
+            });
+    };
 
     return (
         <div>
             <h2>Login</h2>
             <form>
-				<div className="username">
-					<label htmlFor="username">
-						Username{""}
-					</label>
-					<input
-						type="text"
-						id="username"
-						placeholder="Username"
-						value={username}
-						onChange={(e) => handleInputChange(e)}
-					/>
-				</div>
-				<div>
-					<label htmlFor="password">
-						Password{""}
-					</label>
-					<input
-						type="password"
-						id="password"
-						placeholder="Password"
-						value={password}
-						onChange={(e) => handleInputChange(e)}
-					/>
-				</div>
-				<div>
-					<button
-						onClick={(e) => submitLoginForm(e)}
-						type="submit"
-					>
-						Login
-					</button>
-				</div>
-			</form>
+                <label htmlFor="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => handleInputChange(e)}
+                    autoComplete="on"
+                    required
+                />
+                <label htmlFor="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => handleInputChange(e)}
+                    autoComplete="on"
+                    required
+                />
+                <input
+                    type="submit"
+                    onClick={(e) => submitLoginForm(e)}
+                    value="Login"
+                />
+            </form>
         </div>
     );
-}
+};
 export default LoginLocal;
