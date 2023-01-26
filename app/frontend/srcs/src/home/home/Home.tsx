@@ -1,12 +1,10 @@
-import axios from "axios";
-import { useEffect } from "react";
+import "./Home.css";
 
 const Home = () => {
-
     return (
-        <div>
+        <main id="home-main">
             <h2>Welcome Home.</h2>
-        </div>
-    )
-}
+        </main>
+    );
+};
 export default Home;

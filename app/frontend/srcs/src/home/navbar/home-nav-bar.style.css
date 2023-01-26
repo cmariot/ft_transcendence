@@ -3,8 +3,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 100px;
+    padding: 5px;
 }
 
 #home-nav-bar-user {
     display: flex;
+}
+
+#home-nav-bar-user * {
+    padding: 5px;
 }

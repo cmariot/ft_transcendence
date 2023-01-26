@@ -74,6 +74,7 @@ const LoginLocal = () => {
                 />
                 <input
                     type="submit"
+                    className="button"
                     onClick={(e) => submitLoginForm(e)}
                     value="Login"
                 />

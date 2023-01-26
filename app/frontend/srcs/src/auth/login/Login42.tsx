@@ -15,7 +15,9 @@ function Login42() {
     return (
         <div>
             <h2>Login with your 42 account</h2>
-            <button onClick={login42}>Login</button>
+            <button className="button" onClick={login42}>
+                Login
+            </button>
         </div>
     );
 }

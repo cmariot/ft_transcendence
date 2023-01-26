@@ -1,7 +1,8 @@
+import "./Register.css";
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
 import { getCookie } from "./login/LoginLocal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
     const [username, setUsername] = useState("");
@@ -34,7 +35,7 @@ export default function Register() {
                 email: email,
                 password: password,
             })
-            .then(function () {
+            .then(function (response) {
                 setError(false);
                 setUsername("");
                 setPassword("");
@@ -48,7 +49,7 @@ export default function Register() {
             .catch(function (error) {
                 setError(true);
                 setErrorMessage(error.response.data.message);
-                alert(errorMessage);
+                alert("Oops! Some error occured.");
             });
     };
 
@@ -61,59 +62,49 @@ export default function Register() {
     };
 
     return (
-        <div id="register-form" className="form">
+        <main id="register-main">
             <h2>Register</h2>
-            <div className="form-body">
-                <div className="username">
-                    <label className="form__label" htmlFor="username">
-                        Username{" "}
-                    </label>
-                    <input
-                        className="form__input"
-                        type="text"
-                        value={username}
-                        onChange={(e) => handleInputChange(e)}
-                        id="username"
-                        placeholder="Username"
-                    />
-                </div>
-                <div className="email">
-                    <label className="form__label" htmlFor="email">
-                        Email{" "}
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        className="form__input"
-                        value={email}
-                        onChange={(e) => handleInputChange(e)}
-                        placeholder="Email"
-                    />
-                </div>
-                <div className="password">
-                    <label className="form__label" htmlFor="password">
-                        Password{" "}
-                    </label>
-                    <input
-                        className="form__input"
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => handleInputChange(e)}
-                        placeholder="Password"
-                    />
-                </div>
-            </div>
-            <div className="footer">
-                <button
-                    onClick={(e) => submitRegisterForm(e)}
+            <form id="register-form">
+                <label htmlFor="username">Username</label>
+                <input
+                    id="username"
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(event) => handleInputChange(event)}
+                    autoComplete="off"
+                    autoFocus
+                    required
+                />
+                <label htmlFor="email">Email</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(event) => handleInputChange(event)}
+                    required
+                />
+                <label htmlFor="password">Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(event) => handleInputChange(event)}
+                    placeholder="Password"
+                    autoComplete="off"
+                    required
+                />
+                <input
+                    id="submit"
+                    className="button"
                     type="submit"
-                    className="btn"
-                >
-                    Register
-                </button>
-                <div className="messages">{displayErrorMessage()}</div>
-            </div>
-        </div>
+                    value="Register"
+                    onClick={(event) => submitRegisterForm(event)}
+                />
+                <>{displayErrorMessage()}</>
+            </form>
+            <Link to="/login">cancel</Link>
+        </main>
     );
 }

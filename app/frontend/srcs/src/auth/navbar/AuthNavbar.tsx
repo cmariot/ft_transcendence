@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import "./AuthNavbar.css";
 
 const AuthNavbar = () => {
     return (
         <nav id="auth-nav-bar">
-            <h1>ft_transcendence</h1>
+            <Link to="/">ft_transcendence</Link>
         </nav>
     );
 };
