@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCookie } from "../auth/login/LoginLocal";
+import { getCookie } from "./GetCookie";
 
 const ProtectedRoute = (props) => {
     const navigate = useNavigate();

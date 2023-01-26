@@ -1,9 +1,9 @@
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import "./home-nav-bar.style.css";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import "./CSS/AppNavBar.css";
 
-const HomeNavbar = () => {
+const AppNavbar = () => {
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
@@ -11,7 +11,7 @@ const HomeNavbar = () => {
     useEffect(() => {
         const getProfile = async function () {
             await axios
-                .get("https://localhost:8443/api/profile")
+                .get("/api/profile")
                 .then((response) => {
                     setUsername(response.data.username);
                 })
@@ -25,7 +25,7 @@ const HomeNavbar = () => {
 
     const logout = () => {
         axios
-            .get("https://localhost:8443/api/logout")
+            .get("/api/logout")
             .then(() => {
                 navigate("/login");
             })
@@ -34,11 +34,10 @@ const HomeNavbar = () => {
             });
     };
 
-    // lien username + proteger route
     return (
-        <nav id="home-nav-bar">
+        <nav id="app-nav-bar">
             <Link to="/">ft_transcendence</Link>
-            <div id="home-nav-bar-user">
+            <div id="app-nav-bar-user">
                 <Link to="/profile">{username}</Link>
                 <button className="button" onClick={logout}>
                     Logout
@@ -47,4 +46,4 @@ const HomeNavbar = () => {
         </nav>
     );
 };
-export default HomeNavbar;
+export default AppNavbar;

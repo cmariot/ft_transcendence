@@ -1,9 +1,7 @@
-import "./Home.css";
-
 const Home = () => {
     return (
         <main id="home-main">
-            <h2>Welcome Home.</h2>
+            <h2>Welcome Home</h2>
         </main>
     );
 };

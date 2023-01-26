@@ -1,4 +1,4 @@
-#home-nav-bar {
+#app-nav-bar {
     border: 1px black solid;
     display: flex;
     justify-content: space-between;
@@ -7,10 +7,10 @@
     padding: 5px;
 }
 
-#home-nav-bar-user {
+#app-nav-bar-user {
     display: flex;
 }
 
-#home-nav-bar-user * {
+#app-nav-bar-user * {
     padding: 5px;
 }

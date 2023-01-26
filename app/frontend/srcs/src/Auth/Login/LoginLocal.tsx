@@ -1,11 +1,7 @@
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-export function getCookie(key: string): string {
-    var value = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
-    return value ? value.pop() : "";
-}
+import { getCookie } from "../../Utils/GetCookie";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");

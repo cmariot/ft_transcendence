@@ -1,8 +1,8 @@
-import "./Register.css";
-import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { getCookie } from "./login/LoginLocal";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getCookie } from "../../Utils/GetCookie";
+import "../CSS/Register.css";
 
 export default function Register() {
     const [username, setUsername] = useState("");

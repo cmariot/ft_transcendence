@@ -11,7 +11,7 @@ const Profile = () => {
     useEffect(() => {
         const getProfile = async function () {
             await axios
-                .get("https://localhost:8443/api/profile")
+                .get("/api/profile")
                 .then((response) => {
                     setUsername(response.data.username);
                     setEmail(response.data.email);
@@ -26,7 +26,7 @@ const Profile = () => {
 
     const logout = () => {
         axios
-            .get("https://localhost:8443/api/logout")
+            .get("/api/logout")
             .then(() => {
                 navigate("/login");
             })

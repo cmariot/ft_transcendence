@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import HomeNavbar from "./home/navbar/HomeNavBar";
-import HomeFooter from "./home/footer/HomeFooter";
-import { getCookie } from "./auth/login/LoginLocal";
+import AppNavbar from "./AppNavBar";
+import AppFooter from "./AppFooter";
+import { getCookie } from "../Utils/GetCookie";
 
 function App() {
     const navigate = useNavigate();
@@ -22,9 +22,9 @@ function App() {
 
     return (
         <>
-            <HomeNavbar />
+            <AppNavbar />
             <Outlet />
-            <HomeFooter />
+            <AppFooter />
         </>
     );
 }

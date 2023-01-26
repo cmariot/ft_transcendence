@@ -1,14 +1,17 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import App from "./App";
-import ReactDOM from "react-dom/client";
-import ProtectedRoute from "./util/ProtectedRoute";
-import Home from "./home/home/Home";
 import React from "react";
-import Login from "./auth/Login";
-import Register from "./auth/Register";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ReactDOM from "react-dom/client";
+
+import Auth from "./Auth/Auth";
+import Login from "./Auth/Login/Login";
+import Register from "./Auth/Register/Register";
+
+import ProtectedRoute from "./Utils/ProtectedRoute";
+import App from "./App/App";
+import Home from "./App/Home/Home";
+import Profile from "./App/Profile/Profile";
+
 import "./index.css";
-import Auth from "./auth/Auth";
-import Profile from "./home/home/Profile";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -21,7 +24,6 @@ root.render(
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Route>
-
                 <Route
                     path="/"
                     element={

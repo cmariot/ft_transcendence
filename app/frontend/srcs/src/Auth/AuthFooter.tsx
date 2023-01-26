@@ -1,4 +1,4 @@
-import "./AuthFooter.css";
+import "./CSS/AuthFooter.css";
 
 const AuthFooter = () => {
     return (

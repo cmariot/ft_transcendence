@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import AuthNavbar from "./navbar/AuthNavbar";
-import AuthFooter from "./footer/AuthFooter";
+import AuthNavbar from "./AuthNavbar";
+import AuthFooter from "./AuthFooter";
 
 function Auth() {
     return (
