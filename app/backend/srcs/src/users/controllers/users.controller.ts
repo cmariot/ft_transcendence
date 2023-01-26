@@ -5,6 +5,7 @@ import {
     Post,
     Req,
     Request,
+    StreamableFile,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -15,9 +16,11 @@ import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
+import { join } from "path";
 import * as path from "path";
 import { Observable, of } from "rxjs";
 import { UserEntity } from "../entity/user.entity";
+import { createReadStream } from "fs";
 
 // Storage for the upload images
 export const storage = {
@@ -50,7 +53,9 @@ export class UsersController {
         @Request() req
     ) {
         console.log("Updating username");
-        let previousProfile: UserEntity = await this.userService.getProfile(req.user.uuid);
+        let previousProfile: UserEntity = await this.userService.getProfile(
+            req.user.uuid
+        );
         let previousUsername: string = previousProfile.username;
         let newUsername: string = newUsernameDto.username;
         return this.userService.updateUsername(previousUsername, newUsername);
@@ -71,7 +76,21 @@ export class UsersController {
 
     @Get("image")
     @UseGuards(isLogged)
-    async getProfileImage() {
-        return "Profile image";
+    async getProfileImage(@Req() req) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (user.profileImage === null) {
+            const file = createReadStream(
+                join(process.cwd(), "./default/profile_image.png")
+            );
+            return new StreamableFile(file);
+        } else {
+            const file = createReadStream(
+                join(
+                    process.cwd(),
+                    "./uploads/profile_pictures/" + user.profileImage
+                )
+            );
+            return new StreamableFile(file);
+        }
     }
 }
