@@ -2,12 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
+const Profile = (props) => {
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const [newProfileImage, setNewProfileImage] = useState();
 
     useEffect(() => {
         const getProfile = async function () {
@@ -22,6 +21,7 @@ const Profile = () => {
                     logout();
                 });
         };
+
         getProfile();
     }, []);
 
@@ -37,13 +37,9 @@ const Profile = () => {
     };
 
     function handleChange(event) {
-        setNewProfileImage(event.target.files[0]);
-    }
-
-    function handleUpload(event) {
         event.preventDefault();
         const formData = new FormData();
-        formData.append("file", newProfileImage);
+        formData.append("file", event.target.files[0]);
         axios
             .post("/api/profile/update/image", formData, {
                 headers: {
@@ -51,7 +47,12 @@ const Profile = () => {
                 },
             })
             .then((response) => {
-                console.log(response.data);
+                console.log(response);
+                // Il faudrait refresh l'image affiche dans le profil,
+                // la il faut refresh la page ...
+            })
+            .catch((error) => {
+                console.log(error);
             });
     }
 
@@ -59,11 +60,7 @@ const Profile = () => {
         <main>
             <h2>Profile</h2>
             <img src="https://localhost:8443/api/profile/image" />
-            <form onSubmit={handleUpload}>
-                <input type="file" onChange={handleChange} />
-                <button type="submit">Upload</button>
-            </form>
-
+            <input type="file" accept="image/*" onChange={handleChange} />
             <h3>Username : {username}</h3>
             <h3>Email : {email}</h3>
         </main>

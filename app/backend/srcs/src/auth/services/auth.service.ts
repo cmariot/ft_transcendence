@@ -43,33 +43,25 @@ export class AuthService {
     ): Promise<UserEntity> {
         let bdd_user = await this.usersService.getById42(user_42.id42);
         if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
-            console.log("The username is already registered but from FORM");
-            throw new HttpException('The username is already registered but from FORM.', HttpStatus.FORBIDDEN);
+            throw new HttpException(
+                "The username is already registered but from FORM.",
+                HttpStatus.FORBIDDEN
+            );
         } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
             console.log("Sign in 42 user");
-            this.create_authentification_cookie(
-                bdd_user,
-                res
-            );
+            this.create_authentification_cookie(bdd_user, res);
             return bdd_user;
         } else {
             console.log("Saving the user in the database.");
             let new_user: UserEntity = await this.usersService.saveUser(
                 user_42
             );
-            this.create_authentification_cookie(
-                new_user,
-                res
-            );
+            this.create_authentification_cookie(new_user, res);
             return new_user;
         }
     }
 
-    async signin_local_user(
-        username: string,
-        password: string,
-        res
-    ) {
+    async signin_local_user(username: string, password: string, res) {
         const user = await this.usersService.getByUsername(username);
         if (
             user &&
@@ -77,11 +69,8 @@ export class AuthService {
             (await bcrypt.compare(password, user.password)) === true
         ) {
             console.log("Logged as ", user.username);
-            return (this.create_authentification_cookie(
-                user,
-                res
-            ));
+            return this.create_authentification_cookie(user, res);
         }
-        throw new HttpException('Login failed.', HttpStatus.FORBIDDEN);
+        throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);
     }
 }
