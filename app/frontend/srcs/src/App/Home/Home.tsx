@@ -1,7 +1,10 @@
+import "../CSS/Home.css";
+
 const Home = () => {
     return (
         <main id="home-main">
-            <h2>Welcome Home</h2>
+            <div id="game">Game</div>
+            <div id="chat">Chat</div>
         </main>
     );
 };

@@ -1,0 +1,16 @@
+#home-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    height: -moz-available;
+    grid-gap: 10px;
+    margin: 10px;
+}
+
+#game {
+    height: 500px;
+    border: 1px black solid;
+}
+
+#chat {
+    border: 1px black solid;
+}
