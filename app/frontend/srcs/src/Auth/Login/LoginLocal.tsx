@@ -40,7 +40,7 @@ const LoginLocal = () => {
             .catch((error) => {
                 setUsername("");
                 setPassword("");
-                alert("Oops! Some error occured.");
+                alert(error.response.data.message);
             });
     };
 

@@ -38,6 +38,7 @@ export default function Register() {
             .then(function (response) {
                 setError(false);
                 setUsername("");
+                setEmail("");
                 setPassword("");
                 const token = getCookie("authentification");
                 if (!token || token === "undefined") {
@@ -49,7 +50,7 @@ export default function Register() {
             .catch(function (error) {
                 setError(true);
                 setErrorMessage(error.response.data.message);
-                alert("Oops! Some error occured.");
+                alert(error.response.data.message);
             });
     };
 

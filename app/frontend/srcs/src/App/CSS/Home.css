@@ -9,8 +9,10 @@
 #game {
     height: 500px;
     border: 1px black solid;
+    padding: 5px;
 }
 
 #chat {
     border: 1px black solid;
+    padding: 5px;
 }
