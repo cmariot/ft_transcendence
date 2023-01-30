@@ -7,19 +7,46 @@
     padding: 5px;
 }
 
-#app-nav-bar-user {
+#nav-user-infos {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 5px;
 }
 
-#app-nav-bar-user img {
-    width: 50px;
+#nav-user-picture {
     height: 50px;
-    clip-path: circle();
+    width: 50px;
     border-radius: 50%;
+    margin-inline-start: 10px;
 }
 
-#app-nav-bar-user * {
+#app-menu {
+    display: none;
+    justify-content: center;
+    text-align: center;
     padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#app-menu-ul {
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.app-menu-li {
+    height: 30px;
+    border: 1px black solid;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

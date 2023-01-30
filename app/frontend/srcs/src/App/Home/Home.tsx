@@ -1,6 +1,6 @@
 import "../CSS/Home.css";
 
-const Home = () => {
+const Home = (props) => {
     return (
         <main id="home-main">
             <div id="game">Game</div>

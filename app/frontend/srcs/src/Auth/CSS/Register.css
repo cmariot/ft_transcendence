@@ -1,4 +1,28 @@
+#register-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    height: -moz-available;
+    grid-gap: 10px;
+    margin: 5px;
+}
+
 #register-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px black solid;
+    border-radius: 15px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#register-form * {
+    margin: 5px;
+    padding: 5px;
+}
+
+#register-main > article:nth-child(1) {
     display: flex;
     flex-direction: column;
     justify-content: center;

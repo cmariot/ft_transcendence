@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import UpdateProfileImage from "./UpdateProfileImage";
 import UpdateUsername from "./UpdateUsername";
 
-const EditProfile = () => {
+const EditProfile = (props) => {
     const navigate = useNavigate();
 
     function Ok() {

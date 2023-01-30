@@ -10,9 +10,11 @@
     height: 500px;
     border: 1px black solid;
     padding: 5px;
+    border-radius: 15px;
 }
 
 #chat {
     border: 1px black solid;
     padding: 5px;
+    border-radius: 15px;
 }

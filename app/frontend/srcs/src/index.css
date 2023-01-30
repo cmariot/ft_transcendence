@@ -22,7 +22,6 @@
 
 html {
     line-height: 1.15; /* 1 */
-    -webkit-text-size-adjust: 100%; /* 2 */
 }
 
 /* Sections
@@ -179,6 +178,8 @@ textarea {
     font-size: 100%; /* 1 */
     line-height: 1.15; /* 1 */
     margin: 0; /* 2 */
+    margin: 5px;
+    padding: 5px;
 }
 
 /**

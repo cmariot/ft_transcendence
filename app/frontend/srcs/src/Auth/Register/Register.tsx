@@ -18,17 +18,25 @@ export default function Register() {
         const { id, value } = e.target;
         if (id === "username") {
             setUsername(value);
-        }
-        if (id === "email") {
+        } else if (id === "email") {
             setEmail(value);
-        }
-        if (id === "password") {
+        } else if (id === "password") {
             setPassword(value);
         }
     };
 
     const submitRegisterForm = async (event) => {
         event.preventDefault();
+        if (
+            username.length === 0 ||
+            password.length === 0 ||
+            email.length === 0
+        ) {
+            setError(true);
+            setErrorMessage("All the fields are required");
+            alert("Error, all the fields are required");
+            return;
+        }
         await axios
             .post("/api/register", {
                 username: username,
@@ -49,8 +57,17 @@ export default function Register() {
             })
             .catch(function (error) {
                 setError(true);
-                setErrorMessage(error.response.data.message);
-                alert(error.response.data.message);
+                if (error.response.data.statusCode === 401) {
+                    setErrorMessage(error.response.data.message);
+                    alert(error.response.data.message);
+                } else if (error.response.data.message.length > 1) {
+                    setErrorMessage(error.response.data.message[0]);
+                    alert(error.response.data.message[0]);
+                } else {
+                    setErrorMessage(error.response.data.message);
+                    alert(error.response.data.message);
+                }
+                return;
             });
     };
 
@@ -64,48 +81,61 @@ export default function Register() {
 
     return (
         <main id="register-main">
-            <h2>Register</h2>
-            <form id="register-form">
-                <label htmlFor="username">Username</label>
-                <input
-                    id="username"
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(event) => handleInputChange(event)}
-                    autoComplete="off"
-                    autoFocus
-                    required
-                />
-                <label htmlFor="email">Email</label>
-                <input
-                    id="email"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(event) => handleInputChange(event)}
-                    required
-                />
-                <label htmlFor="password">Password</label>
-                <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(event) => handleInputChange(event)}
-                    placeholder="Password"
-                    autoComplete="off"
-                    required
-                />
-                <input
-                    id="submit"
-                    className="button"
-                    type="submit"
-                    value="Register"
-                    onClick={(event) => submitRegisterForm(event)}
-                />
-                <>{displayErrorMessage()}</>
-            </form>
-            <Link to="/login">cancel</Link>
+            <article>
+                <h2>Create your account</h2>
+                <p>
+                    Your username must be unique, it will be displayed on the
+                    website.
+                    <br />
+                    You must provide a valid email address
+                    <br />
+                    And a strong password (min. 10 length characters)
+                </p>
+            </article>
+
+            <aside>
+                <form id="register-form">
+                    <h3>Register</h3>
+                    <input
+                        id="username"
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(event) => handleInputChange(event)}
+                        autoComplete="off"
+                        autoFocus
+                        required
+                    />
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(event) => handleInputChange(event)}
+                        required
+                    />
+                    <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(event) => handleInputChange(event)}
+                        placeholder="Password"
+                        autoComplete="off"
+                        required
+                    />
+                    <div>
+                        <input
+                            id="submit"
+                            className="button"
+                            type="submit"
+                            value="Register"
+                            onClick={(event) => submitRegisterForm(event)}
+                        />
+                        <Link to="/login">cancel</Link>
+                    </div>
+                    <>{displayErrorMessage()}</>
+                </form>
+            </aside>
         </main>
     );
 }
