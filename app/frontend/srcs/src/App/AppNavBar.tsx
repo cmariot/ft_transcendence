@@ -39,6 +39,9 @@ const AppNavbar = () => {
             <Link to="/">ft_transcendence</Link>
             <div id="app-nav-bar-user">
                 <Link to="/profile">{username}</Link>
+                <Link to="/profile">
+                    <img src="/api/profile/image" />
+                </Link>
                 <button className="button" onClick={logout}>
                     Logout
                 </button>

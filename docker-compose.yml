@@ -44,7 +44,7 @@ services:
         networks:
             - network
         ports:
-            - "5000:5000"
+            - "5050:5000"
         depends_on:
             - "database"
         restart: unless-stopped
