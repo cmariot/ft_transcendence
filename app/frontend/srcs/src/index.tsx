@@ -1,15 +1,43 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Main from './layouts/main';
-import  { BrowserRouter } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ReactDOM from "react-dom/client";
 
+import Auth from "./Auth/Auth";
+import Login from "./Auth/Login/Login";
+import Register from "./Auth/Register/Register";
 
-ReactDOM.render(
-	<React.StrictMode>
-	  <BrowserRouter>
-		<Main />
-	  </BrowserRouter>
-	</React.StrictMode>,
-	document.getElementById('root')
+import ProtectedRoute from "./Utils/ProtectedRoute";
+import App from "./App/App";
+import Home from "./App/Home/Home";
+import Profile from "./App/Profile/Profile";
+
+import "./index.css";
+import EditProfile from "./App/EditProfile/EditProfile";
+
+const root = ReactDOM.createRoot(
+    document.getElementById("root") as HTMLElement
+);
+root.render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <Routes>
+                <Route element={<Auth />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Route>
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <App />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile/edit" element={<EditProfile />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    </React.StrictMode>
 );
