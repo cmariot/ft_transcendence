@@ -14,12 +14,14 @@ ft_transcendence est une application web monopage sur laquelle il est possible d
 
 #### Todo list - Jeudi 1er Fevrier 2023
 
--   [ ] Frontend : Codes d'erreur Register
--   [ ] Style de la Validation email
--   [ ] Backend : Validation email en fonction requetes frontend + verifications
 -   [ ] Backend : Faire une route GET qui :
         1- verifie login avec isLogged
         2- verifie validite email grace a req.user.uuid
         3- verifie 2fa
         rien de plus ; faire un appel dans <App/>
+-   [ ] Frontend : Codes d'erreur Register
+-   [ ] Style de la Validation email
+-   [ ] Backend : Validation email en fonction requetes frontend + verifications
+-   [ ] Mise en page du mail
+-   [ ] Mise a jour configure.sh
 -   [ ] Organiser Routes pour 2FA
