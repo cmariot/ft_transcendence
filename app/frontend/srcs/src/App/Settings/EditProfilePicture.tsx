@@ -30,8 +30,16 @@ export default function EditProfilePicture(props) {
 
     return (
         <div id="edit-picture">
-            <img src={image} id="edit-profile-picture" alt="preview image" />
-            <input type="file" accept="image/*" onChange={uploadImage} />
+            <img src={image} id="edit-picture-img" alt="preview image" />
+            <label>
+                Edit Profile Picture
+                <input
+                    type="file"
+                    id="edit-picture-input"
+                    accept="image/*"
+                    onChange={uploadImage}
+                />
+            </label>
         </div>
     );
 }

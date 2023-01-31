@@ -48,11 +48,9 @@ export class AuthService {
                 HttpStatus.FORBIDDEN
             );
         } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
-            console.log("Sign in 42 user");
             this.create_authentification_cookie(bdd_user, res);
             return bdd_user;
         } else {
-            console.log("Saving the user in the database.");
             let new_user: UserEntity = await this.usersService.saveUser(
                 user_42
             );
@@ -68,7 +66,6 @@ export class AuthService {
             user.createdFrom === CreatedFrom.REGISTER &&
             (await bcrypt.compare(password, user.password)) === true
         ) {
-            console.log("Logged as ", user.username);
             return this.create_authentification_cookie(user, res);
         }
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);

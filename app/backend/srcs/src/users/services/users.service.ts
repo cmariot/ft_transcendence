@@ -10,6 +10,7 @@ import { CreatedFrom, UserEntity } from "../entity/user.entity";
 import { RegisterDto } from "src/auth/dtos/register.dto";
 import * as bcrypt from "bcrypt";
 import { createReadStream } from "fs";
+import * as fs from "fs";
 import { join } from "path";
 
 @Injectable()
@@ -89,8 +90,19 @@ export class UsersService {
         return "Username updated.";
     }
 
+    async deletePreviousProfileImage(uuid: string) {
+        const image = (await this.getProfile(uuid)).profileImage;
+        const path = join(process.cwd(), "./uploads/profile_pictures/" + image);
+        fs.unlink(path, (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+        });
+        return;
+    }
+
     async updateProfileImage(uuid: string, imageName: string) {
-        this.getProfile(uuid);
         await this.userRepository.update(
             { uuid: uuid },
             { profileImage: imageName }
@@ -100,7 +112,6 @@ export class UsersService {
 
     async getProfileImage(uuid: string) {
         let user = await this.getByID(uuid);
-        console.log(user.profileImage);
         if (user.profileImage === null) {
             const file = createReadStream(
                 join(process.cwd(), "./default/profile_image.png")
