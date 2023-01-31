@@ -29,11 +29,22 @@ const AppNavbar = (props) => {
         }
     };
 
+    const closeMenu = () => {
+        var menuBox = document.getElementById("app-menu");
+        var app = document.getElementById("app-content");
+        if (menuBox.style.display == "flex") {
+            menuBox.style.display = "none";
+            app.style.display = "";
+        }
+    };
+
     return (
         <>
             <nav>
                 <div id="app-nav-bar">
-                    <Link to="/">ft_transcendence</Link>
+                    <Link to="/" onClick={closeMenu}>
+                        ft_transcendence
+                    </Link>
                     <div id="nav-user-infos">
                         <button onClick={toogleMenu}>{props.username}</button>
                         <img

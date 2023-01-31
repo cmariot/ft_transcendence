@@ -7,19 +7,23 @@ import axios from "axios";
 
 function App() {
     const navigate = useNavigate();
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const [userImage, setUserImage] = useState("/api/profile/image");
+    const [email, setEmail] = useState("");
+    const [valideEmail, setValideEmail] = useState(false);
 
     const context = {
         username,
         setUsername,
         userImage,
         setUserImage,
+        email,
+        setEmail,
     };
 
     const validateConnexion = async function () {
-        console.log("Validate");
         const userToken = getCookie("authentification");
         if (!userToken || userToken === "undefined") {
             setIsLoggedIn(false);
@@ -29,7 +33,15 @@ function App() {
         await axios
             .get("/api/profile")
             .then((response) => {
+                console.log("PROFIL : ", response.data);
+                setValideEmail(response.data.valideEmail);
+                if (response.data.valideEmail === false) {
+                    console.log("ICI", valideEmail);
+                    navigate("/validate");
+                    return;
+                }
                 setUsername(response.data.username);
+                setEmail(response.data.email);
                 setUserImage(context.userImage);
             })
             .catch((error) => {
@@ -52,7 +64,7 @@ function App() {
 
     useEffect(() => {
         validateConnexion();
-    }, [isLoggedIn, context.username, context.userImage]);
+    }, [isLoggedIn, context.username, context.userImage, context.email]);
 
     return (
         <>

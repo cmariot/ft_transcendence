@@ -8,6 +8,7 @@ export default function Register() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [doubleAuth, setDoubleAuth] = useState(true);
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -38,35 +39,21 @@ export default function Register() {
             return;
         }
         await axios
-            .post("/api/register", {
+            .post("/api/register/", {
                 username: username,
                 email: email,
                 password: password,
+                enable2fa: doubleAuth,
             })
             .then(function (response) {
                 setError(false);
                 setUsername("");
                 setEmail("");
                 setPassword("");
-                const token = getCookie("authentification");
-                if (!token || token === "undefined") {
-                    alert("Unable to register. Please try again.");
-                    return;
-                }
-                navigate("/");
+                navigate("/validate");
             })
             .catch(function (error) {
-                setError(true);
-                if (error.response.data.statusCode === 401) {
-                    setErrorMessage(error.response.data.message);
-                    alert(error.response.data.message);
-                } else if (error.response.data.message.length > 1) {
-                    setErrorMessage(error.response.data.message[0]);
-                    alert(error.response.data.message[0]);
-                } else {
-                    setErrorMessage(error.response.data.message);
-                    alert(error.response.data.message);
-                }
+                alert(error);
                 return;
             });
     };
@@ -107,14 +94,6 @@ export default function Register() {
                         required
                     />
                     <input
-                        id="email"
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(event) => handleInputChange(event)}
-                        required
-                    />
-                    <input
                         id="password"
                         type="password"
                         value={password}
@@ -123,6 +102,23 @@ export default function Register() {
                         autoComplete="off"
                         required
                     />
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(event) => handleInputChange(event)}
+                        required
+                    />
+                    <label>
+                        Enable Double-Authentification
+                        <input
+                            id="2fa"
+                            type="checkbox"
+                            defaultChecked={true}
+                            onClick={() => setDoubleAuth(!doubleAuth)}
+                        />
+                    </label>
                     <div>
                         <input
                             id="submit"

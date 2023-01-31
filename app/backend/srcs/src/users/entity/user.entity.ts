@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    NoVersionOrUpdateDateColumnError,
+    PrimaryGeneratedColumn,
+} from "typeorm";
 
 export enum CreatedFrom {
     OAUTH42 = "42",
@@ -21,11 +27,23 @@ export class UserEntity {
     })
     createdFrom: CreatedFrom;
 
+    @Column({ default: false })
+    twoFactorsAuth: boolean;
+
+    @CreateDateColumn()
+    created_at: Date;
+
     @Column({ nullable: false, unique: true })
     username: string;
 
     @Column({ nullable: false })
     email: string;
+
+    @Column({ default: false })
+    valideEmail: boolean;
+
+    @Column({ default: "" })
+    emailValidationCode: string;
 
     @Column({ nullable: true })
     password: string;
