@@ -1,0 +1,12 @@
+#edit-profile-picture {
+    max-height: 150px;
+    max-width: 150px;
+    clip-path: circle();
+}
+
+#edit-picture {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

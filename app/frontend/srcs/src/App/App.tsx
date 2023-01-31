@@ -9,9 +9,17 @@ function App() {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
-    const [profileUpdated, setUpdateProfile] = useState(false);
+    const [userImage, setUserImage] = useState("/api/profile/image");
+
+    const context = {
+        username,
+        setUsername,
+        userImage,
+        setUserImage,
+    };
 
     const validateConnexion = async function () {
+        console.log("Validate");
         const userToken = getCookie("authentification");
         if (!userToken || userToken === "undefined") {
             setIsLoggedIn(false);
@@ -22,6 +30,7 @@ function App() {
             .get("/api/profile")
             .then((response) => {
                 setUsername(response.data.username);
+                setUserImage(context.userImage);
             })
             .catch((error) => {
                 console.log(error);
@@ -43,13 +52,13 @@ function App() {
 
     useEffect(() => {
         validateConnexion();
-    }, [isLoggedIn, profileUpdated]);
+    }, [isLoggedIn, context.username, context.userImage]);
 
     return (
         <>
-            <AppNavbar username={username} />
+            <AppNavbar username={username} userImage={userImage} />
             <div id="app-content">
-                <Outlet />
+                <Outlet context={context} />
             </div>
             <AppFooter />
         </>

@@ -10,9 +10,9 @@ import ProtectedRoute from "./Utils/ProtectedRoute";
 import App from "./App/App";
 import Home from "./App/Home/Home";
 import Profile from "./App/Profile/Profile";
+import Settings from "./App/Settings/Settings";
 
 import "./index.css";
-import EditProfile from "./App/EditProfile/EditProfile";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -35,7 +35,7 @@ root.render(
                 >
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/profile/edit" element={<EditProfile />} />
+                    <Route path="/settings" element={<Settings />} />
                 </Route>
             </Routes>
         </BrowserRouter>

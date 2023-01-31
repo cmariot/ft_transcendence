@@ -15,9 +15,9 @@
 }
 
 #nav-user-picture {
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
+    max-height: 50px;
+    max-width: 50px;
+    clip-path: circle();
     margin-inline-start: 10px;
 }
 

@@ -1,6 +1,12 @@
-#profile-picture {
+#profile {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#profile-user-picture {
+    max-height: 150px;
+    max-width: 150px;
+    clip-path: circle();
 }

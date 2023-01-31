@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
 
@@ -19,7 +18,6 @@ const AppNavbar = (props) => {
     };
 
     const toogleMenu = () => {
-        console.log("Toogle Menu");
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
         if (menuBox.style.display == "flex") {
@@ -39,7 +37,7 @@ const AppNavbar = (props) => {
                     <div id="nav-user-infos">
                         <button onClick={toogleMenu}>{props.username}</button>
                         <img
-                            src="/api/profile/image"
+                            src={props.userImage}
                             id="nav-user-picture"
                             onClick={toogleMenu}
                         />
@@ -60,7 +58,11 @@ const AppNavbar = (props) => {
                         </li>
                         <li className="app-menu-li">Friends</li>
                         <li className="app-menu-li">Stats</li>
-                        <li className="app-menu-li">Settings</li>
+                        <li className="app-menu-li">
+                            <Link to="/settings" onClick={toogleMenu}>
+                                Settings
+                            </Link>
+                        </li>
                         <li className="app-menu-li" onClick={logout}>
                             <Link to="" onClick={toogleMenu}>
                                 Logout
