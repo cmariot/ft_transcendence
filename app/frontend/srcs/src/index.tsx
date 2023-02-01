@@ -27,17 +27,8 @@ root.render(
                 <Route element={<Auth />}>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/validate" element={<Validate />} />
                 </Route>
-                <Route
-                    path="/validate"
-                    element={
-                        <ProtectedRoute>
-                            <AuthNavbar />
-                            <Validate />
-                            <AuthFooter />
-                        </ProtectedRoute>
-                    }
-                />
                 <Route
                     path="/"
                     element={

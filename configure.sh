@@ -48,6 +48,20 @@ create_backend()
 	echo -n "Please enter the REDIRECT_URL : "
 	read redirect_secret_42
 	echo "CALLBACK_URL=\"$redirect_secret_42\""				>> ./app/backend/.env
+
+	echo -n "Please enter the EMAIL_HOST : "
+	read email_host
+	echo "EMAIL_HOST=\"$email_host\""						>> ./app/backend/.env
+	echo -n "Please enter the EMAIL_PORT : "
+	read email_port
+	echo "EMAIL_PORT=\"$email_port\""						>> ./app/backend/.env
+	echo -n "Please enter the EMAIL_ADDR : "
+	read email_addr
+	echo "EMAIL_ADDR=\"$email_addr\""						>> ./app/backend/.env
+	echo -n "Please enter the EMAIL_PASS : "
+	read email_pass
+	echo "EMAIL_PASS=\"$email_pass\""						>> ./app/backend/.env
+
 }
 
 create_frontend()

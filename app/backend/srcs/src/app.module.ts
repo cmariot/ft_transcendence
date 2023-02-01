@@ -6,6 +6,7 @@ import { UsersModule } from "./users/users.module";
 import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { AppController } from "./app.controller";
 
 @Module({
     imports: [
@@ -27,8 +28,8 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
                 port: parseInt(process.env.EMAIL_PORT),
                 secure: true,
                 auth: {
-                    user: process.env.EMAIL,
-                    pass: process.env.EMAIL_PASSWORD,
+                    user: process.env.EMAIL_ADDR,
+                    pass: process.env.EMAIL_PASS,
                 },
             },
             defaults: {
@@ -44,5 +45,6 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
         }),
         UsersModule,
     ],
+    controllers: [AppController],
 })
 export class AppModule {}

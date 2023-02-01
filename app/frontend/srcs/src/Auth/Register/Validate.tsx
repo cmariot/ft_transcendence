@@ -1,6 +1,8 @@
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import "../CSS/Validate.css";
 
 const Validate = () => {
     const navigate = useNavigate();
@@ -15,8 +17,6 @@ const Validate = () => {
 
     const submitValidateForm = async (event) => {
         event.preventDefault();
-        console.log("On submit code = ", code);
-        console.log(event);
         await axios
             .post("/api/register/validate", {
                 code: code,
@@ -25,15 +25,23 @@ const Validate = () => {
                 navigate("/");
             })
             .catch(function (error) {
-                console.log(error);
+                alert("Your code is not valide.");
+                setCode("");
             });
+    };
+
+    const resendCode = async (event) => {
+        event.preventDefault();
+        await axios.get("/api/register/resend").catch(function (error) {
+            console.log(error);
+        });
     };
 
     const cancelRegister = async (event) => {
         event.preventDefault();
         await axios
             .get("/api/register/cancel")
-            .then(function (response) {
+            .then(function () {
                 navigate("/login");
             })
             .catch(function (error) {
@@ -43,29 +51,32 @@ const Validate = () => {
 
     return (
         <main id="validation-main">
-            <article>
+            <aside id="validation-aside">
                 <h2>Validate your account</h2>
                 <p>Check your emails, we just send you a verification code.</p>
-            </article>
+                <button onClick={resendCode}>Resend code</button>
+            </aside>
 
-            <aside>
+            <form id="validation-form">
                 <h3>Enter the code you received by email</h3>
-                <form id="email-validation-form">
-                    <input
-                        type="text"
-                        id="code"
-                        placeholder="Check your emails"
-                        onChange={handleValidateChange}
-                    />
+                <input
+                    type="text"
+                    id="code"
+                    placeholder="Check your emails"
+                    onChange={handleValidateChange}
+                />
+                <div>
                     <input
                         type="submit"
                         className="button"
                         onClick={submitValidateForm}
                         value="Validate"
                     />
-                    <button onClick={cancelRegister}>cancel</button>
-                </form>
-            </aside>
+                    <Link onClick={cancelRegister} to="">
+                        cancel
+                    </Link>
+                </div>
+            </form>
         </main>
     );
 };

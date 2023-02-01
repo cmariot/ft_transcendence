@@ -106,6 +106,18 @@ export class UsersService {
         return this.saveUser(user);
     }
 
+    async resendEmail(uuid: string) {
+        const min = Math.ceil(100000);
+        const max = Math.floor(999999);
+        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+        await this.userRepository.update(
+            { uuid: uuid },
+            { emailValidationCode: randomNumber.toString() }
+        );
+        const user: UserEntity = await this.getByID(uuid);
+        this.sendVerificationMail(user);
+    }
+
     async getProfile(id: string) {
         let user = await this.getByID(id);
         if (user === undefined) {

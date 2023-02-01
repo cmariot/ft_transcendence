@@ -51,6 +51,7 @@ const AppNavbar = (props) => {
                             src={props.userImage}
                             id="nav-user-picture"
                             onClick={toogleMenu}
+                            alt="Menu"
                         />
                     </div>
                 </div>

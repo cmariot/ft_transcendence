@@ -1,4 +1,4 @@
-#register-main {
+#validation-main {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
@@ -6,7 +6,7 @@
     margin: 5px;
 }
 
-#register-form {
+#validation-form {
     display: flex;
     flex-direction: column;
     justify-content: center;

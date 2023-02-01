@@ -12,7 +12,7 @@ import {
 import { RegisterDto } from "../dtos/register.dto";
 import { AuthService } from "../services/auth.service";
 import { UsersService } from "src/users/services/users.service";
-import { CreatedFrom, UserEntity } from "src/users/entity/user.entity";
+import { UserEntity } from "src/users/entity/user.entity";
 import { isLogged } from "../guards/is_logged.guards";
 import { emailValidationCodeDto } from "../dtos/emailValidationCode.dto";
 
@@ -29,6 +29,12 @@ export class RegisterController {
         let user: UserEntity = await this.userService.register(registerDto);
         this.authService.create_validation_cookie(user, res);
         return "OK";
+    }
+
+    @Get("resend")
+    @UseGuards(isLogged)
+    async resend(@Req() req) {
+        this.userService.resendEmail(req.user.uuid);
     }
 
     @Post("validate")

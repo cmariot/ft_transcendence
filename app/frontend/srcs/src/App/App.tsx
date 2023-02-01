@@ -2,60 +2,32 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import AppNavbar from "./AppNavBar";
 import AppFooter from "./AppFooter";
-import { getCookie } from "../Utils/GetCookie";
 import axios from "axios";
 
 function App() {
-    const navigate = useNavigate();
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(true);
     const [username, setUsername] = useState("");
-    const [userImage, setUserImage] = useState("/api/profile/image");
-    const [email, setEmail] = useState("");
-    const [valideEmail, setValideEmail] = useState(false);
+    const [userImage, setUserImage] = useState("");
 
     const context = {
         username,
         setUsername,
         userImage,
         setUserImage,
-        email,
-        setEmail,
     };
 
-    const validateConnexion = async function () {
-        const userToken = getCookie("authentification");
-        if (!userToken || userToken === "undefined") {
-            setIsLoggedIn(false);
-            return navigate("/login");
-        }
-        setIsLoggedIn(true);
+    const getProfile = async function () {
         await axios
             .get("/api/profile")
             .then((response) => {
-                console.log("PROFIL : ", response.data);
-                setValideEmail(response.data.valideEmail);
-                if (response.data.valideEmail === false) {
-                    console.log("ICI", valideEmail);
-                    navigate("/validate");
-                    return;
+                console.log("APP PROFILE : ", response.data);
+                if (firstLoad) {
+                    setUserImage("/api/profile/image");
+                    setFirstLoad(false);
+                } else {
+                    setUserImage(context.userImage);
                 }
                 setUsername(response.data.username);
-                setEmail(response.data.email);
-                setUserImage(context.userImage);
-            })
-            .catch((error) => {
-                console.log(error);
-                logout();
-            });
-    };
-
-    const logout = () => {
-        axios
-            .get("/api/logout")
-            .then(() => {
-                setIsLoggedIn(false);
-                navigate("/login");
             })
             .catch((error) => {
                 console.log(error);
@@ -63,8 +35,8 @@ function App() {
     };
 
     useEffect(() => {
-        validateConnexion();
-    }, [isLoggedIn, context.username, context.userImage, context.email]);
+        getProfile();
+    }, [firstLoad, context.username, context.userImage]);
 
     return (
         <>

@@ -3,6 +3,7 @@ import {
     Controller,
     FileTypeValidator,
     Get,
+    Header,
     MaxFileSizeValidator,
     ParseFilePipe,
     Post,
@@ -87,6 +88,7 @@ export class UsersController {
 
     @Get("image")
     @UseGuards(isLogged)
+    @Header("Cache-Control", "no-cache")
     getProfileImage(@Req() req) {
         return this.userService.getProfileImage(req.user.uuid);
     }
