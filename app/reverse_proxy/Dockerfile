@@ -19,7 +19,7 @@ RUN mkdir /ssl\
 # Add the custom nginx configuration files
 COPY ./conf/ft_transcendence.conf /etc/nginx/nginx.conf
 
-EXPOSE 443
+EXPOSE 8443
 
 # Launch the webserver
 ENTRYPOINT ["nginx"]

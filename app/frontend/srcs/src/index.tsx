@@ -10,8 +10,12 @@ import ProtectedRoute from "./Utils/ProtectedRoute";
 import App from "./App/App";
 import Home from "./App/Home/Home";
 import Profile from "./App/Profile/Profile";
+import Settings from "./App/Settings/Settings";
+import Validate from "./Auth/Register/Validate";
 
 import "./index.css";
+import AuthNavbar from "./Auth/AuthNavbar";
+import AuthFooter from "./Auth/AuthFooter";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -25,6 +29,16 @@ root.render(
                     <Route path="/register" element={<Register />} />
                 </Route>
                 <Route
+                    path="/validate"
+                    element={
+                        <ProtectedRoute>
+                            <AuthNavbar />
+                            <Validate />
+                            <AuthFooter />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/"
                     element={
                         <ProtectedRoute>
@@ -34,6 +48,7 @@ root.render(
                 >
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
                 </Route>
             </Routes>
         </BrowserRouter>

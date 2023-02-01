@@ -1,0 +1,24 @@
+#edit-picture {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-picture-img {
+    max-height: 150px;
+    max-width: 150px;
+    clip-path: circle();
+}
+
+#edit-picture-input {
+    display: none;
+}
+
+#edit-picture > label:nth-child(2) {
+    margin: 5px;
+    padding: 5px;
+    border: 1px #bcbcc5 solid;
+    border-radius: 5px;
+    background-color: #e9e9ed;
+}

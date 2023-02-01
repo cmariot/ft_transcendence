@@ -1,7 +1,10 @@
 import {
     Body,
     Controller,
+    FileTypeValidator,
     Get,
+    MaxFileSizeValidator,
+    ParseFilePipe,
     Post,
     Req,
     Request,
@@ -17,6 +20,7 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
+import { UpdateEmailDto } from "../dto/UpdateEmail.dto";
 
 // Storage for the upload images
 export const storage = {
@@ -48,7 +52,6 @@ export class UsersController {
         @Body() newUsernameDto: UpdateUsernameDto,
         @Request() req
     ) {
-        console.log("Updating username");
         let previousProfile: UserEntity = await this.userService.getProfile(
             req.user.uuid
         );
@@ -60,11 +63,23 @@ export class UsersController {
     @Post("update/image")
     @UseGuards(isLogged)
     @UseInterceptors(FileInterceptor("file", storage))
-    async uploadImage(@UploadedFile() file: Express.Multer.File, @Req() req) {
-        console.log("Updating image");
+    async uploadImage(
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 10000000 }),
+                    new FileTypeValidator({
+                        fileType: /(jpg|jpeg|png|gif)$/,
+                    }),
+                ],
+            })
+        )
+        file: Express.Multer.File,
+        @Req() req
+    ) {
         let user = await this.userService.getByID(req.user.uuid);
         if (user.profileImage != null) {
-            console.log("Delete the previous profile picture");
+            this.userService.deletePreviousProfileImage(user.uuid);
         }
         await this.userService.updateProfileImage(req.user.uuid, file.filename);
         return "OK";

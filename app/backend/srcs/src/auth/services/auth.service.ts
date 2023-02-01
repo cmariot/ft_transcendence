@@ -18,13 +18,22 @@ export class AuthService {
         return token;
     }
 
-    create_authentification_cookie(user, res) {
+    create_authentification_cookie(user: UserEntity, res) {
         let authentification_value: string = this.generate_jwt_token(user);
         res.cookie("authentification", authentification_value, {
             maxAge: 1000 * 60 * 60 * 2, // 2 hours
             sameSite: "none",
             secure: true,
         }).redirect("https://localhost:8443/");
+    }
+
+    create_validation_cookie(user: UserEntity, res) {
+        let authentification_value: string = this.generate_jwt_token(user);
+        res.cookie("authentification", authentification_value, {
+            maxAge: 1000 * 60 * 60 * 2, // 2 hours
+            sameSite: "none",
+            secure: true,
+        }).send("OK");
     }
 
     // 3 cas :
@@ -38,6 +47,8 @@ export class AuthService {
             email: string;
             createdFrom: string;
             password: string;
+            twoFactorsAuth: boolean;
+            valideEmail: boolean;
         },
         res
     ): Promise<UserEntity> {
@@ -48,11 +59,9 @@ export class AuthService {
                 HttpStatus.FORBIDDEN
             );
         } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
-            console.log("Sign in 42 user");
             this.create_authentification_cookie(bdd_user, res);
             return bdd_user;
         } else {
-            console.log("Saving the user in the database.");
             let new_user: UserEntity = await this.usersService.saveUser(
                 user_42
             );
@@ -68,7 +77,6 @@ export class AuthService {
             user.createdFrom === CreatedFrom.REGISTER &&
             (await bcrypt.compare(password, user.password)) === true
         ) {
-            console.log("Logged as ", user.username);
             return this.create_authentification_cookie(user, res);
         }
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);

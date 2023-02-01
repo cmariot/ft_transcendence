@@ -25,6 +25,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
             email: profile.emails[0].value,
             createdFrom: CreatedFrom.OAUTH42,
             password: null,
+            twoFactorsAuth: false,
+            valideEmail: true,
         };
         return user;
     }
