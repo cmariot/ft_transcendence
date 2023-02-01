@@ -4,7 +4,9 @@ import {
     Entity,
     NoVersionOrUpdateDateColumnError,
     PrimaryGeneratedColumn,
+	OneToMany,
 } from "typeorm";
+import { FriendshipEntity } from './friendship.entity';
 
 export enum CreatedFrom {
     OAUTH42 = "42",
@@ -50,4 +52,7 @@ export class UserEntity {
 
     @Column({ nullable: true })
     profileImage: string;
+
+	@OneToMany(type => FriendshipEntity, friendship => friendship.friendUuid)
+  	friendships: FriendshipEntity[];
 }

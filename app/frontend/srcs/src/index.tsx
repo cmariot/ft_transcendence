@@ -13,6 +13,8 @@ import Profile from "./App/Profile/Profile";
 import Settings from "./App/Settings/Settings";
 import Validate from "./Auth/Register/Validate";
 
+import Friends from "./App/Friend/Friends";
+
 import "./index.css";
 import AuthNavbar from "./Auth/AuthNavbar";
 import AuthFooter from "./Auth/AuthFooter";
@@ -48,6 +50,7 @@ root.render(
                 >
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/friends" element={<Friends />} />
                     <Route path="/settings" element={<Settings />} />
                 </Route>
             </Routes>

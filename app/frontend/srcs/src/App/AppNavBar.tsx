@@ -67,7 +67,11 @@ const AppNavbar = (props) => {
                                 Profile
                             </Link>
                         </li>
-                        <li className="app-menu-li">Friends</li>
+                        <li className="app-menu-li">
+						<Link to="/friends" onClick={toogleMenu}>
+								Friends
+                            </Link>
+						</li>
                         <li className="app-menu-li">Stats</li>
                         <li className="app-menu-li">
                             <Link to="/settings" onClick={toogleMenu}>

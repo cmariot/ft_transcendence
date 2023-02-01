@@ -4,6 +4,8 @@ import {
     FileTypeValidator,
     Get,
     MaxFileSizeValidator,
+	HttpException,
+	HttpStatus,
     ParseFilePipe,
     Post,
     Req,
@@ -14,12 +16,13 @@ import {
 } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/is_logged.guards";
 import { UsersService } from "../services/users.service";
-import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
+import { UsernameDto } from "../dto/Username.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
+import { FriendshipEntity } from "../entity/friendship.entity";
 import { UpdateEmailDto } from "../dto/UpdateEmail.dto";
 
 // Storage for the upload images
@@ -49,7 +52,7 @@ export class UsersController {
     @Post("update/username")
     @UseGuards(isLogged)
     async updateUsername(
-        @Body() newUsernameDto: UpdateUsernameDto,
+        @Body() newUsernameDto: UsernameDto,
         @Request() req
     ) {
         let previousProfile: UserEntity = await this.userService.getProfile(
@@ -85,9 +88,15 @@ export class UsersController {
         return "OK";
     }
 
-    @Get("image")
-    @UseGuards(isLogged)
-    getProfileImage(@Req() req) {
-        return this.userService.getProfileImage(req.user.uuid);
-    }
+	@Post()
+	@UseGuards(isLogged)
+	async addFriend ( 
+		@Body() Username: UsernameDto,
+        @Request() req
+    ) {
+		let friend = await this.userService.getByUsername(Username.username);
+		if (!friend)
+			throw new HttpException("Friend not found !", HttpStatus.NOT_FOUND);
+		return await this.userService.addFriend(req.user, friend);
+	}
 }
