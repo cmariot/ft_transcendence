@@ -88,7 +88,7 @@ export class UsersController {
         return "OK";
     }
 
-	@Post()
+	@Post("friend")
 	@UseGuards(isLogged)
 	async addFriend ( 
 		@Body() Username: UsernameDto,

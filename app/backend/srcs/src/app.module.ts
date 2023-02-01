@@ -6,6 +6,7 @@ import { UsersModule } from "./users/users.module";
 import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { FriendshipEntity } from "./users/entity/friendship.entity";
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_SCHEMA,
-            entities: [UserEntity],
+            entities: [UserEntity, FriendshipEntity],
             synchronize: true,
         }),
         MailerModule.forRoot({

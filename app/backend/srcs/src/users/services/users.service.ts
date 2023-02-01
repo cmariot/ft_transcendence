@@ -21,7 +21,7 @@ export class UsersService {
         private userRepository: Repository<UserEntity>,
         private readonly mailerService: MailerService,
 		@InjectRepository(FriendshipEntity)
-    	private readonly friendshipRepository: Repository<FriendshipEntity>
+    	private friendshipRepository: Repository<FriendshipEntity>
     ) {}
 
 	FriendshipEntity = FriendshipEntity;
@@ -183,19 +183,19 @@ export class UsersService {
         }
     }
 
-	async addFriend(user: UserEntity, friend: UserEntity): Promise<void> {
-	
+	async addFriend(user: UserEntity, friend: UserEntity){
+		
 		let userUuid = user.uuid;
 		let friendUuid = friend.uuid;
 		const existingFriendship = await this.friendshipRepository
     	.createQueryBuilder("friendship")
-   		.innerJoin("friendship.users", "users")
-    	.where("users.uuid = :user", { userUuid })
-    	.andWhere("friendship.friendUuid = :friendUuid", { friendUuid })
-    	.getOne();
+   		.innerJoin("friendship.user", "user")
+		.where("user.uuid = :userUuid", { userUuid })
+		.andWhere("friendship.friendUuid = :friendUuid", { friendUuid })
+		.getOne();
 
-  		if (existingFriendship) {
-    		throw new Error("Friendship already exists");
+  		if (!existingFriendship) {
+			throw new HttpException("Friend already exist.", HttpStatus.FOUND);
   		}
 
 		const friendship = new this.FriendshipEntity();
@@ -203,5 +203,6 @@ export class UsersService {
 		friendship.friendUuid = friend.uuid;
 	
 		await this.friendshipRepository.save(friendship);
+		return ("Friend added !");
 	}
 }

@@ -7,7 +7,7 @@ export default function AddFriends (props){
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/profile/addFriend", { username });
+      const response = await axios.post("/api/profile/friend", { username });
       console.log(response.data);
     } catch (error) {
       console.error(error);

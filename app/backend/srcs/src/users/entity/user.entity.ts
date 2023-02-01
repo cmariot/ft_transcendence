@@ -53,6 +53,6 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-	@OneToMany(type => FriendshipEntity, friendship => friendship.friendUuid)
+	@OneToMany(type => FriendshipEntity, friendship => friendship.user)
   	friendships: FriendshipEntity[];
 }
