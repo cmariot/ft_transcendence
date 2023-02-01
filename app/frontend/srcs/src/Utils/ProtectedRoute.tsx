@@ -8,12 +8,18 @@ const ProtectedRoute = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     function validateConnexion() {
+        const userToken = getCookie("authentification");
+        if (!userToken || userToken === "undefined") {
+            setIsLoggedIn(false);
+            return navigate("/login");
+        }
         axios
             .get("/api/")
             .then(function () {
                 setIsLoggedIn(true);
             })
             .catch(function (error) {
+                console.log("ValidateConnexion : ", error);
                 // if not logged in
                 if (
                     error.response.data.statusCode === 401 &&

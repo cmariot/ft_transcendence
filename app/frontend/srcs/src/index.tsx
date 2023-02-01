@@ -14,8 +14,6 @@ import Settings from "./App/Settings/Settings";
 import Validate from "./Auth/Register/Validate";
 
 import "./index.css";
-import AuthNavbar from "./Auth/AuthNavbar";
-import AuthFooter from "./Auth/AuthFooter";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement

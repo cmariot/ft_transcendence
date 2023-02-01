@@ -3,6 +3,7 @@ import {
     Get,
     HttpException,
     HttpStatus,
+    Param,
     Req,
     UseGuards,
 } from "@nestjs/common";
@@ -33,5 +34,11 @@ export class AppController {
             console.log("2FA");
         }
         return "OK";
+    }
+
+    @Get(":username/image")
+    @UseGuards(isLogged)
+    findOne(@Param() params, @Req() req) {
+        return this.userService.getProfileImage(req.user.uuid);
     }
 }

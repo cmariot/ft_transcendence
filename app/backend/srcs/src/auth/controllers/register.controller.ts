@@ -25,7 +25,6 @@ export class RegisterController {
 
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res) {
-        console.log("REGISTER PART 1");
         let user: UserEntity = await this.userService.register(registerDto);
         this.authService.create_validation_cookie(user, res);
         return "OK";

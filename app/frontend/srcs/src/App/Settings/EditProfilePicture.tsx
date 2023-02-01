@@ -18,6 +18,7 @@ export default function EditProfilePicture(props) {
                     },
                 })
                 .then((response) => {
+                    console.log(event.target.files[0]);
                     props.userProps.setUserImage(
                         URL.createObjectURL(event.target.files[0])
                     );

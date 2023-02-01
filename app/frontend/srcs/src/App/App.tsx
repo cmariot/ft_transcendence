@@ -7,27 +7,31 @@ import axios from "axios";
 function App() {
     const [firstLoad, setFirstLoad] = useState(true);
     const [username, setUsername] = useState("");
-    const [userImage, setUserImage] = useState("");
+    const [userImage, setUserImage] = useState("/api/profile/image");
+    const [doubleAuth, setDoubleAuth] = useState(true);
 
     const context = {
         username,
         setUsername,
         userImage,
         setUserImage,
+        doubleAuth,
+        setDoubleAuth,
     };
 
     const getProfile = async function () {
         await axios
             .get("/api/profile")
             .then((response) => {
-                console.log("APP PROFILE : ", response.data);
+                console.log(response.data);
+                setUsername(response.data.username);
+                setDoubleAuth(response.data.twoFactorsAuth);
                 if (firstLoad) {
-                    setUserImage("/api/profile/image");
+                    setUserImage("/api/" + response.data.username + "/image");
                     setFirstLoad(false);
                 } else {
                     setUserImage(context.userImage);
                 }
-                setUsername(response.data.username);
             })
             .catch((error) => {
                 console.log(error);
@@ -36,7 +40,7 @@ function App() {
 
     useEffect(() => {
         getProfile();
-    }, [firstLoad, context.username, context.userImage]);
+    }, [context.username, context.userImage]);
 
     return (
         <>
