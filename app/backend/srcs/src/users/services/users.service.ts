@@ -26,16 +26,20 @@ export class UsersService {
         this.mailerService
             .sendMail({
                 to: user.email, // list of receivers
-                from: process.env.EMAIL, // sender address
+                from: process.env.EMAIL_ADDR, // sender address
                 subject: "Validate your account - ft_transcendence", // Subject line
                 text:
                     "Welcome to ft_transcendence, validate your account with this code :" +
                     user.emailValidationCode, // plaintext body
                 html:
-                    "<h1>Welcome to ft_transcendence</h1>\
-                        <p>Validate your account with this code : <b>" +
+                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+                        <h1>Welcome to ft_transcendence</h1>\
+                        <h3>Validate your email with this code :</h3>\
+                        <h2>" +
                     user.emailValidationCode +
-                    "<b /></p", // HTML body content
+                    "</h2>\
+                    </div>\
+                    ",
             })
             .then((success) => {
                 console.log(success);
