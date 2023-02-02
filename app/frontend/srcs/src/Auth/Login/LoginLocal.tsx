@@ -32,6 +32,13 @@ const LoginLocal = () => {
                 password: password,
             })
             .then(() => {
+                const token2fa = getCookie("double_authentification");
+                if (token2fa) {
+                    setUsername("");
+                    setPassword("");
+                    navigate("/double-auth");
+                    return;
+                }
                 const token = getCookie("authentification");
                 if (!token || token === "undefined") {
                     setUsername("");

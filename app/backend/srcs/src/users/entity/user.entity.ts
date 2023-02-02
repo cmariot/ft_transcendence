@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    NoVersionOrUpdateDateColumnError,
     PrimaryGeneratedColumn,
 } from "typeorm";
 
@@ -44,6 +43,9 @@ export class UserEntity {
 
     @Column({ default: "" })
     emailValidationCode: string;
+
+    @Column({ default: "" })
+    doubleAuthentificationCode: string;
 
     @Column({ nullable: true })
     password: string;

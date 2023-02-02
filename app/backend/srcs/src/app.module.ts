@@ -5,7 +5,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersModule } from "./users/users.module";
 import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
-import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { AppController } from "./app.controller";
 
 @Module({
@@ -30,16 +29,6 @@ import { AppController } from "./app.controller";
                 auth: {
                     user: process.env.EMAIL_ADDR,
                     pass: process.env.EMAIL_PASS,
-                },
-            },
-            defaults: {
-                from: "ft_transcendence <noreply@bot.fr>",
-            },
-            template: {
-                dir: process.cwd() + "/templates/",
-                adapter: new HandlebarsAdapter(), // or new PugAdapter()
-                options: {
-                    strict: true,
                 },
             },
         }),

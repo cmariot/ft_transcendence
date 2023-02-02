@@ -6,8 +6,10 @@ export default function EnableDoubleAuth(props) {
     const [userPref, setUserPref] = useState(props.userProps.doubleAuth);
 
     function editDoubleAuth(event) {
-        console.log("2FA = ", userPref);
         setUserPref(!userPref);
+        axios.post("/api/profile/update/doubleAuth").catch(function (error) {
+            console.log(error);
+        });
     }
 
     return (

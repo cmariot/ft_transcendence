@@ -13,8 +13,8 @@ import { RegisterDto } from "../dtos/register.dto";
 import { AuthService } from "../services/auth.service";
 import { UsersService } from "src/users/services/users.service";
 import { UserEntity } from "src/users/entity/user.entity";
-import { isLogged } from "../guards/is_logged.guards";
 import { emailValidationCodeDto } from "../dtos/emailValidationCode.dto";
+import { EmailGuard } from "../guards/email.guards";
 
 @Controller("register")
 export class RegisterController {
@@ -26,31 +26,47 @@ export class RegisterController {
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res) {
         let user: UserEntity = await this.userService.register(registerDto);
-        this.authService.create_validation_cookie(user, res);
-        return "OK";
-    }
-
-    @Get("resend")
-    @UseGuards(isLogged)
-    async resend(@Req() req) {
-        this.userService.resendEmail(req.user.uuid);
+        if (user) {
+            return this.authService.create_cookie(
+                user,
+                "email_validation",
+                res
+            );
+        }
+        throw new HttpException(
+            "Cannot register, please try again.",
+            HttpStatus.NO_CONTENT
+        );
     }
 
     @Post("validate")
-    @UseGuards(isLogged)
-    async validateEmail(@Body() codeDto: emailValidationCodeDto, @Req() req) {
+    @UseGuards(EmailGuard)
+    async validateEmail(
+        @Req() req,
+        @Body() codeDto: emailValidationCodeDto,
+        @Res() res
+    ) {
+        console.log("VALIDATE");
         const user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.emailValidationCode) {
             await this.userService.validateEmail(user.uuid);
+            res.clearCookie("email_validation");
+            this.authService.create_cookie(user, "authentification", res);
             return "OK";
         }
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
     }
 
+    @Get("resend")
+    @UseGuards(EmailGuard)
+    async resend(@Req() req) {
+        this.userService.resendEmail(req.user.uuid);
+    }
+
     @Get("cancel")
-    @UseGuards(isLogged)
+    @UseGuards(EmailGuard)
     async cancelRegister(@Req() req, @Res() res) {
         this.userService.deleteUser(req.user.uuid);
-        res.clearCookie("authentification").send("Bye !");
+        res.clearCookie("email_validation").send("Bye !");
     }
 }

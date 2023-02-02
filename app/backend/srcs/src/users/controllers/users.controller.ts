@@ -13,7 +13,6 @@ import {
     UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
-import { isLogged } from "src/auth/guards/is_logged.guards";
 import { UsersService } from "../services/users.service";
 import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -21,7 +20,9 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
-import { UpdateEmailDto } from "../dto/UpdateEmail.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { isLogged } from "src/auth/guards/authentification.guards";
+import { EmailGuard } from "src/auth/guards/email.guards";
 
 // Storage for the upload images
 export const storage = {
@@ -86,9 +87,17 @@ export class UsersController {
         return "OK";
     }
 
+    @Post("update/doubleAuth")
+    @UseGuards(isLogged)
+    async toogleDoubleAuth(@Req() req) {
+        const user = await this.userService.getByID(req.user.uuid);
+        const newValue = !user.twoFactorsAuth;
+        await this.userService.updateDoubleAuth(req.user.uuid, newValue);
+        return "OK";
+    }
+
     @Get("image")
     @UseGuards(isLogged)
-    @Header("Cache-Control", "no-cache")
     getProfileImage(@Req() req) {
         return this.userService.getProfileImage(req.user.uuid);
     }

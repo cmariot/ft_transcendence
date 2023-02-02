@@ -8,37 +8,33 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { UsersService } from "./users/services/users.service";
-import { isLogged } from "./auth/guards/is_logged.guards";
-import { UserEntity } from "./users/entity/user.entity";
+import { isLogged } from "./auth/guards/authentification.guards";
+import { DoubleAuthGuard } from "./auth/guards/doubleauth.guards";
+import { EmailGuard } from "./auth/guards/email.guards";
 
 @Controller()
 export class AppController {
     constructor(private userService: UsersService) {}
 
-    @Get()
+    @Get("test/isLogged")
     @UseGuards(isLogged)
-    async test(@Req() req) {
-        let user: UserEntity = await this.userService.getProfile(req.user.uuid);
-        if (user === null) {
-            throw new HttpException(
-                "Invalid user account.",
-                HttpStatus.UNAUTHORIZED
-            );
-        }
-        if (user.valideEmail === false) {
-            throw new HttpException(
-                "Your email is not valid.",
-                HttpStatus.UNAUTHORIZED
-            );
-        } else if (user.twoFactorsAuth === true) {
-            console.log("2FA");
-        }
+    async testLogged(@Req() req) {
+        return "OK";
+    }
+    @Get("test/doubleAuth")
+    //@UseGuards(DoubleAuthGuard)
+    async testDoubleAuth(@Req() req) {
+        return "OK";
+    }
+    @Get("test/emailValidation")
+    @UseGuards(EmailGuard)
+    async testEmail(@Req() req) {
         return "OK";
     }
 
     @Get(":username/image")
     @UseGuards(isLogged)
-    findOne(@Param() params, @Req() req) {
+    getUserImage(@Param() params, @Req() req) {
         return this.userService.getProfileImage(req.user.uuid);
     }
 }

@@ -26,8 +26,8 @@ export class UsersService {
         this.mailerService
             .sendMail({
                 to: user.email, // list of receivers
-                from: process.env.EMAIL_ADDR, // sender address
-                subject: "Validate your account - ft_transcendence", // Subject line
+                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
+                subject: "Validate your email", // Subject line
                 text:
                     "Welcome to ft_transcendence, validate your account with this code :" +
                     user.emailValidationCode, // plaintext body
@@ -53,7 +53,6 @@ export class UsersService {
     async saveUser(user): Promise<UserEntity> {
         if (user.createdFrom === CreatedFrom.REGISTER) {
             this.sendVerificationMail(user);
-            console.log("CODE = ", user.emailValidationCode);
         }
         return this.userRepository.save(user);
     }
@@ -83,6 +82,41 @@ export class UsersService {
         const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);
         return bcrypt.hashSync(rawPassword, salt);
+    }
+
+    async generateDoubleAuthCode(uuid: string) {
+        const min = Math.ceil(100000);
+        const max = Math.floor(999999);
+        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+        await this.userRepository.update(
+            { uuid: uuid },
+            { doubleAuthentificationCode: randomNumber.toString() }
+        );
+        let user = await this.getByID(uuid);
+        this.mailerService
+            .sendMail({
+                to: user.email, // list of receivers
+                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
+                subject: "Your double-authentification code", // Subject line
+                text:
+                    "Welcome back, here is your double authentification code :" +
+                    randomNumber.toString(), // plaintext body
+                html:
+                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+                        <h1>Welcome back !</h1>\
+                        <h3>Here is your double authentification code :</h3>\
+                        <h2>" +
+                    randomNumber.toString() +
+                    "</h2>\
+                    </div>\
+                    ",
+            })
+            .then((success) => {
+                console.log(success);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     async register(registerDto: RegisterDto): Promise<UserEntity> {
@@ -177,7 +211,16 @@ export class UsersService {
         return "Image updated.";
     }
 
+    async updateDoubleAuth(uuid: string, newValue: boolean) {
+        await this.userRepository.update(
+            { uuid: uuid },
+            { twoFactorsAuth: newValue }
+        );
+        return "Setting updated.";
+    }
+
     async getProfileImage(uuid: string) {
+        console.log(uuid);
         let user = await this.getByID(uuid);
         if (user.profileImage === null) {
             const file = createReadStream(

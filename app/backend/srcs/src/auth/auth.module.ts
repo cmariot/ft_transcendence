@@ -8,16 +8,17 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/users/entity/user.entity";
 import { UsersModule } from "src/users/users.module";
 import { jwtConstants } from "./constants/jwt.constants";
-import { JwtStrategy } from "./strategies/jwt.strategy";
 import { RegisterController } from "./controllers/register.controller";
 import { LogoutController } from "./controllers/logout.controller";
 import { LoginController } from "./controllers/login.controller";
+import { AuthentificationStrategy } from "./strategies/authentification.strategy";
+import { DoubleAuthController } from "./controllers/doubleAuth.controller";
 
 @Module({
     imports: [
         JwtModule.register({
             secret: jwtConstants.secret,
-            signOptions: { expiresIn: "1h" },
+            signOptions: { expiresIn: "2h" },
         }),
         PassportModule.register({
             session: false,
@@ -25,9 +26,10 @@ import { LoginController } from "./controllers/login.controller";
         TypeOrmModule.forFeature([UserEntity]),
         UsersModule,
     ],
-    providers: [AuthService, FortyTwoStrategy, JwtStrategy],
+    providers: [AuthService, FortyTwoStrategy, AuthentificationStrategy],
     controllers: [
         AuthController,
+        DoubleAuthController,
         LoginController,
         LogoutController,
         RegisterController,
