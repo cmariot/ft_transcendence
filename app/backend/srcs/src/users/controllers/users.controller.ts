@@ -3,12 +3,13 @@ import {
     Controller,
     FileTypeValidator,
     Get,
-    Header,
     MaxFileSizeValidator,
+    Param,
     ParseFilePipe,
     Post,
     Req,
     Request,
+    UnauthorizedException,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -20,9 +21,7 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
-import { AuthGuard } from "@nestjs/passport";
 import { isLogged } from "src/auth/guards/authentification.guards";
-import { EmailGuard } from "src/auth/guards/email.guards";
 
 // Storage for the upload images
 export const storage = {
@@ -44,8 +43,16 @@ export class UsersController {
 
     @Get()
     @UseGuards(isLogged)
-    profile(@Request() req) {
-        return this.userService.getProfile(req.user.uuid);
+    async profile(@Request() req) {
+        let completeUser = await this.userService.getProfile(req.user.uuid);
+        if (completeUser != null)
+            return {
+                uuid: completeUser.uuid,
+                username: completeUser.username,
+                email: completeUser.email,
+                twoFactorsAuth: completeUser.twoFactorsAuth,
+            };
+        throw new UnauthorizedException();
     }
 
     @Post("update/username")
@@ -96,9 +103,23 @@ export class UsersController {
         return "OK";
     }
 
+    @Get(":username/image")
+    @UseGuards(isLogged)
+    async getUserImage(@Param() params, @Req() req) {
+        const user = await this.userService.getByUsername(params.username);
+        return this.userService.getProfileImage(user.uuid);
+    }
+
     @Get("image")
     @UseGuards(isLogged)
     getProfileImage(@Req() req) {
         return this.userService.getProfileImage(req.user.uuid);
+    }
+
+    @Get("2fa")
+    @UseGuards(isLogged)
+    async get2faenable(@Req() req) {
+        const user = await this.userService.getByID(req.uuid);
+        return user.twoFactorsAuth;
     }
 }

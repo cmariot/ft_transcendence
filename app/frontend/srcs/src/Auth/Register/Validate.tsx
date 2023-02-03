@@ -52,7 +52,7 @@ const Validate = () => {
     return (
         <main id="validation-main">
             <aside id="validation-aside">
-                <h2>Validate your account</h2>
+                <h2>Validate your email</h2>
                 <p>Check your emails, we just send you a verification code.</p>
                 <button onClick={resendCode}>Resend code</button>
             </aside>
@@ -65,7 +65,7 @@ const Validate = () => {
                     placeholder="Check your emails"
                     onChange={handleValidateChange}
                 />
-                <div>
+                <div id="form-validation-choices">
                     <input
                         type="submit"
                         className="button"

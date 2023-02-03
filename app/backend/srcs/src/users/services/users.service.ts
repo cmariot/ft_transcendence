@@ -42,7 +42,7 @@ export class UsersService {
                     ",
             })
             .then((success) => {
-                console.log(success);
+                return "Email send.";
             })
             .catch((err) => {
                 console.log(err);
@@ -84,6 +84,20 @@ export class UsersService {
         return bcrypt.hashSync(rawPassword, salt);
     }
 
+    async deleteEmailValidationCode(uuid: string) {
+        await this.userRepository.update(
+            { uuid: uuid },
+            { doubleAuthentificationCode: "" }
+        );
+    }
+
+    async delete2faCode(uuid: string) {
+        await this.userRepository.update(
+            { uuid: uuid },
+            { doubleAuthentificationCode: "" }
+        );
+    }
+
     async generateDoubleAuthCode(uuid: string) {
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
@@ -111,8 +125,8 @@ export class UsersService {
                     </div>\
                     ",
             })
-            .then((success) => {
-                console.log(success);
+            .then(() => {
+                return "Email send.";
             })
             .catch((err) => {
                 console.log(err);
@@ -187,7 +201,6 @@ export class UsersService {
     }
 
     async validateEmail(uuid: string) {
-        console.log("Email is now valide.");
         await this.userRepository.update({ uuid: uuid }, { valideEmail: true });
     }
 
@@ -220,7 +233,6 @@ export class UsersService {
     }
 
     async getProfileImage(uuid: string) {
-        console.log(uuid);
         let user = await this.getByID(uuid);
         if (user.profileImage === null) {
             const file = createReadStream(

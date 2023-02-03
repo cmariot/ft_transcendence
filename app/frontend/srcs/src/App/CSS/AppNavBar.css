@@ -1,17 +1,20 @@
+#app-content {
+    padding: 10px;
+}
+
 #app-nav-bar {
     border: 1px black solid;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 100px;
-    padding: 5px;
+    padding: 10px;
 }
 
 #nav-user-infos {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 5px;
 }
 
 #nav-user-picture {

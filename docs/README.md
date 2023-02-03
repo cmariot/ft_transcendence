@@ -12,7 +12,8 @@ ft_transcendence est une application web monopage sur laquelle il est possible d
 -   [ ] Parties en ligne en temps reel
 -   [ ] Chat
 
-#### Todo list - Mercredi 1er Fevrier 2023
+#### Todo list - Vendredi 3 Fevrier 2023
 
--   [ ] Organiser Routes pour 2FA
--   [ ] Modifier isLogged pour prendre en compte 2fa
+-   [ ] Duree de validite codes
+-   [ ] Conflits cookies
+-   [ ] CSS Settings

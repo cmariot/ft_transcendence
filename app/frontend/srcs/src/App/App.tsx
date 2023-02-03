@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import AppNavbar from "./AppNavBar";
 import AppFooter from "./AppFooter";
 import axios from "axios";
@@ -7,27 +7,28 @@ import axios from "axios";
 function App() {
     const [firstLoad, setFirstLoad] = useState(true);
     const [username, setUsername] = useState("");
-    const [userImage, setUserImage] = useState("/api/profile/image");
+    const [userImage, setUserImage] = useState("");
     const [doubleAuth, setDoubleAuth] = useState(true);
 
     const context = {
-        username,
-        setUsername,
+        username: username,
+        setUsername: setUsername,
         userImage,
-        setUserImage,
-        doubleAuth,
-        setDoubleAuth,
+        setUserImage: setUserImage,
+        doubleAuth: doubleAuth,
+        setDoubleAuth: setDoubleAuth,
     };
 
     const getProfile = async function () {
         await axios
             .get("/api/profile")
             .then((response) => {
-                console.log(response.data);
-                setUsername(response.data.username);
-                setDoubleAuth(response.data.twoFactorsAuth);
+                context.setUsername(response.data.username);
+                context.setDoubleAuth(response.data.twoFactorsAuth);
                 if (firstLoad) {
-                    setUserImage("/api/" + response.data.username + "/image");
+                    setUserImage(
+                        "/api/profile/" + response.data.username + "/image"
+                    );
                     setFirstLoad(false);
                 } else {
                     setUserImage(context.userImage);
@@ -41,14 +42,14 @@ function App() {
 
     useEffect(() => {
         getProfile();
-    }, [context.username, context.userImage]);
+    }, []);
 
     return (
         <>
             <AppNavbar username={username} userImage={userImage} />
-            <div id="app-content">
+            <section id="app-content">
                 <Outlet context={context} />
-            </div>
+            </section>
             <AppFooter />
         </>
     );

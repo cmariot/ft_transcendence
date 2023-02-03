@@ -30,8 +30,8 @@ export class AuthService {
     }
 
     // authentification : Acces a l'app
-    // double_authentification : Doit valider son login
     // email_validation : Doit valider son email
+    // double_authentification : Doit valider sa connexion
     create_cookie(user: UserEntity, type: string, @Res() res) {
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {

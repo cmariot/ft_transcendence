@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable, Req } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { jwtConstants } from "../constants/jwt.constants";
 import { Request as RequestType } from "express";
 
@@ -22,12 +22,12 @@ export class AuthentificationStrategy extends PassportStrategy(
 
     private static extractJWT(req: RequestType): string | null {
         if (req.cookies) {
-            if (req.cookies["authentification"]) {
-                return req.cookies["authentification"];
-            } else if (req.cookies["email_validation"]) {
+            if (req.cookies["email_validation"]) {
                 return req.cookies["email_validation"];
             } else if (req.cookies["double_authentification"]) {
                 return req.cookies["double_authentification"];
+            } else if (req.cookies["authentification"]) {
+                return req.cookies["authentification"];
             }
         }
         return null;

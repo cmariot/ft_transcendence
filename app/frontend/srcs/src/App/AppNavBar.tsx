@@ -40,8 +40,8 @@ const AppNavbar = (props) => {
 
     return (
         <>
-            <nav>
-                <div id="app-nav-bar">
+            <header>
+                <nav id="app-nav-bar">
                     <Link to="/" onClick={closeMenu}>
                         ft_transcendence
                     </Link>
@@ -54,9 +54,9 @@ const AppNavbar = (props) => {
                             alt="Menu"
                         />
                     </div>
-                </div>
+                </nav>
 
-                <div id="app-menu">
+                <menu id="app-menu">
                     <ul id="app-menu-ul">
                         <li className="app-menu-li">
                             <Link to="/" onClick={toogleMenu}>
@@ -81,8 +81,8 @@ const AppNavbar = (props) => {
                             </Link>
                         </li>
                     </ul>
-                </div>
-            </nav>
+                </menu>
+            </header>
         </>
     );
 };

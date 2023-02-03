@@ -1,8 +1,8 @@
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import "../CSS/Validate.css";
+import "../CSS/DoubleAuth.css";
 
 const DoubleAuth = () => {
     const navigate = useNavigate();
@@ -31,29 +31,31 @@ const DoubleAuth = () => {
             });
     };
 
-    //    const resendCode = async (event) => {
-    //        event.preventDefault();
-    //        await axios.get("/api/second_auth/resend").catch(function (error) {
-    //            console.log(error);
-    //        });
-    //    };
-    //
-    //    const cancelRegister = async (event) => {
-    //        event.preventDefault();
-    //        await axios
-    //            .get("/api/register/cancel")
-    //            .then(function () {
-    //                navigate("/login");
-    //            })
-    //            .catch(function (error) {
-    //                console.log(error);
-    //            });
-    //    };
+    const resend2faCode = async (event) => {
+        event.preventDefault();
+        await axios.get("/api/second_auth/resend").catch(function (error) {
+            console.log(error);
+        });
+    };
+
+    const cancel2fa = async (event) => {
+        event.preventDefault();
+        await axios
+            .get("/api/second_auth/cancel")
+            .then(function () {
+                navigate("/login");
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
 
     return (
         <main id="validation-2fa-main">
             <aside id="validation-2fa-aside">
                 <h2>Double Authentification</h2>
+                <p>Check your emails, we just send you a verification code.</p>
+                <button onClick={resend2faCode}>Resend code</button>
             </aside>
 
             <form id="validation-2fa-form">
@@ -64,13 +66,16 @@ const DoubleAuth = () => {
                     placeholder="Check your emails"
                     onChange={handleValidate2faChange}
                 />
-                <div>
+                <div id="form-2fa-choices">
                     <input
                         type="submit"
                         className="button"
                         onClick={submitValidate2faForm}
                         value="Validate"
                     />
+                    <Link onClick={cancel2fa} to="">
+                        cancel
+                    </Link>
                 </div>
             </form>
         </main>

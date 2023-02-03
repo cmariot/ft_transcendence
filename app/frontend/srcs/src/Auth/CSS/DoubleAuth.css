@@ -1,4 +1,4 @@
-#validation-main {
+#validation-2fa-main {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
@@ -6,7 +6,7 @@
     margin: 5px;
 }
 
-#validation-form {
+#validation-2fa-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -17,11 +17,11 @@
     padding-bottom: 50px;
 }
 
-#validation-form * {
+#register-form * {
     margin: 5px;
     padding: 5px;
 }
 
-#form-validation-choices * {
+#form-2fa-choices * {
     margin-inline: 5px;
 }

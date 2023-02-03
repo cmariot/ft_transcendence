@@ -46,12 +46,15 @@ export class RegisterController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        console.log("VALIDATE");
         const user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.emailValidationCode) {
+            if (user.emailValidationCode.length != 6) {
+                throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
+            }
             await this.userService.validateEmail(user.uuid);
             res.clearCookie("email_validation");
             this.authService.create_cookie(user, "authentification", res);
+            this.userService.deleteEmailValidationCode(req.user.uuid);
             return "OK";
         }
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);

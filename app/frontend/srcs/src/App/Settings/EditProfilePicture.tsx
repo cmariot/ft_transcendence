@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../CSS/Settings.css";
 
 export default function EditProfilePicture(props) {
@@ -18,7 +18,6 @@ export default function EditProfilePicture(props) {
                     },
                 })
                 .then((response) => {
-                    console.log(event.target.files[0]);
                     props.userProps.setUserImage(
                         URL.createObjectURL(event.target.files[0])
                     );
@@ -28,6 +27,10 @@ export default function EditProfilePicture(props) {
                 });
         }
     }
+
+    useEffect(() => {
+        setImage(props.userProps.userImage);
+    }, [props.userProps.userImage]);
 
     return (
         <div id="edit-picture">

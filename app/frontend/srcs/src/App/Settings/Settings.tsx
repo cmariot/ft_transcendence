@@ -5,7 +5,7 @@ import EnableDoubleAuth from "./EnableDoubleAuth";
 
 const Settings = (props) => {
     return (
-        <main>
+        <main id="main-settings">
             <h2>Settings</h2>
             <EditProfilePicture userProps={useOutletContext()} />
             <EditUsername userProps={useOutletContext()} />
