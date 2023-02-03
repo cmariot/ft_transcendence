@@ -10,6 +10,7 @@ export class DoubleAuthGuard extends AuthGuard("jwt") {
         if (user.type === "double_authentification") {
             return user;
         }
+        return user;
         throw new UnauthorizedException();
     }
 }

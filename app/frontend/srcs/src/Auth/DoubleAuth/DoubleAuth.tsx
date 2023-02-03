@@ -65,6 +65,8 @@ const DoubleAuth = () => {
                     id="double_auth_code"
                     placeholder="Check your emails"
                     onChange={handleValidate2faChange}
+                    autoFocus
+                    required
                 />
                 <div id="form-2fa-choices">
                     <input

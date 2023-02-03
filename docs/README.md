@@ -13,7 +13,3 @@ ft_transcendence est une application web monopage sur laquelle il est possible d
 -   [ ] Chat
 
 #### Todo list - Vendredi 3 Fevrier 2023
-
--   [ ] Duree de validite codes
--   [ ] Conflits cookies
--   [ ] CSS Settings

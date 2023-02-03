@@ -33,6 +33,9 @@ export class AuthService {
     // email_validation : Doit valider son email
     // double_authentification : Doit valider sa connexion
     create_cookie(user: UserEntity, type: string, @Res() res) {
+        res.clearCookie("authentification");
+        res.clearCookie("email_validation");
+        res.clearCookie("double_authentification");
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {

@@ -64,6 +64,8 @@ const Validate = () => {
                     id="code"
                     placeholder="Check your emails"
                     onChange={handleValidateChange}
+                    autoFocus
+                    required
                 />
                 <div id="form-validation-choices">
                     <input

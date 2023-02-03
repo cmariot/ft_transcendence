@@ -10,6 +10,7 @@ export class isLogged extends AuthGuard("jwt") {
         if (user.type === "authentification") {
             return user;
         }
+        return user;
         throw new UnauthorizedException();
     }
 }

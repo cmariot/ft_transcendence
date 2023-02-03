@@ -44,8 +44,14 @@ export class UserEntity {
     @Column({ default: "" })
     emailValidationCode: string;
 
+    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    emailValidationCodeCreation: Date;
+
     @Column({ default: "" })
     doubleAuthentificationCode: string;
+
+    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    doubleAuthentificationCodeCreation: Date;
 
     @Column({ nullable: true })
     password: string;

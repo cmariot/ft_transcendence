@@ -7,6 +7,7 @@ import {
     Post,
     Req,
     Res,
+    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "../services/auth.service";
@@ -30,10 +31,17 @@ export class DoubleAuthController {
     ) {
         const user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.doubleAuthentificationCode) {
+            const now = new Date();
+            const diff =
+                now.valueOf() -
+                user.doubleAuthentificationCodeCreation.valueOf();
+            if (diff > 1000 * 60 * 15) {
+                // 15 minutes expiration date
+                throw new UnauthorizedException("Your code is expired.");
+            }
             if (user.doubleAuthentificationCode.length != 6) {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
-            res.clearCookie("double_authentification");
             this.authService.create_cookie(user, "authentification", res);
             this.userService.delete2faCode(req.user.uuid);
             return "OK";

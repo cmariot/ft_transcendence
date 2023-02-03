@@ -106,6 +106,10 @@ export class UsersService {
             { uuid: uuid },
             { doubleAuthentificationCode: randomNumber.toString() }
         );
+        await this.userRepository.update(
+            { uuid: uuid },
+            { doubleAuthentificationCodeCreation: new Date() }
+        );
         let user = await this.getByID(uuid);
         this.mailerService
             .sendMail({
@@ -154,6 +158,7 @@ export class UsersService {
             password: hashed_password,
             twoFactorsAuth: registerDto.enable2fa,
             emailValidationCode: randomNumber.toString(),
+            emailValidationCodeCreation: new Date(),
         };
         return this.saveUser(user);
     }
@@ -165,6 +170,10 @@ export class UsersService {
         await this.userRepository.update(
             { uuid: uuid },
             { emailValidationCode: randomNumber.toString() }
+        );
+        await this.userRepository.update(
+            { uuid: uuid },
+            { emailValidationCodeCreation: new Date() }
         );
         const user: UserEntity = await this.getByID(uuid);
         this.sendVerificationMail(user);

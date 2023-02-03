@@ -10,6 +10,7 @@ export class EmailGuard extends AuthGuard("jwt") {
         if (user.type === "email_validation") {
             return user;
         }
+        return user;
         throw new UnauthorizedException();
     }
 }

@@ -8,10 +8,7 @@ const ProtectedAuth = (props) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     function validateConnexion() {
-        const doubleAuthToken = getCookie("double_authentification");
-        if (doubleAuthToken) {
-            return navigate("/double-auth");
-        }
+        console.log("Test cookie authentification");
         const userToken = getCookie("authentification");
         if (!userToken || userToken === "undefined") {
             setIsLoggedIn(false);
@@ -20,10 +17,12 @@ const ProtectedAuth = (props) => {
         axios
             .get("/api/test/isLogged")
             .then(function () {
+                console.log("OK");
                 setIsLoggedIn(true);
                 return;
             })
             .catch(function (error) {
+                console.log("KO");
                 return navigate("/login");
             });
     }

@@ -7,6 +7,7 @@ import {
     Post,
     Req,
     Res,
+    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { RegisterDto } from "../dtos/register.dto";
@@ -48,6 +49,16 @@ export class RegisterController {
     ) {
         const user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.emailValidationCode) {
+            const now = new Date();
+            const diff =
+                now.valueOf() - user.emailValidationCodeCreation.valueOf();
+            if (diff > 1000 * 60 * 15) {
+                // 15 minutes expiration date
+                this.userService.resendEmail(req.user.uuid);
+                throw new UnauthorizedException(
+                    "Your code is expired, we send you a new code."
+                );
+            }
             if (user.emailValidationCode.length != 6) {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
