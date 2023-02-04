@@ -1,16 +1,13 @@
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getCookie } from "../../Utils/GetCookie";
 import "../CSS/Register.css";
 
 export default function Register() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [doubleAuth, setDoubleAuth] = useState(true);
 
     const navigate = useNavigate();
 
@@ -18,54 +15,69 @@ export default function Register() {
         const { id, value } = e.target;
         if (id === "username") {
             setUsername(value);
-        }
-        if (id === "email") {
+        } else if (id === "email") {
             setEmail(value);
-        }
-        if (id === "password") {
+        } else if (id === "password") {
             setPassword(value);
         }
     };
 
     const submitRegisterForm = async (event) => {
         event.preventDefault();
+        if (
+            username.length === 0 ||
+            password.length === 0 ||
+            email.length === 0
+        ) {
+            alert("Error, all the fields are required");
+            return;
+        }
         await axios
-            .post("/api/register", {
+            .post("/api/register/", {
                 username: username,
                 email: email,
                 password: password,
+                enable2fa: doubleAuth,
             })
             .then(function (response) {
-                setError(false);
                 setUsername("");
+                setEmail("");
                 setPassword("");
-                const token = getCookie("authentification");
-                if (!token || token === "undefined") {
-                    alert("Unable to register. Please try again.");
-                    return;
-                }
-                navigate("/");
+                navigate("/validate");
             })
             .catch(function (error) {
-                setError(true);
-                setErrorMessage(error.response.data.message);
-                alert("Oops! Some error occured.");
+                if (
+                    error.response.data.message &&
+                    Object.prototype.toString.call(
+                        error.response.data.message
+                    ) === "[object Array]"
+                ) {
+                    alert(error.response.data.message[0]);
+                } else if (error.response.data.message) {
+                    alert(error.response.data.message);
+                } else {
+                    alert("Register error");
+                }
+                return;
             });
     };
 
-    const displayErrorMessage = () => {
-        return (
-            <p style={{ display: error ? "inline" : "none" }}>
-                Error: {errorMessage}
-            </p>
-        );
-    };
-
     return (
-        <main id="register-main">
-            <h2>Register</h2>
+        <section id="register-section">
+            <aside id="register-aside">
+                <h2>Create your account</h2>
+                <p>
+                    Your username must be unique, it will be displayed on the
+                    website.
+                    <br />
+                    You must provide a valid email address
+                    <br />
+                    And a strong password (min. 10 length characters)
+                </p>
+            </aside>
+
             <form id="register-form">
-                <label htmlFor="username">Username</label>
+                <h3>Register</h3>
                 <input
                     id="username"
                     type="text"
@@ -76,16 +88,6 @@ export default function Register() {
                     autoFocus
                     required
                 />
-                <label htmlFor="email">Email</label>
-                <input
-                    id="email"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(event) => handleInputChange(event)}
-                    required
-                />
-                <label htmlFor="password">Password</label>
                 <input
                     id="password"
                     type="password"
@@ -96,15 +98,33 @@ export default function Register() {
                     required
                 />
                 <input
-                    id="submit"
-                    className="button"
-                    type="submit"
-                    value="Register"
-                    onClick={(event) => submitRegisterForm(event)}
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(event) => handleInputChange(event)}
+                    required
                 />
-                <>{displayErrorMessage()}</>
+                <label>
+                    Enable Double-Authentification
+                    <input
+                        id="2fa"
+                        type="checkbox"
+                        defaultChecked={true}
+                        onClick={() => setDoubleAuth(!doubleAuth)}
+                    />
+                </label>
+                <div>
+                    <input
+                        id="submit"
+                        className="button"
+                        type="submit"
+                        value="Register"
+                        onClick={(event) => submitRegisterForm(event)}
+                    />
+                    <Link to="/login">cancel</Link>
+                </div>
             </form>
-            <Link to="/login">cancel</Link>
-        </main>
+        </section>
     );
 }

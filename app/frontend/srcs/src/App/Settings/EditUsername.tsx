@@ -1,8 +1,9 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
-export default function UpdateUsername() {
-    const [username, setUsername] = useState("");
+export default function EditUsername(props) {
+    const [username, setUsername] = useState(props.user["username"]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -13,26 +14,34 @@ export default function UpdateUsername() {
 
     const submitUsernameForm = async (event) => {
         event.preventDefault();
+        if (username == props.user["username"]) {
+            alert("Change your username");
+            return;
+        }
         await axios
             .post("/api/profile/update/username", {
                 username: username,
             })
-            .then(function (response) {
-                setUsername("");
+            .then(function () {
+                props.user["setUsername"](username);
             })
             .catch(function (error) {
-                alert("Oops! Some error occured.");
+                setUsername(props.user["username"]);
+                alert(error.response.data.message);
             });
     };
 
+    useEffect(() => {
+        setUsername(props.user["username"]);
+    }, [props.user["username"]]);
+
     return (
-        <main id="username-main">
+        <div id="username-main">
             <form id="username-form">
-                <label htmlFor="username">Username</label>
                 <input
                     id="username"
                     type="text"
-                    placeholder="Username"
+                    placeholder="New Username"
                     value={username}
                     onChange={(event) => handleInputChange(event)}
                     autoComplete="off"
@@ -43,10 +52,10 @@ export default function UpdateUsername() {
                     id="submit"
                     className="button"
                     type="submit"
-                    value="Change Username"
+                    value="Edit Username"
                     onClick={(event) => submitUsernameForm(event)}
                 />
             </form>
-        </main>
+        </div>
     );
 }

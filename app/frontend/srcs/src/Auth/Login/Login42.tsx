@@ -14,9 +14,9 @@ function Login42() {
 
     return (
         <div>
-            <h2>Login with your 42 account</h2>
+            <h3>Login with your 42 account</h3>
             <button className="button" onClick={login42}>
-                Login
+                Login with 42
             </button>
         </div>
     );

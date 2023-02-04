@@ -22,12 +22,23 @@ const LoginLocal = () => {
 
     const submitLoginForm = async (event) => {
         event.preventDefault();
+        if (username.length === 0 || password.length === 0) {
+            alert("Error, all the fields are required");
+            return;
+        }
         await axios
             .post("/api/login", {
                 username: username,
                 password: password,
             })
             .then(() => {
+                const token2fa = getCookie("double_authentification");
+                if (token2fa) {
+                    setUsername("");
+                    setPassword("");
+                    navigate("/double-auth");
+                    return;
+                }
                 const token = getCookie("authentification");
                 if (!token || token === "undefined") {
                     setUsername("");
@@ -40,15 +51,14 @@ const LoginLocal = () => {
             .catch((error) => {
                 setUsername("");
                 setPassword("");
-                alert("Oops! Some error occured.");
+                alert(error.response.data.message);
             });
     };
 
     return (
         <div>
-            <h2>Login</h2>
-            <form>
-                <label htmlFor="username">Username</label>
+            <h3>Login</h3>
+            <form id="login-local-form">
                 <input
                     type="text"
                     id="username"
@@ -58,7 +68,6 @@ const LoginLocal = () => {
                     autoComplete="on"
                     required
                 />
-                <label htmlFor="password">Password</label>
                 <input
                     type="password"
                     id="password"

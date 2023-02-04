@@ -2,7 +2,7 @@
     border: 1px black solid;
     height: 100px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding: 5px;
+    padding: 10px;
 }

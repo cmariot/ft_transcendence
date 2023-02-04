@@ -1,36 +1,67 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    Res,
+    UnauthorizedException,
+} from "@nestjs/common";
 import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private readonly mailerService: MailerService
     ) {}
 
-    // Creacte a JWT token
-    generate_jwt_token(user: UserEntity): string {
-        const payload = { email: user.email, sub: user.uuid };
+    sign_cookie(user: UserEntity, type: string): string {
+        const payload = {
+            uuid: user.uuid,
+            email: user.email,
+            type: type,
+        };
         let token = this.jwtService.sign(payload);
         return token;
     }
 
-    create_authentification_cookie(user, res) {
-        let authentification_value: string = this.generate_jwt_token(user);
-        res.cookie("authentification", authentification_value, {
-            maxAge: 1000 * 60 * 60 * 2, // 2 hours
-            sameSite: "none",
-            secure: true,
-        }).redirect("https://localhost:8443/");
+    // authentification : Acces a l'app
+    // email_validation : Doit valider son email
+    // double_authentification : Doit valider sa connexion
+    create_cookie(user: UserEntity, type: string, @Res() res) {
+        res.clearCookie("authentification");
+        res.clearCookie("email_validation");
+        res.clearCookie("double_authentification");
+        const cookie_value: string = this.sign_cookie(user, type);
+        if (user.createdFrom === CreatedFrom.OAUTH42) {
+            if (type === "double_authentification") {
+                res.cookie(type, cookie_value, {
+                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                    sameSite: "none",
+                    secure: true,
+                }).redirect("https://localhost:8443/double-auth");
+            } else if (type === "authentification") {
+                res.cookie(type, cookie_value, {
+                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                    sameSite: "none",
+                    secure: true,
+                }).redirect("https://localhost:8443/");
+            } else {
+                throw new UnauthorizedException();
+            }
+        } else {
+            res.cookie(type, cookie_value, {
+                maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                sameSite: "none",
+                secure: true,
+            }).send(type);
+        }
     }
 
-    // 3 cas :
-    // - Username invalide (deja pris par quelqu'un qui s'est register avec Username + Password)
-    // - Deja enregistre dans la BDD : Connexion
-    // - Jamais enregistre dans la BDD : Enregistrement
     async signin_or_register_42_user(
         user_42: {
             id42: number;
@@ -38,6 +69,8 @@ export class AuthService {
             email: string;
             createdFrom: string;
             password: string;
+            twoFactorsAuth: boolean;
+            valideEmail: boolean;
         },
         res
     ): Promise<UserEntity> {
@@ -48,29 +81,43 @@ export class AuthService {
                 HttpStatus.FORBIDDEN
             );
         } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
-            console.log("Sign in 42 user");
-            this.create_authentification_cookie(bdd_user, res);
+            if (bdd_user.twoFactorsAuth) {
+                this.create_cookie(bdd_user, "double_authentification", res);
+                await this.usersService.generateDoubleAuthCode(bdd_user.uuid);
+            } else {
+                this.create_cookie(bdd_user, "authentification", res);
+            }
             return bdd_user;
         } else {
-            console.log("Saving the user in the database.");
             let new_user: UserEntity = await this.usersService.saveUser(
                 user_42
             );
-            this.create_authentification_cookie(new_user, res);
+            this.create_cookie(new_user, "authentification", res);
             return new_user;
         }
     }
 
     async signin_local_user(username: string, password: string, res) {
-        const user = await this.usersService.getByUsername(username);
+        let user: UserEntity = await this.usersService.getByUsername(username);
         if (
             user &&
             user.createdFrom === CreatedFrom.REGISTER &&
             (await bcrypt.compare(password, user.password)) === true
         ) {
-            console.log("Logged as ", user.username);
-            return this.create_authentification_cookie(user, res);
+            if (user.valideEmail === false) {
+                this.create_cookie(user, "email_validation", res);
+            } else if (user.twoFactorsAuth === true) {
+                this.create_cookie(user, "double_authentification", res);
+                await this.usersService.generateDoubleAuthCode(user.uuid);
+            } else {
+                this.create_cookie(user, "authentification", res);
+            }
+            return;
         }
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);
+    }
+
+    logout(@Res() res) {
+        res.clearCookie("authentification").send("Bye !");
     }
 }

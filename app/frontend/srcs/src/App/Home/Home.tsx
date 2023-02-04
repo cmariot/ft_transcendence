@@ -1,7 +1,10 @@
-const Home = () => {
+import "../CSS/Home.css";
+
+const Home = (props) => {
     return (
         <main id="home-main">
-            <h2>Welcome Home</h2>
+            <div id="game">Game</div>
+            <aside id="chat">Chat</aside>
         </main>
     );
 };

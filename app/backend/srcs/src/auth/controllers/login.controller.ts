@@ -1,9 +1,4 @@
-import {
-    Body,
-    Controller,
-    Post,
-    Res,
-} from "@nestjs/common";
+import { Body, Controller, Post, Res } from "@nestjs/common";
 import { LoginDto } from "../dtos/login.dto";
 import { AuthService } from "../services/auth.service";
 
@@ -13,7 +8,6 @@ export class LoginController {
 
     @Post()
     async login(@Body() loginDto: LoginDto, @Res() res) {
-        console.log(loginDto)
         return this.authService.signin_local_user(
             loginDto.username,
             loginDto.password,

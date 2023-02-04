@@ -1,10 +1,12 @@
-import { Controller, Get, Res, UseGuards } from "@nestjs/common";
-import { isLogged } from "../guards/is_logged.guards";
+import { Controller, Get, Res } from "@nestjs/common";
+import { AuthService } from "../services/auth.service";
 
 @Controller("logout")
 export class LogoutController {
+    constructor(private authService: AuthService) {}
+
     @Get()
     logout(@Res() res): void {
-        return res.clearCookie("authentification").send("Bye !");
+        this.authService.logout(res);
     }
 }

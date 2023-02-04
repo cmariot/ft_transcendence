@@ -3,7 +3,7 @@ import "./CSS/AuthFooter.css";
 const AuthFooter = () => {
     return (
         <footer id="auth-footer">
-            <p>login footer</p>
+            <p>auth footer</p>
         </footer>
     );
 };

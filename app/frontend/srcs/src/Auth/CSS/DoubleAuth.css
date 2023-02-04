@@ -1,23 +1,22 @@
-#register-section {
+#validation-2fa-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
     grid-gap: 10px;
-    padding: 10px;
+    margin: 10px;
 }
 
-#register-aside,
-#register-form {
+#validation-2fa-aside,
+#validation-2fa-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#register-form {
+#validation-2fa-form {
     border: 1px black solid;
     border-radius: 15px;
-    padding-inline: 0;
     padding-top: 50px;
     padding-bottom: 50px;
 }
@@ -25,4 +24,8 @@
 #register-form * {
     margin: 5px;
     padding: 5px;
+}
+
+#form-2fa-choices * {
+    margin-inline: 5px;
 }

@@ -8,7 +8,7 @@ function NoAccount() {
 
     return (
         <div>
-            <h2>You don't have an account ?</h2>
+            <h3>You don't have an account ?</h3>
             <button className="button" onClick={register}>
                 Create one
             </button>
