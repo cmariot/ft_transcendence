@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AppNavbar from "./AppNavBar";
 import AppFooter from "./AppFooter";
 import axios from "axios";
 
 function App() {
-    const [firstLoad, setFirstLoad] = useState(true);
     const [username, setUsername] = useState("");
     const [userImage, setUserImage] = useState("");
     const [doubleAuth, setDoubleAuth] = useState(true);
 
-    const context = {
-        username: username,
+    let user = {
+        username,
         setUsername: setUsername,
         userImage,
         setUserImage: setUserImage,
-        doubleAuth: doubleAuth,
+        doubleAuth,
         setDoubleAuth: setDoubleAuth,
     };
 
@@ -23,16 +22,11 @@ function App() {
         await axios
             .get("/api/profile")
             .then((response) => {
-                context.setUsername(response.data.username);
-                context.setDoubleAuth(response.data.twoFactorsAuth);
-                if (firstLoad) {
-                    setUserImage(
-                        "/api/profile/" + response.data.username + "/image"
-                    );
-                    setFirstLoad(false);
-                } else {
-                    setUserImage(context.userImage);
-                }
+                user["setUsername"](response.data.username);
+                user["setDoubleAuth"](response.data.twoFactorsAuth);
+                user["setUserImage"](
+                    "/api/profile/" + response.data.username + "/image"
+                );
             })
             .catch((error) => {
                 console.log(error.response);
@@ -46,9 +40,9 @@ function App() {
 
     return (
         <>
-            <AppNavbar username={username} userImage={userImage} />
+            <AppNavbar user={user} />
             <section id="app-content">
-                <Outlet context={context} />
+                <Outlet context={user} />
             </section>
             <AppFooter />
         </>

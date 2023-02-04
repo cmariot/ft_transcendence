@@ -3,22 +3,24 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 
 import Auth from "./Auth/Auth";
+import AuthNavbar from "./Auth/AuthNavbar";
+import AuthFooter from "./Auth/AuthFooter";
 import Login from "./Auth/Login/Login";
 import Register from "./Auth/Register/Register";
 
-import ProtectedAuth from "./Utils/ProtectedAuth";
+import ProtectedPage from "./Utils/ProtectedPage";
 import App from "./App/App";
 import Home from "./App/Home/Home";
 import Profile from "./App/Profile/Profile";
 import Settings from "./App/Settings/Settings";
+
+import ProtectedValidation from "./Utils/ProtectedValidation";
 import Validate from "./Auth/Register/Validate";
 
-import "./index.css";
-import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
-import ProtectedValidation from "./Utils/ProtectedValidation";
-import AuthNavbar from "./Auth/AuthNavbar";
-import AuthFooter from "./Auth/AuthFooter";
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
+import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
+
+import "./index.css";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -34,29 +36,33 @@ root.render(
                 <Route
                     path="/validate"
                     element={
-                        <ProtectedValidation>
+                        <>
                             <AuthNavbar />
-                            <Validate />
+                            <ProtectedValidation>
+                                <Validate />
+                            </ProtectedValidation>
                             <AuthFooter />
-                        </ProtectedValidation>
+                        </>
                     }
                 />
                 <Route
                     path="/double-auth"
                     element={
-                        <ProtectedDoubleAuth>
+                        <>
                             <AuthNavbar />
-                            <DoubleAuth />
+                            <ProtectedDoubleAuth>
+                                <DoubleAuth />
+                            </ProtectedDoubleAuth>
                             <AuthFooter />
-                        </ProtectedDoubleAuth>
+                        </>
                     }
                 />
                 <Route
                     path="/"
                     element={
-                        <ProtectedAuth>
+                        <ProtectedPage>
                             <App />
-                        </ProtectedAuth>
+                        </ProtectedPage>
                     }
                 >
                     <Route path="/" element={<Home />} />

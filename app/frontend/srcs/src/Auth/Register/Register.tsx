@@ -63,8 +63,8 @@ export default function Register() {
     };
 
     return (
-        <main id="register-main">
-            <aside>
+        <section id="register-section">
+            <aside id="register-aside">
                 <h2>Create your account</h2>
                 <p>
                     Your username must be unique, it will be displayed on the
@@ -125,6 +125,6 @@ export default function Register() {
                     <Link to="/login">cancel</Link>
                 </div>
             </form>
-        </main>
+        </section>
     );
 }

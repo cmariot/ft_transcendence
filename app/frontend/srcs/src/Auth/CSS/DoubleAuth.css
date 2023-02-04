@@ -1,16 +1,20 @@
-#validation-2fa-main {
+#validation-2fa-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
     grid-gap: 10px;
-    margin: 5px;
+    margin: 10px;
 }
 
+#validation-2fa-aside,
 #validation-2fa-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#validation-2fa-form {
     border: 1px black solid;
     border-radius: 15px;
     padding-top: 50px;

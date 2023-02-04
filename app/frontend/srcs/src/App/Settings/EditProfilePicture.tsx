@@ -1,24 +1,20 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
 import "../CSS/Settings.css";
 
 export default function EditProfilePicture(props) {
-    const [image, setImage] = useState(props.userProps.userImage);
-
     function uploadImage(event) {
         event.preventDefault();
-        const formData = new FormData();
         if (event.target.files[0]) {
+            const formData = new FormData();
             formData.append("file", event.target.files[0]);
-            setImage(URL.createObjectURL(event.target.files[0]));
             axios
                 .post("/api/profile/update/image", formData, {
                     headers: {
                         "content-type": "multipart/form-data",
                     },
                 })
-                .then((response) => {
-                    props.userProps.setUserImage(
+                .then(() => {
+                    props.user["setUserImage"](
                         URL.createObjectURL(event.target.files[0])
                     );
                 })
@@ -28,13 +24,13 @@ export default function EditProfilePicture(props) {
         }
     }
 
-    useEffect(() => {
-        setImage(props.userProps.userImage);
-    }, [props.userProps.userImage]);
-
     return (
         <div id="edit-picture">
-            <img src={image} id="edit-picture-img" alt="preview image" />
+            <img
+                src={props.user["userImage"]}
+                id="edit-picture-img"
+                alt="preview image"
+            />
             <label>
                 Edit Profile Picture
                 <input

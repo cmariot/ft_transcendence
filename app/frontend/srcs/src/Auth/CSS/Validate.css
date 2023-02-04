@@ -1,9 +1,17 @@
-#validation-main {
+#validation-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
     grid-gap: 10px;
-    margin: 5px;
+    padding: 10px;
+}
+
+#validation-aside,
+#validation-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #validation-form {

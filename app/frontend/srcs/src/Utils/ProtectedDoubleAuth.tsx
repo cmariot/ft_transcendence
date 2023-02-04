@@ -19,6 +19,8 @@ const ProtectedDoubleAuth = (props) => {
                 setIsDoubleAuthorized(true);
             })
             .catch(function (error) {
+                console.log(error);
+                setIsDoubleAuthorized(false);
                 navigate("/login");
             });
     }

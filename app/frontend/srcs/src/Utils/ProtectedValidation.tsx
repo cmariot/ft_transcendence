@@ -20,6 +20,7 @@ const ProtectedValidation = (props) => {
             })
             .catch(function (error) {
                 console.log(error);
+                setIsAuthorized(false);
                 navigate("/login");
             });
     }

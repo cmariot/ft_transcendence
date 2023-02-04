@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
 
-const AppNavbar = (props) => {
+function AppNavBar(props) {
     const navigate = useNavigate();
 
-    const logout = () => {
+    function logout() {
         toogleMenu();
         axios
             .get("/api/logout")
@@ -15,9 +15,9 @@ const AppNavbar = (props) => {
             .catch((error) => {
                 console.log(error);
             });
-    };
+    }
 
-    const toogleMenu = () => {
+    function toogleMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
         if (menuBox.style.display == "flex") {
@@ -27,16 +27,16 @@ const AppNavbar = (props) => {
             menuBox.style.display = "flex";
             app.style.display = "none";
         }
-    };
+    }
 
-    const closeMenu = () => {
+    function closeMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
         if (menuBox.style.display == "flex") {
             menuBox.style.display = "none";
             app.style.display = "";
         }
-    };
+    }
 
     return (
         <>
@@ -46,10 +46,12 @@ const AppNavbar = (props) => {
                         ft_transcendence
                     </Link>
                     <div id="nav-user-infos">
-                        <button onClick={toogleMenu}>{props.username}</button>
+                        <button onClick={toogleMenu}>
+                            {props.user["username"]}
+                        </button>
                         <img
-                            src={props.userImage}
                             id="nav-user-picture"
+                            src={props.user["userImage"]}
                             onClick={toogleMenu}
                             alt="Menu"
                         />
@@ -85,5 +87,6 @@ const AppNavbar = (props) => {
             </header>
         </>
     );
-};
-export default AppNavbar;
+}
+
+export default AppNavBar;

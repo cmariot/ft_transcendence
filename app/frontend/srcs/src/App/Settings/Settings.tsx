@@ -4,12 +4,13 @@ import EditProfilePicture from "./EditProfilePicture";
 import EnableDoubleAuth from "./EnableDoubleAuth";
 
 const Settings = (props) => {
+    let user = useOutletContext();
     return (
         <main id="main-settings">
             <h2>Settings</h2>
-            <EditProfilePicture userProps={useOutletContext()} />
-            <EditUsername userProps={useOutletContext()} />
-            <EnableDoubleAuth userProps={useOutletContext()} />
+            <EditProfilePicture user={user} />
+            <EditUsername user={user} />
+            <EnableDoubleAuth user={user} />
         </main>
     );
 };

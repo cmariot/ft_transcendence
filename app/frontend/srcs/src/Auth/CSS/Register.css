@@ -1,18 +1,23 @@
-#register-main {
+#register-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
     grid-gap: 10px;
-    margin: 5px;
+    padding: 10px;
 }
 
+#register-aside,
 #register-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#register-form {
     border: 1px black solid;
     border-radius: 15px;
+    padding-inline: 0;
     padding-top: 50px;
     padding-bottom: 50px;
 }

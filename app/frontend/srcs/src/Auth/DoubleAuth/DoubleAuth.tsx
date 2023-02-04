@@ -51,7 +51,7 @@ const DoubleAuth = () => {
     };
 
     return (
-        <main id="validation-2fa-main">
+        <section id="validation-2fa-section">
             <aside id="validation-2fa-aside">
                 <h2>Double Authentification</h2>
                 <p>Check your emails, we just send you a verification code.</p>
@@ -80,7 +80,7 @@ const DoubleAuth = () => {
                     </Link>
                 </div>
             </form>
-        </main>
+        </section>
     );
 };
 export default DoubleAuth;

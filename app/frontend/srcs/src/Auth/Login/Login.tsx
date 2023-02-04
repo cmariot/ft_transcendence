@@ -5,7 +5,7 @@ import "../CSS/Login.css";
 
 const Login = () => {
     return (
-        <main id="auth-choices">
+        <section id="auth-content">
             <article>
                 <h2>Welcome to ft_transcendence</h2>
                 <p>You must log in to access the site</p>
@@ -15,7 +15,7 @@ const Login = () => {
                 <NoAccount />
                 <LoginLocal />
             </aside>
-        </main>
+        </section>
     );
 };
 export default Login;

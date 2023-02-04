@@ -1,8 +1,9 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
 export default function EditUsername(props) {
-    const [username, setUsername] = useState(props.userProps.username);
+    const [username, setUsername] = useState(props.user["username"]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -13,26 +14,34 @@ export default function EditUsername(props) {
 
     const submitUsernameForm = async (event) => {
         event.preventDefault();
+        if (username == props.user["username"]) {
+            alert("Change your username");
+            return;
+        }
         await axios
             .post("/api/profile/update/username", {
                 username: username,
             })
-            .then(function (response) {
-                props.userProps.setUsername(username);
+            .then(function () {
+                props.user["setUsername"](username);
             })
             .catch(function (error) {
-                console.log(error);
+                setUsername(props.user["username"]);
                 alert(error.response.data.message);
             });
     };
 
+    useEffect(() => {
+        setUsername(props.user["username"]);
+    }, [props.user["username"]]);
+
     return (
-        <main id="username-main">
+        <div id="username-main">
             <form id="username-form">
                 <input
                     id="username"
                     type="text"
-                    placeholder="Username"
+                    placeholder="New Username"
                     value={username}
                     onChange={(event) => handleInputChange(event)}
                     autoComplete="off"
@@ -47,6 +56,6 @@ export default function EditUsername(props) {
                     onClick={(event) => submitUsernameForm(event)}
                 />
             </form>
-        </main>
+        </div>
     );
 }

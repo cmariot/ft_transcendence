@@ -1,22 +1,16 @@
-#auth-choices {
+#auth-content {
     display: grid;
     grid-template-columns: 2fr 1fr;
     height: -moz-available;
     grid-gap: 10px;
+    padding: 10px;
 }
 
-#auth-choices * {
+#auth-content * {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 5px;
-    padding: 5px;
-}
-
-#auth-choices article {
-    display: flex;
-    flex-direction: column;
 }
 
 #login-pannel {

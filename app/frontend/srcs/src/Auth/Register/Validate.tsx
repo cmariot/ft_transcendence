@@ -50,7 +50,7 @@ const Validate = () => {
     };
 
     return (
-        <main id="validation-main">
+        <section id="validation-section">
             <aside id="validation-aside">
                 <h2>Validate your email</h2>
                 <p>Check your emails, we just send you a verification code.</p>
@@ -79,7 +79,7 @@ const Validate = () => {
                     </Link>
                 </div>
             </form>
-        </main>
+        </section>
     );
 };
 export default Validate;
