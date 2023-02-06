@@ -13,13 +13,12 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService
+        private readonly mailerService: MailerService,
     ) {}
 
     async sendVerificationMail(user) {
@@ -77,6 +76,11 @@ export class UsersService {
     async getById42(id42: number): Promise<UserEntity> {
         return this.userRepository.findOneBy({ id42: id42 });
     }
+
+	async getUsernameById(id: string): Promise<string>{
+		const user = this.getByID(id);
+		return((await user).username);
+	}
 
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
@@ -258,4 +262,33 @@ export class UsersService {
             return new StreamableFile(file);
         }
     }
+
+	async addFriend(userId: string, friend: string){
+
+		let user: UserEntity = await this.getByID(userId);
+		if (userId === friend)
+			throw new HttpException("Can't be friend with yourself", HttpStatus.AMBIGUOUS);
+		console.log(user);
+		if (!user.friend){
+			let array: string[] = [friend];
+			await this.userRepository.update(
+				{ uuid: user.uuid},
+				{ friend: array }
+			);
+		}
+		else{
+			let array: string[] = user.friend;
+			console.log("AAAAAH", array);
+			array.push(friend);
+			await this.userRepository.update(
+				{ uuid: user.uuid},
+				{ friend: array }
+			);
+		}
+	}
+
+	async friendslist(userid: string){
+		const user = await this.getByID(userid);
+		return user.friend;
+	}
 }

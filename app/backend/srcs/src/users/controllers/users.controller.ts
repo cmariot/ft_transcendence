@@ -3,6 +3,8 @@ import {
     Controller,
     FileTypeValidator,
     Get,
+    HttpException,
+    HttpStatus,
     MaxFileSizeValidator,
     Param,
     ParseFilePipe,
@@ -15,7 +17,7 @@ import {
     UseInterceptors,
 } from "@nestjs/common";
 import { UsersService } from "../services/users.service";
-import { UpdateUsernameDto } from "../dto/UpdateUsername.dto";
+import { UsernameDto } from "../dto/Username.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
@@ -58,7 +60,7 @@ export class UsersController {
     @Post("update/username")
     @UseGuards(isLogged)
     async updateUsername(
-        @Body() newUsernameDto: UpdateUsernameDto,
+        @Body() newUsernameDto: UsernameDto,
         @Request() req
     ) {
         let previousProfile: UserEntity = await this.userService.getProfile(
@@ -122,4 +124,32 @@ export class UsersController {
         const user = await this.userService.getByID(req.uuid);
         return user.twoFactorsAuth;
     }
+	
+	@Post("friend")
+	@UseGuards(isLogged)
+	async addFriend ( 
+		@Body() Username: UsernameDto,
+        @Request() req
+    ) {
+		let friend = await this.userService.getByUsername(Username.username);
+		if (!friend)
+			throw new HttpException("Friend not found !", HttpStatus.NOT_FOUND);
+		return await this.userService.addFriend(req.user.uuid, friend.uuid);
+	}
+
+	@Get("friend")
+	@UseGuards(isLogged)
+	async friendlist(@Request() req) {
+		let list = await this.userService.friendslist(req.uuid);
+		let friends:string[];
+
+		let i = 0;
+		while(list[i])
+		{
+			let id = list[i];
+			friends.push(await this.userService.getUsernameById(id));
+			i++;
+		}
+		return (friends);
+  	}
 }

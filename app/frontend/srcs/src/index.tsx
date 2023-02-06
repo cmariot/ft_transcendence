@@ -19,6 +19,7 @@ import Validate from "./Auth/Register/Validate";
 
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
 import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
+import Friends from "./App/Friend/Friends";
 
 import "./index.css";
 
@@ -67,6 +68,7 @@ root.render(
                 >
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/friends" element={<Friends />} />
                     <Route path="/settings" element={<Settings />} />
                 </Route>
             </Routes>
