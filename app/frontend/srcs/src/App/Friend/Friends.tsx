@@ -21,13 +21,15 @@ export default function Friends(props) {
             });
     };
 
-    async function toogleMenu(event) {
-        // Toogle pour une classe ?
-        var menuBox = document.getElementById("friend-menu");
-        if (menuBox.style.display == "flex") {
-            menuBox.style.display = "none";
+    async function toogleMenu(index) {
+        let menus = document.getElementsByClassName("friend-menu");
+        if (menus[index].classList.contains("friend-menu-display")) {
+            menus[index].classList.remove("friend-menu-display");
         } else {
-            menuBox.style.display = "flex";
+            for (var i = 0; i < menus.length; i++) {
+                menus[i].classList.remove("friend-menu-display");
+            }
+            menus[index].classList.add("friend-menu-display");
         }
     }
 
@@ -84,8 +86,8 @@ export default function Friends(props) {
             <main id="friend-list">
                 <h2>Friends list</h2>
                 <ul id="friend-list">
-                    {friends.map((friend) => (
-                        <li className="friend">
+                    {friends.map((friend, index) => (
+                        <li className="friend" key={index}>
                             <img
                                 src={"/api/profile/" + friend + "/image"}
                                 className="friend-profile-picture"
@@ -99,11 +101,11 @@ export default function Friends(props) {
                             <div>
                                 <button
                                     className="friend-profile-button"
-                                    onClick={(event) => toogleMenu(event)}
+                                    onClick={() => toogleMenu(index)}
                                 >
                                     Menu
                                 </button>
-                                <menu id="friend-menu" className="friend-menu">
+                                <menu className="friend-menu">
                                     <ul className="friend-menu-ul">
                                         <li className="friend-menu-li">
                                             Invite to play

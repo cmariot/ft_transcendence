@@ -51,6 +51,10 @@
 
 .friend-menu {
     display: none;
+}
+
+.friend-menu-display {
+    display: flex;
     padding: 0px;
     margin: 0px;
     position: absolute;
