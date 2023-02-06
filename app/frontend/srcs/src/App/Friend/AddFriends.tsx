@@ -1,44 +1,55 @@
-import axios from "axios";
+import axios from 'axios';
 import { useState, useEffect} from "react";
-import { textChangeRangeIsUnchanged } from "typescript";
 
-export default function AddFriends (props){
+export default  function AddFriends (props){
 	const [username, setUsername] = useState("");
 	const [friends, setFriends] = useState([]);
-	const [bool, setBool] = useState(false);
+	const [refresh, setRefresh] = useState(false);
 
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		await axios
-            .post("/api/profile/friend", {
-                username
+	const handleSubmit = async (event) => {
+	  event.preventDefault();
+	  await axios
+            .post("https://localhost:8443/api/profile/friend", {
+                username: username,
             })
-            .then((response) => {
-				console.log(response);
-				setBool(!bool);
+            .then(function (response) {
+				setRefresh(!refresh);
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(function (error) {
+				console.log(error);
             });
 	};
-
+  
 	useEffect(() => {
-		const fetchData = async () => {
-			const result = await axios.get("/api/profile/friend");
-			setFriends(result.data);
-			console.log(friends);
-		};
-		fetchData();
-	}, [friends, bool]);
-
+	  const fetchData = async () => {
+		await axios
+            .get("https://localhost:8443/api/profile/friend",)
+            .then(function (response) {
+				console.log(response);
+				setFriends(response.data);
+            })
+            .catch(function (error) {
+				console.log(error);
+            });
+	  };
+	  fetchData();
+	}, [refresh]);
+  
 	return (
-		<div>
-			<form onSubmit={handleSubmit}>
-				<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-				<button type="submit">Add Friend</button>
-			</form>
-		{friends.map(username => <p>{username}</p>)}
-		</div>
+	  <div>
+		<form onSubmit={handleSubmit}>
+		  <input
+			type="text"
+			value={username}
+			onChange={event => setUsername(event.target.value)}
+		  />
+		  <button type="submit">Add Friend</button>
+		</form>
+		<ul>
+		  {friends.map((friend, index) => (
+			<li key={index}>{friend}</li>
+		  ))}
+		</ul>
+	  </div>
 	);
-} 
+};

@@ -60,6 +60,6 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-	@Column("simple-array", {nullable: true})
+	@Column("text", {array: true, nullable: true})
   	friend: string[];
 }

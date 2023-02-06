@@ -5,7 +5,7 @@ import {
     StreamableFile,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { QueryBuilder, Repository } from "typeorm";
 import { CreatedFrom, UserEntity } from "../entity/user.entity";
 import { RegisterDto } from "src/auth/dtos/register.dto";
 import * as bcrypt from "bcrypt";
@@ -13,6 +13,7 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
+import { findSourceMap } from "module";
 @Injectable()
 export class UsersService {
     constructor(
@@ -267,28 +268,40 @@ export class UsersService {
 
 		let user: UserEntity = await this.getByID(userId);
 		if (userId === friend)
-			throw new HttpException("Can't be friend with yourself", HttpStatus.AMBIGUOUS);
-		console.log(user);
-		if (!user.friend){
-			let array: string[] = [friend];
-			await this.userRepository.update(
-				{ uuid: user.uuid},
-				{ friend: array }
-			);
-		}
-		else{
-			let array: string[] = user.friend;
-			console.log("AAAAAH", array);
-			array.push(friend);
-			await this.userRepository.update(
-				{ uuid: user.uuid},
-				{ friend: array }
-			);
-		}
+			throw new HttpException("Can't be friend with yourself", HttpStatus.BAD_REQUEST);
+		if (!user.friend)
+			user.friend = new Array();
+		else
+		{
+			if (user.friend.find(element => element === friend)){
+				throw new HttpException("Already friend", HttpStatus.BAD_REQUEST);
+			}
+		} 
+		user.friend.push(friend);
+		await this.userRepository.update(
+            { uuid: user.uuid },
+            { friend: user.friend }
+        );
+		return "Friend added."
 	}
 
 	async friendslist(userid: string){
-		const user = await this.getByID(userid);
-		return user.friend;
+		console.log("On rentre la");
+		let user = await this.getByID(userid);
+		let list: string[] =  new Array();
+
+		console.log("USER:", user);
+		if(!user.friend)
+			return list;
+
+		let i = 0;
+		while(i < user.friend.length)
+		{
+			let id = user.friend[i];
+			list.push(await this.getUsernameById(id));
+			i++;
+		}
+		console.log(list);
+		return list;
 	}
 }

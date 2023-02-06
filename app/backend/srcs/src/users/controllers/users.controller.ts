@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
 import { isLogged } from "src/auth/guards/authentification.guards";
+import { UsingJoinColumnIsNotAllowedError } from "typeorm";
 
 // Storage for the upload images
 export const storage = {
@@ -129,27 +130,17 @@ export class UsersController {
 	@UseGuards(isLogged)
 	async addFriend ( 
 		@Body() Username: UsernameDto,
-        @Request() req
+        @Req() req
     ) {
 		let friend = await this.userService.getByUsername(Username.username);
 		if (!friend)
-			throw new HttpException("Friend not found !", HttpStatus.NOT_FOUND);
+			throw new HttpException("Friend not found !", HttpStatus.BAD_REQUEST);
 		return await this.userService.addFriend(req.user.uuid, friend.uuid);
 	}
 
 	@Get("friend")
 	@UseGuards(isLogged)
-	async friendlist(@Request() req) {
-		let list = await this.userService.friendslist(req.uuid);
-		let friends:string[];
-
-		let i = 0;
-		while(list[i])
-		{
-			let id = list[i];
-			friends.push(await this.userService.getUsernameById(id));
-			i++;
-		}
-		return (friends);
+	async friendlist(@Req() req) {
+		return await this.userService.friendslist(req.user.uuid);
   	}
 }
