@@ -286,14 +286,11 @@ export class UsersService {
 	}
 
 	async friendslist(userid: string){
-		console.log("On rentre la");
 		let user = await this.getByID(userid);
 		let list: string[] =  new Array();
 
-		console.log("USER:", user);
 		if(!user.friend)
 			return list;
-
 		let i = 0;
 		while(i < user.friend.length)
 		{
@@ -301,7 +298,22 @@ export class UsersService {
 			list.push(await this.getUsernameById(id));
 			i++;
 		}
-		console.log(list);
 		return list;
+	}
+
+	async DelFriend(userId: string, friend: string){
+
+		let user: UserEntity = await this.getByID(userId);
+		if (userId === friend)
+			throw new HttpException("Can't unfriend yourself", HttpStatus.BAD_REQUEST);
+		let index = user.friend.findIndex(element => element === friend);
+		if (index > -1){
+			user.friend.splice(index, 1);
+		}
+		await this.userRepository.update(
+            { uuid: user.uuid },
+            { friend: user.friend }
+        );
+		return "Friend deleted"
 	}
 }

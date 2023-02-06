@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     FileTypeValidator,
     Get,
     HttpException,
@@ -143,4 +144,18 @@ export class UsersController {
 	async friendlist(@Req() req) {
 		return await this.userService.friendslist(req.user.uuid);
   	}
+
+	@Delete("friend")
+	@UseGuards(isLogged)
+	async DeleteFriend ( 
+		@Body() Username: UsernameDto,
+        @Req() req
+    ) {
+		let friend = await this.userService.getByUsername(Username.username);
+		if (!friend)
+			throw new HttpException("Friend not found !", HttpStatus.BAD_REQUEST);
+		return await this.userService.DelFriend(req.user.uuid, friend.uuid);
+	}
+
 }
+
