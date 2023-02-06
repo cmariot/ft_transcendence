@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AppNavbar from "./AppNavBar";
 import AppFooter from "./AppFooter";
 import axios from "axios";
+import { Websocketcontext } from "../Websockets/WebsocketContext";
 
 function App() {
     const [username, setUsername] = useState("");
     const [userImage, setUserImage] = useState("");
     const [doubleAuth, setDoubleAuth] = useState(true);
+
+    const [message, setMessage] = useState("");
+
+    const socket = useContext(Websocketcontext);
 
     let user = {
         username,
@@ -35,13 +40,23 @@ function App() {
     };
 
     useEffect(() => {
+        socket.on("onMessage", (data) => {
+            console.log("onMessage event received : ", data);
+            setMessage(data);
+        });
         getProfile();
+        return () => {
+            console.log("Unregistering events ... ");
+            socket.off("connect");
+            socket.off("onMessage");
+        };
     }, []);
 
     return (
         <>
             <AppNavbar user={user} />
             <section id="app-content">
+                <p>{message}</p>
                 <Outlet context={user} />
             </section>
             <AppFooter />
