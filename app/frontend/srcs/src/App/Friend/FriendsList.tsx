@@ -1,10 +1,22 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function FriendsList (props){
-	return (
-		<div>
-			<p>Friend List</p>
-		</div>
-	);
-}
+	const [friends, setFriends] = useState([]);
+
+  	useEffect(() => {
+    	const fetchData = async () => {
+      		const result = await axios.get("/api/profile/friend");
+      		setFriends(result.data);
+    	};
+    	fetchData();
+  	}, []);
+
+  	return (
+    	<ul>
+      	{friends.map(friend => (
+        	<li key={friend.uuid}>{friend.username}</li>
+      	))}
+    	</ul>
+  	);
+};	

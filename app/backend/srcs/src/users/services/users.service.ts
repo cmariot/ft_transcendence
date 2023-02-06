@@ -194,7 +194,7 @@ export class UsersService {
 		.andWhere("friendship.friendUuid = :friendUuid", { friendUuid })
 		.getOne();
 
-  		if (!existingFriendship) {
+  		if (existingFriendship) {
 			throw new HttpException("Friend already exist.", HttpStatus.FOUND);
   		}
 
@@ -204,5 +204,18 @@ export class UsersService {
 	
 		await this.friendshipRepository.save(friendship);
 		return ("Friend added !");
+	}
+
+	async friendslist(req: UserEntity){
+		const user = req.username;
+		const friends = await this.friendshipRepository
+		.createQueryBuilder("friendship")
+		.innerJoin("friendship.user", "user")
+		.innerJoin("friendship.friend", "friend")
+		.where("user.uuid = :uuid", { uuid: req.uuid })
+		.select([ "friend.uuid as uuid" ])
+		.getMany();
+
+		return (friends);
 	}
 }

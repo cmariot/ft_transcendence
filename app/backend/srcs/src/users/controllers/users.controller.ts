@@ -24,6 +24,7 @@ import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
 import { FriendshipEntity } from "../entity/friendship.entity";
 import { UpdateEmailDto } from "../dto/UpdateEmail.dto";
+import { get } from "http";
 
 // Storage for the upload images
 export const storage = {
@@ -99,4 +100,11 @@ export class UsersController {
 			throw new HttpException("Friend not found !", HttpStatus.NOT_FOUND);
 		return await this.userService.addFriend(req.user, friend);
 	}
+
+	@Get("friend")
+	@UseGuards(isLogged)
+	async friendlist(@Request() req) {
+		return await this.userService.friendslist(req);
+  	}
+  
 }
