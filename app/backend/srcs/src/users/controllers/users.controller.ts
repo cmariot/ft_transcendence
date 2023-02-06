@@ -25,7 +25,6 @@ import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
 import { UserEntity } from "../entity/user.entity";
 import { isLogged } from "src/auth/guards/authentification.guards";
-import { UsingJoinColumnIsNotAllowedError } from "typeorm";
 
 // Storage for the upload images
 export const storage = {
@@ -61,10 +60,7 @@ export class UsersController {
 
     @Post("update/username")
     @UseGuards(isLogged)
-    async updateUsername(
-        @Body() newUsernameDto: UsernameDto,
-        @Request() req
-    ) {
+    async updateUsername(@Body() newUsernameDto: UsernameDto, @Request() req) {
         let previousProfile: UserEntity = await this.userService.getProfile(
             req.user.uuid
         );
@@ -126,36 +122,34 @@ export class UsersController {
         const user = await this.userService.getByID(req.uuid);
         return user.twoFactorsAuth;
     }
-	
-	@Post("friend")
-	@UseGuards(isLogged)
-	async addFriend ( 
-		@Body() Username: UsernameDto,
-        @Req() req
-    ) {
-		let friend = await this.userService.getByUsername(Username.username);
-		if (!friend)
-			throw new HttpException("Friend not found !", HttpStatus.BAD_REQUEST);
-		return await this.userService.addFriend(req.user.uuid, friend.uuid);
-	}
 
-	@Get("friend")
-	@UseGuards(isLogged)
-	async friendlist(@Req() req) {
-		return await this.userService.friendslist(req.user.uuid);
-  	}
+    @Post("friend")
+    @UseGuards(isLogged)
+    async addFriend(@Body() Username: UsernameDto, @Req() req) {
+        let friend = await this.userService.getByUsername(Username.username);
+        if (!friend)
+            throw new HttpException(
+                "Friend not found !",
+                HttpStatus.BAD_REQUEST
+            );
+        return await this.userService.addFriend(req.user.uuid, friend.uuid);
+    }
 
-	@Delete("friend")
-	@UseGuards(isLogged)
-	async DeleteFriend ( 
-		@Body() Username: UsernameDto,
-        @Req() req
-    ) {
-		let friend = await this.userService.getByUsername(Username.username);
-		if (!friend)
-			throw new HttpException("Friend not found !", HttpStatus.BAD_REQUEST);
-		return await this.userService.DelFriend(req.user.uuid, friend.uuid);
-	}
+    @Get("friend")
+    @UseGuards(isLogged)
+    async friendlist(@Req() req) {
+        return await this.userService.friendslist(req.user.uuid);
+    }
 
+    @Post("friend/delete")
+    @UseGuards(isLogged)
+    async DeleteFriend(@Body() Username: UsernameDto, @Req() req) {
+        let friend = await this.userService.getByUsername(Username.username);
+        if (!friend)
+            throw new HttpException(
+                "Friend not found !",
+                HttpStatus.BAD_REQUEST
+            );
+        return await this.userService.DelFriend(req.user.uuid, friend.uuid);
+    }
 }
-
