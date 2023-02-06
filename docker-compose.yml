@@ -19,6 +19,7 @@ services:
             - network
         expose:
             - 3000
+            - 3001
         depends_on:
             - "database"
         restart: unless-stopped

@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ReactDOM from "react-dom/client";
+import { socket, WebsocketProvider } from "./Websockets/WebsocketContext";
 
 import Auth from "./Auth/Auth";
 import AuthNavbar from "./Auth/AuthNavbar";
@@ -62,7 +63,9 @@ root.render(
                     path="/"
                     element={
                         <ProtectedPage>
-                            <App />
+                            <WebsocketProvider value={socket}>
+                                <App />
+                            </WebsocketProvider>
                         </ProtectedPage>
                     }
                 >
