@@ -79,6 +79,11 @@ export class UsersService {
         return this.userRepository.findOneBy({ id42: id42 });
     }
 
+	async getUsernameById(id: string): Promise<string>{
+		const user = this.getByID(id);
+		return((await user).username);
+	}
+
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);

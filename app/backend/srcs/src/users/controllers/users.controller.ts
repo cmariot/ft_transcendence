@@ -104,7 +104,17 @@ export class UsersController {
 	@Get("friend")
 	@UseGuards(isLogged)
 	async friendlist(@Request() req) {
-		return await this.userService.friendslist(req);
+		let list = await this.userService.friendslist(req);
+		let friends:string[];
+
+		let i = 0;
+		while(list[i])
+		{
+			let id = list[i].friendUuid;
+			friends.push(await this.userService.getUsernameById(id));
+			i++;
+		}
+		return (friends);
   	}
   
 }
