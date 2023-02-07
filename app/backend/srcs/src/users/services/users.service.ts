@@ -19,7 +19,7 @@ export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService,
+        private readonly mailerService: MailerService
     ) {}
 
     async sendVerificationMail(user) {
@@ -78,10 +78,10 @@ export class UsersService {
         return this.userRepository.findOneBy({ id42: id42 });
     }
 
-	async getUsernameById(id: string): Promise<string>{
-		const user = this.getByID(id);
-		return((await user).username);
-	}
+    async getUsernameById(id: string): Promise<string> {
+        const user = this.getByID(id);
+        return (await user).username;
+    }
 
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
@@ -249,71 +249,76 @@ export class UsersService {
     async getProfileImage(uuid: string) {
         let user = await this.getByID(uuid);
         if (user.profileImage === null) {
-            const file = createReadStream(
+            let file = createReadStream(
                 join(process.cwd(), "./default/profile_image.png")
             );
-            return new StreamableFile(file);
+            const stream = new StreamableFile(file);
+            return stream;
         } else {
-            const file = createReadStream(
+            let file = createReadStream(
                 join(
                     process.cwd(),
                     "./uploads/profile_pictures/" + user.profileImage
                 )
             );
-            return new StreamableFile(file);
+            const stream = new StreamableFile(file);
+            return stream;
         }
     }
 
-	async addFriend(userId: string, friend: string){
-
-		let user: UserEntity = await this.getByID(userId);
-		if (userId === friend)
-			throw new HttpException("Can't be friend with yourself", HttpStatus.BAD_REQUEST);
-		if (!user.friend)
-			user.friend = new Array();
-		else
-		{
-			if (user.friend.find(element => element === friend)){
-				throw new HttpException("Already friend", HttpStatus.BAD_REQUEST);
-			}
-		} 
-		user.friend.push(friend);
-		await this.userRepository.update(
+    async addFriend(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "Can't be friend with yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        if (!user.friend) user.friend = new Array();
+        else {
+            if (user.friend.find((element) => element === friend)) {
+                throw new HttpException(
+                    "Already friend",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+        user.friend.push(friend);
+        await this.userRepository.update(
             { uuid: user.uuid },
             { friend: user.friend }
         );
-		return "Friend added."
-	}
+        return "Friend added.";
+    }
 
-	async friendslist(userid: string){
-		let user = await this.getByID(userid);
-		let list: string[] =  new Array();
+    async friendslist(userid: string) {
+        let user = await this.getByID(userid);
+        let list: string[] = new Array();
 
-		if(!user.friend)
-			return list;
-		let i = 0;
-		while(i < user.friend.length)
-		{
-			let id = user.friend[i];
-			list.push(await this.getUsernameById(id));
-			i++;
-		}
-		return list;
-	}
+        if (!user.friend) return list;
+        let i = 0;
+        while (i < user.friend.length) {
+            let id = user.friend[i];
+            list.push(await this.getUsernameById(id));
+            i++;
+        }
+        return list;
+    }
 
-	async DelFriend(userId: string, friend: string){
-
-		let user: UserEntity = await this.getByID(userId);
-		if (userId === friend)
-			throw new HttpException("Can't unfriend yourself", HttpStatus.BAD_REQUEST);
-		let index = user.friend.findIndex(element => element === friend);
-		if (index > -1){
-			user.friend.splice(index, 1);
-		}
-		await this.userRepository.update(
+    async DelFriend(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "Can't unfriend yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        let index = user.friend.findIndex((element) => element === friend);
+        if (index > -1) {
+            user.friend.splice(index, 1);
+        }
+        await this.userRepository.update(
             { uuid: user.uuid },
             { friend: user.friend }
         );
-		return "Friend deleted"
-	}
+        return "Friend deleted";
+    }
 }

@@ -6,13 +6,13 @@ import { UsersModule } from "./users/users.module";
 import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { AppController } from "./app.controller";
-import { GatewayModule } from "./gateway/gateway.module";
+import { ChatModule } from "./chat/chat.module";
 
 @Module({
     imports: [
         AuthModule,
+        ChatModule,
         ConfigModule,
-        GatewayModule,
         MailerModule.forRoot({
             transport: {
                 host: process.env.EMAIL_HOST,

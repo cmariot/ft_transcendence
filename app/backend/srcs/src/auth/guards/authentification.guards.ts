@@ -8,9 +8,9 @@ export class isLogged extends AuthGuard("jwt") {
             throw err || new UnauthorizedException();
         }
         if (user.type === "authentification") {
+            // emit connexion to socket here ?
             return user;
         }
         return user;
-        throw new UnauthorizedException();
     }
 }

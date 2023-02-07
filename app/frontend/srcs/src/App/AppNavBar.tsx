@@ -5,7 +5,12 @@ import "./CSS/AppNavBar.css";
 function AppNavBar(props) {
     const navigate = useNavigate();
 
-    function logout() {
+    function go(path: string) {
+        toogleMenu();
+        navigate(path);
+    }
+
+    function goLogout() {
         toogleMenu();
         axios
             .get("/api/logout")
@@ -59,34 +64,41 @@ function AppNavBar(props) {
                 </nav>
 
                 <menu id="app-menu">
-                    <ul id="app-menu-ul">
-                        <li className="app-menu-li">
-                            <Link to="/" onClick={toogleMenu}>
-                                Home
-                            </Link>
-                        </li>
-                        <li className="app-menu-li">
-                            <Link to="/profile" onClick={toogleMenu}>
-                                Profile
-                            </Link>
-                        </li>
-                        <li className="app-menu-li">
-						<Link to="/friends" onClick={toogleMenu}>
-								Friends
-                            </Link>
-						</li>
-                        <li className="app-menu-li">Stats</li>
-                        <li className="app-menu-li">
-                            <Link to="/settings" onClick={toogleMenu}>
-                                Settings
-                            </Link>
-                        </li>
-                        <li className="app-menu-li" onClick={logout}>
-                            <Link to="" onClick={toogleMenu}>
-                                Logout
-                            </Link>
-                        </li>
-                    </ul>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/");
+                        }}
+                    >
+                        Home
+                    </button>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/profile");
+                        }}
+                    >
+                        Profile
+                    </button>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/friends");
+                        }}
+                    >
+                        Friends
+                    </button>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/settings");
+                        }}
+                    >
+                        Settings
+                    </button>
+                    <button className="app-menu-button" onClick={goLogout}>
+                        Logout
+                    </button>
                 </menu>
             </header>
         </>

@@ -11,6 +11,5 @@ export class EmailGuard extends AuthGuard("jwt") {
             return user;
         }
         return user;
-        throw new UnauthorizedException();
     }
 }

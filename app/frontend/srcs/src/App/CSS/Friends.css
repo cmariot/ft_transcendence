@@ -24,6 +24,7 @@
     border: 1px black solid;
     border-radius: 15px;
     width: -moz-available;
+    width: -webkit-fill-available;
     margin: 5px;
     padding-inline: 35px;
 }

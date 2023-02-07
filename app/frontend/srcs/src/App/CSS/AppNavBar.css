@@ -3,7 +3,7 @@
 }
 
 #app-nav-bar {
-    border: 1px black solid;
+    border-bottom: 1px black solid;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,30 +26,10 @@
 
 #app-menu {
     display: none;
+    flex-direction: column;
     justify-content: center;
     text-align: center;
     padding: 5px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#app-menu-ul {
-    width: 100%;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.app-menu-li {
-    height: 30px;
-    border: 1px black solid;
-    padding: 5px;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    margin-left: 15px;
-    margin-right: 15px;
     margin-top: 10px;
     margin-bottom: 10px;
 }

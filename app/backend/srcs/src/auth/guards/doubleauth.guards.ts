@@ -11,6 +11,5 @@ export class DoubleAuthGuard extends AuthGuard("jwt") {
             return user;
         }
         return user;
-        throw new UnauthorizedException();
     }
 }

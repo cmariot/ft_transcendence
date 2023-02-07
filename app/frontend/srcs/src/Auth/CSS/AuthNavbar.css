@@ -1,5 +1,5 @@
 #auth-nav-bar {
-    border: 1px black solid;
+    border-bottom: 1px black solid;
     height: 100px;
     display: flex;
     justify-content: flex-start;
