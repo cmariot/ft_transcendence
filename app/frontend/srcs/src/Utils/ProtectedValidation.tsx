@@ -27,7 +27,7 @@ const ProtectedValidation = (props: any) => {
 
     useEffect(() => {
         validateAuthorization();
-    }, [isAuthorized]);
+    });
 
     return <>{isAuthorized ? props.children : null}</>;
 };

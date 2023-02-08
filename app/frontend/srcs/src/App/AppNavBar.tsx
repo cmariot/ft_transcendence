@@ -25,25 +25,25 @@ function AppNavBar(props: any) {
     function toogleMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
-		if (!menuBox || !app)
-			return ;
-        if (menuBox.style.display === 'flex') {
-            menuBox.style.display = "none";
-            app.style.display = "";
-        } else {
-            menuBox.style.display = "flex";
-            app.style.display = "none";
+        if (menuBox && app) {
+            if (menuBox.style.display === "flex") {
+                menuBox.style.display = "none";
+                app.style.display = "";
+            } else {
+                menuBox.style.display = "flex";
+                app.style.display = "none";
+            }
         }
     }
 
     function closeMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
-		if (!menuBox || !app)
-			return ;
-        if (menuBox.style.display === "flex") {
-            menuBox.style.display = "none";
-            app.style.display = "";
+        if (menuBox && app) {
+            if (menuBox.style.display == "flex") {
+                menuBox.style.display = "none";
+                app.style.display = "";
+            }
         }
     }
 

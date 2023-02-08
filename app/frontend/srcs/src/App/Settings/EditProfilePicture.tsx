@@ -29,7 +29,7 @@ export default function EditProfilePicture(props: any) {
             <img
                 src={props.user["userImage"]}
                 id="edit-picture-img"
-                alt="preview image"
+                alt="Edit your avatar"
             />
             <label>
                 Edit Profile Picture

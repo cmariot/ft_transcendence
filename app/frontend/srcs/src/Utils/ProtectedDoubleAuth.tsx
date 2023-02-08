@@ -27,7 +27,7 @@ const ProtectedDoubleAuth = (props: any) => {
 
     useEffect(() => {
         validateDoubleAuth();
-    }, [isDoubleAuthorized]);
+    });
 
     return <>{isDoubleAuthorized ? props.children : null}</>;
 };

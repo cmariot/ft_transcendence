@@ -29,7 +29,7 @@ const ProtectedPage = (props: any) => {
 
     useEffect(() => {
         validateConnexion();
-    }, [isLoggedIn]);
+    });
 
     return <>{isLoggedIn ? props.children : null}</>;
 };

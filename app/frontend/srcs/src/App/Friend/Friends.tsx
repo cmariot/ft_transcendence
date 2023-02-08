@@ -21,7 +21,7 @@ export default function Friends(props: any) {
             });
     };
 
-    async function toogleMenu(index: any) {
+    async function toogleMenu(index: number) {
         let menus = document.getElementsByClassName("friend-menu");
         if (menus[index].classList.contains("friend-menu-display")) {
             menus[index].classList.remove("friend-menu-display");
@@ -91,6 +91,7 @@ export default function Friends(props: any) {
                             <img
                                 src={"/api/profile/" + friend + "/image"}
                                 className="friend-profile-picture"
+                                alt="Friend's avatar"
                             />
                             <div className="friend-middle-div">
                                 <p className="friend-username">

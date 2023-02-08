@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
 
 export default function EditUsername(props: any) {
     const [username, setUsername] = useState(props.user["username"]);
@@ -53,7 +52,7 @@ export default function EditUsername(props: any) {
                     className="button"
                     type="submit"
                     value="Edit Username"
-                    onClick={(event) => submitUsernameForm(event)}
+                    onClick={(event) => submitUsernameForm}
                 />
             </form>
         </div>
