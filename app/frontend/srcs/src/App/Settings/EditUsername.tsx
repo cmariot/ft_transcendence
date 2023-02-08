@@ -1,8 +1,7 @@
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
 
-export default function EditUsername(props) {
+export default function EditUsername(props: any) {
     const [username, setUsername] = useState(props.user["username"]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -12,9 +11,8 @@ export default function EditUsername(props) {
         }
     };
 
-    const submitUsernameForm = async (event) => {
-        event.preventDefault();
-        if (username == props.user["username"]) {
+    const submitUsernameForm = async () => {
+        if (username === props.user["username"]) {
             alert("Change your username");
             return;
         }
@@ -53,7 +51,7 @@ export default function EditUsername(props) {
                     className="button"
                     type="submit"
                     value="Edit Username"
-                    onClick={(event) => submitUsernameForm(event)}
+                    onClick={(event) => submitUsernameForm}
                 />
             </form>
         </div>

@@ -2,10 +2,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import "../CSS/Settings.css";
 
-export default function EnableDoubleAuth(props) {
+export default function EnableDoubleAuth(props: any) {
     const [userPref, setUserPref] = useState(props.user["doubleAuth"]);
 
-    function editDoubleAuth(event) {
+    function editDoubleAuth() {
         axios
             .post("/api/profile/update/doubleAuth")
             .then(function () {
@@ -20,7 +20,7 @@ export default function EnableDoubleAuth(props) {
 
     useEffect(() => {
         setUserPref(props.user["doubleAuth"]);
-    }, [props.user["doubleAuth"]]);
+    }, [props.user]);
 
     return (
         <div id="edit-double-auth">

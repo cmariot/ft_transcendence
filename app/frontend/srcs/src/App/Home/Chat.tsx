@@ -1,9 +1,15 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import {
+    ChangeEvent,
+    MouseEvent,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import "../CSS/Chat.css";
 import { Websocketcontext } from "../../Websockets/WebsocketContext";
 import axios from "axios";
 
-const Chat = (props) => {
+const Chat = (props: any) => {
     const [menu, setMenu] = useState("menu");
     const [message, setMessage] = useState("");
 
@@ -22,31 +28,42 @@ const Chat = (props) => {
     function toogleChatMenu() {
         var menu = document.getElementById("chat-menu");
         var app = document.getElementById("chat-main");
-        document.getElementById("chat-create-channel").style.display = "none";
-        if (menu.style.display == "flex") {
-            app.style.display = "flex";
-            menu.style.display = "none";
-        } else {
-            app.style.display = "none";
-            menu.style.display = "flex";
+        var createChatChannel = document.getElementById("chat-create-channel");
+        if (createChatChannel) {
+            createChatChannel.style.display = "none";
+        }
+        if (menu && app) {
+            if (menu.style.display == "flex") {
+                app.style.display = "flex";
+                menu.style.display = "none";
+            } else {
+                app.style.display = "none";
+                menu.style.display = "flex";
+            }
         }
     }
 
     function displayCreateChannel() {
-        document.getElementById("chat-menu").style.display = "none";
-        document.getElementById("chat-create-channel").style.display = "flex";
-        socket.emit("newChannel", { channel: "Channel-Name", user: "User" });
+        const menu = document.getElementById("chat-menu");
+        const createChannel = document.getElementById("chat-create-channel");
+        if (menu && createChannel) {
+            menu.style.display = "none";
+            createChannel.style.display = "flex";
+            socket.emit("newChannel", {
+                channel: "Channel-Name",
+                user: "User",
+            });
+        }
     }
 
-    function handleNewChannelNameChange(event) {
+    function handleNewChannelNameChange(event: ChangeEvent<HTMLInputElement>) {
         const { id, value } = event.target;
         if (id === "new-channel-name") {
             setNewChannelName(value);
         }
     }
 
-    const submitCreateChannelForm = async (event) => {
-        event.preventDefault();
+    const submitCreateChannelForm = async () => {
         await axios
             .post("/api/chat/create-channel", {
                 channel_name: newChannelName,
@@ -65,8 +82,10 @@ const Chat = (props) => {
     function closeChatMenu() {
         var menu = document.getElementById("chat-menu");
         var app = document.getElementById("chat-main");
-        app.style.display = "flex";
-        menu.style.display = "none";
+        if (app && menu) {
+            app.style.display = "flex";
+            menu.style.display = "none";
+        }
     }
 
     function sendMessage() {
@@ -76,13 +95,8 @@ const Chat = (props) => {
     useEffect(() => {
         // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
-        chatMessages.scrollTo(0, chatMessages.scrollHeight);
-        console.log("A");
+        if (chatMessages) chatMessages.scrollTo(0, chatMessages.scrollHeight);
         // Get the channels list
-    }, []);
-
-    useEffect(() => {
-        console.log("B");
     }, []);
 
     return (
@@ -126,7 +140,7 @@ const Chat = (props) => {
                             className="button"
                             type="submit"
                             value="Create Channel"
-                            onClick={(event) => submitCreateChannelForm(event)}
+                            onClick={() => submitCreateChannelForm()}
                         />
                     </form>
                 </menu>

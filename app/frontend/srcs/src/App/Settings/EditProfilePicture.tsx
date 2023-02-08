@@ -2,7 +2,7 @@ import axios from "axios";
 import "../CSS/Settings.css";
 
 export default function EditProfilePicture(props) {
-    function uploadImage(event) {
+    function uploadImage(event: { preventDefault: () => void; target }) {
         event.preventDefault();
         if (event.target.files[0]) {
             const formData = new FormData();
@@ -29,7 +29,7 @@ export default function EditProfilePicture(props) {
             <img
                 src={props.user["userImage"]}
                 id="edit-picture-img"
-                alt="preview image"
+                alt="Edit your avatar"
             />
             <label>
                 Edit Profile Picture

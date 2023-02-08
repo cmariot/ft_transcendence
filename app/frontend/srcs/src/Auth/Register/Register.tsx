@@ -22,8 +22,7 @@ export default function Register() {
         }
     };
 
-    const submitRegisterForm = async (event) => {
-        event.preventDefault();
+    const submitRegisterForm = async () => {
         if (
             username.length === 0 ||
             password.length === 0 ||
@@ -120,7 +119,7 @@ export default function Register() {
                         className="button"
                         type="submit"
                         value="Register"
-                        onClick={(event) => submitRegisterForm(event)}
+                        onClick={() => submitRegisterForm()}
                     />
                     <Link to="/login">cancel</Link>
                 </div>

@@ -20,8 +20,7 @@ const LoginLocal = () => {
         }
     };
 
-    const submitLoginForm = async (event) => {
-        event.preventDefault();
+    const submitLoginForm = async () => {
         if (username.length === 0 || password.length === 0) {
             alert("Error, all the fields are required");
             return;
@@ -80,7 +79,7 @@ const LoginLocal = () => {
                 <input
                     type="submit"
                     className="button"
-                    onClick={(e) => submitLoginForm(e)}
+                    onClick={() => submitLoginForm()}
                     value="Login"
                 />
             </form>

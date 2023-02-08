@@ -2,13 +2,12 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import "../CSS/Friends.css";
 
-export default function Friends(props) {
+export default function Friends(props: any) {
     const [newFriend, setNewFriend] = useState("");
     const [friends, setFriends] = useState([]);
     const [refresh, setRefresh] = useState(false);
 
-    const addFriend = async (event) => {
-        event.preventDefault();
+    const addFriend = async () => {
         await axios
             .post("/api/profile/friend", {
                 username: newFriend,
@@ -21,7 +20,7 @@ export default function Friends(props) {
             });
     };
 
-    async function toogleMenu(index) {
+    async function toogleMenu(index: number) {
         let menus = document.getElementsByClassName("friend-menu");
         if (menus[index].classList.contains("friend-menu-display")) {
             menus[index].classList.remove("friend-menu-display");
@@ -91,6 +90,7 @@ export default function Friends(props) {
                             <img
                                 src={"/api/profile/" + friend + "/image"}
                                 className="friend-profile-picture"
+                                alt="Friend's avatar"
                             />
                             <div className="friend-middle-div">
                                 <p className="friend-username">

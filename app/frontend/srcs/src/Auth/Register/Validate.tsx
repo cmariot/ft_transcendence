@@ -15,8 +15,7 @@ const Validate = () => {
         }
     };
 
-    const submitValidateForm = async (event) => {
-        event.preventDefault();
+    const submitValidateForm = async () => {
         await axios
             .post("/api/register/validate", {
                 code: code,
@@ -30,15 +29,13 @@ const Validate = () => {
             });
     };
 
-    const resendCode = async (event) => {
-        event.preventDefault();
+    const resendCode = async () => {
         await axios.get("/api/register/resend").catch(function (error) {
             console.log(error);
         });
     };
 
-    const cancelRegister = async (event) => {
-        event.preventDefault();
+    const cancelRegister = async () => {
         await axios
             .get("/api/register/cancel")
             .then(function () {
