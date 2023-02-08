@@ -1,7 +1,5 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ReactDOM from "react-dom/client";
-import { socket, WebsocketProvider } from "./Websockets/WebsocketContext";
 
 import Auth from "./Auth/Auth";
 import AuthNavbar from "./Auth/AuthNavbar";
@@ -22,6 +20,9 @@ import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
 import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
 import Friends from "./App/Friend/Friends";
 
+import "./index.css";
+
+import ReactDOM from "react-dom/client";
 import "./index.css";
 
 const root = ReactDOM.createRoot(
@@ -63,9 +64,7 @@ root.render(
                     path="/"
                     element={
                         <ProtectedPage>
-                            <WebsocketProvider value={socket}>
-                                <App />
-                            </WebsocketProvider>
+                            <App />
                         </ProtectedPage>
                     }
                 >

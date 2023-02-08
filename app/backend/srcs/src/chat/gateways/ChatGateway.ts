@@ -1,4 +1,4 @@
-import { OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { OnModuleInit } from "@nestjs/common";
 import {
     MessageBody,
     SubscribeMessage,
@@ -24,11 +24,14 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
-    //@SubscribeMessage("newMessage")
-    //onNewMessage(@MessageBody() data: any) {
-    //    console.log("NEWMESSAGE : ", data);
-    //    console.log("EMIT TO BROADCAST :");
-    //    this.server.emit("onMessage", { message: "NewMessage", content: data });
-    //    return data;
-    //}
+    @SubscribeMessage("newChannelAvailable")
+    onNewChannel(@MessageBody() data: any) {
+        console.log("NEWCHANNEL : ", data);
+        console.log("EMIT TO BROADCAST :");
+        this.server.emit("onNewChannel", {
+            message: "New Channel available",
+            content: data,
+        });
+        return data;
+    }
 }

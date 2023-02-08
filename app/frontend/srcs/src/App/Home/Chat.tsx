@@ -1,9 +1,16 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import "../CSS/Chat.css";
+import { Websocketcontext } from "../../Websockets/WebsocketContext";
+import axios from "axios";
 
 const Chat = (props) => {
     const [menu, setMenu] = useState("menu");
     const [message, setMessage] = useState("");
+
+    const [channels, setChannels] = useState([]);
+    const [newChannelName, setNewChannelName] = useState("");
+
+    const socket = useContext(Websocketcontext);
 
     const handleTyping = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -15,6 +22,7 @@ const Chat = (props) => {
     function toogleChatMenu() {
         var menu = document.getElementById("chat-menu");
         var app = document.getElementById("chat-main");
+        document.getElementById("chat-create-channel").style.display = "none";
         if (menu.style.display == "flex") {
             app.style.display = "flex";
             menu.style.display = "none";
@@ -23,6 +31,36 @@ const Chat = (props) => {
             menu.style.display = "flex";
         }
     }
+
+    function displayCreateChannel() {
+        document.getElementById("chat-menu").style.display = "none";
+        document.getElementById("chat-create-channel").style.display = "flex";
+        socket.emit("newChannel", { channel: "Channel-Name", user: "User" });
+    }
+
+    function handleNewChannelNameChange(event) {
+        const { id, value } = event.target;
+        if (id === "new-channel-name") {
+            setNewChannelName(value);
+        }
+    }
+
+    const submitCreateChannelForm = async (event) => {
+        event.preventDefault();
+        await axios
+            .post("/api/chat/create-channel", {
+                channel_name: newChannelName,
+            })
+            .then(function () {
+                console.log("ARRAY CHANNELS : ", channels);
+                setChannels((oldArray) => [...oldArray, newChannelName]);
+                console.log("ARRAY CHANNELS : ", channels);
+                setNewChannelName("");
+            })
+            .catch(function (error) {
+                alert(error.response.data.message);
+            });
+    };
 
     function closeChatMenu() {
         var menu = document.getElementById("chat-menu");
@@ -36,22 +74,63 @@ const Chat = (props) => {
     }
 
     useEffect(() => {
+        // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
         chatMessages.scrollTo(0, chatMessages.scrollHeight);
+        console.log("A");
+        // Get the channels list
+    }, []);
+
+    useEffect(() => {
+        console.log("B");
     }, []);
 
     return (
         <div id="chat">
-            <header id="chat-header">
-                <p id="chat-channel">channel name</p>
-                <button onClick={toogleChatMenu}>{menu}</button>
-            </header>
-            <menu id="chat-menu">
-                <button>Join another channel</button>
-                <button>Create a channel</button>
-                <button>Leave current channel</button>
-                <button onClick={closeChatMenu}>Cancel</button>
-            </menu>
+            <>
+                <header id="chat-header">
+                    <p id="chat-channel">channel name</p>
+                    <button onClick={toogleChatMenu}>{menu}</button>
+                </header>
+            </>
+            <>
+                <menu id="chat-menu">
+                    <h3>Channels list :</h3>
+                    <ul>
+                        {channels.map((item, index) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ul>
+                    <button onClick={displayCreateChannel}>
+                        Create a channel
+                    </button>
+                    <button onClick={closeChatMenu}>Cancel</button>
+                </menu>
+            </>
+            <>
+                <menu id="chat-create-channel">
+                    <form>
+                        <input
+                            id="new-channel-name"
+                            type="text"
+                            placeholder="New Channel"
+                            value={newChannelName}
+                            onChange={(event) =>
+                                handleNewChannelNameChange(event)
+                            }
+                            autoComplete="off"
+                            required
+                        />
+                        <input
+                            id="submit"
+                            className="button"
+                            type="submit"
+                            value="Create Channel"
+                            onClick={(event) => submitCreateChannelForm(event)}
+                        />
+                    </form>
+                </menu>
+            </>
             <main id="chat-main">
                 <ul id="chat-main-ul">
                     <li className="chat-main-li">
@@ -65,42 +144,6 @@ const Chat = (props) => {
                     <li className="chat-main-li">
                         <p className="chat-username">toto :</p>
                         <p className="chat-message">message</p>
-                    </li>
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">message</p>
-                    </li>{" "}
-                    <li className="chat-main-li">
-                        <p className="chat-username">toto :</p>
-                        <p className="chat-message">dernier message</p>
                     </li>
                 </ul>
             </main>

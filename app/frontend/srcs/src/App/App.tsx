@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import AppNavbar from "./AppNavBar";
 import AppFooter from "./AppFooter";
 import axios from "axios";
+import { WebsocketProvider, socket } from "../Websockets/WebsocketContext";
 
 function App() {
     const [username, setUsername] = useState("");
@@ -39,13 +40,13 @@ function App() {
     }, []);
 
     return (
-        <>
+        <WebsocketProvider value={socket}>
             <AppNavbar user={user} />
             <section id="app-content">
                 <Outlet context={user} />
             </section>
             <AppFooter />
-        </>
+        </WebsocketProvider>
     );
 }
 export default App;

@@ -35,6 +35,10 @@
     align-items: stretch;
 }
 
+#chat-create-channel {
+    display: none;
+}
+
 #chat-main {
     height: 100%;
     width: 100%;
