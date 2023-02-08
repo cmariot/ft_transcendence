@@ -1,5 +1,5 @@
 import "../CSS/Home.css";
-import Chat from "./Chat";
+import Chat from "./Chat/Chat";
 
 const Home = (props: any) => {
     return (

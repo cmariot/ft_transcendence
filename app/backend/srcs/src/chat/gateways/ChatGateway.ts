@@ -14,21 +14,22 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-            console.log(
-                "new user connected to the app, his socket is : ",
-                socket.id
-            );
+            console.log("new client connected to the app");
             socket.on("disconnect", () => {
                 console.log("user disconnected");
             });
         });
     }
 
-    @SubscribeMessage("newChannelAvailable")
-    onNewChannel(@MessageBody() data: any) {
-        console.log("NEWCHANNEL : ", data);
-        console.log("EMIT TO BROADCAST :");
-        this.server.emit("onNewChannel", {
+    newChannelAvailable(@MessageBody() data: any) {
+        this.server.emit("newChannelAvailable", {
+            message: "New Channel available",
+            content: data,
+        });
+        return data;
+    }
+    userConnection(@MessageBody() data: any) {
+        this.server.emit("userConnection", {
             message: "New Channel available",
             content: data,
         });

@@ -3,7 +3,6 @@ import {
     CreateDateColumn,
     Entity,
     PrimaryGeneratedColumn,
-	OneToMany,
 } from "typeorm";
 
 export enum CreatedFrom {
@@ -60,6 +59,6 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-	@Column("text", {array: true, nullable: true})
-  	friend: string[];
+    @Column("text", { array: true, nullable: true })
+    friend: string[];
 }
