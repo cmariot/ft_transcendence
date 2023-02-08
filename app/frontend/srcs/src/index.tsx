@@ -1,7 +1,6 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
-import Auth from "./Auth/Auth";
 import AuthNavbar from "./Auth/AuthNavbar";
 import AuthFooter from "./Auth/AuthFooter";
 import Login from "./Auth/Login/Login";
@@ -24,6 +23,7 @@ import "./index.css";
 
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import AppFooter from "./App/AppFooter";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -32,22 +32,36 @@ root.render(
     <React.StrictMode>
         <BrowserRouter>
             <Routes>
-                <Route element={<Auth />}>
+                <Route
+                    element={
+                        <>
+                            <AuthNavbar />
+                            <Outlet />
+                            <AppFooter />
+                        </>
+                    }
+                >
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Route>
                 <Route
-                    path="/validate"
                     element={
                         <>
-                            <AuthNavbar />
-                            <ProtectedValidation>
-                                <Validate />
-                            </ProtectedValidation>
-                            <AuthFooter />
+                            <ProtectedValidation />
                         </>
                     }
-                />
+                >
+                    <Route
+                        path="/validate"
+                        element={
+                            <>
+                                <AuthNavbar />
+                                <Validate />
+                                <AuthFooter />
+                            </>
+                        }
+                    />
+                </Route>
                 <Route
                     path="/double-auth"
                     element={

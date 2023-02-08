@@ -4,9 +4,13 @@ import axios from "axios";
 import { Websocketcontext } from "../../../Websockets/WebsocketContext";
 
 const ChatMenu = () => {
-    const [chatChannels, setChatChannels] = useState([]);
-
+    const [channels, updateChannel] = useState<string[]>([]);
     const socket = useContext(Websocketcontext);
+
+    socket.on("newChannelAvailable", (socket) => {
+        updateChannel((previous) => [...previous, socket.content.channelName]);
+    });
+
     function displayCreateChannel() {
         const menu = document.getElementById("chat-menu");
         const createChannel = document.getElementById("chat-create-channel");
@@ -16,57 +20,53 @@ const ChatMenu = () => {
         }
     }
 
-    function getInitialChannelsList() {
+    function closeChatMenu() {
+        var menu = document.getElementById("chat-menu");
+        var app = document.getElementById("chat-main");
+        var footer = document.getElementById("chat-footer");
+        if (app && menu && footer) {
+            app.style.display = "flex";
+            menu.style.display = "none";
+            footer.style.display = "flex";
+        }
+    }
+
+    useEffect(() => {
         axios
             .get("/api/chat/channels")
             .then(function (response) {
                 for (let i = 0; i < response.data.length; i++) {
                     if (
                         response.data[i] &&
-                        chatChannels.find(
+                        response.data[i].channelName &&
+                        channels.find(
                             (element) =>
                                 element === response.data[i].channelName
                         ) === undefined
                     ) {
                         const newChannel: string = response.data[i].channelName;
-                        chatChannels.push(newChannel);
+                        updateChannel((previous) => [...previous, newChannel]);
                     }
                 }
             })
             .catch(function (error) {
                 console.log(error);
             });
-    }
-
-    function closeChatMenu() {
-        var menu = document.getElementById("chat-menu");
-        var app = document.getElementById("chat-main");
-        if (app && menu) {
-            app.style.display = "flex";
-            menu.style.display = "none";
-        }
-    }
-
-    useEffect(() => {
-        console.log("USEEFFECT");
-        // Get the initial channels list
-        getInitialChannelsList();
-
-        socket.on("newChannelAvailable", (socket) => {
-            console.log("NEW CHANNEL = ", socket.content.channelName);
-        });
-    });
+    }, [channels]);
 
     return (
         <menu id="chat-menu">
-            <h3>Channels list :</h3>
-            <ul>
-                {chatChannels.map((item, index) => (
-                    <li key={index}>{item}</li>
+            <ul id="chat-menu-ul">
+                {channels.map((item, index) => (
+                    <li className="chat-menu-li" key={index}>
+                        <p className="chat-menu-channel">{item}</p>
+                    </li>
                 ))}
             </ul>
-            <button onClick={displayCreateChannel}>Create a channel</button>
-            <button onClick={closeChatMenu}>Cancel</button>
+            <div id="chat-menu-buttons">
+                <button onClick={displayCreateChannel}>new channel</button>
+                <button onClick={closeChatMenu}>cancel</button>
+            </div>
         </menu>
     );
 };

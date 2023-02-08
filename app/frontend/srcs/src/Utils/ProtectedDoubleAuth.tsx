@@ -5,27 +5,28 @@ import axios from "axios";
 
 const ProtectedDoubleAuth = (props: any) => {
     const navigate = useNavigate();
-    const [isDoubleAuthorized, setIsDoubleAuthorized] = useState(false);
+    let isDoubleAuthorized = true;
 
     function validateDoubleAuth() {
         const userToken = getCookie("double_authentification");
         if (!userToken || userToken === "undefined") {
-            setIsDoubleAuthorized(false);
+            isDoubleAuthorized = false;
             return navigate("/login");
         }
         axios
             .get("/api/test/doubleAuth")
             .then(function () {
-                setIsDoubleAuthorized(true);
+                return;
             })
             .catch(function (error) {
                 console.log(error);
-                setIsDoubleAuthorized(false);
+                isDoubleAuthorized = false;
                 navigate("/login");
             });
     }
 
     useEffect(() => {
+        console.log("UseEffect in ProtectedDoubleAuth");
         validateDoubleAuth();
     });
 
