@@ -3,7 +3,7 @@ import "../CSS/Chat.css";
 import { Websocketcontext } from "../../Websockets/WebsocketContext";
 import axios from "axios";
 
-const Chat = (props) => {
+const Chat = (props: any) => {
     const [menu, setMenu] = useState("menu");
     const [message, setMessage] = useState("");
 
@@ -23,7 +23,9 @@ const Chat = (props) => {
         var menu = document.getElementById("chat-menu");
         var app = document.getElementById("chat-main");
         document.getElementById("chat-create-channel").style.display = "none";
-        if (menu.style.display == "flex") {
+		if (!menu || !app)
+			return;
+        if (menu.style.display === "flex") {
             app.style.display = "flex";
             menu.style.display = "none";
         } else {
@@ -38,14 +40,14 @@ const Chat = (props) => {
         socket.emit("newChannel", { channel: "Channel-Name", user: "User" });
     }
 
-    function handleNewChannelNameChange(event) {
+    function handleNewChannelNameChange(event: any) {
         const { id, value } = event.target;
         if (id === "new-channel-name") {
             setNewChannelName(value);
         }
     }
 
-    const submitCreateChannelForm = async (event) => {
+    const submitCreateChannelForm = async (event: any) => {
         event.preventDefault();
         await axios
             .post("/api/chat/create-channel", {
@@ -65,6 +67,8 @@ const Chat = (props) => {
     function closeChatMenu() {
         var menu = document.getElementById("chat-menu");
         var app = document.getElementById("chat-main");
+		if (!app || !menu)
+			return;
         app.style.display = "flex";
         menu.style.display = "none";
     }
@@ -76,6 +80,8 @@ const Chat = (props) => {
     useEffect(() => {
         // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
+		if (!chatMessages)
+			return ;
         chatMessages.scrollTo(0, chatMessages.scrollHeight);
         console.log("A");
         // Get the channels list

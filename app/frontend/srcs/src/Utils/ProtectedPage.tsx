@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
 
-const ProtectedPage = (props) => {
+const ProtectedPage = (props: any) => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 

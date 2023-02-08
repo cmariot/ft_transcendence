@@ -1,7 +1,7 @@
 import "../CSS/Home.css";
 import Chat from "./Chat";
 
-const Home = (props) => {
+const Home = (props: any) => {
     return (
         <main id="home-main">
             <div id="game">Game</div>

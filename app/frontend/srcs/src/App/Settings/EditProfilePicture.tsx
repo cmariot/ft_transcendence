@@ -1,8 +1,8 @@
 import axios from "axios";
 import "../CSS/Settings.css";
 
-export default function EditProfilePicture(props) {
-    function uploadImage(event) {
+export default function EditProfilePicture(props: any) {
+    function uploadImage(event: any) {
         event.preventDefault();
         if (event.target.files[0]) {
             const formData = new FormData();

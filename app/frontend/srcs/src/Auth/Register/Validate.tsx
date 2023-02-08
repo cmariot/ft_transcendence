@@ -15,7 +15,7 @@ const Validate = () => {
         }
     };
 
-    const submitValidateForm = async (event) => {
+    const submitValidateForm = async (event: any) => {
         event.preventDefault();
         await axios
             .post("/api/register/validate", {
@@ -30,14 +30,14 @@ const Validate = () => {
             });
     };
 
-    const resendCode = async (event) => {
+    const resendCode = async (event: any) => {
         event.preventDefault();
         await axios.get("/api/register/resend").catch(function (error) {
             console.log(error);
         });
     };
 
-    const cancelRegister = async (event) => {
+    const cancelRegister = async (event: any) => {
         event.preventDefault();
         await axios
             .get("/api/register/cancel")

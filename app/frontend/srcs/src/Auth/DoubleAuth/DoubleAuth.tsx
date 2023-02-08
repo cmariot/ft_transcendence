@@ -15,7 +15,7 @@ const DoubleAuth = () => {
         }
     };
 
-    const submitValidate2faForm = async (event) => {
+    const submitValidate2faForm = async (event: any) => {
         event.preventDefault();
         await axios
             .post("/api/second_auth", {
@@ -31,14 +31,14 @@ const DoubleAuth = () => {
             });
     };
 
-    const resend2faCode = async (event) => {
+    const resend2faCode = async (event: any) => {
         event.preventDefault();
         await axios.get("/api/second_auth/resend").catch(function (error) {
             console.log(error);
         });
     };
 
-    const cancel2fa = async (event) => {
+    const cancel2fa = async (event: any) => {
         event.preventDefault();
         await axios
             .get("/api/second_auth/cancel")

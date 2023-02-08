@@ -2,12 +2,12 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import "../CSS/Friends.css";
 
-export default function Friends(props) {
+export default function Friends(props: any) {
     const [newFriend, setNewFriend] = useState("");
     const [friends, setFriends] = useState([]);
     const [refresh, setRefresh] = useState(false);
 
-    const addFriend = async (event) => {
+    const addFriend = async (event: any) => {
         event.preventDefault();
         await axios
             .post("/api/profile/friend", {
@@ -21,7 +21,7 @@ export default function Friends(props) {
             });
     };
 
-    async function toogleMenu(index) {
+    async function toogleMenu(index: any) {
         let menus = document.getElementsByClassName("friend-menu");
         if (menus[index].classList.contains("friend-menu-display")) {
             menus[index].classList.remove("friend-menu-display");

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
 
-function AppNavBar(props) {
+function AppNavBar(props: any) {
     const navigate = useNavigate();
 
     function go(path: string) {
@@ -25,7 +25,9 @@ function AppNavBar(props) {
     function toogleMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
-        if (menuBox.style.display == "flex") {
+		if (!menuBox || !app)
+			return ;
+        if (menuBox.style.display === 'flex') {
             menuBox.style.display = "none";
             app.style.display = "";
         } else {
@@ -37,7 +39,9 @@ function AppNavBar(props) {
     function closeMenu() {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
-        if (menuBox.style.display == "flex") {
+		if (!menuBox || !app)
+			return ;
+        if (menuBox.style.display === "flex") {
             menuBox.style.display = "none";
             app.style.display = "";
         }

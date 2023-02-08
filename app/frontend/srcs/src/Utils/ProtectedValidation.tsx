@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
 
-const ProtectedValidation = (props) => {
+const ProtectedValidation = (props: any) => {
     const navigate = useNavigate();
     const [isAuthorized, setIsAuthorized] = useState(false);
 

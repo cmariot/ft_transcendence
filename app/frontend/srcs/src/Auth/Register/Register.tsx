@@ -22,7 +22,7 @@ export default function Register() {
         }
     };
 
-    const submitRegisterForm = async (event) => {
+    const submitRegisterForm = async (event: any) => {
         event.preventDefault();
         if (
             username.length === 0 ||

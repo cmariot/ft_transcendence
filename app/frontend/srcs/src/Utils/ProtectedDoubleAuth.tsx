@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
 
-const ProtectedDoubleAuth = (props) => {
+const ProtectedDoubleAuth = (props: any) => {
     const navigate = useNavigate();
     const [isDoubleAuthorized, setIsDoubleAuthorized] = useState(false);
 
