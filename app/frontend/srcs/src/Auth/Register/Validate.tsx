@@ -15,12 +15,8 @@ const Validate = () => {
         }
     };
 
-<<<<<<< HEAD
     const submitValidateForm = async (event: any) => {
         event.preventDefault();
-=======
-    const submitValidateForm = async () => {
->>>>>>> 6516be0facb0472989df2c502fc3b7ade8919996
         await axios
             .post("/api/register/validate", {
                 code: code,
@@ -34,23 +30,15 @@ const Validate = () => {
             });
     };
 
-<<<<<<< HEAD
     const resendCode = async (event: any) => {
         event.preventDefault();
-=======
-    const resendCode = async () => {
->>>>>>> 6516be0facb0472989df2c502fc3b7ade8919996
         await axios.get("/api/register/resend").catch(function (error) {
             console.log(error);
         });
     };
 
-<<<<<<< HEAD
     const cancelRegister = async (event: any) => {
         event.preventDefault();
-=======
-    const cancelRegister = async () => {
->>>>>>> 6516be0facb0472989df2c502fc3b7ade8919996
         await axios
             .get("/api/register/cancel")
             .then(function () {

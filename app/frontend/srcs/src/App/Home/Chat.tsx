@@ -141,7 +141,7 @@ const Chat = (props: any) => {
                             className="button"
                             type="submit"
                             value="Create Channel"
-                            onClick={() => submitCreateChannelForm()}
+                            onClick={(e) => submitCreateChannelForm(e)}
                         />
                     </form>
                 </menu>
