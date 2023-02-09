@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
+import { socket } from "../Websockets/WebsocketContext";
 
 const ProtectedPage = (props: any) => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const ProtectedPage = (props: any) => {
             }
             axios
                 .get("/api/test/isLogged")
-                .then(function () {
+                .then(function (response) {
                     setIsLoggedIn(true);
                     return;
                 })

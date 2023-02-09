@@ -6,32 +6,39 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
-
+import { SocketService } from "../services/socket.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
+	constructor(private socketService: SocketService) {}
     @WebSocketServer()
     server: Server;
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-            console.log(
-                "new user connected to the app, his socket is : ",
-                socket.id
-            );
-            socket.on("disconnect", () => {
-                console.log("user disconnected");
+			socket.on("disconnect", () => {
+				let username = this.socketService.UserDisconnetion(socket.id);
+				this.server.emit("userStatus", {
+            		message: "A user is disconnected",
+            		username: username
+        		});
             });
         });
     }
 
     @SubscribeMessage("newChannelAvailable")
     onNewChannel(@MessageBody() data: any) {
-        console.log("NEWCHANNEL : ", data);
         console.log("EMIT TO BROADCAST :");
         this.server.emit("onNewChannel", {
             message: "New Channel available",
             content: data,
         });
+        return data;
+    }
+
+	@SubscribeMessage("userStatus")
+    userStatus(@MessageBody() data: any) {
+		console.log("RECEIVE: ", data);
+		this.socketService.UserConnection(data.username, data.socket, data.status);
         return data;
     }
 }

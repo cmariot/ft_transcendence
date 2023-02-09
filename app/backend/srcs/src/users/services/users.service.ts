@@ -6,14 +6,14 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QueryBuilder, Repository } from "typeorm";
-import { CreatedFrom, UserEntity } from "../entity/user.entity";
+import { CreatedFrom, Status, UserEntity } from "../entity/user.entity";
 import { RegisterDto } from "src/auth/dtos/register.dto";
 import * as bcrypt from "bcrypt";
 import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-import { findSourceMap } from "module";
+import { ChatGateway } from "src/chat/gateways/ChatGateway";
 @Injectable()
 export class UsersService {
     constructor(
@@ -83,6 +83,10 @@ export class UsersService {
         return (await user).username;
     }
 
+	async getBySocket(socket: string): Promise<UserEntity> {
+        return this.userRepository.findOneBy({ socketId: socket });
+    }
+
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);
@@ -102,6 +106,46 @@ export class UsersService {
             { doubleAuthentificationCode: "" }
         );
     }
+
+	async user_status(username: string, status: Status)
+	{
+		let user: UserEntity = await this.getByUsername(username);
+		if(status === "Online"){
+			await this.userRepository.update(
+				{ uuid: user.uuid },
+				{ status: Status.ONLINE }
+			);}
+		if(status === "Offline"){
+			await this.userRepository.update(
+				{ uuid: user.uuid },
+				{ status: Status.OFFLINE }
+			);}
+		if(status === "In_game"){
+			await this.userRepository.update(
+				{ uuid: user.uuid },
+				{ status: Status.IN_GAME }
+			);}
+	}
+
+	async setSocketID(username: string, socket: string, status: Status)
+	{
+		let user: UserEntity = await this.getByUsername(username);
+		await this.user_status(user.username, status);
+		user.socketId = socket;
+		await this.userRepository.update(
+        	{ uuid: user.uuid },
+        	{ socketId: user.socketId },
+        );
+	}
+	async userDisconnection(socket: string)
+	{
+		let user: UserEntity = await this.getBySocket(socket);
+		if (user){
+			await this.user_status(user.username, Status.OFFLINE);
+			return (user.username);
+		}
+		return ("User not register")
+	}
 
     async generateDoubleAuthCode(uuid: string) {
         const min = Math.ceil(100000);

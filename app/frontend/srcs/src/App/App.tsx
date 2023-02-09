@@ -28,6 +28,11 @@ function App() {
                 user["setUserImage"](
                     "/api/profile/" + response.data.username + "/image"
                 );
+				socket.emit("userStatus", {
+                	status: "Online",
+					socket: socket.id,
+					username: response.data.username,
+            	});
             })
             .catch((error) => {
                 console.log(error.response);

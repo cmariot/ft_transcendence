@@ -152,4 +152,5 @@ export class UsersController {
             );
         return await this.userService.DelFriend(req.user.uuid, friend.uuid);
     }
+
 }
