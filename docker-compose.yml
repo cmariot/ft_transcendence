@@ -9,6 +9,18 @@ services:
             - network
         restart: unless-stopped
 
+    pgadmin:
+        container_name: "pgadmin"
+        image: dpage/pgadmin4
+        env_file: app/pgadmin/.env
+        networks:
+            - network
+        ports:
+            - "5050:5000"
+        depends_on:
+            - "database"
+        restart: unless-stopped
+
     backend:
         container_name: "backend"
         build: app/backend/
@@ -35,19 +47,8 @@ services:
         expose:
             - 4000
         depends_on:
-            - "backend"
-        restart: unless-stopped
-
-    pgadmin:
-        container_name: "pgadmin"
-        image: dpage/pgadmin4
-        env_file: app/pgadmin/.env
-        networks:
-            - network
-        ports:
-            - "5050:5000"
-        depends_on:
             - "database"
+            - "backend"
         restart: unless-stopped
 
     reverse_proxy:
@@ -55,10 +56,11 @@ services:
         build: app/reverse_proxy/
         networks:
             - network
-        ports:
-            - "8443:8443"
         depends_on:
             - "frontend"
+            - "backend"
+        ports:
+            - "8443:8443"
         restart: unless-stopped
 
 networks:

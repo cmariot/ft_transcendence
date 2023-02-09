@@ -11,6 +11,8 @@ export PGADMIN_CONFIG_SERVER_MODE="False"
 export DATABASE_PORT="5432"
 export DATABASE_CONTAINER="database"
 
+export REVERSE_PROXY_PORT="8443"
+
 create_database()
 {
 	echo "Database initialization : "
@@ -69,6 +71,8 @@ create_frontend()
 	echo "PORT=\"${FRONTEND_PORT}\""						> ./app/frontend/.env
 	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
 	echo "GENERATE_SOURCEMAP=false"							>> ./app/frontend/.env
+	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""		>> ./app/frontend/.env
+	
 }
 
 create_pgadmin()

@@ -7,6 +7,7 @@ import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { AppController } from "./app.controller";
 import { ChatModule } from "./chat/chat.module";
+import { ChatEntity } from "./chat/entities/chat.entity.";
 
 @Module({
     imports: [
@@ -31,7 +32,7 @@ import { ChatModule } from "./chat/chat.module";
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_SCHEMA,
-            entities: [UserEntity],
+            entities: [ChatEntity, UserEntity],
             synchronize: true,
         }),
         UsersModule,

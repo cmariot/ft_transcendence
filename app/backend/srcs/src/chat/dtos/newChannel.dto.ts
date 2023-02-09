@@ -1,7 +1,10 @@
-import { IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsEmpty, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class NewChannelDTO {
     @IsNotEmpty()
     @IsString()
-    channel_name: string;
+    channelName: string;
+
+    @IsEmpty()
+    channelOwner: string;
 }
