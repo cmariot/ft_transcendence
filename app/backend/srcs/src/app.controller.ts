@@ -7,13 +7,13 @@ import { Status } from "./users/entity/user.entity";
 
 @Controller()
 export class AppController {
-	constructor(private userService: UsersService){}
+    constructor(private userService: UsersService) {}
     @Get("test/isLogged")
     @UseGuards(isLogged)
     async testLogged(@Req() req) {
-		await this.userService.user_status(req.user.Username, Status.ONLINE);
-		return req.user.username;
-	}
+        await this.userService.user_status(req.user.Username, Status.ONLINE);
+        return req.user.username;
+    }
 
     @Get("test/doubleAuth")
     @UseGuards(DoubleAuthGuard)

@@ -65,16 +65,16 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-	@Column({
+    @Column({
         type: "enum",
         enum: Status,
         default: Status.OFFLINE,
     })
-    status: Status;	
+    status: Status;
 
-	@Column({ nullable: true })
-	socketId : string;
+    @Column({ nullable: true })
+    socketId: string;
 
-	@Column("text", {array: true, nullable: true})
-  	friend: string[];
+    @Column("text", { array: true, nullable: true })
+    friend: string[];
 }
