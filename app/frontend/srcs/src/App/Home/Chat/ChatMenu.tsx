@@ -3,7 +3,7 @@ import "../../CSS/Chat.css";
 import axios from "axios";
 import { Websocketcontext } from "../../../Websockets/WebsocketContext";
 
-const ChatMenu = () => {
+const ChatMenu = (props: any) => {
     const [chatChannels, updateChannel] = useState<
         Map<string, { channelType: string }>
     >(new Map<string, { channelType: string }>());
@@ -62,6 +62,12 @@ const ChatMenu = () => {
         }
     }
 
+    function changeChannel(item: any) {
+        console.log("Click on : ", item[0]);
+        props.changeChannel(item[0]);
+        closeChatMenu();
+    }
+
     return (
         <menu id="chat-menu" className="chat-section">
             <header id="chat-menu-header" className="chat-header">
@@ -70,7 +76,11 @@ const ChatMenu = () => {
             </header>
             <div id="chat-menu-channels" className="chat-main">
                 {Array.from(chatChannels).map((item, index) => (
-                    <button className="chat-menu-li" key={index}>
+                    <button
+                        className="chat-menu-li"
+                        key={index}
+                        onClick={() => changeChannel(item)}
+                    >
                         <p className="chat-menu-channel">{item[0]}</p>
                         <p className="chat-menu-channel">
                             ({item[1].channelType})

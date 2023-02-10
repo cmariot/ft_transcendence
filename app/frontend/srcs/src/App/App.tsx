@@ -6,6 +6,7 @@ import axios from "axios";
 import { WebsocketProvider, socket } from "../Websockets/WebsocketContext";
 
 function App() {
+    const [firstLoad, setFirstLoad] = useState(true);
     const [username, setUsername] = useState("");
     const [userImage, setUserImage] = useState("");
     const [doubleAuth, setDoubleAuth] = useState(true);
@@ -19,30 +20,32 @@ function App() {
         setDoubleAuth: setDoubleAuth,
     };
 
-    const getProfile = async function () {
-        await axios
-            .get("/api/profile")
-            .then((response) => {
-                user["setUsername"](response.data.username);
-                user["setDoubleAuth"](response.data.twoFactorsAuth);
-                user["setUserImage"](
-                    "/api/profile/" + response.data.username + "/image"
-                );
-				socket.emit("userStatus", {
-                	status: "Online",
-					socket: socket.id,
-					username: response.data.username,
-            	});
-            })
-            .catch((error) => {
-                console.log(error.response);
-                return;
-            });
-    };
-
     useEffect(() => {
-        getProfile();
-    }, []);
+        const getProfile = async () => {
+            setFirstLoad(false);
+            await axios
+                .get("/api/profile")
+                .then((response) => {
+                    user["setUsername"](response.data.username);
+                    user["setDoubleAuth"](response.data.twoFactorsAuth);
+                    user["setUserImage"](
+                        "/api/profile/" + response.data.username + "/image"
+                    );
+                    socket.emit("userStatus", {
+                        status: "Online",
+                        socket: socket.id,
+                        username: response.data.username,
+                    });
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    return;
+                });
+        };
+        if (firstLoad) {
+            getProfile();
+        }
+    });
 
     return (
         <WebsocketProvider value={socket}>

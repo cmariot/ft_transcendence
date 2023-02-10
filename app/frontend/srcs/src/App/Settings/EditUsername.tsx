@@ -13,26 +13,26 @@ export default function EditUsername(props: any) {
 
     const submitUsernameForm = async (event: any) => {
         event.preventDefault();
-        if (username === props.user["username"]) {
+        const newValue: string = username;
+        if (newValue === props.user["username"]) {
             alert("Change your username");
             return;
         }
         await axios
             .post("/api/profile/update/username", {
-                username: username,
+                username: newValue,
             })
             .then(function () {
-                props.user["setUsername"](username);
+                props.user["setUsername"](newValue);
             })
             .catch(function (error) {
-                setUsername(props.user["username"]);
                 alert(error.response.data.message);
             });
     };
 
     useEffect(() => {
         setUsername(props.user["username"]);
-    }, [props.user["username"]]);
+    }, [props.user]);
 
     return (
         <div id="username-main">
@@ -42,7 +42,7 @@ export default function EditUsername(props: any) {
                     type="text"
                     placeholder="New Username"
                     value={username}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={handleInputChange}
                     autoComplete="off"
                     autoFocus
                     required
@@ -52,7 +52,7 @@ export default function EditUsername(props: any) {
                     className="button"
                     type="submit"
                     value="Edit Username"
-                    onClick={(event) => submitUsernameForm}
+                    onClick={submitUsernameForm}
                 />
             </form>
         </div>

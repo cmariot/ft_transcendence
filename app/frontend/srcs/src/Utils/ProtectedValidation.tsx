@@ -1,31 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
 
 const ProtectedValidation = () => {
-    let isAuthorizedRef = useRef(true);
     const navigate = useNavigate();
+    const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
-        console.log("USEEFFECT DE MES COUILLES");
-        const userToken = getCookie("email_validation");
-        if (!userToken || userToken === "undefined") {
-            isAuthorizedRef.current = false;
-            return navigate("/login");
-        }
-        axios
-            .get("/api/test/emailValidation")
-            .then(function () {
-                return;
-            })
-            .catch(function (error) {
-                isAuthorizedRef.current = false;
-                console.log(error);
+        const validateConnexion = async () => {
+            const userToken = getCookie("email_validation");
+            if (!userToken || userToken === "undefined") {
+                setIsAuthorized(false);
                 return navigate("/login");
-            });
-    });
+            }
+            await axios
+                .get("/api/authorization/email")
+                .then(function () {
+                    setIsAuthorized(true);
+                    return;
+                })
+                .catch(function () {
+                    setIsAuthorized(false);
+                    return navigate("/login");
+                });
+        };
+        validateConnexion();
+    }, [isAuthorized, navigate]);
 
-    return <>{isAuthorizedRef.current === true ? <Outlet /> : null}</>;
+    return <>{isAuthorized === true ? <Outlet /> : null}</>;
 };
 export default ProtectedValidation;

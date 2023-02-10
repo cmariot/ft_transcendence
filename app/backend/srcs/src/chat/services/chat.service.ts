@@ -72,12 +72,11 @@ export class ChatService {
     }
 
     async send_message(channelName: string, userID: string, message: string) {
-        let channel = await this.chatRepository.findOneBy({
+        const channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
-        if (!channel) throw new UnauthorizedException();
-        let user = await this.userService.getByID(userID);
-        if (!user) throw new UnauthorizedException();
+        const user = await this.userService.getByID(userID);
+        if (!channel || !user) throw new UnauthorizedException();
         if (channel.channelType === ChannelType.PUBLIC) {
             this.chatGateway.send_message(
                 channel.channelName,

@@ -3,7 +3,7 @@ import EditUsername from "./EditUsername";
 import EditProfilePicture from "./EditProfilePicture";
 import EnableDoubleAuth from "./EnableDoubleAuth";
 
-const Settings = (props: any) => {
+const Settings = () => {
     let user = useOutletContext();
     return (
         <main id="main-settings">

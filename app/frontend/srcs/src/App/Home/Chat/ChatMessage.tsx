@@ -17,12 +17,12 @@ const ChatMessage = (props: any) => {
         axios
             .post("/api/chat", { channelName: props.channel, message: message })
             .then((response) => {
-                console.log(response);
+                console.log("SEND MESSAGE: ", response);
+                setMessage("");
             })
             .catch((error) => {
                 console.log(error);
             });
-        setMessage("");
     }
 
     return (

@@ -8,18 +8,18 @@ import { Status } from "./users/entity/user.entity";
 @Controller()
 export class AppController {
     constructor(private userService: UsersService) {}
-    @Get("test/isLogged")
+    @Get("authorization/logged")
     @UseGuards(isLogged)
     async testLogged(@Req() req) {
         await this.userService.user_status(req.user.Username, Status.ONLINE);
         return req.user.username;
     }
 
-    @Get("test/doubleAuth")
+    @Get("authorization/double-authentification")
     @UseGuards(DoubleAuthGuard)
     async testDoubleAuth() {}
 
-    @Get("test/emailValidation")
+    @Get("authorization/email")
     @UseGuards(EmailGuard)
     async testEmail() {}
 }
