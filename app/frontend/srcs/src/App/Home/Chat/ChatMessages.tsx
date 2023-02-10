@@ -11,6 +11,7 @@ const ChatMessages = (props: any) => {
 
     socket.on("newMessage", (socket) => {
         if (socket.channel === props.channel) {
+            console.log("New message", socket);
             let newMessage = {
                 username: socket.username,
                 message: socket.message,

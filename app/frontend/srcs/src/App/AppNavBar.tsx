@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
-import { socket } from "../Websockets/WebsocketContext";
 
 function AppNavBar(props: any) {
     const navigate = useNavigate();
@@ -15,7 +14,7 @@ function AppNavBar(props: any) {
         toogleMenu();
         axios
             .get("/api/logout")
-            .then((response) => {
+            .then(() => {
                 navigate("/login");
             })
             .catch((error) => {
@@ -41,7 +40,7 @@ function AppNavBar(props: any) {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
         if (menuBox && app) {
-            if (menuBox.style.display == "flex") {
+            if (menuBox.style.display === "flex") {
                 menuBox.style.display = "none";
                 app.style.display = "";
             }

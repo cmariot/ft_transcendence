@@ -75,7 +75,6 @@ root.render(
                     }
                 />
                 <Route
-                    path="/"
                     element={
                         <ProtectedPage>
                             <App />

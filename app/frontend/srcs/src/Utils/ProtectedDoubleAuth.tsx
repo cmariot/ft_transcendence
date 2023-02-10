@@ -4,32 +4,30 @@ import { getCookie } from "./GetCookie";
 import axios from "axios";
 
 const ProtectedDoubleAuth = (props: any) => {
+    const [isDoubleAuthorized, setIsDoubleAuthorized] = useState(false);
     const navigate = useNavigate();
-    let isDoubleAuthorized = true;
-
-    function validateDoubleAuth() {
-        const userToken = getCookie("double_authentification");
-        if (!userToken || userToken === "undefined") {
-            isDoubleAuthorized = false;
-            return navigate("/login");
-        }
-        axios
-            .get("/api/test/doubleAuth")
-            .then(function () {
-                return;
-            })
-            .catch(function (error) {
-                console.log(error);
-                isDoubleAuthorized = false;
-                navigate("/login");
-            });
-    }
 
     useEffect(() => {
-        console.log("UseEffect in ProtectedDoubleAuth");
-        validateDoubleAuth();
-    });
+        const validateConnexion = async () => {
+            const userToken = getCookie("double_authentification");
+            if (!userToken || userToken === "undefined") {
+                setIsDoubleAuthorized(false);
+                return navigate("/login");
+            }
+            await axios
+                .get("/api/authorization/double-authentification")
+                .then(function () {
+                    setIsDoubleAuthorized(true);
+                    return;
+                })
+                .catch(function () {
+                    setIsDoubleAuthorized(false);
+                    return navigate("/login");
+                });
+        };
+        validateConnexion();
+    }, [isDoubleAuthorized, navigate]);
 
-    return <>{isDoubleAuthorized ? props.children : null}</>;
+    return <>{isDoubleAuthorized === true ? props.children : null}</>;
 };
 export default ProtectedDoubleAuth;

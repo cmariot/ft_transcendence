@@ -6,7 +6,6 @@ import ChatMessages from "./ChatMessages";
 import axios from "axios";
 import { Websocketcontext } from "../../../Websockets/WebsocketContext";
 import ChatMessage from "./ChatMessage";
-import { channel } from "diagnostics_channel";
 
 const Chat = () => {
     const [currentChannel, changeChannel] = useState("General");
@@ -37,9 +36,6 @@ const Chat = () => {
         // Send an alert : Join channel
         axios
             .post("/api/chat/connect", { channelName: currentChannel })
-            .then(function (response) {
-                console.log(response);
-            })
             .catch(function (error) {
                 console.log(error);
             });
@@ -47,13 +43,13 @@ const Chat = () => {
         // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
         if (chatMessages) chatMessages.scrollTo(0, chatMessages.scrollHeight);
-    });
+    }, [currentChannel]);
 
     return (
         <>
             <menu id="chat" className="chat-section">
                 <header id="chat-header" className="chat-header">
-                    <p id="chat-channel">Channel : {currentChannel}</p>
+                    <p id="chat-channel">{currentChannel}</p>
                     <button onClick={toogleChatMenu}>change</button>
                 </header>
                 <main id="chat-main" className="chat-main">
@@ -63,7 +59,7 @@ const Chat = () => {
                     <ChatMessage channel={currentChannel} />
                 </footer>
             </menu>
-            <ChatMenu />
+            <ChatMenu changeChannel={changeChannel} />
             <CreateChannelMenu />
         </>
     );

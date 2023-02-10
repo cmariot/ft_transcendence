@@ -5,30 +5,28 @@ import axios from "axios";
 
 const ProtectedPage = (props: any) => {
     const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    function validateConnexion() {
-        if (isLoggedIn === false) {
+    useEffect(() => {
+        const validateConnexion = async () => {
             const userToken = getCookie("authentification");
             if (!userToken || userToken === "undefined") {
                 setIsLoggedIn(false);
                 return navigate("/login");
             }
-            axios
-                .get("/api/test/isLogged")
-                .then(function (response) {
+            await axios
+                .get("/api/authorization/logged")
+                .then(function () {
                     setIsLoggedIn(true);
                     return;
                 })
-                .catch(function (error) {
+                .catch(function () {
                     setIsLoggedIn(false);
                     return navigate("/login");
                 });
-        }
-    }
-    useEffect(() => {
-        console.log("UseEffect in ProtectedPage");
-    });
+        };
+        validateConnexion();
+    }, [isLoggedIn, navigate]);
 
     return <>{isLoggedIn === true ? props.children : null}</>;
 };
