@@ -8,6 +8,7 @@ import { MailerModule } from "@nestjs-modules/mailer";
 import { AppController } from "./app.controller";
 import { ChatModule } from "./chat/chat.module";
 import { ChatEntity } from "./chat/entities/chat.entity.";
+import { UsersService } from "./users/services/users.service";
 
 @Module({
     imports: [

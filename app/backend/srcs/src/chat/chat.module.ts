@@ -10,7 +10,7 @@ import { ChatEntity } from "./entities/chat.entity.";
 import { UserEntity } from "src/users/entity/user.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ChatEntity, UserEntity]), UsersModule],
+    imports: [TypeOrmModule.forFeature([ChatEntity, UserEntity]), UsersModule, ChatModule],
     providers: [SocketService, ChatGateway, ChatService, UsersService],
     controllers: [ChatController],
 })

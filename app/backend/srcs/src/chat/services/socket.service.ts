@@ -2,6 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { Status } from "src/users/entity/user.entity";
 import { UsersService } from "../../users/services/users.service";
 import { ChatGateway } from "../gateways/ChatGateway";
+import {
+    MessageBody,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer,
+} from "@nestjs/websockets";
 
 @Injectable()
 export class SocketService {

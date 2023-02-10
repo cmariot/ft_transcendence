@@ -16,7 +16,10 @@ export class ChatGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on("connection", (socket) => {
             socket.on("disconnect", () => {
-                this.socketService.UserDisconnetion(socket.id);
+                let username = this.socketService.UserDisconnetion(socket.id);
+				if(username){
+					this.sendStatus(username, "Offline");
+				}
             });
         });
     }
