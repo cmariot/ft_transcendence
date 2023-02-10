@@ -7,19 +7,27 @@ import {
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { SocketService } from "../services/socket.service";
+import { UsersService } from "src/users/services/users.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
-    constructor(private socketService: SocketService) {}
+    constructor(
+        private socketService: SocketService,
+        private userService: UsersService
+    ) {}
+
     @WebSocketServer()
     server: Server;
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-            socket.on("disconnect", () => {
-                let username = this.socketService.UserDisconnetion(socket.id);
-				if(username){
-					this.sendStatus(username, "Offline");
-				}
+            socket.on("disconnect", async () => {
+                let username = await this.userService.userDisconnection(
+                    socket.id
+                );
+				console.log("Disconnected User : ", username);
+                if (username) {
+                    this.sendStatus(username, "Offline");
+                }
             });
         });
     }
@@ -59,11 +67,11 @@ export class ChatGateway implements OnModuleInit {
         return data;
     }
 
-	sendStatus(username: string, status: string){
-		console.log("user Status : ", username, status);
+    sendStatus(username: string, status: string) {
+        console.log("user Status : ", username, status);
         this.server.emit("userStatus", {
             username: username,
             status: status,
         });
-	}
+    }
 }
