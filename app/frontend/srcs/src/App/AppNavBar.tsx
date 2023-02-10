@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
-
+import { socket } from "../Websockets/WebsocketContext"
+;
 function AppNavBar(props: any) {
     const navigate = useNavigate();
 
@@ -16,7 +17,10 @@ function AppNavBar(props: any) {
             .get("/api/logout")
             .then(() => {
                 navigate("/login");
-				socket.close();
+				socket.emit("userStatus", {
+					status: "Offline",
+					socket: socket.id,
+				});
             })
             .catch((error) => {
                 console.log(error);

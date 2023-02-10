@@ -8,7 +8,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreatedFrom, UserEntity } from "../entity/user.entity";
 import {} from "typeorm";
-import { Status } from "../entity/user.entity";
 import { RegisterDto } from "src/auth/dtos/register.dto";
 import * as bcrypt from "bcrypt";
 import { createReadStream } from "fs";
@@ -108,29 +107,17 @@ export class UsersService {
         );
     }
 
-    async user_status(username: string, status: Status) {
+    async user_status(username: string, status: string) {
         let user: UserEntity = await this.getByUsername(username);
         if (status === "Online") {
-            await this.userRepository.update(
+            return await this.userRepository.update(
                 { uuid: user.uuid },
-                { status: Status.ONLINE }
-            );
-        }
-        if (status === "Offline") {
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: Status.OFFLINE }
-            );
-        }
-        if (status === "In_game") {
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: Status.IN_GAME }
+                { status: "Online"}
             );
         }
     }
 
-    async setSocketID(username: string, socket: string, status: Status) {
+    async setSocketID(username: string, socket: string, status: string) {
         let user: UserEntity = await this.getByUsername(username);
         await this.user_status(user.username, status);
         user.socketId = socket;
@@ -142,7 +129,10 @@ export class UsersService {
     async userDisconnection(socket: string) {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
-            await this.user_status(user.username, Status.OFFLINE);
+			await this.userRepository.update(
+				{ uuid: user.uuid },
+				{ status: "Offline"}
+			);
             return user.username;
         }
         return "User not register";

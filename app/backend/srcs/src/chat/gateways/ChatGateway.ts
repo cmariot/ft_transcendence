@@ -20,6 +20,7 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
+			console.log("SOCKET SERVER: ", socket.id);
             socket.on("disconnect", async () => {
                 let username = await this.userService.userDisconnection(
                     socket.id

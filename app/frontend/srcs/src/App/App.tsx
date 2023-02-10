@@ -31,6 +31,7 @@ function App() {
                     user["setUserImage"](
                         "/api/profile/" + response.data.username + "/image"
                     );
+					console.log("EMIT", socket.id, response.data.username);
                     socket.emit("userStatus", {
                         status: "Online",
                         socket: socket.id,
