@@ -56,7 +56,6 @@ export class ChatService {
         if (channels.length === 0) {
             this.create_general_channel();
         }
-
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
@@ -71,18 +70,24 @@ export class ChatService {
         }
     }
 
-    async send_message(channelName: string, userID: string, message: string) {
-        const channel = await this.chatRepository.findOneBy({
+    async send_public_message(
+        channelName: string,
+        userID: string,
+        message: string
+    ) {
+        let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
-        const user = await this.userService.getByID(userID);
+        let user = await this.userService.getByID(userID);
         if (!channel || !user) throw new UnauthorizedException();
         if (channel.channelType === ChannelType.PUBLIC) {
-            this.chatGateway.send_message(
+            return this.chatGateway.send_message(
                 channel.channelName,
                 user.username,
                 message
             );
+        } else {
+            throw new UnauthorizedException();
         }
     }
 }

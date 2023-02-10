@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
-import { Websocketcontext } from "../../../Websockets/WebsocketContext";
+import { Websocketcontext } from "../../../Contexts/WebsocketContext";
 
 const ChatMenu = (props: any) => {
+    const socket = useContext(Websocketcontext);
     const [chatChannels, updateChannel] = useState<
         Map<string, { channelType: string }>
     >(new Map<string, { channelType: string }>());
@@ -33,8 +34,6 @@ const ChatMenu = (props: any) => {
         };
         fetchData();
     }, []);
-
-    const socket = useContext(Websocketcontext);
 
     socket.on("newChannelAvailable", (socket) => {
         const updatedChannels = new Map<string, { channelType: string }>(

@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import "../CSS/Home.css";
 import Chat from "./Chat/Chat";
 
-const Home = (props: any) => {
+const Home = () => {
     return (
         <main id="home-main">
             <div id="game">Game</div>

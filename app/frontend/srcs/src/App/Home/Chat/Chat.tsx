@@ -1,22 +1,43 @@
 import { useContext, useEffect, useState } from "react";
 import "../../CSS/Chat.css";
-import ChatMenu from "./ChatMenu";
+import ChatMenu from "./ChatChannels";
 import CreateChannelMenu from "./CreateChannelsMenu";
 import ChatMessages from "./ChatMessages";
 import axios from "axios";
-import { Websocketcontext } from "../../../Websockets/WebsocketContext";
+import { Websocketcontext } from "../../../Contexts/WebsocketContext";
 import ChatMessage from "./ChatMessage";
 
 const Chat = () => {
     const [currentChannel, changeChannel] = useState("General");
+    const [channelMessages, updateChannelMessages] = useState(
+        new Array<{ username: string; message: string }>()
+    );
+
+    console.log("CHAT COMPONNENT");
 
     const socket = useContext(Websocketcontext);
 
-    socket.on("userChannelConnection", (socket) => {
-        if (socket.channel === currentChannel) {
-            console.log(socket.username, "joined your channel.");
-        }
-    });
+    useEffect(() => {
+        const listenNewMessage = async () => {
+            socket.on("newChatMessage", (socket) => {
+                console.log("Event");
+                if (socket.channel === currentChannel) {
+                    console.log("New message", socket);
+                    let newMessage = {
+                        username: socket.username,
+                        message: socket.message,
+                    };
+                    updateChannelMessages((state) => [...state, newMessage]);
+                }
+            });
+            socket.on("userChannelConnection", (socket) => {
+                if (socket.channel === currentChannel) {
+                    console.log(socket.username, "joined your channel.");
+                }
+            });
+        };
+        listenNewMessage();
+    }, [currentChannel]);
 
     function toogleChatMenu() {
         var chat = document.getElementById("chat");
@@ -43,8 +64,20 @@ const Chat = () => {
         // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
         if (chatMessages) chatMessages.scrollTo(0, chatMessages.scrollHeight);
+
+        console.log("Clear messages");
+        const clearMessages = async () => {
+            updateChannelMessages(
+                new Array<{ username: string; message: string }>()
+            );
+        };
+        clearMessages();
     }, [currentChannel]);
 
+    let context = {
+        currentChannel: currentChannel,
+        channelMessages: channelMessages,
+    };
     return (
         <>
             <menu id="chat" className="chat-section">
@@ -53,7 +86,7 @@ const Chat = () => {
                     <button onClick={toogleChatMenu}>change</button>
                 </header>
                 <main id="chat-main" className="chat-main">
-                    <ChatMessages channel={currentChannel} />
+                    <ChatMessages context={context} />
                 </main>
                 <footer id="chat-footer" className="chat-footer">
                     <ChatMessage channel={currentChannel} />

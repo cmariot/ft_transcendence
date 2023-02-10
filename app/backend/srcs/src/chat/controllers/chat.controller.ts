@@ -21,7 +21,6 @@ export class ChatController {
             await this.chatService.create_general_channel();
             return await this.chatService.get_channels();
         }
-        console.log("get_channels : ", channels);
         return channels;
     }
 
@@ -55,10 +54,10 @@ export class ChatController {
         );
     }
 
-    @Post()
+    @Post("public")
     @UseGuards(isLogged)
-    send_message(@Req() req, @Body() message: messageDTO) {
-        return this.chatService.send_message(
+    async send_public_message(@Req() req, @Body() message: messageDTO) {
+        return await this.chatService.send_public_message(
             message.channelName,
             req.user.uuid,
             message.message

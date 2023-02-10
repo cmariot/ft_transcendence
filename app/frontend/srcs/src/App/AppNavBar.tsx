@@ -1,9 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
+import { useContext, useEffect, useState } from "react";
+import UserContext from "../Contexts/UserContext";
 
-function AppNavBar(props: any) {
+function AppNavBar() {
     const navigate = useNavigate();
+    let user = useContext(UserContext);
+    const [username, setUsername] = useState(user.username);
+    const [avatar, setAvatar] = useState(user.avatar);
 
     function go(path: string) {
         toogleMenu();
@@ -16,7 +21,6 @@ function AppNavBar(props: any) {
             .get("/api/logout")
             .then(() => {
                 navigate("/login");
-				socket.close();
             })
             .catch((error) => {
                 console.log(error);
@@ -48,6 +52,11 @@ function AppNavBar(props: any) {
         }
     }
 
+    useEffect(() => {
+        setUsername(user.username);
+        setAvatar(user.avatar);
+    }, [user.username, user.avatar]);
+
     return (
         <>
             <header>
@@ -56,12 +65,10 @@ function AppNavBar(props: any) {
                         ft_transcendence
                     </Link>
                     <div id="nav-user-infos">
-                        <button onClick={toogleMenu}>
-                            {props.user["username"]}
-                        </button>
+                        <button onClick={toogleMenu}>{username}</button>
                         <img
                             id="nav-user-picture"
-                            src={props.user["userImage"]}
+                            src={avatar}
                             onClick={toogleMenu}
                             alt="Menu"
                         />

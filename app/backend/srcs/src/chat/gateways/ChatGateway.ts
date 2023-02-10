@@ -47,16 +47,16 @@ export class ChatGateway implements OnModuleInit {
     }
 
     send_message(channel: string, username: string, message: string) {
-        this.server.emit("newMessage", {
+        this.server.emit("newChatMessage", {
             channel: channel,
             username: username,
             message: message,
         });
+        return message;
     }
 
     @SubscribeMessage("userStatus")
     userStatus(@MessageBody() data: any) {
-        console.log("User Status : ", data.username, data.status);
         this.socketService.UserConnection(
             data.username,
             data.socket,

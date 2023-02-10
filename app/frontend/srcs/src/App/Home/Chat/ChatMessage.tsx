@@ -15,13 +15,18 @@ const ChatMessage = (props: any) => {
 
     function sendMessage() {
         axios
-            .post("/api/chat", { channelName: props.channel, message: message })
+            .post("/api/chat/public", {
+                channelName: props.channel,
+                message: message,
+            })
             .then((response) => {
                 console.log("SEND MESSAGE: ", response);
                 setMessage("");
             })
             .catch((error) => {
-                console.log(error);
+                alert(
+                    "You are not authorized to send a message on this channel."
+                );
             });
     }
 

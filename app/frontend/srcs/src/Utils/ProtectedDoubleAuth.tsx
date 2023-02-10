@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
 
@@ -11,7 +11,6 @@ const ProtectedDoubleAuth = (props: any) => {
         const validateConnexion = async () => {
             const userToken = getCookie("double_authentification");
             if (!userToken || userToken === "undefined") {
-                setIsDoubleAuthorized(false);
                 return navigate("/login");
             }
             await axios
@@ -21,13 +20,12 @@ const ProtectedDoubleAuth = (props: any) => {
                     return;
                 })
                 .catch(function () {
-                    setIsDoubleAuthorized(false);
                     return navigate("/login");
                 });
         };
         validateConnexion();
     }, [isDoubleAuthorized, navigate]);
 
-    return <>{isDoubleAuthorized === true ? props.children : null}</>;
+    return <>{isDoubleAuthorized === true ? <Outlet /> : null}</>;
 };
 export default ProtectedDoubleAuth;
