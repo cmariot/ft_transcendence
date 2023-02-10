@@ -7,8 +7,7 @@ export class LogoutController {
     constructor(private authService: AuthService, private userService: UsersService) {}
 
     @Get()
-    logout(@Req() req, @Res() res): void {
-		console.log(req);
+    logout(@Res() res): void {
         this.authService.logout(res);
     }
 }

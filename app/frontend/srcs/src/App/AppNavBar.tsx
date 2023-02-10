@@ -16,6 +16,7 @@ function AppNavBar(props: any) {
             .get("/api/logout")
             .then(() => {
                 navigate("/login");
+				socket.close();
             })
             .catch((error) => {
                 console.log(error);
