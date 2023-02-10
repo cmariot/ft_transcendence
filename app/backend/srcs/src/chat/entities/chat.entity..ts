@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export enum ChannelType {
@@ -21,6 +22,9 @@ export class ChatEntity {
     })
     channelType: ChannelType;
 
-    @Column({ default: "" })
+    @Column({ default: "", select: false })
+    channelPassword: string;
+
+    @Column({ default: "", select: false })
     channelOwner: string;
 }

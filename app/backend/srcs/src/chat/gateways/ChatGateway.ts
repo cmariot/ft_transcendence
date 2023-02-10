@@ -1,7 +1,6 @@
 import { OnModuleInit } from "@nestjs/common";
 import {
     MessageBody,
-    SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
 } from "@nestjs/websockets";
@@ -24,8 +23,26 @@ export class ChatGateway implements OnModuleInit {
 
     //@SubscribeMessage("newChannelAvailable")
     newChannelAvailable(@MessageBody() data: any) {
+        console.log("newChannelAvailable");
         this.server.emit("newChannelAvailable", {
             content: data,
+        });
+    }
+
+    userJoinChannel(channel: string, username: string) {
+        console.log("userJoinChannel");
+        this.server.emit("userChannelConnection", {
+            channel: channel,
+            username: username,
+        });
+    }
+
+    send_message(channel: string, username: string, message: string) {
+        console.log("userJoinChannel");
+        this.server.emit("newMessage", {
+            channel: channel,
+            username: username,
+            message: message,
         });
     }
 }

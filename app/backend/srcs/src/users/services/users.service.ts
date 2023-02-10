@@ -5,7 +5,7 @@ import {
     StreamableFile,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { QueryBuilder, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { CreatedFrom, UserEntity } from "../entity/user.entity";
 import { RegisterDto } from "src/auth/dtos/register.dto";
 import * as bcrypt from "bcrypt";
@@ -13,7 +13,6 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-import { findSourceMap } from "module";
 @Injectable()
 export class UsersService {
     constructor(

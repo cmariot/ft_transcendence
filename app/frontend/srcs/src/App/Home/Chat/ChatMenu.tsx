@@ -4,32 +4,43 @@ import axios from "axios";
 import { Websocketcontext } from "../../../Websockets/WebsocketContext";
 
 const ChatMenu = () => {
-    const [channels, updateChannel] = useState<Set<string>>(fetchChannels());
+    const [chatChannels, updateChannel] = useState<
+        Map<string, { channelType: string }>
+    >(new Map<string, { channelType: string }>());
+
+    useEffect(() => {
+        const fetchData = async () => {
+            axios
+                .get("/api/chat/channels")
+                .then(function (response) {
+                    let initialChannels = new Map<
+                        string,
+                        { channelType: string }
+                    >();
+                    for (let i = 0; i < response.data.length; i++) {
+                        if (response.data[i] && response.data[i].channelName) {
+                            initialChannels.set(
+                                response.data[i].channelName,
+                                response.data[i]
+                            );
+                        }
+                    }
+                    updateChannel(initialChannels);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        };
+        fetchData();
+    }, []);
+
     const socket = useContext(Websocketcontext);
 
-    function fetchChannels(): Set<string> {
-        let initialChannels = new Set<string>();
-        axios
-            .get("/api/chat/channels")
-            .then(function (response) {
-                for (let i = 0; i < response.data.length; i++) {
-                    if (response.data[i] && response.data[i].channelName) {
-                        initialChannels.add(response.data[i].channelName);
-                    }
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-                return initialChannels;
-            });
-        return initialChannels;
-    }
-
     socket.on("newChannelAvailable", (socket) => {
-        const updatedChannels = new Set(channels);
-        if (updatedChannels.has(socket.content.channelName) === false) {
-            updatedChannels.add(socket.content.channelName);
-        }
+        const updatedChannels = new Map<string, { channelType: string }>(
+            chatChannels
+        );
+        updatedChannels.set(socket.content.channelName, socket.content);
         updateChannel(updatedChannels);
     });
 
@@ -43,31 +54,33 @@ const ChatMenu = () => {
     }
 
     function closeChatMenu() {
+        var chat = document.getElementById("chat");
         var menu = document.getElementById("chat-menu");
-        var app = document.getElementById("chat-main");
-        var footer = document.getElementById("chat-footer");
-        if (app && menu && footer) {
-            app.style.display = "flex";
+        if (chat && menu) {
             menu.style.display = "none";
-            footer.style.display = "flex";
+            chat.style.display = "flex";
         }
     }
 
-    useEffect(() => {}, []);
-
     return (
-        <menu id="chat-menu">
-            <ul id="chat-menu-ul">
-                {Array.from(channels).map((item, index) => (
-                    <li className="chat-menu-li" key={index}>
-                        <p className="chat-menu-channel">{item}</p>
-                    </li>
-                ))}
-            </ul>
-            <div id="chat-menu-buttons">
-                <button onClick={displayCreateChannel}>new channel</button>
+        <menu id="chat-menu" className="chat-section">
+            <header id="chat-menu-header" className="chat-header">
+                <p id="chat-channel">Channels List</p>
                 <button onClick={closeChatMenu}>cancel</button>
+            </header>
+            <div id="chat-menu-channels" className="chat-main">
+                {Array.from(chatChannels).map((item, index) => (
+                    <button className="chat-menu-li" key={index}>
+                        <p className="chat-menu-channel">{item[0]}</p>
+                        <p className="chat-menu-channel">
+                            ({item[1].channelType})
+                        </p>
+                    </button>
+                ))}
             </div>
+            <footer id="chat-menu-buttons" className="chat-footer">
+                <button onClick={displayCreateChannel}>new channel</button>
+            </footer>
         </menu>
     );
 };

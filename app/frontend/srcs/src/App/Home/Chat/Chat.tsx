@@ -1,76 +1,71 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../../CSS/Chat.css";
 import ChatMenu from "./ChatMenu";
 import CreateChannelMenu from "./CreateChannelsMenu";
 import ChatMessages from "./ChatMessages";
+import axios from "axios";
+import { Websocketcontext } from "../../../Websockets/WebsocketContext";
+import ChatMessage from "./ChatMessage";
+import { channel } from "diagnostics_channel";
 
-const Chat = (props: any) => {
-    const [chatTittle, setChatTittle] = useState("General");
-    const [message, setMessage] = useState("");
+const Chat = () => {
+    const [currentChannel, changeChannel] = useState("General");
 
-    const handleMessageTyping = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const { id, value } = e.target;
-        if (id === "chat-message-input") {
-            setMessage(value);
+    const socket = useContext(Websocketcontext);
+
+    socket.on("userChannelConnection", (socket) => {
+        if (socket.channel === currentChannel) {
+            console.log(socket.username, "joined your channel.");
         }
-    };
+    });
 
     function toogleChatMenu() {
+        var chat = document.getElementById("chat");
         var menu = document.getElementById("chat-menu");
-        var app = document.getElementById("chat-main");
-        var footer = document.getElementById("chat-footer");
-        var createChatChannel = document.getElementById("chat-create-channel");
-        if (createChatChannel) {
-            createChatChannel.style.display = "none";
-        }
-        if (menu && app && footer) {
-            if (menu.style.display === "flex") {
-                setChatTittle("General");
-                app.style.display = "flex";
-                menu.style.display = "none";
-                footer.style.display = "flex";
-            } else {
-                setChatTittle("Channels list");
-                app.style.display = "none";
+        if (chat && menu) {
+            if (chat.style.display === "flex") {
+                chat.style.display = "none";
                 menu.style.display = "flex";
-                footer.style.display = "none";
+            } else {
+                menu.style.display = "flex";
+                chat.style.display = "none";
             }
         }
     }
 
-    function sendMessage() {
-        setMessage("");
-    }
-
     useEffect(() => {
+        // Send an alert : Join channel
+        axios
+            .post("/api/chat/connect", { channelName: currentChannel })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
         // Go to the bottom of the chat
         var chatMessages = document.getElementById("chat-main-ul");
         if (chatMessages) chatMessages.scrollTo(0, chatMessages.scrollHeight);
-    }, []);
+    });
 
     return (
-        <div id="chat">
-            <>
-                <header id="chat-header">
-                    <p id="chat-channel">{chatTittle}</p>
-                    <button onClick={toogleChatMenu}>menu</button>
+        <>
+            <menu id="chat" className="chat-section">
+                <header id="chat-header" className="chat-header">
+                    <p id="chat-channel">Channel : {currentChannel}</p>
+                    <button onClick={toogleChatMenu}>change</button>
                 </header>
-            </>
+                <main id="chat-main" className="chat-main">
+                    <ChatMessages channel={currentChannel} />
+                </main>
+                <footer id="chat-footer" className="chat-footer">
+                    <ChatMessage channel={currentChannel} />
+                </footer>
+            </menu>
             <ChatMenu />
             <CreateChannelMenu />
-            <ChatMessages />
-            <footer id="chat-footer">
-                <input
-                    id="chat-message-input"
-                    type="text"
-                    placeholder="message"
-                    value={message}
-                    onChange={handleMessageTyping}
-                />
-                <button onClick={sendMessage}>send</button>
-            </footer>
-        </div>
+        </>
     );
 };
 export default Chat;
