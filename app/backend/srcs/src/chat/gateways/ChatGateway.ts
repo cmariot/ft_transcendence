@@ -16,12 +16,7 @@ export class ChatGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on("connection", (socket) => {
             socket.on("disconnect", () => {
-                let username = this.socketService.UserDisconnetion(socket.id);
-				if (username){
-                	this.server.emit("userStatus", {
-                    	message: "A user is disconnected",
-                    	username: username,
-                	});}
+                this.socketService.UserDisconnetion(socket.id);
             });
         });
     }
@@ -52,7 +47,7 @@ export class ChatGateway implements OnModuleInit {
 
     @SubscribeMessage("userStatus")
     userStatus(@MessageBody() data: any) {
-        console.log("RECEIVE: ", data);
+        console.log("User Status : ", data.username, data.status);
         this.socketService.UserConnection(
             data.username,
             data.socket,
@@ -60,4 +55,12 @@ export class ChatGateway implements OnModuleInit {
         );
         return data;
     }
+
+	sendStatus(username: string, status: string){
+		console.log("user Status : ", username, status);
+        this.server.emit("userStatus", {
+            username: username,
+            status: status,
+        });
+	}
 }

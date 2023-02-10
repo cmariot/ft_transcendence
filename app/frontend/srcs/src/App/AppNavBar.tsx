@@ -17,6 +17,7 @@ function AppNavBar(props: any) {
             .get("/api/logout")
             .then((response) => {
                 navigate("/login");
+				socket.close();
             })
             .catch((error) => {
                 console.log(error);
@@ -41,7 +42,7 @@ function AppNavBar(props: any) {
         var menuBox = document.getElementById("app-menu");
         var app = document.getElementById("app-content");
         if (menuBox && app) {
-            if (menuBox.style.display == "flex") {
+            if (menuBox.style.display === "flex") {
                 menuBox.style.display = "none";
                 app.style.display = "";
             }

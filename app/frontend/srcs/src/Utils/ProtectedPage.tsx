@@ -5,10 +5,6 @@ import axios from "axios";
 
 const ProtectedPage = (props: any) => {
     const navigate = useNavigate();
-<<<<<<< HEAD
-    let isLoggedInRef = useRef(true);
-
-=======
     const [isLoggedIn, setIsLoggedIn] = useState(true);
 
     function validateConnexion() {
@@ -30,7 +26,6 @@ const ProtectedPage = (props: any) => {
                 });
         }
     }
->>>>>>> d6f5dd93907ef4c8e093e4cb33bc4922ab77c818
     useEffect(() => {
         console.log("UseEffect in ProtectedPage");
     });
