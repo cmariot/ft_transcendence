@@ -11,6 +11,12 @@ export enum CreatedFrom {
     OTHER = "GHOST",
 }
 
+export enum Status {
+    ONLINE = "Online",
+    OFFLINE = "Offline",
+    IN_GAME = "In_game",
+}
+
 @Entity()
 export class UserEntity {
     @PrimaryGeneratedColumn("uuid")
@@ -58,6 +64,16 @@ export class UserEntity {
 
     @Column({ nullable: true })
     profileImage: string;
+
+    @Column({
+        type: "enum",
+        enum: Status,
+        default: Status.OFFLINE,
+    })
+    status: Status;
+
+    @Column({ nullable: true })
+    socketId: string;
 
     @Column("text", { array: true, nullable: true })
     friend: string[];

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
+import { socket } from "../Websockets/WebsocketContext";
 
 function AppNavBar(props: any) {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ function AppNavBar(props: any) {
         toogleMenu();
         axios
             .get("/api/logout")
-            .then(() => {
+            .then((response) => {
                 navigate("/login");
             })
             .catch((error) => {
