@@ -1,28 +1,27 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
+import ChatContext from "../../../Contexts/ChatContext";
 
-const ChatMessage = (props: any) => {
-    const [message, setMessage] = useState("");
+const ChatMessage = () => {
+    const chat = useContext(ChatContext);
+    let message: string = "";
 
     const handleMessageTyping = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         const { id, value } = e.target;
         if (id === "chat-message-input") {
-            setMessage(value);
+            message = value;
         }
     };
 
     function sendMessage() {
         axios
             .post("/api/chat/public", {
-                channelName: props.channel,
+                channelName: chat.currentChannel,
                 message: message,
             })
-            .then((response) => {
-                console.log("SEND MESSAGE: ", response);
-                setMessage("");
-            })
+            .then((response) => {})
             .catch((error) => {
                 alert(
                     "You are not authorized to send a message on this channel."
@@ -36,7 +35,6 @@ const ChatMessage = (props: any) => {
                 id="chat-message-input"
                 type="text"
                 placeholder="message"
-                value={message}
                 onChange={handleMessageTyping}
             />
             <button onClick={sendMessage}>send</button>

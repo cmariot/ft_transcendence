@@ -291,7 +291,7 @@ export class UsersService {
         return "Setting updated.";
     }
 
-    async getProfileImage(uuid: string) {
+    async getProfileImage(uuid: string): Promise<StreamableFile> {
         let user = await this.getByID(uuid);
         if (user.profileImage === null) {
             let file = createReadStream(
@@ -337,13 +337,14 @@ export class UsersService {
 
     async friendslist(userid: string) {
         let user = await this.getByID(userid);
-        let list: string[] = new Array();
-
+        let list: { username: string; status: string }[] = new Array();
         if (!user.friend) return list;
         let i = 0;
         while (i < user.friend.length) {
             let id = user.friend[i];
-            list.push(await this.getUsernameById(id));
+            let friendUsername = await this.getUsernameById(id);
+            // Rajouter des elements ici pour les retrouver dans le front
+            list.push({ username: friendUsername, status: "online" });
             i++;
         }
         return list;

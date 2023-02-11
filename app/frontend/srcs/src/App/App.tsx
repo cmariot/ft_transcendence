@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import React from "react";
 import AppNavBar from "./AppNavBar";
 import UserContext from "../Contexts/UserContext";
+import ChatContext from "../Contexts/ChatContext";
 
 export default class App extends React.Component<any, any> {
     constructor(props: any) {
@@ -17,11 +18,16 @@ export default class App extends React.Component<any, any> {
                 doubleAuth: true,
                 friends: [],
             },
+            chat: {
+                currentChannel: "General",
+                currentChannelMessages: [],
+                availableChannels: new Map<string, { channelType: string }>(),
+            },
         };
     }
 
-    fetchUser() {
-        axios
+    async fetchUser() {
+        return await axios
             .get("/api/profile")
             .then((response) => {
                 this.setState({
@@ -39,12 +45,12 @@ export default class App extends React.Component<any, any> {
             });
     }
 
-    fetchFriends() {
-        axios
-            .get("/api/profile/friend")
+    // https://stackoverflow.com/questions/61657089/how-to-render-streamable-image-response-in-react-as-a-image
+    async fetchFriends() {
+        return await axios
+            .get("/api/profile/friends")
             .then((response) => {
-                //Create the array from the response
-
+                console.log(response.data);
                 this.setState({
                     user: {
                         ...this.state.user,
@@ -57,21 +63,72 @@ export default class App extends React.Component<any, any> {
             });
     }
 
+    async fetchChatChannels() {
+        axios
+            .get("/api/chat/channels")
+            .then((response) => {
+                let initialChannels = new Map<
+                    string,
+                    { channelType: string }
+                >();
+                for (let i = 0; i < response.data.length; i++) {
+                    if (response.data[i] && response.data[i].channelName) {
+                        initialChannels.set(
+                            response.data[i].channelName,
+                            response.data[i]
+                        );
+                    }
+                }
+                this.setState({
+                    chat: {
+                        ...this.state.chat,
+                        availableChannels: initialChannels,
+                    },
+                });
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }
+
     componentDidMount() {
         this.fetchUser();
         this.fetchFriends();
+        this.fetchChatChannels();
         socket.emit("userStatus", {
             status: "Online",
             socket: socket.id,
             username: this.state.user.username,
         });
         this.setState({ loading: false });
+        socket.on("newChatMessage", (socket) => {
+            console.log(
+                "New message on ",
+                socket.channel,
+                " from ",
+                socket.username,
+                " : ",
+                socket.message
+            );
+
+            this.setState({
+                chat: {
+                    ...this.state.chat,
+                    currentChannelMessages: [
+                        ...this.state.chat.currentChannelMessages,
+                        { username: socket.username, message: socket.message },
+                    ],
+                },
+            });
+
+            console.log(socket);
+        });
     }
 
     render() {
-        const { username, doubleAuth, avatar, friends } = this.state.user;
+        let { username, doubleAuth, avatar, friends } = this.state.user;
 
-        const user = {
+        let user = {
             username: username,
             doubleAuth: doubleAuth,
             avatar: avatar,
@@ -96,20 +153,25 @@ export default class App extends React.Component<any, any> {
             },
         };
 
+        let { currentChannel, currentChannelMessages, availableChannels } =
+            this.state.chat;
+
+        let chat = {
+            currentChannel: currentChannel,
+            currentChannelMessages: currentChannelMessages,
+            availableChannels: availableChannels,
+        };
+
         return (
-            <>
-                {this.state.loading ? (
-                    <p>Loading ...</p>
-                ) : (
-                    <UserContext.Provider value={user}>
-                        <AppNavBar />
-                        <div id="app-content">
-                            <Outlet />
-                        </div>
-                        <AppFooter />
-                    </UserContext.Provider>
-                )}
-            </>
+            <UserContext.Provider value={user}>
+                <ChatContext.Provider value={chat}>
+                    <AppNavBar />
+                    <div id="app-content">
+                        <Outlet />
+                    </div>
+                    <AppFooter />
+                </ChatContext.Provider>
+            </UserContext.Provider>
         );
     }
 }

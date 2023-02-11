@@ -90,17 +90,19 @@ export default function Friends(props: any) {
                                 <li className="friend" key={index}>
                                     <img
                                         src={
-                                            "/api/profile/" + friend + "/image"
+                                            "/api/profile/" +
+                                            friend["username"] +
+                                            "/image"
                                         }
                                         className="friend-profile-picture"
                                         alt="Friend's avatar"
                                     />
                                     <div className="friend-middle-div">
                                         <p className="friend-username">
-                                            <b>{friend}</b>
+                                            <b>{friend["username"]}</b>
                                         </p>
                                         <p className="friend-status">
-                                            (online)
+                                            {friend["status"]}
                                         </p>
                                     </div>
                                     <div>

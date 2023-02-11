@@ -2,46 +2,49 @@ import { useContext, useEffect, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { Websocketcontext } from "../../../Contexts/WebsocketContext";
+import ChatContext from "../../../Contexts/ChatContext";
 
-const ChatMenu = (props: any) => {
+const ChatMenu = () => {
+    const chat = useContext(ChatContext);
     const socket = useContext(Websocketcontext);
-    const [chatChannels, updateChannel] = useState<
-        Map<string, { channelType: string }>
-    >(new Map<string, { channelType: string }>());
 
-    useEffect(() => {
-        const fetchData = async () => {
-            axios
-                .get("/api/chat/channels")
-                .then(function (response) {
-                    let initialChannels = new Map<
-                        string,
-                        { channelType: string }
-                    >();
-                    for (let i = 0; i < response.data.length; i++) {
-                        if (response.data[i] && response.data[i].channelName) {
-                            initialChannels.set(
-                                response.data[i].channelName,
-                                response.data[i]
-                            );
-                        }
-                    }
-                    updateChannel(initialChannels);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-        };
-        fetchData();
-    }, []);
+    //const [chatChannels, updateChannel] = useState<
+    //    Map<string, { channelType: string }>
+    //>(new Map<string, { channelType: string }>());
 
-    socket.on("newChannelAvailable", (socket) => {
-        const updatedChannels = new Map<string, { channelType: string }>(
-            chatChannels
-        );
-        updatedChannels.set(socket.content.channelName, socket.content);
-        updateChannel(updatedChannels);
-    });
+    //useEffect(() => {
+    //    const fetchData = async () => {
+    //        axios
+    //            .get("/api/chat/channels")
+    //            .then(function (response) {
+    //                let initialChannels = new Map<
+    //                    string,
+    //                    { channelType: string }
+    //                >();
+    //                for (let i = 0; i < response.data.length; i++) {
+    //                    if (response.data[i] && response.data[i].channelName) {
+    //                        initialChannels.set(
+    //                            response.data[i].channelName,
+    //                            response.data[i]
+    //                        );
+    //                    }
+    //                }
+    //                updateChannel(initialChannels);
+    //            })
+    //            .catch(function (error) {
+    //                console.log(error);
+    //            });
+    //    };
+    //    fetchData();
+    //}, []);
+
+    //socket.on("newChannelAvailable", (socket) => {
+    //    const updatedChannels = new Map<string, { channelType: string }>(
+    //        chatChannels
+    //    );
+    //    updatedChannels.set(socket.content.channelName, socket.content);
+    //    updateChannel(updatedChannels);
+    //});
 
     function displayCreateChannel() {
         const menu = document.getElementById("chat-menu");
@@ -62,9 +65,9 @@ const ChatMenu = (props: any) => {
     }
 
     function changeChannel(item: any) {
-        console.log("Click on : ", item[0]);
-        props.changeChannel(item[0]);
-        closeChatMenu();
+        console.log("Change channel to : ", item[0]);
+        //    //props.changeChannel(item[0]);
+        //    closeChatMenu();
     }
 
     return (
@@ -74,7 +77,7 @@ const ChatMenu = (props: any) => {
                 <button onClick={closeChatMenu}>cancel</button>
             </header>
             <div id="chat-menu-channels" className="chat-main">
-                {Array.from(chatChannels).map((item, index) => (
+                {Array.from(chat.availableChannels).map((item, index) => (
                     <button
                         className="chat-menu-li"
                         key={index}
@@ -82,7 +85,7 @@ const ChatMenu = (props: any) => {
                     >
                         <p className="chat-menu-channel">{item[0]}</p>
                         <p className="chat-menu-channel">
-                            ({item[1].channelType})
+                            ({item[1]["channelType"]})
                         </p>
                     </button>
                 ))}

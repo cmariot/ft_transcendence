@@ -135,7 +135,7 @@ export class UsersController {
         return await this.userService.addFriend(req.user.uuid, friend.uuid);
     }
 
-    @Get("friend")
+    @Get("friends")
     @UseGuards(isLogged)
     async friendlist(@Req() req) {
         return await this.userService.friendslist(req.user.uuid);
@@ -152,5 +152,4 @@ export class UsersController {
             );
         return await this.userService.DelFriend(req.user.uuid, friend.uuid);
     }
-
 }
