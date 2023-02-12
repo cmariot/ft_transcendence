@@ -1,12 +1,9 @@
-import AppFooter from "./AppFooter";
 import axios from "axios";
 import { socket } from "../Contexts/WebsocketContext";
-import { Outlet } from "react-router-dom";
 import React from "react";
-import AppNavBar from "./AppNavBar";
 import UserContext from "../Contexts/UserContext";
-import ChatContext from "../Contexts/ChatContext";
-
+import "./CSS/Theme.css";
+import { ChatParent } from "./Home/Chat/ChatParent";
 export default class App extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
@@ -17,11 +14,6 @@ export default class App extends React.Component<any, any> {
                 avatar: "",
                 doubleAuth: true,
                 friends: [],
-            },
-            chat: {
-                currentChannel: "General",
-                currentChannelMessages: [],
-                availableChannels: new Map<string, { channelType: string }>(),
             },
         };
     }
@@ -45,12 +37,10 @@ export default class App extends React.Component<any, any> {
             });
     }
 
-    // https://stackoverflow.com/questions/61657089/how-to-render-streamable-image-response-in-react-as-a-image
     async fetchFriends() {
         return await axios
             .get("/api/profile/friends")
             .then((response) => {
-                console.log(response.data);
                 this.setState({
                     user: {
                         ...this.state.user,
@@ -63,65 +53,13 @@ export default class App extends React.Component<any, any> {
             });
     }
 
-    async fetchChatChannels() {
-        axios
-            .get("/api/chat/channels")
-            .then((response) => {
-                let initialChannels = new Map<
-                    string,
-                    { channelType: string }
-                >();
-                for (let i = 0; i < response.data.length; i++) {
-                    if (response.data[i] && response.data[i].channelName) {
-                        initialChannels.set(
-                            response.data[i].channelName,
-                            response.data[i]
-                        );
-                    }
-                }
-                this.setState({
-                    chat: {
-                        ...this.state.chat,
-                        availableChannels: initialChannels,
-                    },
-                });
-            })
-            .catch((error) => {
-                console.log(error.response);
-            });
-    }
-
     componentDidMount() {
         this.fetchUser();
         this.fetchFriends();
-        this.fetchChatChannels();
         socket.emit("userStatus", {
             status: "Online",
             socket: socket.id,
             username: this.state.user.username,
-        });
-        this.setState({ loading: false });
-        socket.on("newChatMessage", (socket) => {
-            console.log(
-                "New message on ",
-                socket.channel,
-                " from ",
-                socket.username,
-                " : ",
-                socket.message
-            );
-
-            this.setState({
-                chat: {
-                    ...this.state.chat,
-                    currentChannelMessages: [
-                        ...this.state.chat.currentChannelMessages,
-                        { username: socket.username, message: socket.message },
-                    ],
-                },
-            });
-
-            console.log(socket);
         });
     }
 
@@ -153,24 +91,9 @@ export default class App extends React.Component<any, any> {
             },
         };
 
-        let { currentChannel, currentChannelMessages, availableChannels } =
-            this.state.chat;
-
-        let chat = {
-            currentChannel: currentChannel,
-            currentChannelMessages: currentChannelMessages,
-            availableChannels: availableChannels,
-        };
-
         return (
             <UserContext.Provider value={user}>
-                <ChatContext.Provider value={chat}>
-                    <AppNavBar />
-                    <div id="app-content">
-                        <Outlet />
-                    </div>
-                    <AppFooter />
-                </ChatContext.Provider>
+                <ChatParent />
             </UserContext.Provider>
         );
     }

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    UnauthorizedException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity.";
 import { Repository } from "typeorm";
@@ -67,7 +72,19 @@ export class ChatService {
                 channel.channelName,
                 user.username
             );
+            return channel.messages;
+        } else if (channel.channelType === ChannelType.PROTECTED) {
+            throw new HttpException(
+                "Enter the channel's password",
+                HttpStatus.FOUND
+            );
+            this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
+            return channel.messages;
         }
+        throw new UnauthorizedException();
     }
 
     async send_public_message(
@@ -81,6 +98,12 @@ export class ChatService {
         let user = await this.userService.getByID(userID);
         if (!channel || !user) throw new UnauthorizedException();
         if (channel.channelType === ChannelType.PUBLIC) {
+            let channelMessages = channel.messages;
+            channelMessages.push({ username: user.username, message: message });
+            await this.chatRepository.update(
+                { uuid: channel.uuid },
+                { messages: channelMessages }
+            );
             return this.chatGateway.send_message(
                 channel.channelName,
                 user.username,

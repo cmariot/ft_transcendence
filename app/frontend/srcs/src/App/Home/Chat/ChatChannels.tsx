@@ -1,50 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
-import { Websocketcontext } from "../../../Contexts/WebsocketContext";
-import ChatContext from "../../../Contexts/ChatContext";
+import { ChatContext } from "./ChatParent";
 
 const ChatMenu = () => {
     const chat = useContext(ChatContext);
-    const socket = useContext(Websocketcontext);
-
-    //const [chatChannels, updateChannel] = useState<
-    //    Map<string, { channelType: string }>
-    //>(new Map<string, { channelType: string }>());
-
-    //useEffect(() => {
-    //    const fetchData = async () => {
-    //        axios
-    //            .get("/api/chat/channels")
-    //            .then(function (response) {
-    //                let initialChannels = new Map<
-    //                    string,
-    //                    { channelType: string }
-    //                >();
-    //                for (let i = 0; i < response.data.length; i++) {
-    //                    if (response.data[i] && response.data[i].channelName) {
-    //                        initialChannels.set(
-    //                            response.data[i].channelName,
-    //                            response.data[i]
-    //                        );
-    //                    }
-    //                }
-    //                updateChannel(initialChannels);
-    //            })
-    //            .catch(function (error) {
-    //                console.log(error);
-    //            });
-    //    };
-    //    fetchData();
-    //}, []);
-
-    //socket.on("newChannelAvailable", (socket) => {
-    //    const updatedChannels = new Map<string, { channelType: string }>(
-    //        chatChannels
-    //    );
-    //    updatedChannels.set(socket.content.channelName, socket.content);
-    //    updateChannel(updatedChannels);
-    //});
 
     function displayCreateChannel() {
         const menu = document.getElementById("chat-menu");
@@ -64,10 +24,17 @@ const ChatMenu = () => {
         }
     }
 
-    function changeChannel(item: any) {
-        console.log("Change channel to : ", item[0]);
-        //    //props.changeChannel(item[0]);
-        //    closeChatMenu();
+    async function joinChannel(channel: string) {
+        await axios
+            .post("/api/chat/connect", { channelName: channel })
+            .then(function (response) {
+                chat.changeCurrentChannel(channel);
+                chat.setCurrentChannelMessages(response.data);
+                closeChatMenu();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     return (
@@ -81,11 +48,11 @@ const ChatMenu = () => {
                     <button
                         className="chat-menu-li"
                         key={index}
-                        onClick={() => changeChannel(item)}
+                        onClick={() => joinChannel(item[0])}
                     >
                         <p className="chat-menu-channel">{item[0]}</p>
                         <p className="chat-menu-channel">
-                            ({item[1]["channelType"]})
+                            ({item[1].channelType})
                         </p>
                     </button>
                 ))}

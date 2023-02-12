@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "../CSS/Home.css";
 import Chat from "./Chat/Chat";
 

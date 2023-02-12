@@ -60,6 +60,7 @@ export class AuthService {
                 throw new UnauthorizedException();
             }
         } else {
+            console.log("Cookie ok");
             res.cookie(type, cookie_value, {
                 maxAge: 1000 * 60 * 60 * 2, // 2 hours
                 sameSite: "none",

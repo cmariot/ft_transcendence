@@ -32,14 +32,12 @@ export class ChatGateway implements OnModuleInit {
     }
 
     newChannelAvailable(@MessageBody() data: any) {
-        console.log("newChannelAvailable");
         this.server.emit("newChannelAvailable", {
             content: data,
         });
     }
 
     userJoinChannel(channel: string, username: string) {
-        console.log("userJoinChannel");
         this.server.emit("userChannelConnection", {
             channel: channel,
             username: username,

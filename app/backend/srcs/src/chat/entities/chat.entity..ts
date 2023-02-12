@@ -27,4 +27,7 @@ export class ChatEntity {
 
     @Column({ default: "", select: false })
     channelOwner: string;
+
+    @Column("jsonb", { default: [] })
+    messages: { username: string; message: string }[];
 }

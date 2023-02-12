@@ -47,7 +47,7 @@ export class RegisterController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        const user = await this.userService.getProfile(req.user.uuid);
+        let user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.emailValidationCode) {
             const now = new Date();
             const diff =
@@ -63,7 +63,6 @@ export class RegisterController {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
             await this.userService.validateEmail(user.uuid);
-            res.clearCookie("email_validation");
             this.authService.create_cookie(user, "authentification", res);
             this.userService.deleteEmailValidationCode(req.user.uuid);
             return "OK";

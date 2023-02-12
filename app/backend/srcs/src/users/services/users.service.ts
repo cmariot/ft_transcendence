@@ -55,7 +55,7 @@ export class UsersService {
         if (user.createdFrom === CreatedFrom.REGISTER) {
             this.sendVerificationMail(user);
         }
-        return this.userRepository.save(user);
+        return await this.userRepository.save(user);
     }
 
     // Delete an UserEntity from the database
@@ -68,8 +68,8 @@ export class UsersService {
         return this.userRepository.find();
     }
 
-    async getByID(id: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ uuid: id });
+    async getByID(id: string) {
+        return await this.userRepository.findOneBy({ uuid: id });
     }
     async getByUsername(username: string): Promise<UserEntity> {
         return this.userRepository.findOneBy({ username: username });
@@ -80,8 +80,9 @@ export class UsersService {
     }
 
     async getUsernameById(id: string): Promise<string> {
-        const user = this.getByID(id);
-        return (await user).username;
+        const user = await this.getByID(id);
+        if (user) return user.username;
+        return null;
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
@@ -167,11 +168,15 @@ export class UsersService {
                 from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
                 subject: "Your double-authentification code", // Subject line
                 text:
-                    "Welcome back, here is your double authentification code :" +
+                    "Welcome back" +
+                    user.username +
+                    ", here is your double authentification code :" +
                     randomNumber.toString(), // plaintext body
                 html:
                     "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
-                        <h1>Welcome back !</h1>\
+                        <h1>Welcome back " +
+                    user.username +
+                    " !</h1>\
                         <h3>Here is your double authentification code :</h3>\
                         <h2>" +
                     randomNumber.toString() +
@@ -191,12 +196,17 @@ export class UsersService {
         let db_user: UserEntity = await this.getByUsername(
             registerDto.username
         );
-        if (db_user && db_user.username === registerDto.username) {
+        if (
+            db_user &&
+            db_user.username === registerDto.username &&
+            db_user.valideEmail === true
+        ) {
             throw new HttpException(
                 "This username is already registered.",
                 HttpStatus.UNAUTHORIZED
             );
         }
+
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
@@ -210,7 +220,20 @@ export class UsersService {
             emailValidationCode: randomNumber.toString(),
             emailValidationCodeCreation: new Date(),
         };
-        return this.saveUser(user);
+        if (db_user) {
+            await this.userRepository.update(
+                { uuid: db_user.uuid },
+                {
+                    email: user.email,
+                    password: user.password,
+                    twoFactorsAuth: user.twoFactorsAuth,
+                    doubleAuthentificationCodeCreation: new Date(),
+                    emailValidationCode: user.emailValidationCode,
+                }
+            );
+        } else {
+            return this.saveUser(user);
+        }
     }
 
     async resendEmail(uuid: string) {
@@ -231,7 +254,7 @@ export class UsersService {
 
     async getProfile(id: string) {
         let user = await this.getByID(id);
-        if (user === undefined) {
+        if (user === null) {
             throw new HttpException("Invalid uuid.", HttpStatus.FORBIDDEN);
         }
         return user;
@@ -343,8 +366,8 @@ export class UsersService {
         while (i < user.friend.length) {
             let id = user.friend[i];
             let friendUsername = await this.getUsernameById(id);
-            // Rajouter des elements ici pour les retrouver dans le front
-            list.push({ username: friendUsername, status: "online" });
+            if (friendUsername !== null)
+                list.push({ username: friendUsername, status: "online" });
             i++;
         }
         return list;
