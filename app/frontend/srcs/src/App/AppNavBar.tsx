@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
 import { useContext, useEffect, useState } from "react";
-import UserContext from "../Contexts/UserContext";
+import { UserContext } from "./App";
 
 function AppNavBar() {
     const navigate = useNavigate();
@@ -53,9 +53,10 @@ function AppNavBar() {
     }
 
     useEffect(() => {
+        console.log(user);
         setUsername(user.username);
         setAvatar(user.avatar);
-    }, [user.username, user.avatar]);
+    }, [user]);
 
     return (
         <>

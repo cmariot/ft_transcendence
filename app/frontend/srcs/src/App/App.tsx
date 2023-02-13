@@ -1,100 +1,155 @@
 import axios from "axios";
-import { socket } from "../Contexts/WebsocketContext";
-import React from "react";
-import UserContext from "../Contexts/UserContext";
-import "./CSS/Theme.css";
+import React, { useEffect, useState } from "react";
 import { ChatParent } from "./Home/Chat/ChatParent";
-export default class App extends React.Component<any, any> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            loading: true,
-            user: {
-                username: "",
-                avatar: "",
-                doubleAuth: true,
-                friends: [],
-            },
-        };
-    }
 
-    async fetchUser() {
-        return await axios
+export const UserContext = React.createContext({
+    username: "",
+    editUsername: (newUsername: string) => {},
+    avatar: "",
+    editAvatar: (newAvatar: string) => {},
+    doubleAuth: true,
+    editDoubleAuth: (newValue: boolean) => {},
+    friends: [],
+    setFriends: (newFriends: []) => {},
+});
+
+export const App = () => {
+    const [username, editUsername] = useState("");
+    const [avatar, editAvatar] = useState("");
+    const [doubleAuth, editDoubleAuth] = useState(true);
+    const [friends, setFriends] = useState([]);
+
+    useEffect(() => {
+        axios
             .get("/api/profile")
             .then((response) => {
-                this.setState({
-                    user: {
-                        ...this.state.user,
-                        username: response.data.username,
-                        doubleAuth: response.data.twoFactorsAuth,
-                        avatar:
-                            "/api/profile/" + response.data.username + "/image",
-                    },
-                });
+                editUsername(response.data.username);
+                editAvatar("/api/profile/" + response.data.username + "/image");
+                editDoubleAuth(response.data.twoFactorsAuth);
             })
             .catch((error) => {
                 console.log(error.response);
             });
-    }
-
-    async fetchFriends() {
-        return await axios
+        axios
             .get("/api/profile/friends")
             .then((response) => {
-                this.setState({
-                    user: {
-                        ...this.state.user,
-                        friends: response.data,
-                    },
-                });
+                setFriends(response.data);
             })
             .catch((error) => {
                 console.log(error.response);
             });
-    }
+    }, []);
 
-    componentDidMount() {
-        this.fetchUser();
-        this.fetchFriends();
-        socket.emit("userStatus", {
-            status: "Online",
-            socket: socket.id,
-            username: this.state.user.username,
-        });
-    }
+    const value = {
+        username,
+        editUsername,
+        avatar,
+        editAvatar,
+        doubleAuth,
+        editDoubleAuth,
+        friends,
+        setFriends,
+    };
 
-    render() {
-        let { username, doubleAuth, avatar, friends } = this.state.user;
+    return (
+        <UserContext.Provider value={value as any}>
+            <ChatParent />
+        </UserContext.Provider>
+    );
+};
 
-        let user = {
-            username: username,
-            doubleAuth: doubleAuth,
-            avatar: avatar,
-            friends: friends,
-            updateUsername: function (newUsername: string) {
-                this.username = newUsername;
-            },
-            updateAvatar: function (newAvatar: string) {
-                this.avatar = newAvatar;
-            },
-            updateDoubleAuth: function () {
-                this.doubleAuth = !this.doubleAuth;
-            },
-            addFriend: function (username: string) {
-                this.friends.push(username);
-            },
-            removeFriend: function (username: string) {
-                const index = this.friends.indexOf(username);
-                if (index !== -1) {
-                    this.friends.splice(index, 1);
-                }
-            },
-        };
-
-        return (
-            <UserContext.Provider value={user}>
-                <ChatParent />
-            </UserContext.Provider>
-        );
-    }
-}
+//export default class App extends React.Component<any, any> {
+//    constructor(props: any) {
+//        super(props);
+//        this.state = {
+//            loading: true,
+//            user: {
+//                username: "",
+//                avatar: "",
+//                doubleAuth: true,
+//                friends: [],
+//            },
+//        };
+//    }
+//
+//    async fetchUser() {
+//        return await axios
+//            .get("/api/profile")
+//            .then((response) => {
+//                this.setState({
+//                    user: {
+//                        ...this.state.user,
+//                        username: response.data.username,
+//                        doubleAuth: response.data.twoFactorsAuth,
+//                        avatar:
+//                            "/api/profile/" + response.data.username + "/image",
+//                    },
+//                });
+//            })
+//            .catch((error) => {
+//                console.log(error.response);
+//            });
+//    }
+//
+//    async fetchFriends() {
+//        return await axios
+//            .get("/api/profile/friends")
+//            .then((response) => {
+//                this.setState({
+//                    user: {
+//                        ...this.state.user,
+//                        friends: response.data,
+//                    },
+//                });
+//            })
+//            .catch((error) => {
+//                console.log(error.response);
+//            });
+//    }
+//
+//    componentDidMount() {
+//        this.fetchUser();
+//        this.fetchFriends();
+//        socket.emit("userStatus", {
+//            status: "Online",
+//            socket: socket.id,
+//            username: this.state.user.username,
+//        });
+//    }
+//
+//    render() {
+//        let { username, doubleAuth, avatar, friends } = this.state.user;
+//
+//        let user = {
+//            username: username,
+//            doubleAuth: doubleAuth,
+//            avatar: avatar,
+//            friends: friends,
+//            updateUsername: function (newUsername: string) {
+//                this.username = newUsername;
+//            },
+//            updateAvatar: function (newAvatar: string) {
+//                this.avatar = newAvatar;
+//            },
+//            updateDoubleAuth: function () {
+//                this.doubleAuth = !this.doubleAuth;
+//            },
+//            addFriend: function (username: string) {
+//                this.friends.push(username);
+//            },
+//            removeFriend: function (username: string) {
+//                const index = this.friends.indexOf(username);
+//                if (index !== -1) {
+//                    this.friends.splice(index, 1);
+//                }
+//            },
+//        };
+//
+//        return (
+//            <UserContext.Provider value={user}>
+//                <ChatParent />
+//            </UserContext.Provider>
+//        );
+//    }
+//}
+//

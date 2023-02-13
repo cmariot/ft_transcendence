@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ChangeEvent, useContext, useState } from "react";
-import UserContext from "../../Contexts/UserContext";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
 
 export default function EditUsername() {
     const user = useContext(UserContext);
@@ -27,15 +27,19 @@ export default function EditUsername() {
                 username: newValue,
             })
             .then(function () {
-                user.updateUsername(newValue);
+                user.editUsername(newValue);
                 setUsername(newValue);
                 navigate("/settings");
             })
             .catch(function (error) {
-                console.log(error);
-                alert(error);
+                setUsername(user.username);
+                alert(error.response.data.message);
             });
     };
+
+    useEffect(() => {
+        setUsername(user.username);
+    }, [user.username]);
 
     return (
         <div id="username-main">

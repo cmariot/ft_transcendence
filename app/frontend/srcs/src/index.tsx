@@ -9,7 +9,6 @@ import Login from "./Auth/Login/Login";
 import Register from "./Auth/Register/Register";
 import Validate from "./Auth/Register/Validate";
 import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
-import App from "./App/App";
 import Home from "./App/Home/Home";
 import Profile from "./App/Profile/Profile";
 import Friends from "./App/Friend/Friends";
@@ -17,6 +16,7 @@ import Settings from "./App/Settings/Settings";
 import ProtectedPage from "./Utils/ProtectedPage";
 import ProtectedValidation from "./Utils/ProtectedValidation";
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
+import { App } from "./App/App";
 
 const router = createBrowserRouter([
     {

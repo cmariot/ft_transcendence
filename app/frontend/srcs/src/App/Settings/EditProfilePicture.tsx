@@ -2,8 +2,8 @@ import axios from "axios";
 import "../CSS/Settings.css";
 import "../CSS/Theme.css";
 import { useContext } from "react";
-import UserContext from "../../Contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
 
 export default function EditProfilePicture() {
     const user = useContext(UserContext);
@@ -21,9 +21,7 @@ export default function EditProfilePicture() {
                     },
                 })
                 .then(() => {
-                    user.updateAvatar(
-                        URL.createObjectURL(event.target.files[0])
-                    );
+                    user.editAvatar(URL.createObjectURL(event.target.files[0]));
                     navigate("/settings");
                 })
                 .catch((error) => {

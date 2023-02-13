@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import "../CSS/Friends.css";
-import UserContext from "../../Contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
 
 export default function Friends(props: any) {
     let user = useContext(UserContext);
@@ -29,7 +29,7 @@ export default function Friends(props: any) {
                 username: newFriend,
             })
             .then(function () {
-                user.addFriend(newFriend);
+                //user.setFriends(newFriend);
                 setNewFriend("");
             })
             .catch(function (error) {
@@ -43,7 +43,7 @@ export default function Friends(props: any) {
                 username: friendUsername,
             })
             .then(function () {
-                user.removeFriend(friendUsername);
+                //user.removeFriend(friendUsername);
                 toogleMenu(index);
                 navigate("/friends");
             })

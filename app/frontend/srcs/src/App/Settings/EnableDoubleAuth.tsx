@@ -1,7 +1,7 @@
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../CSS/Settings.css";
-import UserContext from "../../Contexts/UserContext";
+import { UserContext } from "../App";
 
 export default function EnableDoubleAuth() {
     const user = useContext(UserContext);
@@ -11,13 +11,18 @@ export default function EnableDoubleAuth() {
         axios
             .post("/api/profile/update/doubleAuth")
             .then(function () {
-                setUserPref(!user.doubleAuth);
-                user.updateDoubleAuth();
+                const newValue = !userPref;
+                setUserPref(newValue);
+                user.editDoubleAuth(newValue);
             })
             .catch(function (error) {
                 console.log(error);
             });
     }
+
+    useEffect(() => {
+        setUserPref(user.doubleAuth);
+    }, [user.doubleAuth]);
 
     return (
         <div id="edit-double-auth">
