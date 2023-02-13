@@ -231,6 +231,10 @@ export class UsersService {
                     emailValidationCode: user.emailValidationCode,
                 }
             );
+            let newUser: UserEntity = await this.getByUsername(
+                registerDto.username
+            );
+            return newUser;
         } else {
             return this.saveUser(user);
         }

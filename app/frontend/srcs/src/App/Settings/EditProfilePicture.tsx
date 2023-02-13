@@ -1,5 +1,6 @@
 import axios from "axios";
 import "../CSS/Settings.css";
+import "../CSS/Theme.css";
 import { useContext } from "react";
 import UserContext from "../../Contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -38,8 +39,8 @@ export default function EditProfilePicture() {
                 id="edit-picture-img"
                 alt="Edit your avatar"
             />
-            <label>
-                Edit Profile Picture
+            <label id="label-edit-picture">
+                <p>Edit Profile Picture</p>
                 <input
                     type="file"
                     id="edit-picture-input"

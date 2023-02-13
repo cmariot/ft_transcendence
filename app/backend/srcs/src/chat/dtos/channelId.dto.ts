@@ -15,3 +15,13 @@ export class messageDTO {
     @IsString()
     message: string;
 }
+
+export class channelPasswordDTO {
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+
+    @IsNotEmpty()
+    @IsString()
+    channelPassword: string;
+}

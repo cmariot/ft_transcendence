@@ -20,7 +20,7 @@ const ChatMessage = () => {
         if (message.length === 0) return;
 
         axios
-            .post("/api/chat/public", {
+            .post("/api/chat", {
                 channelName: chat.currentChannel,
                 message: message,
             })

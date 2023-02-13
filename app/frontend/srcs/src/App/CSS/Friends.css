@@ -106,3 +106,22 @@
 #add-friend > form:nth-child(2) {
     margin-block: 15px;
 }
+#friend-list {
+    /* border: 1px solid black; */
+    border: 3px solid #737373;
+}
+
+.friend {
+    border: 3px #737373 solid;
+}
+
+#add-friend {
+    /* border: 1px solid black; */
+    border: 3px solid #737373;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+#friend-list-main > p:nth-child(1) {
+    color: #1e1e1e;
+}

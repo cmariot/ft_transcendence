@@ -24,7 +24,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        var chatMessages = document.getElementById("chat-main");
+        var chatMessages = document.getElementById("chat-main-ul");
         if (chatMessages) chatMessages.scrollTo(0, chatMessages.scrollHeight);
     });
 

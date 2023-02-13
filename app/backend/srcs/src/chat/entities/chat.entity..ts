@@ -22,7 +22,7 @@ export class ChatEntity {
     })
     channelType: ChannelType;
 
-    @Column({ default: "", select: false })
+    @Column({ default: "" })
     channelPassword: string;
 
     @Column({ default: "", select: false })
@@ -30,4 +30,7 @@ export class ChatEntity {
 
     @Column("jsonb", { default: [] })
     messages: { username: string; message: string }[];
+
+    @Column("jsonb", { default: [] })
+    allowed_users: { uuid: string }[];
 }

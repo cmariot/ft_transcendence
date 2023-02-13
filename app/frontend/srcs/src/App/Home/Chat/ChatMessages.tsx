@@ -33,7 +33,8 @@ const ChatMessages = () => {
             {chat.currentChannelMessages.map((item: any, index: any) => (
                 <li className="chat-main-li" key={index}>
                     <p className="chat-menu-channel chatMessages">
-                        {item.username} : {item.message}
+                        {item.username} :<br />
+                        {item.message}
                     </p>
                 </li>
             ))}

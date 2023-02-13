@@ -7,7 +7,11 @@ import {
 } from "../dtos/newChannel.dto";
 import { ChatService } from "../services/chat.service";
 import { ChatEntity } from "../entities/chat.entity.";
-import { channelDTO, messageDTO } from "../dtos/channelId.dto";
+import {
+    channelDTO,
+    channelPasswordDTO,
+    messageDTO,
+} from "../dtos/channelId.dto";
 
 @Controller("chat")
 export class ChatController {
@@ -54,13 +58,26 @@ export class ChatController {
         );
     }
 
-    @Post("public")
+    @Post()
     @UseGuards(isLogged)
-    async send_public_message(@Req() req, @Body() message: messageDTO) {
-        return await this.chatService.send_public_message(
+    async send_message(@Req() req, @Body() message: messageDTO) {
+        return await this.chatService.send_message(
             message.channelName,
             req.user.uuid,
             message.message
+        );
+    }
+
+    @Post("join/protected")
+    @UseGuards(isLogged)
+    async join_protected_channel(
+        @Req() req,
+        @Body() channel: channelPasswordDTO
+    ) {
+        return await this.chatService.join_protected_channel(
+            channel.channelName,
+            channel.channelPassword,
+            req.user.uuid
         );
     }
 }

@@ -9,7 +9,8 @@ const Login = () => {
             <section id="auth-content">
                 <article>
                     <h2>Welcome to ft_transcendence</h2>
-                    <p>You must log in to access the site</p>
+                    <h3>Let's play pong !</h3>
+                    <p>You must log in to access the website</p>
                 </article>
                 <aside id="login-pannel">
                     <Login42 />

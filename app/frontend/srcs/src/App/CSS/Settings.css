@@ -17,8 +17,5 @@
 
 #edit-picture > label:nth-child(2) {
     margin: 5px;
-    padding: 5px;
-    border: 1px #bcbcc5 solid;
     border-radius: 5px;
-    background-color: #e9e9ed;
 }

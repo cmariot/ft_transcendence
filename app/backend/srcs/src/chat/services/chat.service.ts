@@ -74,24 +74,27 @@ export class ChatService {
             );
             return channel.messages;
         } else if (channel.channelType === ChannelType.PROTECTED) {
+            let allowed_users = channel.allowed_users;
+            let i = 0;
+            while (i < allowed_users.length) {
+                if (allowed_users[i].uuid === user.uuid) {
+                    this.chatGateway.userJoinChannel(
+                        channel.channelName,
+                        user.username
+                    );
+                    return channel.messages;
+                }
+                i++;
+            }
             throw new HttpException(
                 "Enter the channel's password",
                 HttpStatus.FOUND
             );
-            this.chatGateway.userJoinChannel(
-                channel.channelName,
-                user.username
-            );
-            return channel.messages;
         }
         throw new UnauthorizedException();
     }
 
-    async send_public_message(
-        channelName: string,
-        userID: string,
-        message: string
-    ) {
+    async send_message(channelName: string, userID: string, message: string) {
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
@@ -109,8 +112,58 @@ export class ChatService {
                 user.username,
                 message
             );
+        } else if (channel.channelType === ChannelType.PROTECTED) {
+            let allowed_users = channel.allowed_users;
+            let i = 0;
+            while (i < allowed_users.length) {
+                if (allowed_users[i].uuid === user.uuid) {
+                    let channelMessages = channel.messages;
+                    channelMessages.push({
+                        username: user.username,
+                        message: message,
+                    });
+                    await this.chatRepository.update(
+                        { uuid: channel.uuid },
+                        { messages: channelMessages }
+                    );
+                    return this.chatGateway.send_message(
+                        channel.channelName,
+                        user.username,
+                        message
+                    );
+                }
+                i++;
+            }
+            throw new HttpException("Unauthorized.", HttpStatus.UNAUTHORIZED);
         } else {
             throw new UnauthorizedException();
         }
+    }
+
+    async join_protected_channel(
+        channelName: string,
+        channelPassword: string,
+        uuid: string
+    ) {
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (!channel || channel.channelType !== ChannelType.PROTECTED)
+            throw new UnauthorizedException("Invalid channel");
+        let user = await this.userService.getByID(uuid);
+        if (!user) throw new UnauthorizedException("Invalid user");
+        const isMatch = await bcrypt.compare(
+            channelPassword,
+            channel.channelPassword
+        );
+        if (!isMatch) throw new UnauthorizedException("Invalid password");
+        let allowedUsers = channel.allowed_users;
+        allowedUsers.push({ uuid: user.uuid });
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { allowed_users: allowedUsers }
+        );
+        this.chatGateway.userJoinChannel(channel.channelName, user.username);
+        return channel.messages;
     }
 }

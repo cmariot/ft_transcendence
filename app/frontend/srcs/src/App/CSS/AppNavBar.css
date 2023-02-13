@@ -3,7 +3,7 @@
 }
 
 #app-nav-bar {
-    border-bottom: 1px black solid;
+    border-bottom: 2px #737373 solid;
     display: flex;
     justify-content: space-between;
     align-items: center;
