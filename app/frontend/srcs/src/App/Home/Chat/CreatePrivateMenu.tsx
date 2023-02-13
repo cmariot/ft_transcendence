@@ -2,7 +2,6 @@ import { ChangeEvent, useContext, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { UserContext } from "../../App";
-import { clear } from "console";
 
 const CreatePrivateMenu = () => {
     let user = useContext(UserContext);

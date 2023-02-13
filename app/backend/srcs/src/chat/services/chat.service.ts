@@ -106,6 +106,24 @@ export class ChatService {
         return null;
     }
 
+    async convertChannelMessages(
+        initial_messages: { uuid: string; message: string }[]
+    ) {
+        let returned_messages: { username: string; message: string }[] = [];
+        let i = 0;
+        while (i < initial_messages.length) {
+            let user = await this.userService.getByID(initial_messages[i].uuid);
+            if (user) {
+                returned_messages.push({
+                    username: user.username,
+                    message: initial_messages[i].message,
+                });
+            }
+            i++;
+        }
+        return returned_messages;
+    }
+
     async join_channel(channelName: string, userID: string) {
         let channels = await this.get_channels(userID);
         if (channels.length === 0) {
@@ -117,12 +135,26 @@ export class ChatService {
         if (!channel) throw new UnauthorizedException();
         let user = await this.userService.getByID(userID);
         if (!user) throw new UnauthorizedException();
-        if (channel.channelType === ChannelType.PUBLIC) {
+        if (channel.channelType == ChannelType.PRIVATE) {
+            let index_in_authorized_channels = channels.findIndex((element) => {
+                if (element.channelName === channelName) return 1;
+            });
+            if (index_in_authorized_channels !== -1) {
+                channel = channels[index_in_authorized_channels];
+                this.chatGateway.userJoinChannel(
+                    channel.channelName,
+                    user.username
+                );
+                return this.convertChannelMessages(
+                    channels[index_in_authorized_channels].messages
+                );
+            }
+        } else if (channel.channelType === ChannelType.PUBLIC) {
             this.chatGateway.userJoinChannel(
                 channel.channelName,
                 user.username
             );
-            return channel.messages;
+            return this.convertChannelMessages(channel.messages);
         } else if (channel.channelType === ChannelType.PROTECTED) {
             let allowed_users = channel.allowed_users;
             let i = 0;
@@ -132,7 +164,7 @@ export class ChatService {
                         channel.channelName,
                         user.username
                     );
-                    return channel.messages;
+                    return this.convertChannelMessages(channel.messages);
                 }
                 i++;
             }
@@ -152,7 +184,7 @@ export class ChatService {
         if (!channel || !user) throw new UnauthorizedException();
         if (channel.channelType === ChannelType.PUBLIC) {
             let channelMessages = channel.messages;
-            channelMessages.push({ username: user.username, message: message });
+            channelMessages.push({ uuid: user.uuid, message: message });
             await this.chatRepository.update(
                 { uuid: channel.uuid },
                 { messages: channelMessages }
@@ -162,14 +194,17 @@ export class ChatService {
                 user.username,
                 message
             );
-        } else if (channel.channelType === ChannelType.PROTECTED) {
+        } else if (
+            channel.channelType === ChannelType.PROTECTED ||
+            channel.channelType === ChannelType.PRIVATE
+        ) {
             let allowed_users = channel.allowed_users;
             let i = 0;
             while (i < allowed_users.length) {
                 if (allowed_users[i].uuid === user.uuid) {
                     let channelMessages = channel.messages;
                     channelMessages.push({
-                        username: user.username,
+                        uuid: user.uuid,
                         message: message,
                     });
                     await this.chatRepository.update(
@@ -214,6 +249,7 @@ export class ChatService {
             { allowed_users: allowedUsers }
         );
         this.chatGateway.userJoinChannel(channel.channelName, user.username);
-        return channel.messages;
+
+        return this.convertChannelMessages(channel.messages);
     }
 }

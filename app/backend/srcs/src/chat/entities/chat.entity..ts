@@ -29,7 +29,7 @@ export class ChatEntity {
     channelOwner: string;
 
     @Column("jsonb", { default: [] })
-    messages: { username: string; message: string }[];
+    messages: { uuid: string; message: string }[];
 
     @Column("jsonb", { default: [] })
     allowed_users: { uuid: string }[];

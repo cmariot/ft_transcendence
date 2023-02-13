@@ -55,7 +55,7 @@ export const ChatParent = () => {
                 console.log(error.response);
             });
         axios
-            .post("/api/chat/connect", { channelName: "General" })
+            .post("/api/chat/connect", { channelName: currentChannel })
             .then(function (response) {
                 setCurrentChannelMessages(response.data);
             })
@@ -68,7 +68,7 @@ export const ChatParent = () => {
         //    socket: socket.id,
         //    username: user.username,
         //});
-    }, [user]);
+    }, [user, currentChannel]);
 
     const value = {
         currentChannel,
