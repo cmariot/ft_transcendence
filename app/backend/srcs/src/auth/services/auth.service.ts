@@ -37,35 +37,42 @@ export class AuthService {
     // email_validation : Doit valider son email
     // double_authentification : Doit valider sa connexion
     create_cookie(user: UserEntity, type: string, @Res() res) {
-        if (res.cookie["authentification"]) res.clearCookie("authentification");
-        if (res.cookie["email_validation"]) res.clearCookie("email_validation");
-        if (res.cookie["double_authentification"])
-            res.clearCookie("double_authentification");
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
-                res.cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                    sameSite: "none",
-                    secure: true,
-                }).redirect("https://localhost:8443/double-authentification");
+                res.clearCookie("authentification")
+                    .clearCookie("email_validation")
+                    .clearCookie("double_authentification")
+                    .cookie(type, cookie_value, {
+                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect("https://localhost:8443/double-authentification");
             } else if (type === "authentification") {
                 this.usersService.user_status(user.username, Status.ONLINE);
-                res.cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                    sameSite: "none",
-                    secure: true,
-                }).redirect("https://localhost:8443/");
+                res.clearCookie("authentification")
+                    .clearCookie("email_validation")
+                    .clearCookie("double_authentification")
+                    .cookie(type, cookie_value, {
+                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect("https://localhost:8443/");
             } else {
                 throw new UnauthorizedException();
             }
         } else {
-            console.log("Cookie ok");
-            res.cookie(type, cookie_value, {
-                maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                sameSite: "none",
-                secure: true,
-            }).send(type);
+            res.clearCookie("authentification")
+                .clearCookie("email_validation")
+                .clearCookie("double_authentification")
+                .cookie(type, cookie_value, {
+                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                    sameSite: "none",
+                    secure: true,
+                })
+                .send(type);
         }
     }
 
@@ -112,6 +119,7 @@ export class AuthService {
             (await bcrypt.compare(password, user.password)) === true
         ) {
             if (user.valideEmail === false) {
+                await this.usersService.resendEmail(user.uuid);
                 this.create_cookie(user, "email_validation", res);
             } else if (user.twoFactorsAuth === true) {
                 this.create_cookie(user, "double_authentification", res);

@@ -32,6 +32,13 @@ const LoginLocal = () => {
                 password: password,
             })
             .then(() => {
+                const email_validation_token = getCookie("email_validation");
+                if (email_validation_token) {
+                    setUsername("");
+                    setPassword("");
+                    navigate("/validate");
+                    return;
+                }
                 const token2fa = getCookie("double_authentification");
                 if (token2fa) {
                     setUsername("");

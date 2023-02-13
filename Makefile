@@ -63,6 +63,9 @@ top_frontend:
 sh_reverse_proxy:
 	docker-compose exec reverse_proxy sh
 
+sh_pgadmin:
+	docker-compose exec pgadmin sh
+
 ps:
 	docker-compose ps
 

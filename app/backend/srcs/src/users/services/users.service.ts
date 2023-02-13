@@ -171,7 +171,7 @@ export class UsersService {
                     "Welcome back" +
                     user.username +
                     ", here is your double authentification code :" +
-                    randomNumber.toString(), // plaintext body
+                    user.doubleAuthentificationCode, // plaintext body
                 html:
                     "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
                         <h1>Welcome back " +
@@ -179,7 +179,7 @@ export class UsersService {
                     " !</h1>\
                         <h3>Here is your double authentification code :</h3>\
                         <h2>" +
-                    randomNumber.toString() +
+                    user.doubleAuthentificationCode +
                     "</h2>\
                     </div>\
                     ",
@@ -220,11 +220,16 @@ export class UsersService {
             emailValidationCode: randomNumber.toString(),
             emailValidationCodeCreation: new Date(),
         };
-        if (db_user) {
+        if (
+            db_user &&
+            db_user.username === registerDto.username &&
+            db_user.valideEmail === false
+        ) {
             await this.userRepository.update(
                 { uuid: db_user.uuid },
                 {
                     email: user.email,
+                    createdFrom: CreatedFrom.REGISTER,
                     password: user.password,
                     twoFactorsAuth: user.twoFactorsAuth,
                     doubleAuthentificationCodeCreation: new Date(),
@@ -234,6 +239,9 @@ export class UsersService {
             let newUser: UserEntity = await this.getByUsername(
                 registerDto.username
             );
+            if (newUser.createdFrom === CreatedFrom.REGISTER) {
+                this.sendVerificationMail(user);
+            }
             return newUser;
         } else {
             return this.saveUser(user);

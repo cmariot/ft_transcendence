@@ -26,6 +26,7 @@ export class RegisterController {
 
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res) {
+        res.clearCookie();
         let user: UserEntity = await this.userService.register(registerDto);
         if (user) {
             return this.authService.create_cookie(
@@ -63,9 +64,13 @@ export class RegisterController {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
             await this.userService.validateEmail(user.uuid);
-            this.authService.create_cookie(user, "authentification", res);
             this.userService.deleteEmailValidationCode(req.user.uuid);
-            return "OK";
+            res.clearCookie();
+            return this.authService.create_cookie(
+                user,
+                "authentification",
+                res
+            );
         }
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
     }
