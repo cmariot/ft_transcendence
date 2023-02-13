@@ -7,13 +7,9 @@ import {
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { SocketService } from "../services/socket.service";
-import { UsersService } from "src/users/services/users.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
-    constructor(
-        private socketService: SocketService,
-        private userService: UsersService
-    ) {}
+    constructor(private socketService: SocketService) {}
 
     @WebSocketServer()
     server: Server;
@@ -21,12 +17,12 @@ export class ChatGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on("connection", (socket) => {
             socket.on("disconnect", async () => {
-                let username = await this.userService.userDisconnection(
-                    socket.id
-                );
-                if (username) {
-                    this.sendStatus(username, "Offline");
-                }
+                //let username = await this.userService.userDisconnection(
+                //    socket.id
+                //);
+                //if (username) {
+                //    this.sendStatus(username, "Offline");
+                //}
             });
         });
     }
@@ -37,7 +33,10 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
-    userJoinChannel(channel: string, username: string) {
+    async userJoinChannel(channel: string, username: string) {
+        //let user = await this.userService.getByUsername(username);
+        // remove user from previousChannel.currentUsers
+        // add user in channel.currentUsers
         this.server.emit("userChannelConnection", {
             channel: channel,
             username: username,

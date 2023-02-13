@@ -123,7 +123,7 @@ export class UsersController {
         return user.twoFactorsAuth;
     }
 
-    @Post("friend")
+    @Post("friends/add")
     @UseGuards(isLogged)
     async addFriend(@Body() Username: UsernameDto, @Req() req) {
         let friend = await this.userService.getByUsername(Username.username);
@@ -141,7 +141,7 @@ export class UsersController {
         return await this.userService.friendslist(req.user.uuid);
     }
 
-    @Post("friend/delete")
+    @Post("friends/remove")
     @UseGuards(isLogged)
     async DeleteFriend(@Body() Username: UsernameDto, @Req() req) {
         let friend = await this.userService.getByUsername(Username.username);

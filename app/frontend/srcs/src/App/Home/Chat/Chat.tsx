@@ -5,6 +5,7 @@ import CreateChannelMenu from "./CreateChannelsMenu";
 import ChatMessages from "./ChatMessages";
 import ChatMessage from "./ChatMessage";
 import { ChatContext } from "./ChatParent";
+import CreatePrivateMenu from "./CreatePrivateMenu";
 
 const Chat = () => {
     let chat = useContext(ChatContext);
@@ -44,6 +45,7 @@ const Chat = () => {
             </menu>
             <ChatMenu />
             <CreateChannelMenu />
+            <CreatePrivateMenu />
         </div>
     );
 };

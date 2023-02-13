@@ -17,6 +17,15 @@ const ChatMenu = () => {
         }
     }
 
+    function displayCreatePrivate() {
+        const menu = document.getElementById("chat-menu");
+        const createPrivate = document.getElementById("chat-create-private");
+        if (menu && createPrivate) {
+            menu.style.display = "none";
+            createPrivate.style.display = "flex";
+        }
+    }
+
     function closeChatMenu() {
         var chat = document.getElementById("chat");
         var menu = document.getElementById("chat-menu");
@@ -86,6 +95,9 @@ const ChatMenu = () => {
                 </div>
                 <footer id="chat-menu-buttons" className="chat-footer">
                     <button onClick={displayCreateChannel}>new channel</button>
+                    <button onClick={displayCreatePrivate}>
+                        private conversation
+                    </button>
                 </footer>
             </menu>
 

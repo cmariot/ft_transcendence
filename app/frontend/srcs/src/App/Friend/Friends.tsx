@@ -1,14 +1,12 @@
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import "../CSS/Friends.css";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 
 export default function Friends(props: any) {
     let user = useContext(UserContext);
     const [newFriend, setNewFriend] = useState("");
     const [friends, setFriends] = useState(user.friends);
-    const navigate = useNavigate();
 
     async function toogleMenu(index: number) {
         let menus = document.getElementsByClassName("friend-menu");
@@ -25,30 +23,29 @@ export default function Friends(props: any) {
     const addFriend = async (event: any) => {
         event.preventDefault();
         await axios
-            .post("/api/profile/friend", {
+            .post("/api/profile/friends/add", {
                 username: newFriend,
             })
-            .then(function () {
-                //user.setFriends(newFriend);
+            .then(function (response) {
+                user.setFriends(response.data);
                 setNewFriend("");
             })
             .catch(function (error) {
-                console.log(error);
+                alert(error.response.data.message);
             });
     };
 
     async function removeFriend(friendUsername: string, index: number) {
         await axios
-            .post("/api/profile/friend/delete", {
+            .post("/api/profile/friends/remove", {
                 username: friendUsername,
             })
-            .then(function () {
-                //user.removeFriend(friendUsername);
+            .then(function (response) {
+                user.setFriends(response.data);
                 toogleMenu(index);
-                navigate("/friends");
             })
             .catch(function (error) {
-                console.log(error);
+                alert(error.response.data.message);
             });
     }
 
@@ -127,7 +124,9 @@ export default function Friends(props: any) {
                                                     <button
                                                         onClick={() =>
                                                             removeFriend(
-                                                                friend,
+                                                                friend[
+                                                                    "username"
+                                                                ],
                                                                 index
                                                             )
                                                         }

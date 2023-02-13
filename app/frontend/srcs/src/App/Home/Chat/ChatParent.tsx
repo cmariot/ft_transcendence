@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppNavBar from "../../AppNavBar";
 import { Outlet } from "react-router-dom";
 import AppFooter from "../../AppFooter";
 import axios from "axios";
+import { UserContext } from "../../App";
 
 export const ChatContext = React.createContext({
     currentChannel: "General",
@@ -21,6 +22,8 @@ export const ChatContext = React.createContext({
 
 export const ChatParent = () => {
     const [currentChannel, changeCurrentChannel] = useState("General");
+
+    let user = useContext(UserContext);
 
     const [currentChannelMessages, setCurrentChannelMessages] = useState(
         new Array<{ username: string; message: string }>()
@@ -59,7 +62,13 @@ export const ChatParent = () => {
             .catch(function (error) {
                 console.log(error);
             });
-    }, []);
+
+        //socket.emit("userStatus", {
+        //    status: "Online",
+        //    socket: socket.id,
+        //    username: user.username,
+        //});
+    }, [user]);
 
     const value = {
         currentChannel,

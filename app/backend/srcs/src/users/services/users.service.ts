@@ -15,12 +15,15 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
+import { ChatGateway } from "src/chat/gateways/ChatGateway";
+import { SocketService } from "src/chat/services/socket.service";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService
+        private readonly mailerService: MailerService,
+        private socketService: SocketService
     ) {}
 
     async sendVerificationMail(user) {
@@ -284,6 +287,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
+        this.socketService.userUpdate(newUsername);
         return "Username updated.";
     }
 
@@ -315,6 +319,8 @@ export class UsersService {
             { uuid: uuid },
             { profileImage: imageName }
         );
+        let user = await this.getByID(uuid);
+        this.socketService.userUpdate(user.username);
         return "Image updated.";
     }
 
@@ -367,7 +373,7 @@ export class UsersService {
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return "Friend added.";
+        return this.friendslist(userId);
     }
 
     async friendslist(userid: string) {
@@ -400,6 +406,6 @@ export class UsersService {
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return "Friend deleted";
+        return this.friendslist(userId);
     }
 }

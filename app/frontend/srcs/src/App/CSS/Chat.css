@@ -190,3 +190,59 @@ button.chat-menu-li:nth-child(1) > p:nth-child(2) {
 .chat-menu-li {
     padding-inline: 5px;
 }
+
+/* Élément | https://localhost:8443/ */
+
+#chat-create-private > header:nth-child(1) > p:nth-child(1) {
+    padding-inline: 12px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-create-private > form:nth-child(2) > ul:nth-child(3) {
+    padding: 0;
+    overflow-y: scroll;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+.friend.chat-friends-list {
+    padding: 0;
+    margin-inline: 10px;
+}
+
+#new-conversation-name {
+    margin-top: 20px;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+.friend-profile-picture.chat-friends-picture {
+    margin: 5px;
+}
+
+.friend.chat-friends-list.user-selected {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+.friend.chat-friends-list:hover {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+    border-color: #1e1e1e;
+}
+
+.friend.chat-friends-list:focus {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+}
+
+.friend.chat-friends-list.user-selected:focus {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+.friend.chat-friends-list.user-selected:hover {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}

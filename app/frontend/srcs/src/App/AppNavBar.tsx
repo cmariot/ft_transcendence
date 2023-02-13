@@ -53,7 +53,6 @@ function AppNavBar() {
     }
 
     useEffect(() => {
-        console.log(user);
         setUsername(user.username);
         setAvatar(user.avatar);
     }, [user]);

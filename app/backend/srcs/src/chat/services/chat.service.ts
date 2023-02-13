@@ -9,7 +9,6 @@ import { ChannelType, ChatEntity } from "../entities/chat.entity.";
 import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
-import { PublicChannelDTO } from "../dtos/newChannel.dto";
 import { UsersService } from "src/users/services/users.service";
 
 @Injectable()
@@ -21,8 +20,34 @@ export class ChatService {
         private userService: UsersService
     ) {}
 
-    async get_channels() {
-        return await this.chatRepository.find();
+    async get_channels(uuid: string) {
+        let channels = await this.chatRepository.find();
+        let returned_channels: ChatEntity[] = [];
+        let i = 0;
+        while (i < channels.length) {
+            if (channels[i].channelType === ChannelType.PRIVATE) {
+                let j = 0;
+                while (j < channels[i].allowed_users.length) {
+                    if (channels[i].allowed_users[j].uuid === uuid) {
+                        returned_channels.push(channels[i]);
+                        break;
+                    }
+                    j++;
+                }
+            } else {
+                returned_channels.push(channels[i]);
+            }
+            i++;
+        }
+        return returned_channels.sort((a, b) => {
+            if (a.channelName > b.channelName) {
+                return 1;
+            }
+            if (a.channelName < b.channelName) {
+                return -1;
+            }
+            return 0;
+        });
     }
 
     async encode_password(rawPassword: string): Promise<string> {
@@ -42,22 +67,47 @@ export class ChatService {
 
     async create_channel(newChannel: any, uuid: string): Promise<ChatEntity> {
         newChannel.channelOwner = uuid;
-        if (newChannel.channelType === ChannelType.PROTECTED) {
-            let hashed_password = await this.encode_password(
-                newChannel.channelPassword
-            );
-            newChannel.channelPassword = hashed_password;
+        if (
+            newChannel.channelType === ChannelType.PROTECTED ||
+            newChannel.channelType === ChannelType.PUBLIC
+        ) {
+            if (newChannel.channelType === ChannelType.PROTECTED) {
+                let hashed_password = await this.encode_password(
+                    newChannel.channelPassword
+                );
+                newChannel.channelPassword = hashed_password;
+            }
+            const channel = await this.chatRepository.save(newChannel);
+            if (channel) {
+                this.chatGateway.newChannelAvailable(channel);
+            }
+            return channel;
         }
-        const channel = await this.chatRepository.save(newChannel);
-        if (channel) {
-            this.chatGateway.newChannelAvailable(channel);
-            return null;
+        if (newChannel.channelType === ChannelType.PRIVATE) {
+            let uuid_array: { uuid: string }[] = [];
+            uuid_array.push({ uuid: newChannel.channelOwner });
+            let i = 0;
+            while (i < newChannel.allowed_users.length) {
+                let allowed_user = await this.userService.getByUsername(
+                    newChannel.allowed_users[i]
+                );
+                if (allowed_user) {
+                    uuid_array.push({ uuid: allowed_user.uuid });
+                }
+                i++;
+            }
+            newChannel.allowed_users = uuid_array;
+            const channel = await this.chatRepository.save(newChannel);
+            if (channel) {
+                this.chatGateway.newChannelAvailable(channel);
+            }
+            return channel;
         }
-        return channel;
+        return null;
     }
 
     async join_channel(channelName: string, userID: string) {
-        let channels = await this.get_channels();
+        let channels = await this.get_channels(userID);
         if (channels.length === 0) {
             this.create_general_channel();
         }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ChatParent } from "./Home/Chat/ChatParent";
+import { socket } from "../Contexts/WebsocketContext";
 
 export const UserContext = React.createContext({
     username: "",
@@ -18,6 +19,7 @@ export const App = () => {
     const [avatar, editAvatar] = useState("");
     const [doubleAuth, editDoubleAuth] = useState(true);
     const [friends, setFriends] = useState([]);
+    const [friendUpdate, setFriendUpdate] = useState(false);
 
     useEffect(() => {
         axios
@@ -39,6 +41,20 @@ export const App = () => {
                 console.log(error.response);
             });
     }, []);
+
+    useEffect(() => {
+        socket.on("userUpdate", () => {
+            setFriendUpdate(!friendUpdate);
+        });
+        axios
+            .get("/api/profile/friends")
+            .then((response) => {
+                setFriends(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }, [friendUpdate]);
 
     const value = {
         username,

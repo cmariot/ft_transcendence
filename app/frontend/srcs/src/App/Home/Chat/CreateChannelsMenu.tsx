@@ -140,6 +140,7 @@ const CreateChannelMenu = () => {
                 <p>New Channel</p>
                 <button onClick={closeCreateChannelMenu}>cancel</button>
             </header>
+
             <form id="chat-create-channel-form" className="chat-main">
                 <h4>Create a new channel</h4>
                 <input
