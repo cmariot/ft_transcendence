@@ -18,6 +18,7 @@ import { ChannelType, ChatEntity } from "../entities/chat.entity.";
 import {
     channelDTO,
     channelPasswordDTO,
+    conversationDTO,
     messageDTO,
 } from "../dtos/channelId.dto";
 
@@ -28,14 +29,7 @@ export class ChatController {
     @Get("channels")
     @UseGuards(isLogged)
     async get_channels(@Req() req) {
-        const channels: ChatEntity[] = await this.chatService.get_channels(
-            req.user.uuid
-        );
-        if (channels.length === 0) {
-            await this.chatService.create_general_channel();
-            return await this.chatService.get_channels(req.user.uuid);
-        }
-        return channels;
+        return await this.chatService.get_channels(req.user.uuid);
     }
 
     @Post("create/public")
@@ -96,6 +90,18 @@ export class ChatController {
         return await this.chatService.join_protected_channel(
             channel.channelName,
             channel.channelPassword,
+            req.user.uuid
+        );
+    }
+
+    @Post("conversations")
+    @UseGuards(isLogged)
+    async getConversations(@Req() req, @Body() friend: conversationDTO) {
+        if (friend.username.length === 0) {
+            return;
+        }
+        return await this.chatService.getConversationsWith(
+            friend.username,
             req.user.uuid
         );
     }

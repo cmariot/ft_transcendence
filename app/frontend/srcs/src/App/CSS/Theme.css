@@ -48,10 +48,6 @@ input {
 
 /* Feuille de style intégrée #10 | https://localhost:8443/ */
 
-.chat-section {
-    background-color: #1e1e1e;
-}
-
 .chat-main {
     background-color: #3a3a3a;
 }
@@ -109,10 +105,11 @@ html {
 
 #profile {
     width: fit-content;
-    background-color: #1e1e1e;
     border-radius: 15px;
     padding: 30px;
-    border: 1px solid #1e1e1e;
+    margin: auto;
+    background-color: #1e1e1e;
+    border: 5px solid #737373;
 }
 
 #profile-user-picture {
@@ -396,50 +393,7 @@ textarea {
     border: 3px solid #737373;
 }
 
-/* Feuille de style intégrée #8 | https://localhost:8443/settings */
-input[type="checkbox"]:checked {
-    background: blue;
-    color: white;
-}
-input[type="checkbox"]:checked {
-    background: blue;
-    color: white;
-}
-
-input[type="checkbox"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: 0;
-    height: 16px;
-    width: 16px;
-    color: white;
-}
-
-input[type="checkbox"]:after {
-    content: " ";
-    position: relative;
-    left: 40%;
-    top: 20%;
-    width: 15%;
-    height: 40%;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(50deg);
-    display: none;
-}
-
-input[type="checkbox"]:checked:after {
-    display: block;
-}
-
 /* Feuille de style intégrée #7 | https://localhost:8443/ */
-
-input[type="checkbox"] {
-    /* cursor: pointer; */
-    /* background: lightgray; */
-    /* border: 1px solid white; */
-}
 
 #chat-create-channel-form > label:nth-child(4) {
     display: flex;
@@ -447,18 +401,7 @@ input[type="checkbox"] {
     align-items: center;
 }
 
-input[type="checkbox"]:checked {
-    /* background: blue; */
-    background: #1e1e1e;
-}
-
 /* Feuille de style intégrée #0 | https://localhost:8443/ */
-
-[type="checkbox"],
-[type="radio"] {
-    /* padding: 0; */
-    padding: 0px;
-}
 
 /* Élément | https://localhost:8443/settings */
 
@@ -503,4 +446,29 @@ input[type="checkbox"]:checked {
 
 #edit-double-auth > label:nth-child(1) {
     margin: 20px;
+}
+
+#chat-menu-channels.conversation-with-create {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+.chat-header {
+    /* justify-content: flex-start; */
+    justify-content: space-between;
+}
+
+/* Élément | https://localhost:8443/ */
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+#no-channels {
+    margin: 10px;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
 }

@@ -27,13 +27,17 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
-    newChannelAvailable(@MessageBody() data: any) {
-        this.server.emit("newChannelAvailable", {
-            content: data,
-        });
+    newChannelAvailable() {
+        console.log("Backend emit 'newChannelAvailable' with data: ");
+        this.server.emit("newChannelAvailable");
     }
 
     async userJoinChannel(channel: string, username: string) {
+        console.log(
+            "Backend emit 'userChannelConnection' with data: ",
+            channel,
+            username
+        );
         //let user = await this.userService.getByUsername(username);
         // remove user from previousChannel.currentUsers
         // add user in channel.currentUsers
@@ -44,6 +48,12 @@ export class ChatGateway implements OnModuleInit {
     }
 
     send_message(channel: string, username: string, message: string) {
+        console.log(
+            "Backend emit 'newChatMessage' with data: ",
+            channel,
+            username,
+            message
+        );
         this.server.emit("newChatMessage", {
             channel: channel,
             username: username,

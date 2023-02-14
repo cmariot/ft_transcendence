@@ -6,6 +6,11 @@ export class channelDTO {
     channelName: string;
 }
 
+export class conversationDTO {
+    @IsString()
+    username: string;
+}
+
 export class messageDTO {
     @IsNotEmpty()
     @IsString()

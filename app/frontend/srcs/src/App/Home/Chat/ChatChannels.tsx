@@ -77,7 +77,6 @@ const ChatMenu = () => {
             <menu id="chat-menu" className="chat-section">
                 <header id="chat-menu-header" className="chat-header">
                     <p id="chat-channel">Channels List</p>
-                    <button onClick={closeChatMenu}>cancel</button>
                 </header>
                 <div id="chat-menu-channels" className="chat-main">
                     {Array.from(chat.availableChannels).map((item, index) => (
