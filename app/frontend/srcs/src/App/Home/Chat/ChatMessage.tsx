@@ -18,7 +18,6 @@ const ChatMessage = () => {
     function sendMessage(e: any) {
         e.preventDefault();
         if (message.length === 0) return;
-
         axios
             .post("/api/chat", {
                 channelName: chat.currentChannel,
@@ -26,7 +25,8 @@ const ChatMessage = () => {
             })
             .then((response) => {
                 setMessage("");
-                const chatMessages = document.getElementById("chat-main");
+                const chatMessages =
+                    document.getElementById("chat-messages-list");
                 if (chatMessages) {
                     chatMessages.scrollTo(0, chatMessages.scrollHeight);
                 }
@@ -39,7 +39,7 @@ const ChatMessage = () => {
     }
 
     return (
-        <form onSubmit={sendMessage}>
+        <form onSubmit={sendMessage} id="send-message-form">
             <input
                 id="chat-message-input"
                 type="text"

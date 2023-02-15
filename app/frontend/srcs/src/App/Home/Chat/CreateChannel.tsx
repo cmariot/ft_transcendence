@@ -77,7 +77,6 @@ const CreateChannel = () => {
         } else {
             newChannelType = "public";
         }
-        console.log(newChannelType, url);
         await axios
             .post(url, {
                 channelName: newChannelName,
@@ -101,9 +100,17 @@ const CreateChannel = () => {
                         channelPasswordInput.style.display = "none";
                     }
                 }
+                chat.setCurrentChannelMessages([]);
+                chat.changeCurrentChannel(newChannelName);
                 setNewChannelName("");
                 setNewChannelPassword("");
                 setProtectedChannel(false);
+                const current = document.getElementById("chat-create-channel");
+                const menu = document.getElementById("chat-conversation");
+                if (menu && current) {
+                    current.style.display = "none";
+                    menu.style.display = "flex";
+                }
                 // Rejoindre le channel automatiquement ici
             })
             .catch(function (error) {

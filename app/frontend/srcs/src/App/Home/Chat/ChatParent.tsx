@@ -6,8 +6,14 @@ import axios from "axios";
 import { socket } from "../../../Contexts/WebsocketContext";
 
 export const ChatContext = React.createContext({
-    currentChannel: "General",
+    currentChannel: "",
     changeCurrentChannel: (newChannel: string) => {},
+
+    targetChannel: "",
+    setTargetChannel: (targetchannel: string) => {},
+
+    previousMenu: "",
+    setPreviousMenu: (previousMenu: string) => {},
 
     userChannels: new Map<string, { channelType: string }>(),
     userPrivateChannels: new Map<string, { channelType: string }>(),
@@ -34,6 +40,8 @@ export const ChatContext = React.createContext({
 
 export const ChatParent = () => {
     const [currentChannel, changeCurrentChannel] = useState("");
+    const [targetChannel, setTargetChannel] = useState("");
+    const [previousMenu, setPreviousMenu] = useState("channels");
     const [currentChannelMessages, setCurrentChannelMessages] = useState(
         new Array<{ username: string; message: string }>()
     );
@@ -124,6 +132,10 @@ export const ChatParent = () => {
     const value = {
         currentChannel,
         changeCurrentChannel,
+        targetChannel,
+        setTargetChannel,
+        previousMenu,
+        setPreviousMenu,
         userChannels,
         userPrivateChannels,
         availableChannels,

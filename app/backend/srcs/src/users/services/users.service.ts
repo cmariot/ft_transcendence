@@ -408,4 +408,62 @@ export class UsersService {
         );
         return this.friendslist(userId);
     }
+
+    async blockUser(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "You cannot block yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        if (!user.blocked) user.blocked = new Array();
+        else {
+            if (user.blocked.find((element) => element === friend)) {
+                throw new HttpException(
+                    "Already blocked",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+        user.blocked.push(friend);
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { blocked: user.blocked }
+        );
+        return "Blocked";
+    }
+
+    async blockedList(uuid: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        if (!user)
+            throw new HttpException("Invalid user", HttpStatus.BAD_REQUEST);
+        let blocked: { username: string }[] = [];
+        let i = 0;
+        while (i < user.blocked.length) {
+            let blocked_user = await this.getByID(user.blocked[i]);
+            if (blocked_user) {
+                blocked.push({ username: blocked_user.username });
+            }
+            i++;
+        }
+        return blocked;
+    }
+
+    async unBlock(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "Can't unblock yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        let index = user.blocked.findIndex((element) => element === friend);
+        if (index > -1) {
+            user.blocked.splice(index, 1);
+        }
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { blocked: user.blocked }
+        );
+        return "Unblocked";
+    }
 }

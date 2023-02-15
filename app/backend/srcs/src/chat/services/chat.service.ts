@@ -10,6 +10,7 @@ import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
+import { IsUUID } from "class-validator";
 
 @Injectable()
 export class ChatService {
@@ -46,7 +47,10 @@ export class ChatService {
         let found = false;
         while (i < channels.length) {
             // user is the channel owner
-            if (channels[i].channelOwner === user.uuid) {
+            if (
+                channels[i].channelOwner === user.uuid &&
+                channels[i].channelType !== ChannelType.PRIVATE
+            ) {
                 userChannels.push(channels[i]);
             } else if (
                 channels[i].channelType === "public" ||
@@ -72,7 +76,7 @@ export class ChatService {
                 let j = 0;
                 while (j < channels[i].allowed_users.length) {
                     if (channels[i].allowed_users[j].uuid === user.uuid) {
-                        // a private conversation request
+                        // a private conversation
                         userPrivateChannels.push(channels[i]);
                         break;
                     }
@@ -113,12 +117,12 @@ export class ChatService {
                 HttpStatus.FORBIDDEN
             );
         }
-
         newChannel.channelOwner = uuid;
         if (
             newChannel.channelType === ChannelType.PROTECTED ||
             newChannel.channelType === ChannelType.PUBLIC
         ) {
+            newChannel.users = [{ uuid: uuid }];
             if (newChannel.channelType === ChannelType.PROTECTED) {
                 let hashed_password = await this.encode_password(
                     newChannel.channelPassword
@@ -144,6 +148,8 @@ export class ChatService {
                 }
                 i++;
             }
+            newChannel.channelName =
+                uuid_array[0].uuid + " and " + uuid_array[1].uuid;
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
@@ -155,18 +161,32 @@ export class ChatService {
     }
 
     async convertChannelMessages(
+        uuid: string,
         initial_messages: { uuid: string; message: string }[]
     ) {
+        let user = await this.userService.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+        let blocked_users = user.blocked;
         let returned_messages: { username: string; message: string }[] = [];
         let i = 0;
         while (i < initial_messages.length) {
-            let user = await this.userService.getByID(initial_messages[i].uuid);
-            if (user) {
-                returned_messages.push({
-                    username: user.username,
-                    message: initial_messages[i].message,
-                });
+            if (
+                !blocked_users ||
+                blocked_users.indexOf(initial_messages[i].uuid) === -1
+            ) {
+                let chat_user = await this.userService.getByID(
+                    initial_messages[i].uuid
+                );
+                if (chat_user) {
+                    returned_messages.push({
+                        username: chat_user.username,
+                        message: initial_messages[i].message,
+                    });
+                }
             }
+
             i++;
         }
         return returned_messages;
@@ -183,6 +203,7 @@ export class ChatService {
         if (!channel) throw new UnauthorizedException();
         let user = await this.userService.getByID(userID);
         if (!user) throw new UnauthorizedException();
+
         if (channel.channelType == ChannelType.PRIVATE) {
             let index_in_authorized_channels = channels.findIndex((element) => {
                 if (element.channelName === channelName) return 1;
@@ -194,17 +215,33 @@ export class ChatService {
                     user.username
                 );
                 return this.convertChannelMessages(
+                    userID,
                     channels[index_in_authorized_channels].messages
                 );
             }
         } else if (channel.channelType === ChannelType.PUBLIC) {
-            this.chatGateway.userJoinChannel(
-                channel.channelName,
-                user.username
-            );
-            return this.convertChannelMessages(channel.messages);
+            let channel_users = channel.users;
+            let i = 0;
+            let found = false;
+            while (i < channel_users.length) {
+                if (channel_users[i].uuid === user.uuid) {
+                    found = true;
+                    break;
+                }
+                i++;
+            }
+            if (found === false) {
+                channel_users.push({ uuid: user.uuid });
+                this.chatRepository.update(
+                    { channelName: channel.channelName },
+                    { users: channel_users }
+                );
+            }
+
+            this.chatGateway.newChannelAvailable();
+            return this.convertChannelMessages(user.uuid, channel.messages);
         } else if (channel.channelType === ChannelType.PROTECTED) {
-            let allowed_users = channel.allowed_users;
+            let allowed_users = channel.users;
             let i = 0;
             while (i < allowed_users.length) {
                 if (allowed_users[i].uuid === user.uuid) {
@@ -212,7 +249,10 @@ export class ChatService {
                         channel.channelName,
                         user.username
                     );
-                    return this.convertChannelMessages(channel.messages);
+                    return this.convertChannelMessages(
+                        user.uuid,
+                        channel.messages
+                    );
                 }
                 i++;
             }
@@ -242,10 +282,30 @@ export class ChatService {
                 user.username,
                 message
             );
-        } else if (
-            channel.channelType === ChannelType.PROTECTED ||
-            channel.channelType === ChannelType.PRIVATE
-        ) {
+        } else if (channel.channelType === ChannelType.PROTECTED) {
+            let allowed_users = channel.users;
+            let i = 0;
+            while (i < allowed_users.length) {
+                if (allowed_users[i].uuid === user.uuid) {
+                    let channelMessages = channel.messages;
+                    channelMessages.push({
+                        uuid: user.uuid,
+                        message: message,
+                    });
+                    await this.chatRepository.update(
+                        { uuid: channel.uuid },
+                        { messages: channelMessages }
+                    );
+                    return this.chatGateway.send_message(
+                        channel.channelName,
+                        user.username,
+                        message
+                    );
+                }
+                i++;
+            }
+            throw new HttpException("Unauthorized.", HttpStatus.UNAUTHORIZED);
+        } else if (channel.channelType === ChannelType.PRIVATE) {
             let allowed_users = channel.allowed_users;
             let i = 0;
             while (i < allowed_users.length) {
@@ -290,18 +350,29 @@ export class ChatService {
             channel.channelPassword
         );
         if (!isMatch) throw new UnauthorizedException("Invalid password");
-        let allowedUsers = channel.allowed_users;
-        allowedUsers.push({ uuid: user.uuid });
-        await this.chatRepository.update(
-            { uuid: channel.uuid },
-            { allowed_users: allowedUsers }
-        );
-        this.chatGateway.userJoinChannel(channel.channelName, user.username);
 
-        return this.convertChannelMessages(channel.messages);
+        let channel_users = channel.users;
+        let i = 0;
+        let found = false;
+        while (i < channel_users.length) {
+            if (channel_users[i].uuid === user.uuid) {
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            channel_users.push({ uuid: user.uuid });
+            this.chatRepository.update(
+                { channelName: channel.channelName },
+                { users: channel_users }
+            );
+        }
+        this.chatGateway.newChannelAvailable();
+        return this.convertChannelMessages(uuid, channel.messages);
     }
 
-    async getConversationsWith(username: string, uuid: string) {
+    async getConversationWith(username: string, uuid: string) {
         let friend = await this.userService.getByUsername(username);
         if (!friend) {
             throw new UnauthorizedException("Cannot find this user");
@@ -321,9 +392,11 @@ export class ChatService {
                                 channels[i].allowed_users[k].uuid ===
                                 friend.uuid
                             ) {
-                                returned_channels.push(channels[i]);
-                                found = true;
-                                break;
+                                if (channels[i].allowed_users.length === 2) {
+                                    returned_channels.push(channels[i]);
+                                    found = true;
+                                    break;
+                                }
                             }
                             k++;
                         }
@@ -338,5 +411,39 @@ export class ChatService {
             i++;
         }
         return returned_channels;
+    }
+
+    async leave_channel(channelName: string, uuid: string) {
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (!channel) throw new UnauthorizedException("Invalid channel");
+        let user = await this.userService.getByID(uuid);
+        if (!user) throw new UnauthorizedException("Invalid user");
+
+        if (
+            channel.channelType === ChannelType.PUBLIC ||
+            channel.channelType === ChannelType.PROTECTED
+        ) {
+            if (channel.channelOwner === uuid) {
+                this.chatRepository.delete({ uuid: channel.uuid });
+            } else {
+                let index = channel.users.findIndex(
+                    (element) => element.uuid === user.uuid
+                );
+                if (index !== -1) {
+                    channel.users.splice(index, 1);
+                    await this.chatRepository.update(
+                        { channelName: channelName },
+                        { users: channel.users }
+                    );
+                } else {
+                    throw new UnauthorizedException();
+                }
+            }
+            this.chatGateway.newChannelAvailable();
+        } else {
+            throw new UnauthorizedException();
+        }
     }
 }

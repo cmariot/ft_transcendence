@@ -8,6 +8,7 @@ export class channelDTO {
 
 export class conversationDTO {
     @IsString()
+    @IsNotEmpty()
     username: string;
 }
 

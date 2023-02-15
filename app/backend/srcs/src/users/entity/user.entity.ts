@@ -77,4 +77,7 @@ export class UserEntity {
 
     @Column("text", { array: true, nullable: true })
     friend: string[];
+
+    @Column("text", { array: true, nullable: true })
+    blocked: string[];
 }

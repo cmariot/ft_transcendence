@@ -10,11 +10,18 @@ const YourChannels = () => {
         await axios
             .post("/api/chat/connect", { channelName: channel })
             .then(function (response) {
-                chat.setCurrentChannelMessages([]);
                 chat.changeCurrentChannel(channel);
                 chat.setCurrentChannelMessages(response.data);
+                const current = document.getElementById("chat-your-channels");
+                const menu = document.getElementById("chat-conversation");
+                if (menu && current) {
+                    current.style.display = "none";
+                    menu.style.display = "flex";
+                }
             })
-            .catch(function (error) {});
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     function joinChannelMenu() {
@@ -26,9 +33,10 @@ const YourChannels = () => {
         }
     }
 
-    function displayCreatePrivate() {
+    function displayPrivate() {
+        chat.setPreviousMenu("private");
         const current = document.getElementById("chat-your-channels");
-        const menu = document.getElementById("chat-create-private");
+        const menu = document.getElementById("chat-private-channels");
         if (menu && current) {
             current.style.display = "none";
             menu.style.display = "flex";
@@ -36,11 +44,14 @@ const YourChannels = () => {
     }
 
     function displayJoinedChannels() {
-        if (chat.userChannels.size === 0) {
+        if (
+            chat.userChannels.size === 0 &&
+            chat.userPrivateChannels.size === 0
+        ) {
             return (
                 <section className="chat-section">
                     <div id="no-channels">
-                        <p>You haven't joined any channels yet</p>
+                        <p>You haven't joined any channel yet</p>
                     </div>
                 </section>
             );
@@ -58,17 +69,19 @@ const YourChannels = () => {
                             </p>
                         </button>
                     ))}
+                    {Array.from(chat.userPrivateChannels).map((item, index) => (
+                        <button
+                            className="channel-selection-button"
+                            key={index}
+                            onClick={() => joinChannel(item[0])}
+                        >
+                            <p className="channel-selection-button-channel-name">
+                                {item[0]}
+                            </p>
+                        </button>
+                    ))}
                 </section>
             );
-        }
-    }
-
-    function privateRequests() {
-        let privateRequests: number = chat.userPrivateChannels.size;
-        if (privateRequests === 1) {
-            return <button>{chat.userPrivateChannels.size} request</button>;
-        } else if (privateRequests > 0) {
-            return <button>{chat.userPrivateChannels.size} requests</button>;
         }
     }
 
@@ -76,15 +89,11 @@ const YourChannels = () => {
         <menu id="chat-your-channels" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Your channels</p>
-                {privateRequests()}
+
+                <button onClick={() => joinChannelMenu()}>more</button>
             </header>
             {displayJoinedChannels()}
-            <footer className="chat-footer">
-                <button onClick={() => joinChannelMenu()}>
-                    other channels
-                </button>
-                <button onClick={displayCreatePrivate}>create private</button>
-            </footer>
+            <footer className="chat-footer"></footer>
         </menu>
     );
 };

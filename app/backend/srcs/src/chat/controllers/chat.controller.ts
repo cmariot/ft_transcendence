@@ -71,6 +71,15 @@ export class ChatController {
         );
     }
 
+    @Post("leave")
+    @UseGuards(isLogged)
+    leave_channel(@Req() req, @Body() channel: channelDTO) {
+        return this.chatService.leave_channel(
+            channel.channelName,
+            req.user.uuid
+        );
+    }
+
     @Post()
     @UseGuards(isLogged)
     async send_message(@Req() req, @Body() message: messageDTO) {
@@ -94,15 +103,24 @@ export class ChatController {
         );
     }
 
-    @Post("conversations")
+    @Post("direct-message")
     @UseGuards(isLogged)
-    async getConversations(@Req() req, @Body() friend: conversationDTO) {
-        if (friend.username.length === 0) {
-            return;
-        }
-        return await this.chatService.getConversationsWith(
+    async directMessage(@Req() req, @Body() friend: conversationDTO) {
+        let privateconv = await this.chatService.getConversationWith(
             friend.username,
             req.user.uuid
         );
+        if (privateconv.length === 1) {
+            return privateconv[0];
+        } else {
+            console.log("Pas de conv trouvee, creation !");
+            let newChannel: PrivateChannelDTO = {
+                channelName: "private conversation",
+                channelType: "private",
+                channelOwner: req.user.uuid,
+                allowed_users: [friend.username],
+            };
+            return this.chatService.create_channel(newChannel, req.user.uuid);
+        }
     }
 }

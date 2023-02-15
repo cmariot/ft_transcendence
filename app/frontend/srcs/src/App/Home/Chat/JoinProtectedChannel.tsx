@@ -3,7 +3,7 @@ import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
 
-const JoinProtectedMenu = (props: any) => {
+const JoinProtected = () => {
     const chat = useContext(ChatContext);
     const [password, setPassword] = useState("");
 
@@ -19,20 +19,18 @@ const JoinProtectedMenu = (props: any) => {
         event.preventDefault();
         await axios
             .post("/api/chat/join/protected", {
-                channelName: props.channel,
+                channelName: chat.targetChannel,
                 channelPassword: password,
             })
             .then((response) => {
                 setPassword("");
-                chat.changeCurrentChannel(props.channel);
+                chat.changeCurrentChannel(chat.targetChannel);
                 chat.setCurrentChannelMessages(response.data);
-                var passwordMenu = document.getElementById(
-                    "chat-join-protected"
-                );
-                var chatMain = document.getElementById("chat");
-                if (passwordMenu && chatMain) {
-                    passwordMenu.style.display = "none";
-                    chatMain.style.display = "flex";
+                const current = document.getElementById("chat-join-protected");
+                const menu = document.getElementById("chat-conversation");
+                if (menu && current) {
+                    current.style.display = "none";
+                    menu.style.display = "flex";
                 }
             })
             .catch((error) => {
@@ -41,42 +39,43 @@ const JoinProtectedMenu = (props: any) => {
             });
     }
 
-    function closeChatMenu() {
-        var passwordMenu = document.getElementById("chat-join-protected");
-        var menu = document.getElementById("chat-menu");
-        if (passwordMenu && menu) {
+    function closeJoinMenu() {
+        const current = document.getElementById("chat-join-protected");
+        const menu = document.getElementById("chat-channels-list");
+        if (menu && current) {
+            current.style.display = "none";
             menu.style.display = "flex";
-            passwordMenu.style.display = "none";
         }
     }
 
     return (
-        <menu id="chat-join-protected" className="chat-section">
-            <header id="chat-protected-header" className="chat-header">
-                <p id="chat-channel">{props.channel} password</p>
-                <button onClick={closeChatMenu}>cancel</button>
+        <menu id="chat-join-protected" className="chat-menu">
+            <header className="chat-header">
+                <p className="chat-header-tittle">Join protected channel</p>
+                <button onClick={closeJoinMenu}>cancel</button>
             </header>
-            <div id="chat-protected-channels" className="chat-main">
-                <p>Enter the {props.channel}'s password :</p>
+            <section
+                className="chat-section"
+                id="join-protected-channel-section"
+            >
+                <p>Enter the {chat.targetChannel}'s password :</p>
                 <form onSubmit={submitProtectedForm}>
                     <input
                         type="password"
                         id="password-protected-channel"
-                        placeholder="Password"
+                        placeholder={chat.targetChannel.concat(" password")}
                         value={password}
                         onChange={handleProtectedChange}
                         autoComplete="off"
                         required
                     />
                 </form>
-            </div>
-
-            <footer id="chat-protexted-buttons" className="chat-footer">
+            </section>
+            <footer className="chat-footer">
                 <button
                     type="submit"
                     className="button"
                     onClick={submitProtectedForm}
-                    value="Login"
                 >
                     join
                 </button>
@@ -84,4 +83,4 @@ const JoinProtectedMenu = (props: any) => {
         </menu>
     );
 };
-export default JoinProtectedMenu;
+export default JoinProtected;
