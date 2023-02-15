@@ -26,6 +26,9 @@ export class SocketService {
         this.server.emit("userUpdate", {
             username: username,
         });
-        console.log("UPDATE IN BACKEND SEND");
+    }
+
+    chatUpdate() {
+        this.server.emit("newChannelAvailable", {});
     }
 }

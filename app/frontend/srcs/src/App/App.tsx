@@ -12,6 +12,8 @@ export const UserContext = React.createContext({
     editDoubleAuth: (newValue: boolean) => {},
     friends: [],
     setFriends: (newFriends: []) => {},
+    blocked: [],
+    setBlocked: (newFriends: []) => {},
 });
 
 export const App = () => {
@@ -19,6 +21,7 @@ export const App = () => {
     const [avatar, editAvatar] = useState("");
     const [doubleAuth, editDoubleAuth] = useState(true);
     const [friends, setFriends] = useState([]);
+    const [blocked, setBlocked] = useState([]);
     const [friendUpdate, setFriendUpdate] = useState(false);
 
     useEffect(() => {
@@ -54,6 +57,14 @@ export const App = () => {
             .catch((error) => {
                 console.log(error.response);
             });
+        axios
+            .get("/api/profile/blocked")
+            .then((response) => {
+                setBlocked(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
     }, [friendUpdate]);
 
     const value = {
@@ -65,6 +76,8 @@ export const App = () => {
         editDoubleAuth,
         friends,
         setFriends,
+        blocked,
+        setBlocked,
     };
 
     return (

@@ -152,4 +152,28 @@ export class UsersController {
             );
         return await this.userService.DelFriend(req.user.uuid, friend.uuid);
     }
+
+    @Post("block")
+    @UseGuards(isLogged)
+    async block_user(@Body() Username: UsernameDto, @Req() req) {
+        let block = await this.userService.getByUsername(Username.username);
+        if (!block)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        return await this.userService.blockUser(req.user.uuid, block.uuid);
+    }
+
+    @Get("blocked")
+    @UseGuards(isLogged)
+    async blocked_list(@Req() req) {
+        return await this.userService.blockedList(req.user.uuid);
+    }
+
+    @Post("unblock")
+    @UseGuards(isLogged)
+    async unBlock(@Body() Username: UsernameDto, @Req() req) {
+        let block = await this.userService.getByUsername(Username.username);
+        if (!block)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        return await this.userService.unBlock(req.user.uuid, block.uuid);
+    }
 }

@@ -430,7 +430,7 @@ export class UsersService {
             { uuid: user.uuid },
             { blocked: user.blocked }
         );
-        return "Blocked";
+        return this.blockedList(user.uuid);
     }
 
     async blockedList(uuid: string) {
@@ -464,6 +464,6 @@ export class UsersService {
             { uuid: user.uuid },
             { blocked: user.blocked }
         );
-        return "Unblocked";
+        return this.blockedList(user.uuid);
     }
 }

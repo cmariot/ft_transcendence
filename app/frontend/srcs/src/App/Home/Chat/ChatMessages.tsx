@@ -28,6 +28,29 @@ const ChatMessages = () => {
         //}
     }
 
+    async function blockUser(username: string) {
+        await axios
+            .post("/api/profile/block", { username: username })
+            .then(async (response) => {
+                user.setBlocked(response.data);
+                console.log(response.data);
+                await axios
+                    .post("/api/chat/connect", {
+                        channelName: chat.currentChannel,
+                    })
+                    .then((response) => {
+                        chat.setCurrentChannelMessages(response.data);
+                        console.log(response.data);
+                    })
+                    .catch((error) => {
+                        console.log(error.data);
+                    });
+            })
+            .catch((error) => {
+                console.log(error.data);
+            });
+    }
+
     function messageMenu(username: string) {
         if (username !== user.username) {
             return (
@@ -37,7 +60,7 @@ const ChatMessages = () => {
                     </button>
                     <button>play</button>
                     <button>profile</button>
-                    <button>block</button>
+                    <button onClick={() => blockUser(username)}>block</button>
                 </div>
             );
         }

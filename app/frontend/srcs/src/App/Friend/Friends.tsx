@@ -7,6 +7,7 @@ export default function Friends(props: any) {
     let user = useContext(UserContext);
     const [newFriend, setNewFriend] = useState("");
     const [friends, setFriends] = useState(user.friends);
+    const [blocked, setBlocked] = useState(user.blocked);
 
     async function toogleMenu(index: number) {
         let menus = document.getElementsByClassName("friend-menu");
@@ -49,9 +50,64 @@ export default function Friends(props: any) {
             });
     }
 
+    async function unblock(username: string) {
+        await axios
+            .post("/api/profile/unblock", { username: username })
+            .then((response) => {
+                user.setBlocked(response.data);
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    function blockedUsersList() {
+        if (user.blocked.length) {
+            return (
+                <section>
+                    <>
+                        <ul id="friend-list">
+                            <h2>blocked list</h2>
+                            {blocked.map((blocked, index) => (
+                                <li className="friend" key={index}>
+                                    <img
+                                        src={
+                                            "/api/profile/" +
+                                            blocked["username"] +
+                                            "/image"
+                                        }
+                                        className="friend-profile-picture"
+                                        alt="Friend's avatar"
+                                    />
+                                    <div className="friend-middle-div">
+                                        <p className="friend-username">
+                                            <b>{blocked["username"]}</b>
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() =>
+                                            unblock(blocked["username"])
+                                        }
+                                    >
+                                        unblock
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                </section>
+            );
+        }
+    }
+
     useEffect(() => {
         setFriends(user.friends);
     }, [user.friends]);
+
+    useEffect(() => {
+        setBlocked(user.blocked);
+    }, [user.blocked]);
 
     // Voir ce qui est obligatoire au niveau du sujet a modif si necessaire
     // - Photo de profil des amis : Ok mais pas mis a jour automatiquement lorsqu'ils la changent
@@ -146,6 +202,7 @@ export default function Friends(props: any) {
                     </>
                 )}
             </main>
+            {blockedUsersList()}
         </div>
     );
 }
