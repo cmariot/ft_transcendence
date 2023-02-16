@@ -4,6 +4,7 @@
     align-items: center;
     margin: 0;
     padding: 0;
+    width: -webkit-fill-available;
     width: -moz-available;
     height: inherit;
     justify-content: flex-start;
@@ -43,6 +44,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
     height: 50px;
     padding-inline: 12px;
@@ -55,6 +57,7 @@
     border: 2px solid #1e1e1e;
     margin: 5px;
     padding: 5px;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -66,6 +69,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
     height: 50px;
     padding-inline: 12px;
@@ -75,6 +79,7 @@
 #chat-create-channel-form {
     display: flex;
     flex-direction: column;
+    width: -webkit-fill-available;
     width: -moz-available;
     height: 100%;
     justify-content: center;
@@ -95,6 +100,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
     padding-inline: 5px;
 }
@@ -114,11 +120,14 @@
 
 .chat-friends-list {
     display: flex;
+    width: -webkit-fill-available;
     width: -moz-available;
     justify-content: flex-start;
 }
 
 #chat-create-private-form {
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
     height: -moz-available;
     width: -moz-available;
 }
@@ -150,12 +159,15 @@
     justify-content: center;
     padding: 0;
     align-items: flex-start;
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
     height: -moz-available;
     width: -moz-available;
     margin-block: 5px;
 }
 
 .chat-main-li {
+    width: -webkit-fill-available;
     width: -moz-available;
     margin: 3px;
     border-radius: 5px;
@@ -170,6 +182,7 @@
 }
 
 #send-message-form {
+    width: -webkit-fill-available;
     width: -moz-available;
     display: flex;
     justify-content: center;
@@ -179,6 +192,7 @@
 
 #chat-message-input {
     margin: 0;
+    width: -webkit-fill-available;
     width: -moz-available;
     margin-inline-end: 3px;
 }
@@ -205,6 +219,7 @@
 }
 
 #chat-menu-options > button {
+    width: -webkit-fill-available;
     width: -moz-available;
     text-align: center;
 }

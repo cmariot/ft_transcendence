@@ -23,6 +23,7 @@
     justify-content: space-around;
     border: 1px black solid;
     border-radius: 15px;
+    width: -webkit-fill-available;
     width: -moz-available;
     width: -webkit-fill-available;
     margin: 5px;
@@ -92,6 +93,7 @@
 }
 
 .friend {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 

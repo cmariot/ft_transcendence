@@ -219,6 +219,7 @@ html {
 
 #friends {
     /* width: 100%; */
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -272,6 +273,7 @@ textarea {
 
 #friends {
     /* width: 100%; */
+    width: -webkit-fill-available;
     width: -moz-available;
     display: flex;
     flex-direction: column;

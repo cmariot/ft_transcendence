@@ -1,6 +1,7 @@
 #validation-2fa-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
+    height: -webkit-fill-available;
     height: -moz-available;
     grid-gap: 10px;
     margin: 10px;
