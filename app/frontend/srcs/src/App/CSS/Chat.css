@@ -200,22 +200,25 @@
     flex-direction: column;
 }
 
-/* Feuille de style intégrée #15 | https://localhost:8443/ */
-
 #chat-crete-private-section {
     justify-content: center;
 }
-
-/* Élément | https://localhost:8443/ */
 
 #chat-menu-options > button {
     width: -moz-available;
     text-align: center;
 }
 
-/* Élément | https://localhost:8443/ */
-
 .chat-user-message-options {
-    width: -moz-available;
+    display: none;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.chat-main-li:hover > .chat-user-message-options {
     display: flex;
+}
+
+.chat-user-message-options button {
+    margin-inline: 2px;
 }

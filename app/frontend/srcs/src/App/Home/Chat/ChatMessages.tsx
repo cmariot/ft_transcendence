@@ -3,29 +3,39 @@ import "../../CSS/Chat.css";
 import { ChatContext } from "./ChatParent";
 import { socket } from "../../../Contexts/WebsocketContext";
 import { UserContext } from "../../App";
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ChatMessages = () => {
     const chat = useContext(ChatContext);
     const user = useContext(UserContext);
+    const navigate = useNavigate();
+
+    function createPrivateMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("chat-create-private");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
 
     async function directMessage(username: string) {
         await axios
             .post("/api/chat/direct-message", { username: username })
-            .then((response) => console.log(response.data.message))
-            .catch((error) => console.log(error));
-        //chat.startConversationWith(username);
-        //var chatMenu = document.getElementById("chat");
-        //var menu = document.getElementById("conversation-with-menu");
-        //if (chatMenu && menu) {
-        //    if (chatMenu.style.display === "flex") {
-        //        chatMenu.style.display = "none";
-        //        menu.style.display = "flex";
-        //    } else {
-        //        menu.style.display = "flex";
-        //        chatMenu.style.display = "none";
-        //    }
-        //}
+            .then((response) => {
+                if (response.status === HttpStatusCode.NoContent) {
+                    chat.startConversationWith(username);
+                    createPrivateMenu();
+                    return;
+                } else {
+                    chat.changeCurrentChannel(response.data.channelName);
+                    chat.setCurrentChannelMessages(response.data.messages);
+                }
+            })
+            .catch((error) => {
+                console.log("Catch : ", error);
+            });
     }
 
     async function blockUser(username: string) {
@@ -51,6 +61,10 @@ const ChatMessages = () => {
             });
     }
 
+    async function profile(username: string) {
+        navigate("/profile/" + username);
+    }
+
     function messageMenu(username: string) {
         if (username !== user.username) {
             return (
@@ -59,7 +73,7 @@ const ChatMessages = () => {
                         message
                     </button>
                     <button>play</button>
-                    <button>profile</button>
+                    <button onClick={() => profile(username)}>profile</button>
                     <button onClick={() => blockUser(username)}>block</button>
                 </div>
             );

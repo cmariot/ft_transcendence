@@ -33,17 +33,49 @@ const YourChannels = () => {
         }
     }
 
-    function displayPrivate() {
-        chat.setPreviousMenu("private");
-        const current = document.getElementById("chat-your-channels");
-        const menu = document.getElementById("chat-private-channels");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
+    function displayJoinedChannels() {
+        if (chat.userPrivateChannels.size) {
+            return (
+                <>
+                    <p>Your channels :</p>
+                    {Array.from(chat.userChannels).map((item, index) => (
+                        <button
+                            className="channel-selection-button"
+                            key={index}
+                            onClick={() => joinChannel(item[0])}
+                        >
+                            <p className="channel-selection-button-channel-name">
+                                {item[0]}
+                            </p>
+                        </button>
+                    ))}
+                </>
+            );
         }
     }
 
-    function displayJoinedChannels() {
+    function displayPrivateMessages() {
+        if (chat.userPrivateChannels.size) {
+            return (
+                <>
+                    <p>Private messages :</p>
+                    {Array.from(chat.userPrivateChannels).map((item, index) => (
+                        <button
+                            className="channel-selection-button"
+                            key={index}
+                            onClick={() => joinChannel(item[0])}
+                        >
+                            <p className="channel-selection-button-channel-name">
+                                {item[0]}
+                            </p>
+                        </button>
+                    ))}
+                </>
+            );
+        }
+    }
+
+    function displayChannels() {
         if (
             chat.userChannels.size === 0 &&
             chat.userPrivateChannels.size === 0
@@ -58,28 +90,8 @@ const YourChannels = () => {
         } else {
             return (
                 <section className="chat-section">
-                    {Array.from(chat.userChannels).map((item, index) => (
-                        <button
-                            className="channel-selection-button"
-                            key={index}
-                            onClick={() => joinChannel(item[0])}
-                        >
-                            <p className="channel-selection-button-channel-name">
-                                {item[0]}
-                            </p>
-                        </button>
-                    ))}
-                    {Array.from(chat.userPrivateChannels).map((item, index) => (
-                        <button
-                            className="channel-selection-button"
-                            key={index}
-                            onClick={() => joinChannel(item[0])}
-                        >
-                            <p className="channel-selection-button-channel-name">
-                                {item[0]}
-                            </p>
-                        </button>
-                    ))}
+                    {displayJoinedChannels()}
+                    {displayPrivateMessages()}
                 </section>
             );
         }
@@ -92,7 +104,7 @@ const YourChannels = () => {
 
                 <button onClick={() => joinChannelMenu()}>more</button>
             </header>
-            {displayJoinedChannels()}
+            {displayChannels()}
             <footer className="chat-footer"></footer>
         </menu>
     );

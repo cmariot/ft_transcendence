@@ -17,10 +17,12 @@ import ProtectedPage from "./Utils/ProtectedPage";
 import ProtectedValidation from "./Utils/ProtectedValidation";
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
 import { App } from "./App/App";
+import UserProfile, { loader } from "./App/Profile/UserProfile";
 
 const router = createBrowserRouter([
     {
         path: "/",
+        errorElement: <ErrorPage />,
         element: <ProtectedPage />,
         children: [
             {
@@ -35,6 +37,11 @@ const router = createBrowserRouter([
                         element: <Profile />,
                     },
                     {
+                        path: "profile/:user",
+                        element: <UserProfile />,
+                        loader: loader,
+                    },
+                    {
                         path: "friends",
                         element: <Friends />,
                     },
@@ -45,10 +52,10 @@ const router = createBrowserRouter([
                 ],
             },
         ],
-        errorElement: <ErrorPage />,
     },
     {
         path: "/",
+        errorElement: <ErrorPage />,
         element: <Auth />,
         children: [
             {

@@ -107,6 +107,9 @@ export class UsersController {
     @UseGuards(isLogged)
     async getUserImage(@Param() params, @Req() req) {
         const user = await this.userService.getByUsername(params.username);
+        if (!user)
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+
         return this.userService.getProfileImage(user.uuid);
     }
 

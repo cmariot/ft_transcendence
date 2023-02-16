@@ -439,6 +439,7 @@ export class UsersService {
             throw new HttpException("Invalid user", HttpStatus.BAD_REQUEST);
         let blocked: { username: string }[] = [];
         let i = 0;
+        if (user.blocked === null) return blocked;
         while (i < user.blocked.length) {
             let blocked_user = await this.getByID(user.blocked[i]);
             if (blocked_user) {

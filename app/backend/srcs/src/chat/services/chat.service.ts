@@ -134,8 +134,8 @@ export class ChatService {
                 this.chatGateway.newChannelAvailable();
             }
             return channel;
-        }
-        if (newChannel.channelType === ChannelType.PRIVATE) {
+        } else if (newChannel.channelType === ChannelType.PRIVATE) {
+            console.log("ici : ", newChannel);
             let uuid_array: { uuid: string }[] = [];
             uuid_array.push({ uuid: newChannel.channelOwner });
             let i = 0;
@@ -148,8 +148,6 @@ export class ChatService {
                 }
                 i++;
             }
-            newChannel.channelName =
-                uuid_array[0].uuid + " and " + uuid_array[1].uuid;
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
@@ -378,9 +376,10 @@ export class ChatService {
             throw new UnauthorizedException("Cannot find this user");
         }
         let channels = await this.chatRepository.find();
-        let returned_channels: ChatEntity[] = [];
+        if (!channels) {
+            return null;
+        }
         let i = 0;
-        let found = false;
         while (i < channels.length) {
             if (channels[i].channelType === ChannelType.PRIVATE) {
                 let j = 0;
@@ -390,27 +389,28 @@ export class ChatService {
                         while (k < channels[i].allowed_users.length) {
                             if (
                                 channels[i].allowed_users[k].uuid ===
-                                friend.uuid
+                                    friend.uuid &&
+                                channels[i].allowed_users.length === 2
                             ) {
-                                if (channels[i].allowed_users.length === 2) {
-                                    returned_channels.push(channels[i]);
-                                    found = true;
-                                    break;
-                                }
+                                let messages =
+                                    await this.convertChannelMessages(
+                                        uuid,
+                                        channels[i].messages
+                                    );
+                                return {
+                                    channelName: channels[i].channelName,
+                                    messages: messages,
+                                };
                             }
                             k++;
                         }
-                    }
-                    if (found === true) {
-                        found = false;
-                        break;
                     }
                     j++;
                 }
             }
             i++;
         }
-        return returned_channels;
+        return null;
     }
 
     async leave_channel(channelName: string, uuid: string) {

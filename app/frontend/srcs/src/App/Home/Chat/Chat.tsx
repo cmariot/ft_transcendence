@@ -4,6 +4,7 @@ import ChannelsList from "./ChannelsList";
 import CreateChannel from "./CreateChannel";
 import ChatConv from "./ChatConv";
 import JoinProtected from "./JoinProtectedChannel";
+import CreatePrivate from "./CreatePrivate";
 
 const Chat = () => {
     return (
@@ -12,6 +13,7 @@ const Chat = () => {
             <ChannelsList />
             <JoinProtected />
             <CreateChannel />
+            <CreatePrivate />
             <ChatConv />
         </div>
     );
