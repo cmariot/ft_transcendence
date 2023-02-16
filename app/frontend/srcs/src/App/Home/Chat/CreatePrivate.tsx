@@ -38,8 +38,9 @@ const CreatePrivate = () => {
                 allowed_users: [chat.conversationUser],
             })
             .then(function (response) {
-                chat.changeCurrentChannel(response.data.channelName);
-                chat.setCurrentChannelMessages(response.data.messages);
+                chat.changeCurrentChannel(newChannelName);
+                chat.setCurrentChannelMessages([]);
+                chat.setChannelOwner(true);
                 const current = document.getElementById("chat-create-private");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

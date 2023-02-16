@@ -9,17 +9,17 @@ import { UserContext } from "../../App";
 export const ChatContext = React.createContext({
     currentChannel: "",
     changeCurrentChannel: (newChannel: string) => {},
-
     targetChannel: "",
     setTargetChannel: (targetchannel: string) => {},
-
     previousMenu: "",
     setPreviousMenu: (previousMenu: string) => {},
-
+    channelOwner: false,
+    setChannelOwner: (newValue: boolean) => {},
+    channelAdmin: false,
+    setChannelAdmin: (newValue: boolean) => {},
     userChannels: new Map<string, { channelType: string }>(),
     userPrivateChannels: new Map<string, { channelType: string }>(),
     availableChannels: new Map<string, { channelType: string }>(),
-
     updateUserChannels: (
         updatedChannels: Map<string, { channelType: string }>
     ) => {},
@@ -29,12 +29,10 @@ export const ChatContext = React.createContext({
     updateAvailableChannels: (
         updatedChannels: Map<string, { channelType: string }>
     ) => {},
-
     currentChannelMessages: new Array<{ username: string; message: string }>(),
     setCurrentChannelMessages: (
         updatedMessages: Array<{ username: string; message: string }>
     ) => {},
-
     conversationUser: "",
     startConversationWith: (newChannel: string) => {},
 });
@@ -43,8 +41,13 @@ export const ChatParent = () => {
     let user = useContext(UserContext);
 
     const [currentChannel, changeCurrentChannel] = useState("");
+
     const [targetChannel, setTargetChannel] = useState("");
     const [previousMenu, setPreviousMenu] = useState("channels");
+
+    const [channelOwner, setChannelOwner] = useState(true);
+    const [channelAdmin, setChannelAdmin] = useState(true);
+
     const [currentChannelMessages, setCurrentChannelMessages] = useState(
         new Array<{ username: string; message: string }>()
     );
@@ -139,6 +142,10 @@ export const ChatParent = () => {
         setTargetChannel,
         previousMenu,
         setPreviousMenu,
+        channelOwner,
+        setChannelOwner,
+        channelAdmin,
+        setChannelAdmin,
         userChannels,
         userPrivateChannels,
         availableChannels,

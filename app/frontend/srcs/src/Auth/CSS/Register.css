@@ -26,3 +26,16 @@
     margin: 5px;
     padding: 5px;
 }
+
+#username-register,
+#email-register,
+#password-register {
+    width: -moz-available;
+}
+
+#register-form > label:nth-child(5) {
+    width: -moz-available;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

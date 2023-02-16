@@ -15,10 +15,11 @@
 }
 
 #validation-2fa-form {
-    border: 1px black solid;
+    border: 3px solid #737373;
     border-radius: 15px;
     padding-top: 50px;
     padding-bottom: 50px;
+    background-color: #1e1e1e;
 }
 
 #register-form * {
@@ -28,4 +29,8 @@
 
 #form-2fa-choices * {
     margin-inline: 5px;
+}
+
+#validation-2fa-aside {
+    color: #1e1e1e;
 }

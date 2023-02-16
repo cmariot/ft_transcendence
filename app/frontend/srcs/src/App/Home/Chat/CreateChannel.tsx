@@ -102,6 +102,7 @@ const CreateChannel = () => {
                 }
                 chat.setCurrentChannelMessages([]);
                 chat.changeCurrentChannel(newChannelName);
+                chat.setChannelOwner(true);
                 setNewChannelName("");
                 setNewChannelPassword("");
                 setProtectedChannel(false);

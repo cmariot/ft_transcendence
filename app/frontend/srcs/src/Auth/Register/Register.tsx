@@ -13,11 +13,11 @@ export default function Register() {
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        if (id === "username") {
+        if (id === "username-register") {
             setUsername(value);
-        } else if (id === "email") {
+        } else if (id === "email-register") {
             setEmail(value);
-        } else if (id === "password") {
+        } else if (id === "password-register") {
             setPassword(value);
         }
     };
@@ -79,7 +79,7 @@ export default function Register() {
             <form id="register-form">
                 <h3>Register</h3>
                 <input
-                    id="username"
+                    id="username-register"
                     type="text"
                     placeholder="Username"
                     value={username}
@@ -89,7 +89,7 @@ export default function Register() {
                     required
                 />
                 <input
-                    id="password"
+                    id="password-register"
                     type="password"
                     value={password}
                     onChange={(event) => handleInputChange(event)}
@@ -98,7 +98,7 @@ export default function Register() {
                     required
                 />
                 <input
-                    id="email"
+                    id="email-register"
                     type="email"
                     placeholder="Email"
                     value={email}
@@ -108,7 +108,7 @@ export default function Register() {
                 <label>
                     Enable Double-Authentification
                     <input
-                        id="2fa"
+                        id="2fa-register"
                         type="checkbox"
                         defaultChecked={true}
                         onClick={() => setDoubleAuth(!doubleAuth)}
@@ -116,7 +116,7 @@ export default function Register() {
                 </label>
                 <div>
                     <input
-                        id="submit"
+                        id="submit-register"
                         className="button"
                         type="submit"
                         value="Register"

@@ -11,6 +11,7 @@ import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { IsUUID } from "class-validator";
+import { channelDTO } from "../dtos/channelId.dto";
 
 @Injectable()
 export class ChatService {
@@ -30,7 +31,7 @@ export class ChatService {
             );
         }
         let channels = await this.chatRepository.find();
-        if (!channels) {
+        if (!channels || channels.length === 0) {
             let general = await this.create_general_channel();
             if (!general) {
                 throw new HttpException(
@@ -135,14 +136,14 @@ export class ChatService {
         return await this.chatRepository.save(generalChannel);
     }
 
-    async create_channel(newChannel: any, uuid: string): Promise<ChatEntity> {
+    async create_channel(newChannel: any, uuid: string) {
         let channel = await this.chatRepository.findOneBy({
             channelName: newChannel.channelName,
         });
         if (channel) {
             throw new HttpException(
                 "Unavailable channel name",
-                HttpStatus.FORBIDDEN
+                HttpStatus.FOUND
             );
         }
         newChannel.channelOwner = uuid;
@@ -161,7 +162,7 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.newChannelAvailable();
             }
-            return channel;
+            return this.convertChannelMessages(uuid, channel.messages, channel);
         } else if (newChannel.channelType === ChannelType.PRIVATE) {
             console.log("ici : ", newChannel);
             let uuid_array: { uuid: string }[] = [];
@@ -181,14 +182,15 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.newChannelAvailable();
             }
-            return channel;
+            return this.convertChannelMessages(uuid, channel.messages, channel);
         }
         return null;
     }
 
     async convertChannelMessages(
         uuid: string,
-        initial_messages: { uuid: string; message: string }[]
+        initial_messages: { uuid: string; message: string }[],
+        channel: ChatEntity
     ) {
         let user = await this.userService.getByID(uuid);
         if (!user) {
@@ -215,7 +217,11 @@ export class ChatService {
 
             i++;
         }
-        return returned_messages;
+        let owner: boolean = false;
+        if (user.uuid === channel.channelOwner) {
+            owner = true;
+        }
+        return { messages: returned_messages, channel_owner: owner };
     }
 
     async join_channel(channelName: string, userID: string) {
@@ -242,7 +248,8 @@ export class ChatService {
                 );
                 return this.convertChannelMessages(
                     userID,
-                    channels[index_in_authorized_channels].messages
+                    channels[index_in_authorized_channels].messages,
+                    channels[index_in_authorized_channels]
                 );
             }
         } else if (channel.channelType === ChannelType.PUBLIC) {
@@ -265,7 +272,11 @@ export class ChatService {
             }
 
             this.chatGateway.newChannelAvailable();
-            return this.convertChannelMessages(user.uuid, channel.messages);
+            return this.convertChannelMessages(
+                user.uuid,
+                channel.messages,
+                channel
+            );
         } else if (channel.channelType === ChannelType.PROTECTED) {
             let allowed_users = channel.users;
             let i = 0;
@@ -277,7 +288,8 @@ export class ChatService {
                     );
                     return this.convertChannelMessages(
                         user.uuid,
-                        channel.messages
+                        channel.messages,
+                        channel
                     );
                 }
                 i++;
@@ -394,8 +406,9 @@ export class ChatService {
                 { users: channel_users }
             );
         }
+        this.chatGateway.userJoinChannel(channel.channelName, user.username);
         this.chatGateway.newChannelAvailable();
-        return this.convertChannelMessages(uuid, channel.messages);
+        return this.convertChannelMessages(uuid, channel.messages, channel);
     }
 
     async getConversationWith(username: string, uuid: string) {
@@ -423,11 +436,12 @@ export class ChatService {
                                 let messages =
                                     await this.convertChannelMessages(
                                         uuid,
-                                        channels[i].messages
+                                        channels[i].messages,
+                                        channels[i]
                                     );
                                 return {
                                     channelName: channels[i].channelName,
-                                    messages: messages,
+                                    data: messages,
                                 };
                             }
                             k++;

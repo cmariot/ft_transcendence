@@ -2,12 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ChatParent } from "./Home/Chat/ChatParent";
 import { socket } from "../Contexts/WebsocketContext";
-import AuthNavbar from "../Auth/AuthNavbar";
-import AuthFooter from "../Auth/AuthFooter";
-import EditProfilePicture from "./Settings/EditProfilePicture";
-import EditUsername from "./Settings/EditUsername";
-import EnableDoubleAuth from "./Settings/EnableDoubleAuth";
-import { useNavigate } from "react-router-dom";
 import ConfirmProfile from "./Settings/ConfirmProfile";
 
 export const UserContext = React.createContext({
@@ -33,8 +27,6 @@ export const App = () => {
     const [blocked, setBlocked] = useState([]);
     const [firstLog, setFirstLog] = useState(false);
     const [friendUpdate, setFriendUpdate] = useState(false);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         axios

@@ -228,3 +228,16 @@
 .chat-main-li {
     margin-inline: 6px;
 }
+
+/* Élément | https://localhost:8443/ */
+
+#chat {
+    min-width: 300px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+.chat-user-message-options {
+    flex-wrap: wrap;
+    justify-content: center;
+}

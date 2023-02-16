@@ -30,7 +30,8 @@ const ChatMessages = () => {
                     return;
                 } else {
                     chat.changeCurrentChannel(response.data.channelName);
-                    chat.setCurrentChannelMessages(response.data.messages);
+                    chat.setCurrentChannelMessages(response.data.data.messages);
+                    chat.setChannelOwner(response.data.data.channel_owner);
                 }
             })
             .catch((error) => {

@@ -22,7 +22,6 @@ const ChatConv = () => {
             const menu2 = document.getElementById("chat-menu-options");
             const messages = document.getElementById("chat-messages-list");
             const input = document.getElementById("send-message-form");
-
             if (menu2 && messages && input) {
                 if (menu2.style.display === "flex") {
                     messages.style.display = "flex";
@@ -71,6 +70,31 @@ const ChatConv = () => {
         }
     });
 
+    function adminPannel() {
+        if (chat.channelOwner === true || chat.channelAdmin === true) {
+            return (
+                <>
+                    <button>mute an user</button>
+                    <button>ban an user</button>
+                </>
+            );
+        }
+        return null;
+    }
+
+    function ownerPannel() {
+        if (chat.channelOwner === true) {
+            return (
+                <>
+                    {adminPannel()}
+                    <button>edit channel's password</button>
+                    <button>edit channel's administrators</button>
+                </>
+            );
+        }
+        return null;
+    }
+
     return (
         <menu id="chat-conversation" className="chat-menu">
             <header className="chat-header">
@@ -81,6 +105,7 @@ const ChatConv = () => {
                 <ChatMessages />
             </section>
             <section id="chat-menu-options" className="chat-section">
+                {ownerPannel()}
                 <button onClick={leaveChannel}>leave</button>
                 <button onClick={closeChat}>close</button>
             </section>

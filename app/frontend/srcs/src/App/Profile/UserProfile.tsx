@@ -1,7 +1,8 @@
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import "../CSS/Profile.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { UserContext } from "../App";
 
 export function loader({ params }: any) {
     return params;
@@ -11,12 +12,19 @@ const UserProfile = () => {
     const params: any = useLoaderData();
     const navigate = useNavigate();
     const [found, setFound] = useState(true);
-    let user: string = params.user;
-    let userImage: string = "/api/profile/" + user + "/image";
+
+    let user = useContext(UserContext);
+
+    let username: string = params.user;
+    let userImage: string = "/api/profile/" + username + "/image";
 
     useEffect(() => {
+        if (user.username === username) {
+            navigate("/profile");
+            return;
+        }
         axios
-            .get("/api/profile/" + user + "/image")
+            .get("/api/profile/" + username + "/image")
             .then((response) => {
                 if (found === false) {
                     setFound(true);
@@ -37,14 +45,18 @@ const UserProfile = () => {
         if (found) {
             return (
                 <>
-                    <h2>{user}'s profile</h2>
+                    <h2>{username}'s profile</h2>
                     <img
                         id="profile-user-picture"
                         src={userImage}
                         alt="user-imag"
                     />
-                    <h3>{user}</h3>
-                    <button onClick={() => goToPrevious()}>return</button>
+                    <h3>{username}</h3>
+                    <div>
+                        <button>add friend</button>
+                        <button>block</button>
+                        <button onClick={() => goToPrevious()}>cancel</button>
+                    </div>
                 </>
             );
         } else {

@@ -24,7 +24,8 @@ const ChannelsList = () => {
                 .post("/api/chat/connect", { channelName: channel })
                 .then(function (response) {
                     chat.changeCurrentChannel(channel);
-                    chat.setCurrentChannelMessages(response.data);
+                    chat.setCurrentChannelMessages(response.data.messages);
+                    chat.setChannelOwner(response.data.channel_owner);
                     const current =
                         document.getElementById("chat-channels-list");
                     const menu = document.getElementById("chat-conversation");
@@ -100,7 +101,7 @@ const ChannelsList = () => {
             </header>
             <section className="chat-section">{displayChannelsList()}</section>
             <footer className="chat-footer">
-                <button onClick={() => createChannelMenu()}>new</button>
+                <button onClick={() => createChannelMenu()}>new channel</button>
             </footer>
         </menu>
     );

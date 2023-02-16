@@ -491,3 +491,37 @@ textarea {
     padding: 20px;
     width: 43vw;
 }
+
+/* Élément | https://localhost:8443/ */
+
+.chat-menu {
+    border: 2px #737373 solid;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#game {
+    border: 2px #737373 solid;
+}
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+#chat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Feuille de style intégrée #11 | https://localhost:8443/ */
+
+.chat-header {
+    align-items: center;
+}
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+.chat-section {
+    border-block: 0.5px #737373 solid;
+}
