@@ -222,3 +222,9 @@
 .chat-user-message-options button {
     margin-inline: 2px;
 }
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+.chat-main-li {
+    margin-inline: 6px;
+}

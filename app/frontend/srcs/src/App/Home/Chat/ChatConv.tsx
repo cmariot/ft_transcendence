@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
@@ -64,6 +64,13 @@ const ChatConv = () => {
         }
     }
 
+    useEffect(() => {
+        const chatMessages = document.getElementById("chat-messages-list");
+        if (chatMessages) {
+            chatMessages.scrollTo(0, chatMessages.scrollHeight);
+        }
+    });
+
     return (
         <menu id="chat-conversation" className="chat-menu">
             <header className="chat-header">
@@ -83,4 +90,5 @@ const ChatConv = () => {
         </menu>
     );
 };
+
 export default ChatConv;

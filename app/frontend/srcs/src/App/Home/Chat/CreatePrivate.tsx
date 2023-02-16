@@ -38,7 +38,6 @@ const CreatePrivate = () => {
                 allowed_users: [chat.conversationUser],
             })
             .then(function (response) {
-                console.log(response.data);
                 chat.changeCurrentChannel(response.data.channelName);
                 chat.setCurrentChannelMessages(response.data.messages);
                 const current = document.getElementById("chat-create-private");
@@ -60,7 +59,7 @@ const CreatePrivate = () => {
                 <button onClick={cancelCreatePrivate}>cancel</button>
             </header>
             <section className="chat-section">
-                <form id="chat-create-channel-form" className="chat-main">
+                <div id="chat-create-channel-form" className="chat-main">
                     <input
                         id="new-channel-name"
                         type="text"
@@ -70,7 +69,7 @@ const CreatePrivate = () => {
                         autoComplete="off"
                         required
                     />
-                </form>
+                </div>
             </section>
             <footer className="chat-footer">
                 <input

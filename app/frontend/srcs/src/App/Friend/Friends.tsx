@@ -55,7 +55,6 @@ export default function Friends(props: any) {
             .post("/api/profile/unblock", { username: username })
             .then((response) => {
                 user.setBlocked(response.data);
-                console.log(response);
             })
             .catch((error) => {
                 console.log(error);

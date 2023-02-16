@@ -77,8 +77,36 @@ export class ChatService {
                 while (j < channels[i].allowed_users.length) {
                     if (channels[i].allowed_users[j].uuid === user.uuid) {
                         // a private conversation
-                        userPrivateChannels.push(channels[i]);
-                        break;
+                        let blocked_users = user.blocked;
+                        if (!blocked_users) {
+                            userPrivateChannels.push(channels[i]);
+                            break;
+                        } else {
+                            let k = 0;
+                            while (k < channels[i].allowed_users.length) {
+                                let l = 0;
+                                while (l < blocked_users.length) {
+                                    if (
+                                        channels[i].allowed_users[k].uuid ===
+                                        blocked_users[l]
+                                    ) {
+                                        found = true;
+                                        break;
+                                    }
+                                    l++;
+                                }
+                                if (found === true) {
+                                    break;
+                                }
+                                k++;
+                            }
+                            if (found === false) {
+                                userPrivateChannels.push(channels[i]);
+                            } else {
+                                found = true;
+                            }
+                            break;
+                        }
                     }
                     j++;
                 }
@@ -442,8 +470,9 @@ export class ChatService {
                 }
             }
             this.chatGateway.newChannelAvailable();
-        } else {
-            throw new UnauthorizedException();
+        } else if (channel.channelType === ChannelType.PRIVATE) {
+            this.chatRepository.delete({ uuid: channel.uuid });
         }
+        this.chatGateway.newChannelAvailable();
     }
 }

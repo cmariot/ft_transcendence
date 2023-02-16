@@ -22,6 +22,9 @@ export class UserEntity {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
+    @Column({ default: true })
+    firstLog: boolean;
+
     @Column({ default: 0 })
     id42: number;
 

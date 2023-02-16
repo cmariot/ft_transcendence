@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppNavBar from "../../AppNavBar";
 import { Outlet } from "react-router-dom";
 import AppFooter from "../../AppFooter";
 import axios from "axios";
 import { socket } from "../../../Contexts/WebsocketContext";
+import { UserContext } from "../../App";
 
 export const ChatContext = React.createContext({
     currentChannel: "",
@@ -39,6 +40,8 @@ export const ChatContext = React.createContext({
 });
 
 export const ChatParent = () => {
+    let user = useContext(UserContext);
+
     const [currentChannel, changeCurrentChannel] = useState("");
     const [targetChannel, setTargetChannel] = useState("");
     const [previousMenu, setPreviousMenu] = useState("channels");
@@ -127,7 +130,7 @@ export const ChatParent = () => {
             .catch((error) => {
                 console.log(error.response);
             });
-    }, [firstLoad]);
+    }, [firstLoad, user.blocked]);
 
     const value = {
         currentChannel,

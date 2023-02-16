@@ -112,6 +112,11 @@ export class UsersService {
         );
     }
 
+    async confirm_profile(uuid: string) {
+        await this.userRepository.update({ uuid: uuid }, { firstLog: false });
+        return "OK";
+    }
+
     async user_status(username: string, status: Status) {
         let user: UserEntity = await this.getByUsername(username);
         if (status === "Online") {

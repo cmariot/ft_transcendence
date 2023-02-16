@@ -54,6 +54,7 @@ export class UsersController {
                 username: completeUser.username,
                 email: completeUser.email,
                 twoFactorsAuth: completeUser.twoFactorsAuth,
+                firstLog: completeUser.firstLog,
             };
         throw new UnauthorizedException();
     }
@@ -178,5 +179,11 @@ export class UsersController {
         if (!block)
             throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
         return await this.userService.unBlock(req.user.uuid, block.uuid);
+    }
+
+    @Get("confirm")
+    @UseGuards(isLogged)
+    confirm_profile(@Req() req) {
+        return this.userService.confirm_profile(req.user.uuid);
     }
 }

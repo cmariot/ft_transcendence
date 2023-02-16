@@ -120,14 +120,5 @@ export class ChatController {
             "Please create a new private conversation",
             HttpStatus.NO_CONTENT
         );
-
-        console.log("Pas de conv trouvee, creation !");
-        let newChannel: PrivateChannelDTO = {
-            channelName: "private conversation",
-            channelType: "private",
-            channelOwner: req.user.uuid,
-            allowed_users: [friend.username],
-        };
-        return this.chatService.create_channel(newChannel, req.user.uuid);
     }
 }
