@@ -32,6 +32,7 @@ const ChatMessages = () => {
                     chat.changeCurrentChannel(response.data.channelName);
                     chat.setCurrentChannelMessages(response.data.data.messages);
                     chat.setChannelOwner(response.data.data.channel_owner);
+                    chat.changeCurrentChannelType("private");
                 }
             })
             .catch((error) => {

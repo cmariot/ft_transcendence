@@ -29,6 +29,9 @@ export class ChatEntity {
     channelOwner: string;
 
     @Column("jsonb", { default: [] })
+    channelAdministrators: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
     messages: { uuid: string; message: string }[];
 
     @Column("jsonb", { default: [] })
@@ -36,4 +39,10 @@ export class ChatEntity {
 
     @Column("jsonb", { default: [] })
     users: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
+    banned_users: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
+    mutted_users: { uuid: string; mute_date: string; mute_duration: string }[];
 }

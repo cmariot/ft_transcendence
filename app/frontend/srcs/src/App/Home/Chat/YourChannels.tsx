@@ -7,11 +7,12 @@ import { ChatContext } from "./ChatParent";
 const YourChannels = () => {
     const chat = useContext(ChatContext);
 
-    async function joinChannel(channel: string) {
+    async function joinChannel(channel: string, channelType: string) {
         await axios
             .post("/api/chat/connect", { channelName: channel })
             .then(function (response) {
                 chat.changeCurrentChannel(channel);
+                chat.changeCurrentChannelType(channelType);
                 chat.setCurrentChannelMessages(response.data.messages);
                 chat.setChannelOwner(response.data.channel_owner);
                 const current = document.getElementById("chat-your-channels");
@@ -35,7 +36,9 @@ const YourChannels = () => {
                         <button
                             className="channel-selection-button"
                             key={index}
-                            onClick={() => joinChannel(item[0])}
+                            onClick={() =>
+                                joinChannel(item[0], item[1].channelType)
+                            }
                         >
                             <p className="channel-selection-button-channel-name">
                                 {item[0]}
@@ -56,7 +59,9 @@ const YourChannels = () => {
                         <button
                             className="channel-selection-button"
                             key={index}
-                            onClick={() => joinChannel(item[0])}
+                            onClick={() =>
+                                joinChannel(item[0], item[1].channelType)
+                            }
                         >
                             <p className="channel-selection-button-channel-name">
                                 {item[0]}

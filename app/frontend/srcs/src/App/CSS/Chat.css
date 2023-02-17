@@ -256,3 +256,29 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+
+/* Élément | https://localhost:8443/ */
+
+#chat-your-channels > section:nth-child(2) > p:nth-child(1) {
+    margin-block: 10px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-your-channels > section:nth-child(2) > p:nth-child(6) {
+    margin-block: 10px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-menu-options-buttons {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-menu-adminmenus {
+    display: none;
+}

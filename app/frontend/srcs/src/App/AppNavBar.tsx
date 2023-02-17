@@ -74,7 +74,6 @@ function AppNavBar() {
                         />
                     </div>
                 </nav>
-
                 <menu id="app-menu">
                     <button
                         className="app-menu-button"
@@ -87,18 +86,18 @@ function AppNavBar() {
                     <button
                         className="app-menu-button"
                         onClick={() => {
-                            go("/profile");
-                        }}
-                    >
-                        Profile
-                    </button>
-                    <button
-                        className="app-menu-button"
-                        onClick={() => {
                             go("/friends");
                         }}
                     >
                         Friends
+                    </button>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/profile");
+                        }}
+                    >
+                        Profile
                     </button>
                     <button
                         className="app-menu-button"

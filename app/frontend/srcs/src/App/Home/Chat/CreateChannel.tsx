@@ -92,6 +92,16 @@ const CreateChannel = () => {
                     channelType: newChannelType,
                 });
                 chat.updateUserChannels(updatedUserChannels);
+                chat.setCurrentChannelMessages([]);
+                chat.changeCurrentChannel(newChannelName);
+                chat.changeCurrentChannelType(newChannelType);
+                chat.setChannelOwner(true);
+                const current = document.getElementById("chat-create-channel");
+                const menu = document.getElementById("chat-conversation");
+                if (menu && current) {
+                    current.style.display = "none";
+                    menu.style.display = "flex";
+                }
                 if (protectedChannel) {
                     const channelPasswordInput = document.getElementById(
                         "new-channel-password"
@@ -100,19 +110,9 @@ const CreateChannel = () => {
                         channelPasswordInput.style.display = "none";
                     }
                 }
-                chat.setCurrentChannelMessages([]);
-                chat.changeCurrentChannel(newChannelName);
-                chat.setChannelOwner(true);
                 setNewChannelName("");
                 setNewChannelPassword("");
                 setProtectedChannel(false);
-                const current = document.getElementById("chat-create-channel");
-                const menu = document.getElementById("chat-conversation");
-                if (menu && current) {
-                    current.style.display = "none";
-                    menu.style.display = "flex";
-                }
-                // Rejoindre le channel automatiquement ici
             })
             .catch(function (error) {
                 alert(error.response.data.message);

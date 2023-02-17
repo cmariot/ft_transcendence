@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
 
 export class channelDTO {
     @IsNotEmpty()
@@ -30,4 +30,21 @@ export class channelPasswordDTO {
     @IsNotEmpty()
     @IsString()
     channelPassword: string;
+}
+
+export class updateChannelDTO {
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+
+    @IsNotEmpty()
+    @IsString()
+    channelType: string;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    newChannelType: boolean;
+
+    @IsString()
+    newChannelPassword: string;
 }

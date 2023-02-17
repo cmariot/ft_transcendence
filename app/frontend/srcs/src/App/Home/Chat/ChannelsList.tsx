@@ -24,6 +24,7 @@ const ChannelsList = () => {
                 .post("/api/chat/connect", { channelName: channel })
                 .then(function (response) {
                     chat.changeCurrentChannel(channel);
+                    chat.changeCurrentChannelType(channelType);
                     chat.setCurrentChannelMessages(response.data.messages);
                     chat.setChannelOwner(response.data.channel_owner);
                     const current =

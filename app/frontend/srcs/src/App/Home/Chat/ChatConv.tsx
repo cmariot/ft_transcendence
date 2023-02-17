@@ -10,24 +10,15 @@ const ChatConv = () => {
 
     function closeChat() {
         const current = document.getElementById("chat-conversation");
-        let menu: HTMLElement | null;
-        if (chat.previousMenu === "private") {
-            menu = document.getElementById("chat-private-channels");
-        } else {
-            menu = document.getElementById("chat-your-channels");
-        }
-        if (menu && current) {
+        const current2 = document.getElementById("chat-menu-options");
+        const menu = document.getElementById("chat-your-channels");
+        if (menu && current && current2) {
+            // Close the chat conv
             current.style.display = "none";
             menu.style.display = "flex";
-            const menu2 = document.getElementById("chat-menu-options");
-            const messages = document.getElementById("chat-messages-list");
-            const input = document.getElementById("send-message-form");
-            if (menu2 && messages && input) {
-                if (menu2.style.display === "flex") {
-                    messages.style.display = "flex";
-                    input.style.display = "flex";
-                    menu2.style.display = "none";
-                }
+            // Close the chat menu if open
+            if (current2.style.display === "flex") {
+                toogleChatMenu();
             }
         }
     }
@@ -38,6 +29,7 @@ const ChatConv = () => {
             .then(function (response) {
                 chat.setCurrentChannelMessages([]);
                 chat.changeCurrentChannel("");
+                chat.changeCurrentChannelType("");
                 closeChat();
             })
             .catch(function (error) {
@@ -49,7 +41,6 @@ const ChatConv = () => {
         const menu = document.getElementById("chat-menu-options");
         const messages = document.getElementById("chat-messages-list");
         const input = document.getElementById("send-message-form");
-
         if (menu && messages && input) {
             if (menu.style.display === "flex") {
                 messages.style.display = "flex";
@@ -70,8 +61,20 @@ const ChatConv = () => {
         }
     });
 
+    function displayChannelPasswordMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("change-channel-password");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
     function adminPannel() {
-        if (chat.channelOwner === true || chat.channelAdmin === true) {
+        if (
+            (chat.channelOwner === true || chat.channelAdmin === true) &&
+            chat.currentChannelType !== "private"
+        ) {
             return (
                 <>
                     <button>mute an user</button>
@@ -83,11 +86,15 @@ const ChatConv = () => {
     }
 
     function ownerPannel() {
-        if (chat.channelOwner === true) {
+        if (
+            chat.channelOwner === true &&
+            chat.currentChannelType !== "private"
+        ) {
             return (
                 <>
-                    {adminPannel()}
-                    <button>edit channel's password</button>
+                    <button onClick={() => displayChannelPasswordMenu()}>
+                        edit channel's password
+                    </button>
                     <button>edit channel's administrators</button>
                 </>
             );
@@ -95,6 +102,24 @@ const ChatConv = () => {
         return null;
     }
 
+    function userPannel() {
+        if (chat.channelOwner === true) {
+            return (
+                <>
+                    <button onClick={leaveChannel}>
+                        leave this channel and delete it
+                    </button>
+                    <button onClick={closeChat}>return to channels list</button>
+                </>
+            );
+        }
+        return (
+            <>
+                <button onClick={leaveChannel}>leave</button>
+                <button onClick={closeChat}>return to channels list</button>
+            </>
+        );
+    }
     return (
         <menu id="chat-conversation" className="chat-menu">
             <header className="chat-header">
@@ -105,9 +130,9 @@ const ChatConv = () => {
                 <ChatMessages />
             </section>
             <section id="chat-menu-options" className="chat-section">
+                {adminPannel()}
                 {ownerPannel()}
-                <button onClick={leaveChannel}>leave</button>
-                <button onClick={closeChat}>close</button>
+                {userPannel()}
             </section>
             <footer className="chat-footer">
                 <ChatMessage />

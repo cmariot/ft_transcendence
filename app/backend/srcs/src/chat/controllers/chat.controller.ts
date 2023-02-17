@@ -22,11 +22,16 @@ import {
     channelPasswordDTO,
     conversationDTO,
     messageDTO,
+    updateChannelDTO,
 } from "../dtos/channelId.dto";
+import { UsersService } from "src/users/services/users.service";
 
 @Controller("chat")
 export class ChatController {
-    constructor(private chatService: ChatService) {}
+    constructor(
+        private chatService: ChatService,
+        private userService: UsersService
+    ) {}
 
     @Get("channels")
     @UseGuards(isLogged)
@@ -120,5 +125,27 @@ export class ChatController {
             "Please create a new private conversation",
             HttpStatus.NO_CONTENT
         );
+    }
+
+    @Post("updateChannel")
+    @UseGuards(isLogged)
+    async updateChannelPassword(@Req() req, @Body() channel: updateChannelDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        let targetChannel = await this.chatService.getByName(
+            channel.channelName
+        );
+        if (!user || !targetChannel) {
+            throw new UnauthorizedException();
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_only",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException();
+        }
+        this.chatService.upodateChannelPassword(targetChannel, channel);
     }
 }

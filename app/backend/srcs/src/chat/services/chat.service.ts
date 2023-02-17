@@ -11,7 +11,7 @@ import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { IsUUID } from "class-validator";
-import { channelDTO } from "../dtos/channelId.dto";
+import { channelDTO, updateChannelDTO } from "../dtos/channelId.dto";
 
 @Injectable()
 export class ChatService {
@@ -21,6 +21,12 @@ export class ChatService {
         private chatGateway: ChatGateway,
         private userService: UsersService
     ) {}
+
+    async getByName(channelName: string) {
+        return await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+    }
 
     async get_channels(uuid: string) {
         let user = await this.userService.getByID(uuid);
@@ -218,10 +224,26 @@ export class ChatService {
             i++;
         }
         let owner: boolean = false;
+        let admin: boolean = false;
         if (user.uuid === channel.channelOwner) {
             owner = true;
+            admin = true;
         }
-        return { messages: returned_messages, channel_owner: owner };
+        if (owner === false && channel.channelAdministrators) {
+            let i = 0;
+            while (i < channel.channelAdministrators.length) {
+                if (user.uuid === channel.channelAdministrators[i].uuid) {
+                    admin = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        return {
+            messages: returned_messages,
+            channel_owner: owner,
+            channel_admin: admin,
+        };
     }
 
     async join_channel(channelName: string, userID: string) {
@@ -488,5 +510,98 @@ export class ChatService {
             this.chatRepository.delete({ uuid: channel.uuid });
         }
         this.chatGateway.newChannelAvailable();
+    }
+
+    async upodateChannelPassword(
+        targetChannel: ChatEntity,
+        channel: updateChannelDTO
+    ) {
+        if (
+            targetChannel.channelType === "public" &&
+            channel.newChannelType === false
+        ) {
+            // do nothing
+        } else if (
+            targetChannel.channelType === "public" &&
+            channel.newChannelType === true
+        ) {
+            // Change to protected and add password
+            if (channel.newChannelPassword.length < 10) {
+                return "error";
+                throw new UnauthorizedException(
+                    "Password must be 10 length min characters"
+                );
+            }
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelType: ChannelType.PROTECTED }
+            );
+            let hashed_password = await this.encode_password(
+                channel.newChannelPassword
+            );
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelPassword: hashed_password }
+            );
+        } else if (
+            targetChannel.channelType === "protected" &&
+            channel.newChannelType === false
+        ) {
+            // Change to public and remove password
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelType: ChannelType.PUBLIC }
+            );
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelPassword: "" }
+            );
+        } else if (
+            targetChannel.channelType === "protected" &&
+            channel.newChannelType === true
+        ) {
+            // Update the channel password"
+            if (channel.newChannelPassword.length < 10) {
+                return "error";
+                throw new UnauthorizedException(
+                    "Password must be 10 length min characters"
+                );
+            }
+            let hashed_password = await this.encode_password(
+                channel.newChannelPassword
+            );
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelPassword: hashed_password }
+            );
+        } else {
+            throw new UnauthorizedException();
+        }
+        this.chatGateway.newChannelAvailable();
+        return "updated";
+    }
+
+    checkPermission(
+        uuid: string,
+        authorizationType: string,
+        targetChannel: ChatEntity
+    ) {
+        if (
+            authorizationType === "owner_only" ||
+            authorizationType === "owner_and_admins"
+        ) {
+            if (uuid == targetChannel.channelOwner) {
+                return "Authorized";
+            }
+        } else if (authorizationType === "owner_and_admins") {
+            let i = 0;
+            while (i < targetChannel.channelAdministrators.length) {
+                if (uuid === targetChannel.channelAdministrators[i].uuid) {
+                    return "Authorized";
+                }
+                i++;
+            }
+        }
+        return "Unauthorized";
     }
 }

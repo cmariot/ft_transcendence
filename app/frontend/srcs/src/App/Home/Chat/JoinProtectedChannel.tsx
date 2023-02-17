@@ -25,6 +25,7 @@ const JoinProtected = () => {
             .then((response) => {
                 setPassword("");
                 chat.changeCurrentChannel(chat.targetChannel);
+                chat.changeCurrentChannelType("protected");
                 chat.setCurrentChannelMessages(response.data.messages);
                 chat.setChannelOwner(response.data.channel_owner);
                 const current = document.getElementById("chat-join-protected");

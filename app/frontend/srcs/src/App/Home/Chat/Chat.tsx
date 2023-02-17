@@ -5,6 +5,7 @@ import CreateChannel from "./CreateChannel";
 import ChatConv from "./ChatConv";
 import JoinProtected from "./JoinProtectedChannel";
 import CreatePrivate from "./CreatePrivate";
+import EditChannelPassword from "./EditChannelPassword";
 
 // List of menus for the chat, by default all are hidden except 'YourChannels'
 const Chat = () => {
@@ -16,6 +17,7 @@ const Chat = () => {
             <CreateChannel />
             <CreatePrivate />
             <ChatConv />
+            <EditChannelPassword />
         </div>
     );
 };
