@@ -6,7 +6,7 @@ export class channelDTO {
     channelName: string;
 }
 
-export class conversationDTO {
+export class usernameDTO {
     @IsString()
     @IsNotEmpty()
     username: string;
@@ -47,4 +47,13 @@ export class updateChannelDTO {
 
     @IsString()
     newChannelPassword: string;
+}
+export class addAdminDTO {
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+
+    @IsString()
+    @IsNotEmpty()
+    newAdminUsername: string;
 }

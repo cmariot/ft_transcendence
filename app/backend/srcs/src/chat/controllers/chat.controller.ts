@@ -18,11 +18,12 @@ import {
 import { ChatService } from "../services/chat.service";
 import { ChannelType, ChatEntity } from "../entities/chat.entity.";
 import {
+    addAdminDTO,
     channelDTO,
     channelPasswordDTO,
-    conversationDTO,
     messageDTO,
     updateChannelDTO,
+    usernameDTO,
 } from "../dtos/channelId.dto";
 import { UsersService } from "src/users/services/users.service";
 
@@ -112,7 +113,7 @@ export class ChatController {
 
     @Post("direct-message")
     @UseGuards(isLogged)
-    async directMessage(@Req() req, @Body() friend: conversationDTO) {
+    async directMessage(@Req() req, @Body() friend: usernameDTO) {
         let privateconv = await this.chatService.getConversationWith(
             friend.username,
             req.user.uuid
@@ -120,7 +121,6 @@ export class ChatController {
         if (privateconv != null) {
             return privateconv;
         }
-
         throw new HttpException(
             "Please create a new private conversation",
             HttpStatus.NO_CONTENT
@@ -146,6 +146,41 @@ export class ChatController {
         ) {
             throw new UnauthorizedException();
         }
-        this.chatService.upodateChannelPassword(targetChannel, channel);
+        return this.chatService.upodateChannelPassword(targetChannel, channel);
+    }
+
+    @Post("admin/add")
+    @UseGuards(isLogged)
+    async add_admin(@Req() req, @Body() channel: addAdminDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let newAdmin = await this.userService.getByUsername(
+            channel.newAdminUsername
+        );
+        if (!newAdmin) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            channel.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_only",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException();
+        }
+        return this.chatService.addAdmin(
+            targetChannel,
+            newAdmin.uuid,
+            user.uuid
+        );
     }
 }

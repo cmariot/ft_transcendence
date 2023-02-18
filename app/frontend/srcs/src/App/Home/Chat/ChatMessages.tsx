@@ -33,6 +33,7 @@ const ChatMessages = () => {
                     chat.setCurrentChannelMessages(response.data.data.messages);
                     chat.setChannelOwner(response.data.data.channel_owner);
                     chat.changeCurrentChannelType("private");
+                    chat.setCurrentChannelAdmins([]);
                 }
             })
             .catch((error) => {
@@ -46,16 +47,16 @@ const ChatMessages = () => {
             .then(async (response) => {
                 user.setBlocked(response.data);
                 console.log(response.data);
-                await axios
-                    .post("/api/chat/connect", {
-                        channelName: chat.currentChannel,
-                    })
-                    .then((response) => {
-                        chat.setCurrentChannelMessages(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error.data);
-                    });
+            })
+            .catch((error) => {
+                console.log(error.data);
+            });
+        await axios
+            .post("/api/chat/connect", {
+                channelName: chat.currentChannel,
+            })
+            .then((response) => {
+                chat.setCurrentChannelMessages(response.data.messages);
             })
             .catch((error) => {
                 console.log(error.data);

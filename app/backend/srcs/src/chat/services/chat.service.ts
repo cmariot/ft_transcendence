@@ -11,7 +11,11 @@ import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { IsUUID } from "class-validator";
-import { channelDTO, updateChannelDTO } from "../dtos/channelId.dto";
+import {
+    addAdminDTO,
+    channelDTO,
+    updateChannelDTO,
+} from "../dtos/channelId.dto";
 
 @Injectable()
 export class ChatService {
@@ -220,14 +224,23 @@ export class ChatService {
                     });
                 }
             }
-
             i++;
         }
         let owner: boolean = false;
         let admin: boolean = false;
+        let admins: string[] = [];
         if (user.uuid === channel.channelOwner) {
             owner = true;
             admin = true;
+            let i = 0;
+            while (i < channel.channelAdministrators.length) {
+                let id = channel.channelAdministrators[i].uuid;
+                let user = await this.userService.getByID(id);
+                if (user) {
+                    admins.push(user.username);
+                }
+                i++;
+            }
         }
         if (owner === false && channel.channelAdministrators) {
             let i = 0;
@@ -243,6 +256,7 @@ export class ChatService {
             messages: returned_messages,
             channel_owner: owner,
             channel_admin: admin,
+            channel_admins: admins,
         };
     }
 
@@ -292,7 +306,6 @@ export class ChatService {
                     { users: channel_users }
                 );
             }
-
             this.chatGateway.newChannelAvailable();
             return this.convertChannelMessages(
                 user.uuid,
@@ -586,14 +599,10 @@ export class ChatService {
         authorizationType: string,
         targetChannel: ChatEntity
     ) {
-        if (
-            authorizationType === "owner_only" ||
-            authorizationType === "owner_and_admins"
-        ) {
-            if (uuid == targetChannel.channelOwner) {
-                return "Authorized";
-            }
-        } else if (authorizationType === "owner_and_admins") {
+        if (uuid == targetChannel.channelOwner) {
+            return "Authorized";
+        }
+        if (authorizationType === "owner_and_admins") {
             let i = 0;
             while (i < targetChannel.channelAdministrators.length) {
                 if (uuid === targetChannel.channelAdministrators[i].uuid) {
@@ -603,5 +612,31 @@ export class ChatService {
             }
         }
         return "Unauthorized";
+    }
+
+    async addAdmin(
+        channel: ChatEntity,
+        newAdminUUID: string,
+        ownerUUID: string
+    ) {
+        if (newAdminUUID === ownerUUID) {
+            throw new HttpException(
+                "The owner cannot be an administrator",
+                HttpStatus.FOUND
+            );
+        }
+        let currentAdmin = channel.channelAdministrators;
+        let i = 0;
+        while (i < currentAdmin.length) {
+            if (newAdminUUID === currentAdmin[i].uuid) {
+                throw new HttpException("Already admin", HttpStatus.FOUND);
+            }
+            i++;
+        }
+        currentAdmin.push({ uuid: newAdminUUID });
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { channelAdministrators: currentAdmin }
+        );
     }
 }

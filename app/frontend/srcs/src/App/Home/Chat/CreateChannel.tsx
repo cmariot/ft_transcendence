@@ -96,6 +96,7 @@ const CreateChannel = () => {
                 chat.changeCurrentChannel(newChannelName);
                 chat.changeCurrentChannelType(newChannelType);
                 chat.setChannelOwner(true);
+                chat.setCurrentChannelAdmins([]);
                 const current = document.getElementById("chat-create-channel");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

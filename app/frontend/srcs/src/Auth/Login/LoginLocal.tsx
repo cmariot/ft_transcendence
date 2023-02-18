@@ -72,7 +72,7 @@ const LoginLocal = () => {
                     placeholder="Username"
                     value={username}
                     onChange={(e) => handleInputChange(e)}
-                    autoComplete="on"
+                    autoComplete="off"
                     required
                 />
                 <input
@@ -81,7 +81,7 @@ const LoginLocal = () => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => handleInputChange(e)}
-                    autoComplete="on"
+                    autoComplete="off"
                     required
                 />
                 <input

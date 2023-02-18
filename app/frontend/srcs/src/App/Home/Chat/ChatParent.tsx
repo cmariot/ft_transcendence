@@ -11,6 +11,8 @@ export const ChatContext = React.createContext({
     changeCurrentChannel: (newChannel: string) => {},
     currentChannelType: "",
     changeCurrentChannelType: (newChannelType: string) => {},
+    currentChannelAdmins: [],
+    setCurrentChannelAdmins: (updatedMessages: Array<string>) => {},
     targetChannel: "",
     setTargetChannel: (targetchannel: string) => {},
     previousMenu: "",
@@ -51,6 +53,9 @@ export const ChatParent = () => {
     const [channelOwner, setChannelOwner] = useState(false);
     const [channelAdmin, setChannelAdmin] = useState(false);
 
+    const [currentChannelAdmins, setCurrentChannelAdmins] = useState(
+        new Array<string>()
+    );
     const [currentChannelMessages, setCurrentChannelMessages] = useState(
         new Array<{ username: string; message: string }>()
     );
@@ -143,6 +148,8 @@ export const ChatParent = () => {
         changeCurrentChannel,
         currentChannelType,
         changeCurrentChannelType,
+        currentChannelAdmins,
+        setCurrentChannelAdmins,
         targetChannel,
         setTargetChannel,
         previousMenu,

@@ -42,6 +42,7 @@ const CreatePrivate = () => {
                 chat.changeCurrentChannelType("private");
                 chat.setCurrentChannelMessages([]);
                 chat.setChannelOwner(true);
+                chat.setCurrentChannelAdmins([]);
                 const current = document.getElementById("chat-create-private");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

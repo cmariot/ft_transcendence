@@ -70,6 +70,15 @@ const ChatConv = () => {
         }
     }
 
+    function displayEditAdminsMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("edit-admins-menu");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
     function adminPannel() {
         if (
             (chat.channelOwner === true || chat.channelAdmin === true) &&
@@ -95,7 +104,9 @@ const ChatConv = () => {
                     <button onClick={() => displayChannelPasswordMenu()}>
                         edit channel's password
                     </button>
-                    <button>edit channel's administrators</button>
+                    <button onClick={() => displayEditAdminsMenu()}>
+                        edit channel's administrators
+                    </button>
                 </>
             );
         }

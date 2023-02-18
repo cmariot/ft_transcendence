@@ -133,6 +133,9 @@ export class AuthService {
     }
 
     logout(@Res() res) {
-        res.clearCookie("authentification").send("Bye !");
+        res.clearCookie("authentification", {
+            sameSite: "none",
+            secure: true,
+        }).send("Bye !");
     }
 }
