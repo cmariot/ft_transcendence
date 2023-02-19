@@ -88,13 +88,12 @@ export class AuthService {
         },
         res
     ): Promise<UserEntity> {
+        let user = await this.usersService.getByUsername(user_42.username);
+        if (user && user.createdFrom !== CreatedFrom.OAUTH42) {
+            return null;
+        }
         let bdd_user = await this.usersService.getById42(user_42.id42);
-        if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
-            throw new HttpException(
-                "The username is already registered but from FORM.",
-                HttpStatus.FORBIDDEN
-            );
-        } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
+        if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
             if (bdd_user.twoFactorsAuth) {
                 this.create_cookie(bdd_user, "double_authentification", res);
                 await this.usersService.generateDoubleAuthCode(bdd_user.uuid);

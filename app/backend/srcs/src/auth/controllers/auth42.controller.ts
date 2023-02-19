@@ -1,9 +1,10 @@
 import {
     Controller,
     Get,
+    HttpException,
+    HttpStatus,
     Request,
     Response,
-    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { FortyTwoOauthGuard } from "../guards/forty_two_oauth.guards";
@@ -27,7 +28,11 @@ export class AuthController {
             res
         );
         if (user === null) {
-            throw new UnauthorizedException();
+            res.redirect("https://localhost:8443/unavailable-username");
+            throw new HttpException(
+                "This username is already registered, try to register manually",
+                HttpStatus.NOT_FOUND
+            );
         }
     }
 }

@@ -540,7 +540,6 @@ export class ChatService {
         ) {
             // Change to protected and add password
             if (channel.newChannelPassword.length < 10) {
-                return "error";
                 throw new UnauthorizedException(
                     "Password must be 10 length min characters"
                 );
@@ -575,7 +574,6 @@ export class ChatService {
         ) {
             // Update the channel password"
             if (channel.newChannelPassword.length < 10) {
-                return "error";
                 throw new UnauthorizedException(
                     "Password must be 10 length min characters"
                 );
@@ -634,6 +632,31 @@ export class ChatService {
             i++;
         }
         currentAdmin.push({ uuid: newAdminUUID });
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { channelAdministrators: currentAdmin }
+        );
+    }
+
+    async removeAdmin(
+        channel: ChatEntity,
+        newAdminUUID: string,
+        ownerUUID: string
+    ) {
+        if (newAdminUUID === ownerUUID) {
+            throw new HttpException(
+                "The owner cannot be removed from the admins",
+                HttpStatus.FOUND
+            );
+        }
+        let currentAdmin = channel.channelAdministrators;
+        let i = 0;
+        while (i < currentAdmin.length) {
+            if (newAdminUUID === currentAdmin[i].uuid) {
+                currentAdmin.splice(i, 1);
+            }
+            i++;
+        }
         await this.chatRepository.update(
             { uuid: channel.uuid },
             { channelAdministrators: currentAdmin }

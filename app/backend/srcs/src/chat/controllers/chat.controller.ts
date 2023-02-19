@@ -183,4 +183,39 @@ export class ChatController {
             user.uuid
         );
     }
+
+    @Post("admin/remove")
+    @UseGuards(isLogged)
+    async remove_admin(@Req() req, @Body() channel: addAdminDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let newAdmin = await this.userService.getByUsername(
+            channel.newAdminUsername
+        );
+        if (!newAdmin) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            channel.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_only",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException();
+        }
+        return this.chatService.removeAdmin(
+            targetChannel,
+            newAdmin.uuid,
+            user.uuid
+        );
+    }
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
@@ -6,6 +6,7 @@ import { ChatContext } from "./ChatParent";
 const EditAdmins = () => {
     const chat = useContext(ChatContext);
     const [newAdminName, setNewAdmin] = useState("");
+    const [update, setUpdate] = useState(false);
 
     function handleNewsAdminChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
@@ -42,19 +43,46 @@ const EditAdmins = () => {
             });
     }
 
+    async function removeAdmin(username: string, index: number) {
+        await axios
+            .post("/api/chat/admin/remove", {
+                channelName: chat.currentChannel,
+                newAdminUsername: username,
+            })
+            .then(() => {
+                let previousAdmins: string[] = chat.currentChannelAdmins;
+                previousAdmins.splice(index, 1);
+                chat.setCurrentChannelAdmins(previousAdmins);
+                setUpdate(!update);
+            })
+            .catch((error) => {
+                alert(error.response.data.message);
+            });
+    }
+
     function currentChannelAdmins() {
-        return chat.currentChannelAdmins.map((admin, index) => (
-            <li className="admin-channel" key={index}>
-                <p className="admin-channel-username">{admin}</p>
-            </li>
-        ));
+        if (chat.currentChannelAdmins.length) {
+            return (
+                <ul id="channel-admins-list">
+                    <p>Administrators :</p>
+                    {chat.currentChannelAdmins.map((admin, index) => (
+                        <li className="admin-channel" key={index}>
+                            <p className="admin-channel-username">{admin}</p>
+                            <button onClick={() => removeAdmin(admin, index)}>
+                                remove
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            );
+        } else return <p>There is no administrators for this channel</p>;
     }
 
     return (
         <menu id="edit-admins-menu" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Edit channel admins</p>
-                <button onClick={() => returnToChatMenu()}>cancel</button>
+                <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section className="chat-section">
                 <form onSubmit={(event) => addAdministrator(event)}>
@@ -62,11 +90,12 @@ const EditAdmins = () => {
                         type="text"
                         id="new-admin-channel"
                         onChange={handleNewsAdminChange}
-                        placeholder="new administrator username"
+                        value={newAdminName}
+                        placeholder="new admin username"
                     />
                     <input type="submit" value="add" />
-                    {currentChannelAdmins()}
                 </form>
+                {currentChannelAdmins()}
             </section>
             <footer className="chat-footer"></footer>
         </menu>

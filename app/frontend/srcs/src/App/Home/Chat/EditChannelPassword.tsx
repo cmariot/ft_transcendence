@@ -45,7 +45,7 @@ const EditChannelPassword = () => {
         }
     }
 
-    function cancelCreateChannel() {
+    function cancelEdit() {
         if (chat.currentChannelType === "protected") {
             setProtectedChannel(true);
         } else if (chat.currentChannelType === "public") {
@@ -59,7 +59,7 @@ const EditChannelPassword = () => {
         }
     }
 
-    const submitCreateChannelForm = async (event: any) => {
+    const submitChannelEdit = async (event: any) => {
         event.preventDefault();
         console.log("channel :", chat.currentChannel, chat.currentChannelType);
         console.log("new values :", protectedChannel, newChannelPassword);
@@ -140,7 +140,7 @@ const EditChannelPassword = () => {
         <menu id="change-channel-password" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Edit channel password</p>
-                <button onClick={cancelCreateChannel}>cancel</button>
+                <button onClick={cancelEdit}>cancel</button>
             </header>
             <section className="chat-section">
                 <form id="chat-create-channel-form" className="chat-main">
@@ -162,7 +162,7 @@ const EditChannelPassword = () => {
                     className="button"
                     type="submit"
                     value="update"
-                    onClick={submitCreateChannelForm}
+                    onClick={submitChannelEdit}
                 />
             </footer>
         </menu>

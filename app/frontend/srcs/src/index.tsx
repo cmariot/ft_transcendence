@@ -18,6 +18,7 @@ import ProtectedValidation from "./Utils/ProtectedValidation";
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
 import { App } from "./App/App";
 import UserProfile, { loader } from "./App/Profile/UserProfile";
+import UnavailableUsername42 from "./Auth/Login/UnavailableUsername42";
 
 const router = createBrowserRouter([
     {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
             {
                 path: "register",
                 element: <Register />,
+            },
+            {
+                path: "unavailable-username",
+                element: <UnavailableUsername42 />,
             },
             {
                 path: "validate",

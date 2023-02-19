@@ -7,8 +7,9 @@ function Login42() {
         try {
             window.open("/api/auth/42", "_self");
         } catch (e) {
-            console.error(e);
             navigate("/login");
+            alert("error");
+            console.error(e);
         }
     }
 

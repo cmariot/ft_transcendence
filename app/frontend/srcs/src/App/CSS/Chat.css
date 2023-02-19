@@ -282,3 +282,47 @@
 .chat-menu-adminmenus {
     display: none;
 }
+
+/* Élément | https://localhost:8443/ */
+
+#channel-admins-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: -moz-available;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    padding: 5px;
+    overflow-y: scroll;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+.admin-channel {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border: 3px solid #737373;
+    border-radius: 5px;
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+    padding: 5px;
+}
+
+.admin-channel-username {
+    padding-inline: 5px;
+}
+
+.admin-channel {
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#edit-admins-menu > section:nth-child(2) > form:nth-child(1) {
+    margin-block: 20px;
+}
