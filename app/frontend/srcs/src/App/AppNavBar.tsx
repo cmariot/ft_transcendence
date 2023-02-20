@@ -1,10 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CSS/AppNavBar.css";
-import { socket } from "../Websockets/WebsocketContext"
-;
-function AppNavBar(props: any) {
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "./App";
+import { socket } from "../Contexts/WebsocketContext";
+
+function AppNavBar() {
     const navigate = useNavigate();
+    let user = useContext(UserContext);
+    const [username, setUsername] = useState(user.username);
+    const [avatar, setAvatar] = useState(user.avatar);
 
     function go(path: string) {
         toogleMenu();
@@ -17,10 +22,10 @@ function AppNavBar(props: any) {
             .get("/api/logout")
             .then(() => {
                 navigate("/login");
-				socket.emit("userStatus", {
-					status: "Offline",
-					socket: socket.id,
-				});
+                socket.emit("userStatus", {
+                    status: "Offline",
+                    socket: socket.id,
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -52,6 +57,11 @@ function AppNavBar(props: any) {
         }
     }
 
+    useEffect(() => {
+        setUsername(user.username);
+        setAvatar(user.avatar);
+    }, [user]);
+
     return (
         <>
             <header>
@@ -60,18 +70,15 @@ function AppNavBar(props: any) {
                         ft_transcendence
                     </Link>
                     <div id="nav-user-infos">
-                        <button onClick={toogleMenu}>
-                            {props.user["username"]}
-                        </button>
+                        <button onClick={toogleMenu}>{username}</button>
                         <img
                             id="nav-user-picture"
-                            src={props.user["userImage"]}
+                            src={avatar}
                             onClick={toogleMenu}
                             alt="Menu"
                         />
                     </div>
                 </nav>
-
                 <menu id="app-menu">
                     <button
                         className="app-menu-button"
@@ -84,18 +91,18 @@ function AppNavBar(props: any) {
                     <button
                         className="app-menu-button"
                         onClick={() => {
-                            go("/profile");
-                        }}
-                    >
-                        Profile
-                    </button>
-                    <button
-                        className="app-menu-button"
-                        onClick={() => {
                             go("/friends");
                         }}
                     >
                         Friends
+                    </button>
+                    <button
+                        className="app-menu-button"
+                        onClick={() => {
+                            go("/profile");
+                        }}
+                    >
+                        Profile
                     </button>
                     <button
                         className="app-menu-button"

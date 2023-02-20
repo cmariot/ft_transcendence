@@ -16,6 +16,9 @@ export class UserEntity {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
+    @Column({ default: true })
+    firstLog: boolean;
+
     @Column({ default: 0 })
     id42: number;
 
@@ -67,4 +70,7 @@ export class UserEntity {
 
     @Column("text", { array: true, nullable: true })
     friend: string[];
+
+    @Column("text", { array: true, nullable: true })
+    blocked: string[];
 }

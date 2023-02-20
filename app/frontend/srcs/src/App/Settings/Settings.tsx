@@ -1,17 +1,18 @@
-import { useOutletContext } from "react-router-dom";
 import EditUsername from "./EditUsername";
 import EditProfilePicture from "./EditProfilePicture";
 import EnableDoubleAuth from "./EnableDoubleAuth";
+import "../CSS/Theme.css";
 
 const Settings = () => {
-    let user = useOutletContext();
     return (
-        <main id="main-settings">
-            <h2>Settings</h2>
-            <EditProfilePicture user={user} />
-            <EditUsername user={user} />
-            <EnableDoubleAuth user={user} />
-        </main>
+        <div id="settings-div">
+            <main id="main-settings">
+                <h2>Settings</h2>
+                <EditProfilePicture />
+                <EditUsername />
+                <EnableDoubleAuth />
+            </main>
+        </div>
     );
 };
 export default Settings;

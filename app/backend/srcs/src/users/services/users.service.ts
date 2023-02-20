@@ -14,12 +14,15 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
+import { ChatGateway } from "src/chat/gateways/ChatGateway";
+import { SocketService } from "src/chat/services/socket.service";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService
+        private readonly mailerService: MailerService,
+        private socketService: SocketService
     ) {}
 
     async sendVerificationMail(user) {
@@ -54,7 +57,7 @@ export class UsersService {
         if (user.createdFrom === CreatedFrom.REGISTER) {
             this.sendVerificationMail(user);
         }
-        return this.userRepository.save(user);
+        return await this.userRepository.save(user);
     }
 
     // Delete an UserEntity from the database
@@ -67,8 +70,8 @@ export class UsersService {
         return this.userRepository.find();
     }
 
-    async getByID(id: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ uuid: id });
+    async getByID(id: string) {
+        return await this.userRepository.findOneBy({ uuid: id });
     }
     async getByUsername(username: string): Promise<UserEntity> {
         return this.userRepository.findOneBy({ username: username });
@@ -79,8 +82,9 @@ export class UsersService {
     }
 
     async getUsernameById(id: string): Promise<string> {
-        const user = this.getByID(id);
-        return (await user).username;
+        const user = await this.getByID(id);
+        if (user) return user.username;
+        return null;
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
@@ -106,18 +110,26 @@ export class UsersService {
             { doubleAuthentificationCode: "" }
         );
     }
+    async confirm_profile(uuid: string) {
+        await this.userRepository.update({ uuid: uuid }, { firstLog: false });
+        return "OK";
+    }
 
     async user_status(username: string, status: string) {
         let user: UserEntity = await this.getByUsername(username);
         if (status === "Online") {
             return await this.userRepository.update(
                 { uuid: user.uuid },
-                { status: "Online"}
+                { status: "Online" }
             );
         }
     }
 
-    async setSocketID(username: string, socket: string, status: string) : Promise <string> {
+    async setSocketID(
+        username: string,
+        socket: string,
+        status: string
+    ): Promise<string> {
         let user: UserEntity = await this.getByUsername(username);
         await this.user_status(user.username, status);
         user.socketId = socket;
@@ -125,19 +137,19 @@ export class UsersService {
             { uuid: user.uuid },
             { socketId: user.socketId }
         );
-		return (user.username);
+        return user.username;
     }
-    async userDisconnection(socket: string) : Promise<string> {
+    async userDisconnection(socket: string): Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
-			user.status = "Offline";
-			await this.userRepository.update(
-				{ uuid: user.uuid },
-				{ status: "Offline"}
-			);
-            return (user.username);
+            user.status = "Offline";
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { status: "Offline" }
+            );
+            return user.username;
         }
-        return ("User not register");
+        return "User not register";
     }
 
     async generateDoubleAuthCode(uuid: string) {
@@ -159,14 +171,18 @@ export class UsersService {
                 from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
                 subject: "Your double-authentification code", // Subject line
                 text:
-                    "Welcome back, here is your double authentification code :" +
-                    randomNumber.toString(), // plaintext body
+                    "Welcome back" +
+                    user.username +
+                    ", here is your double authentification code :" +
+                    user.doubleAuthentificationCode, // plaintext body
                 html:
                     "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
-                        <h1>Welcome back !</h1>\
+                        <h1>Welcome back " +
+                    user.username +
+                    " !</h1>\
                         <h3>Here is your double authentification code :</h3>\
                         <h2>" +
-                    randomNumber.toString() +
+                    user.doubleAuthentificationCode +
                     "</h2>\
                     </div>\
                     ",
@@ -183,12 +199,17 @@ export class UsersService {
         let db_user: UserEntity = await this.getByUsername(
             registerDto.username
         );
-        if (db_user && db_user.username === registerDto.username) {
+        if (
+            db_user &&
+            db_user.username === registerDto.username &&
+            db_user.valideEmail === true
+        ) {
             throw new HttpException(
                 "This username is already registered.",
                 HttpStatus.UNAUTHORIZED
             );
         }
+
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
@@ -202,7 +223,32 @@ export class UsersService {
             emailValidationCode: randomNumber.toString(),
             emailValidationCodeCreation: new Date(),
         };
-        return this.saveUser(user);
+        if (
+            db_user &&
+            db_user.username === registerDto.username &&
+            db_user.valideEmail === false
+        ) {
+            await this.userRepository.update(
+                { uuid: db_user.uuid },
+                {
+                    email: user.email,
+                    createdFrom: CreatedFrom.REGISTER,
+                    password: user.password,
+                    twoFactorsAuth: user.twoFactorsAuth,
+                    doubleAuthentificationCodeCreation: new Date(),
+                    emailValidationCode: user.emailValidationCode,
+                }
+            );
+            let newUser: UserEntity = await this.getByUsername(
+                registerDto.username
+            );
+            if (newUser.createdFrom === CreatedFrom.REGISTER) {
+                this.sendVerificationMail(user);
+            }
+            return newUser;
+        } else {
+            return this.saveUser(user);
+        }
     }
 
     async resendEmail(uuid: string) {
@@ -223,7 +269,7 @@ export class UsersService {
 
     async getProfile(id: string) {
         let user = await this.getByID(id);
-        if (user === undefined) {
+        if (user === null) {
             throw new HttpException("Invalid uuid.", HttpStatus.FORBIDDEN);
         }
         return user;
@@ -241,6 +287,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
+        //this.socketService.userUpdate(newUsername);
         return "Username updated.";
     }
 
@@ -272,6 +319,8 @@ export class UsersService {
             { uuid: uuid },
             { profileImage: imageName }
         );
+        let user = await this.getByID(uuid);
+        this.socketService.userUpdate(user.username);
         return "Image updated.";
     }
 
@@ -283,7 +332,7 @@ export class UsersService {
         return "Setting updated.";
     }
 
-    async getProfileImage(uuid: string) {
+    async getProfileImage(uuid: string): Promise<StreamableFile> {
         let user = await this.getByID(uuid);
         if (user.profileImage === null) {
             let file = createReadStream(
@@ -324,18 +373,19 @@ export class UsersService {
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return "Friend added.";
+        return this.friendslist(userId);
     }
 
     async friendslist(userid: string) {
         let user = await this.getByID(userid);
-        let list: string[] = new Array();
-
+        let list: { username: string; status: string }[] = new Array();
         if (!user.friend) return list;
         let i = 0;
         while (i < user.friend.length) {
             let id = user.friend[i];
-            list.push(await this.getUsernameById(id));
+            let friendUsername = await this.getUsernameById(id);
+            if (friendUsername !== null)
+                list.push({ username: friendUsername, status: "online" });
             i++;
         }
         return list;
@@ -356,6 +406,65 @@ export class UsersService {
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return "Friend deleted";
+        return this.friendslist(userId);
+    }
+
+    async blockUser(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "You cannot block yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        if (!user.blocked) user.blocked = new Array();
+        else {
+            if (user.blocked.find((element) => element === friend)) {
+                throw new HttpException(
+                    "Already blocked",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+        user.blocked.push(friend);
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { blocked: user.blocked }
+        );
+        return this.blockedList(user.uuid);
+    }
+
+    async blockedList(uuid: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        if (!user)
+            throw new HttpException("Invalid user", HttpStatus.BAD_REQUEST);
+        let blocked: { username: string }[] = [];
+        let i = 0;
+        if (user.blocked === null) return blocked;
+        while (i < user.blocked.length) {
+            let blocked_user = await this.getByID(user.blocked[i]);
+            if (blocked_user) {
+                blocked.push({ username: blocked_user.username });
+            }
+            i++;
+        }
+        return blocked;
+    }
+
+    async unBlock(userId: string, friend: string) {
+        let user: UserEntity = await this.getByID(userId);
+        if (userId === friend)
+            throw new HttpException(
+                "Can't unblock yourself",
+                HttpStatus.BAD_REQUEST
+            );
+        let index = user.blocked.findIndex((element) => element === friend);
+        if (index > -1) {
+            user.blocked.splice(index, 1);
+        }
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { blocked: user.blocked }
+        );
+        return this.blockedList(user.uuid);
     }
 }

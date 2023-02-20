@@ -22,9 +22,27 @@ export class ChatEntity {
     })
     channelType: ChannelType;
 
-    @Column({ default: "", select: false })
+    @Column({ default: "" })
     channelPassword: string;
 
-    @Column({ default: "", select: false })
+    @Column({ default: "" })
     channelOwner: string;
+
+    @Column("jsonb", { default: [] })
+    channelAdministrators: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
+    messages: { uuid: string; message: string }[];
+
+    @Column("jsonb", { default: [] })
+    allowed_users: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
+    users: { uuid: string }[];
+
+    @Column("jsonb", { default: [] })
+    banned_users: { uuid: string; ban_date: string; ban_duration: string }[];
+
+    @Column("jsonb", { default: [] })
+    mutted_users: { uuid: string; mute_date: string; mute_duration: string }[];
 }

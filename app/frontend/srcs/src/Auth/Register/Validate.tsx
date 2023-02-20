@@ -62,7 +62,7 @@ const Validate = () => {
                 <input
                     type="text"
                     id="code"
-                    placeholder="Check your emails"
+                    placeholder="your code"
                     onChange={handleValidateChange}
                     autoFocus
                     required

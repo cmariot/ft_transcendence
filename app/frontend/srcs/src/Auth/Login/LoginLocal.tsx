@@ -32,11 +32,18 @@ const LoginLocal = () => {
                 password: password,
             })
             .then(() => {
+                const email_validation_token = getCookie("email_validation");
+                if (email_validation_token) {
+                    setUsername("");
+                    setPassword("");
+                    navigate("/validate");
+                    return;
+                }
                 const token2fa = getCookie("double_authentification");
                 if (token2fa) {
                     setUsername("");
                     setPassword("");
-                    navigate("/double-auth");
+                    navigate("/double-authentification");
                     return;
                 }
                 const token = getCookie("authentification");
@@ -65,7 +72,7 @@ const LoginLocal = () => {
                     placeholder="Username"
                     value={username}
                     onChange={(e) => handleInputChange(e)}
-                    autoComplete="on"
+                    autoComplete="off"
                     required
                 />
                 <input
@@ -74,7 +81,7 @@ const LoginLocal = () => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => handleInputChange(e)}
-                    autoComplete="on"
+                    autoComplete="off"
                     required
                 />
                 <input

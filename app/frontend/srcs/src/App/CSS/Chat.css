@@ -1,153 +1,328 @@
 .chat-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: inherit;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    max-height: 400px;
+    background-color: #3a3a3a;
+    padding-inline: 5px;
+}
+
+.chat-menu {
     display: none;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 0;
-    margin: 0;
-    border: 1px black solid;
     border-radius: 15px;
-    height: 500px;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #1e1e1e;
 }
 
-#chat {
+#chat-your-channels {
     display: flex;
+}
+
+.channel-selection-button {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 5px;
+    border: 2px solid #1e1e1e;
+    margin: 5px;
+    padding: 5px;
 }
 
 .chat-header {
     display: flex;
+    justify-content: flex-start;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
     height: 50px;
-    border-bottom: 1px black solid;
+    padding-inline: 12px;
 }
 
-.chat-main {
+.channel-selection-button {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 400px;
-    overflow-y: scroll;
+    justify-content: space-between;
+    border-radius: 5px;
+    border: 2px solid #1e1e1e;
+    margin: 5px;
+    padding: 5px;
+    width: -webkit-fill-available;
+    width: -moz-available;
 }
 
 .chat-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
     height: 50px;
-    border-top: 1px black solid;
-}
-
-#chat-channel {
-    margin-inline: 10px;
-}
-
-#chat-main-ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    width: 100%;
-    list-style-type: none;
-}
-
-.chat-main-li,
-.chat-menu-li {
-    display: flex;
-    width: -moz-available;
-    border: 1px solid black;
-    border-radius: 5px;
-    padding-inline: 5px;
-    margin: 5px;
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-
-.chat-username {
-    margin-inline-end: 5px;
-}
-
-.chat-menu-li {
-    display: flex;
-}
-
-/* Feuille de style intégrée #7 | https://localhost:8443/ */
-
-.chat-menu-li {
-    margin: 5px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    width: -moz-available;
-}
-
-.chat-section {
-    width: 100%;
-}
-
-.chat-main {
-    /* width: 100%; */
-    width: -moz-available;
-    padding-block: 5px;
-}
-
-.chat-menu-channel {
-    padding-inline: 5px;
-}
-
-#chat-menu-channels {
-    /* align-items: first baseline; */
-    justify-content: flex-start;
-}
-
-/* Élément | https://localhost:8443/ */
-
-#chat-message-input {
-    margin: 0;
-}
-
-/* Élément | https://localhost:8443/ */
-
-button.chat-menu-li:nth-child(2) > p:nth-child(1) {
-    margin: 0;
-}
-
-/* Élément | https://localhost:8443/ */
-
-button.chat-menu-li:nth-child(1) > p:nth-child(2) {
-    margin: 0;
 }
 
 .chat-header {
-    /* width: 100%; */
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
-    padding-inline: 5px;
+    height: 50px;
+    padding-inline: 12px;
+    margin-inline: 5px;
 }
 
-#chat-create-channel > header:nth-child(1) > p:nth-child(1) {
-    margin-inline: 10px;
+#chat-create-channel-form {
+    display: flex;
+    flex-direction: column;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: 100%;
+    justify-content: center;
+    margin: 10px;
+}
+
+#chat-create-channel-form > label:nth-child(3) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #new-channel-password {
     display: none;
 }
 
-/* Élément | https://localhost:8443/ */
-
-#chat-message-input {
+.chat-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
+    padding-inline: 5px;
+}
+
+#chat-friend-list {
+    padding: 0;
+    margin: 0;
+}
+
+#new-conversation-name {
+    margin-top: 20px;
+}
+
+.chat-friends-picture {
+    max-width: 50px;
+}
+
+.chat-friends-list {
+    display: flex;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    justify-content: flex-start;
+}
+
+#chat-create-private-form {
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    height: -moz-available;
+    width: -moz-available;
+}
+
+.friend-list-profile {
+    display: flex;
+}
+
+.chat-friends-list {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-friends-list,
+.chat-friends-list:hover,
+.chat-friends-list:focus {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+}
+
+.chat-friends-list.user-selected {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+#chat-main-ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0;
+    align-items: flex-start;
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    height: -moz-available;
+    width: -moz-available;
+    margin-block: 5px;
+}
+
+.chat-main-li {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    margin: 3px;
+    border-radius: 5px;
+    padding-inline: 5px;
+}
+
+#chat-conversation
+    > header:nth-child(1)
+    > div:nth-child(2)
+    > button:nth-child(1) {
+    margin: 0;
+}
+
+#send-message-form {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-inline: 5px;
 }
 
-/* Feuille de style intégrée #7 | https://localhost:8443/ */
+#chat-message-input {
+    margin: 0;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    margin-inline-end: 3px;
+}
 
-.chat-menu-li {
-    margin-inline: 12px;
+#send-message-form > button:nth-child(2) {
+    margin: 0;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+#join-protected-channel-section {
+    justify-content: center;
+}
+
+#chat-menu-options {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#chat-crete-private-section {
+    justify-content: center;
+}
+
+#chat-menu-options > button {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    text-align: center;
+}
+
+.chat-user-message-options {
+    display: none;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.chat-main-li:hover > .chat-user-message-options {
+    display: flex;
+}
+
+.chat-user-message-options button {
+    margin-inline: 2px;
+}
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+.chat-main-li {
+    margin-inline: 6px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat {
+    min-width: 300px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+.chat-user-message-options {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-your-channels > section:nth-child(2) > p:nth-child(1) {
+    margin-block: 10px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-your-channels > section:nth-child(2) > p:nth-child(6) {
+    margin-block: 10px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-menu-options-buttons {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-menu-adminmenus {
+    display: none;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#channel-admins-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: -moz-available;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    padding: 5px;
+    overflow-y: scroll;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/ */
+
+.admin-channel {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border: 3px solid #737373;
+    border-radius: 5px;
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+    padding: 5px;
+}
+
+.admin-channel-username {
+    padding-inline: 5px;
+}
+
+.admin-channel {
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#edit-admins-menu > section:nth-child(2) > form:nth-child(1) {
+    margin-block: 20px;
 }

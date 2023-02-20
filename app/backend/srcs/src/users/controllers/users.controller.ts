@@ -54,6 +54,7 @@ export class UsersController {
                 username: completeUser.username,
                 email: completeUser.email,
                 twoFactorsAuth: completeUser.twoFactorsAuth,
+                firstLog: completeUser.firstLog,
             };
         throw new UnauthorizedException();
     }
@@ -107,6 +108,9 @@ export class UsersController {
     @UseGuards(isLogged)
     async getUserImage(@Param() params, @Req() req) {
         const user = await this.userService.getByUsername(params.username);
+        if (!user)
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+
         return this.userService.getProfileImage(user.uuid);
     }
 
@@ -123,7 +127,7 @@ export class UsersController {
         return user.twoFactorsAuth;
     }
 
-    @Post("friend")
+    @Post("friends/add")
     @UseGuards(isLogged)
     async addFriend(@Body() Username: UsernameDto, @Req() req) {
         let friend = await this.userService.getByUsername(Username.username);
@@ -135,13 +139,13 @@ export class UsersController {
         return await this.userService.addFriend(req.user.uuid, friend.uuid);
     }
 
-    @Get("friend")
+    @Get("friends")
     @UseGuards(isLogged)
     async friendlist(@Req() req) {
         return await this.userService.friendslist(req.user.uuid);
     }
 
-    @Post("friend/delete")
+    @Post("friends/remove")
     @UseGuards(isLogged)
     async DeleteFriend(@Body() Username: UsernameDto, @Req() req) {
         let friend = await this.userService.getByUsername(Username.username);
@@ -153,4 +157,33 @@ export class UsersController {
         return await this.userService.DelFriend(req.user.uuid, friend.uuid);
     }
 
+    @Post("block")
+    @UseGuards(isLogged)
+    async block_user(@Body() Username: UsernameDto, @Req() req) {
+        let block = await this.userService.getByUsername(Username.username);
+        if (!block)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        return await this.userService.blockUser(req.user.uuid, block.uuid);
+    }
+
+    @Get("blocked")
+    @UseGuards(isLogged)
+    async blocked_list(@Req() req) {
+        return await this.userService.blockedList(req.user.uuid);
+    }
+
+    @Post("unblock")
+    @UseGuards(isLogged)
+    async unBlock(@Body() Username: UsernameDto, @Req() req) {
+        let block = await this.userService.getByUsername(Username.username);
+        if (!block)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        return await this.userService.unBlock(req.user.uuid, block.uuid);
+    }
+
+    @Get("confirm")
+    @UseGuards(isLogged)
+    confirm_profile(@Req() req) {
+        return this.userService.confirm_profile(req.user.uuid);
+    }
 }

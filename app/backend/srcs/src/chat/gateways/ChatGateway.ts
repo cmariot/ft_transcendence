@@ -20,28 +20,31 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-			console.log("SOCKET SERVER: ", socket.id);
+            console.log("SOCKET SERVER: ", socket.id);
             socket.on("disconnect", async () => {
-				let username;
-                username = await this.userService.userDisconnection(
-                    socket.id
-                );
+                let username;
+                username = await this.userService.userDisconnection(socket.id);
                 if (username) {
-                	this.sendStatus(username, "Offline");
+                    this.sendStatus(username, "Offline");
                 }
             });
         });
     }
 
-    newChannelAvailable(@MessageBody() data: any) {
-        console.log("newChannelAvailable");
-        this.server.emit("newChannelAvailable", {
-            content: data,
-        });
+    newChannelAvailable() {
+        console.log("Backend emit 'newChannelAvailable' with data: ");
+        this.server.emit("newChannelAvailable");
     }
 
-    userJoinChannel(channel: string, username: string) {
-        console.log("userJoinChannel");
+    async userJoinChannel(channel: string, username: string) {
+        console.log(
+            "Backend emit 'userChannelConnection' with data: ",
+            channel,
+            username
+        );
+        //let user = await this.userService.getByUsername(username);
+        // remove user from previousChannel.currentUsers
+        // add user in channel.currentUsers
         this.server.emit("userChannelConnection", {
             channel: channel,
             username: username,
@@ -49,11 +52,18 @@ export class ChatGateway implements OnModuleInit {
     }
 
     send_message(channel: string, username: string, message: string) {
-        this.server.emit("newMessage", {
+        console.log(
+            "Backend emit 'newChatMessage' with data: ",
+            channel,
+            username,
+            message
+        );
+        this.server.emit("newChatMessage", {
             channel: channel,
             username: username,
             message: message,
         });
+        return message;
     }
 
     @SubscribeMessage("userStatus")

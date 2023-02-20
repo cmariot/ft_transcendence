@@ -1,7 +1,14 @@
 import axios from "axios";
 import "../CSS/Settings.css";
+import "../CSS/Theme.css";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
 
-export default function EditProfilePicture(props: any) {
+export default function EditProfilePicture() {
+    const user = useContext(UserContext);
+    const navigate = useNavigate();
+
     function uploadImage(event: any) {
         event.preventDefault();
         if (event.target.files[0]) {
@@ -14,9 +21,8 @@ export default function EditProfilePicture(props: any) {
                     },
                 })
                 .then(() => {
-                    props.user["setUserImage"](
-                        URL.createObjectURL(event.target.files[0])
-                    );
+                    user.editAvatar(URL.createObjectURL(event.target.files[0]));
+                    navigate("/settings");
                 })
                 .catch((error) => {
                     console.log(error);
@@ -27,12 +33,12 @@ export default function EditProfilePicture(props: any) {
     return (
         <div id="edit-picture">
             <img
-                src={props.user["userImage"]}
+                src={user.avatar}
                 id="edit-picture-img"
                 alt="Edit your avatar"
             />
-            <label>
-                Edit Profile Picture
+            <label id="label-edit-picture">
+                <p>Edit Profile Picture</p>
                 <input
                     type="file"
                     id="edit-picture-input"

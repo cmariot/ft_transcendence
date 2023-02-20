@@ -23,10 +23,12 @@
     justify-content: space-around;
     border: 1px black solid;
     border-radius: 15px;
+    width: -webkit-fill-available;
     width: -moz-available;
     width: -webkit-fill-available;
     margin: 5px;
     padding-inline: 35px;
+    width: 100%;
 }
 
 .friend-profile-picture {
@@ -72,4 +74,56 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+/* Feuille de style intégrée #11 | https://localhost:8443/friends */
+
+#friend-list {
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+#friends {
+    width: 100%;
+    height: 100%;
+    margin-block: 25px;
+}
+
+.friend {
+    width: -webkit-fill-available;
+    width: -moz-available;
+}
+
+#add-friend {
+    height: 100%;
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+#add-friend > form:nth-child(2) {
+    margin-block: 15px;
+}
+#friend-list {
+    /* border: 1px solid black; */
+    border: 3px solid #737373;
+}
+
+.friend {
+    border: 3px #737373 solid;
+}
+
+#add-friend {
+    /* border: 1px solid black; */
+    border: 3px solid #737373;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+#friend-list-main > p:nth-child(1) {
+    color: #1e1e1e;
 }

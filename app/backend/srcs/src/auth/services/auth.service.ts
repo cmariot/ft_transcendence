@@ -5,7 +5,15 @@ import {
     Res,
     UnauthorizedException,
 } from "@nestjs/common";
+<<<<<<< HEAD
 import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
+=======
+import {
+    CreatedFrom,
+    Status,
+    UserEntity,
+} from "../../users/entity/user.entity";
+>>>>>>> Chat
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -33,33 +41,51 @@ export class AuthService {
     // email_validation : Doit valider son email
     // double_authentification : Doit valider sa connexion
     create_cookie(user: UserEntity, type: string, @Res() res) {
-        res.clearCookie("authentification");
-        res.clearCookie("email_validation");
-        res.clearCookie("double_authentification");
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
-                res.cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                    sameSite: "none",
-                    secure: true,
-                }).redirect("https://localhost:8443/double-auth");
+                res.clearCookie("authentification")
+                    .clearCookie("email_validation")
+                    .clearCookie("double_authentification")
+                    .cookie(type, cookie_value, {
+                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect("https://localhost:8443/double-authentification");
             } else if (type === "authentification") {
+<<<<<<< HEAD
                 res.cookie(type, cookie_value, {
                     maxAge: 1000 * 60 * 60 * 2, // 2 hours
                     sameSite: "none",
                     secure: true,
                 }).redirect("https://localhost:8443/");
 
+=======
+                this.usersService.user_status(user.username, Status.ONLINE);
+                res.clearCookie("authentification")
+                    .clearCookie("email_validation")
+                    .clearCookie("double_authentification")
+                    .cookie(type, cookie_value, {
+                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect("https://localhost:8443/");
+>>>>>>> Chat
             } else {
                 throw new UnauthorizedException();
             }
         } else {
-            res.cookie(type, cookie_value, {
-                maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                sameSite: "none",
-                secure: true,
-            }).send(type);
+            res.clearCookie("authentification")
+                .clearCookie("email_validation")
+                .clearCookie("double_authentification")
+                .cookie(type, cookie_value, {
+                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                    sameSite: "none",
+                    secure: true,
+                })
+                .send(type);
         }
     }
 
@@ -75,13 +101,12 @@ export class AuthService {
         },
         res
     ): Promise<UserEntity> {
+        let user = await this.usersService.getByUsername(user_42.username);
+        if (user && user.createdFrom !== CreatedFrom.OAUTH42) {
+            return null;
+        }
         let bdd_user = await this.usersService.getById42(user_42.id42);
-        if (bdd_user && bdd_user.createdFrom != CreatedFrom.OAUTH42) {
-            throw new HttpException(
-                "The username is already registered but from FORM.",
-                HttpStatus.FORBIDDEN
-            );
-        } else if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
+        if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
             if (bdd_user.twoFactorsAuth) {
                 this.create_cookie(bdd_user, "double_authentification", res);
                 await this.usersService.generateDoubleAuthCode(bdd_user.uuid);
@@ -106,6 +131,7 @@ export class AuthService {
             (await bcrypt.compare(password, user.password)) === true
         ) {
             if (user.valideEmail === false) {
+                await this.usersService.resendEmail(user.uuid);
                 this.create_cookie(user, "email_validation", res);
             } else if (user.twoFactorsAuth === true) {
                 this.create_cookie(user, "double_authentification", res);
@@ -119,6 +145,9 @@ export class AuthService {
     }
 
     logout(@Res() res) {
-        res.clearCookie("authentification").send("Bye !");
+        res.clearCookie("authentification", {
+            sameSite: "none",
+            secure: true,
+        }).send("Bye !");
     }
 }

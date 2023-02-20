@@ -17,8 +17,13 @@
 
 #edit-picture > label:nth-child(2) {
     margin: 5px;
-    padding: 5px;
-    border: 1px #bcbcc5 solid;
     border-radius: 5px;
-    background-color: #e9e9ed;
+}
+
+#settings-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }

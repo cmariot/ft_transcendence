@@ -1,8 +1,9 @@
 .vscode
 .DS_Store
 
+./docs/*
 docs/en.subject.pdf
-docs/fr.subject.pdf
+docs/*.pdf
 
 app/backend/.env
 app/backend/srcs/node_modules

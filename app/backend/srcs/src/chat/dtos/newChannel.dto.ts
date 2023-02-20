@@ -1,4 +1,10 @@
-import { IsEmpty, IsNotEmpty, IsString, MinLength } from "class-validator";
+import {
+    IsArray,
+    IsEmpty,
+    IsNotEmpty,
+    IsString,
+    MinLength,
+} from "class-validator";
 
 export class ProtectedChannelDTO {
     @IsNotEmpty()
@@ -27,6 +33,9 @@ export class PrivateChannelDTO {
 
     @IsEmpty()
     channelOwner: string;
+
+    @IsArray()
+    allowed_users: string[];
 }
 export class PublicChannelDTO {
     @IsNotEmpty()

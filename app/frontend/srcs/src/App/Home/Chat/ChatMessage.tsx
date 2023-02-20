@@ -1,8 +1,10 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
+import { ChatContext } from "./ChatParent";
 
-const ChatMessage = (props: any) => {
+const ChatMessage = () => {
+    const chat = useContext(ChatContext);
     const [message, setMessage] = useState("");
 
     const handleMessageTyping = (e: ChangeEvent<HTMLInputElement>) => {
@@ -13,29 +15,43 @@ const ChatMessage = (props: any) => {
         }
     };
 
-    function sendMessage() {
+    function sendMessage(e: any) {
+        e.preventDefault();
+        if (message.length === 0) return;
         axios
-            .post("/api/chat", { channelName: props.channel, message: message })
+            .post("/api/chat", {
+                channelName: chat.currentChannel,
+                message: message,
+            })
             .then((response) => {
-                console.log("SEND MESSAGE: ", response);
                 setMessage("");
+                const chatMessages =
+                    document.getElementById("chat-messages-list");
+                if (chatMessages) {
+                    chatMessages.scrollTo(0, chatMessages.scrollHeight);
+                }
             })
             .catch((error) => {
-                console.log(error);
+                alert(
+                    "You are not authorized to send a message on this channel."
+                );
             });
     }
 
     return (
-        <>
+        <form onSubmit={sendMessage} id="send-message-form">
             <input
                 id="chat-message-input"
                 type="text"
                 placeholder="message"
                 value={message}
                 onChange={handleMessageTyping}
+                autoComplete="off"
+                autoFocus
+                required
             />
-            <button onClick={sendMessage}>send</button>
-        </>
+            <button type="submit">send</button>
+        </form>
     );
 };
 export default ChatMessage;

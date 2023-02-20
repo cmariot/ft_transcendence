@@ -1,0 +1,21 @@
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsNumberString,
+    IsPositive,
+    IsString,
+} from "class-validator";
+
+export class muteOptionsDTO {
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+
+    @IsString()
+    @IsNotEmpty()
+    username: string;
+
+    @IsNumberString()
+    @IsNotEmpty()
+    duration: number;
+}

@@ -1,8 +1,12 @@
 import axios from "axios";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
 
-export default function EditUsername(props: any) {
-    const [username, setUsername] = useState(props.user["username"]);
+export default function EditUsername() {
+    const user = useContext(UserContext);
+    const [username, setUsername] = useState(user.username);
+    const navigate = useNavigate();
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -14,7 +18,7 @@ export default function EditUsername(props: any) {
     const submitUsernameForm = async (event: any) => {
         event.preventDefault();
         const newValue: string = username;
-        if (newValue === props.user["username"]) {
+        if (newValue === user.username) {
             alert("Change your username");
             return;
         }
@@ -23,16 +27,19 @@ export default function EditUsername(props: any) {
                 username: newValue,
             })
             .then(function () {
-                props.user["setUsername"](newValue);
+                user.editUsername(newValue);
+                setUsername(newValue);
+                navigate("/settings");
             })
             .catch(function (error) {
+                setUsername(user.username);
                 alert(error.response.data.message);
             });
     };
 
     useEffect(() => {
-        setUsername(props.user["username"]);
-    }, [props.user]);
+        setUsername(user.username);
+    }, [user.username]);
 
     return (
         <div id="username-main">

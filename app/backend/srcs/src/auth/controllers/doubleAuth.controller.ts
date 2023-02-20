@@ -29,7 +29,7 @@ export class DoubleAuthController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        const user = await this.userService.getProfile(req.user.uuid);
+        let user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.doubleAuthentificationCode) {
             const now = new Date();
             const diff =

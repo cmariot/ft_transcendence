@@ -1,6 +1,7 @@
 #validation-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
+    height: -webkit-fill-available;
     height: -moz-available;
     grid-gap: 10px;
     padding: 10px;
@@ -19,10 +20,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px black solid;
     border-radius: 15px;
     padding-top: 50px;
     padding-bottom: 50px;
+    background-color: #1e1e1e;
+    border: 3px solid #737373;
 }
 
 #validation-form * {
@@ -32,4 +34,8 @@
 
 #form-validation-choices * {
     margin-inline: 5px;
+}
+
+#validation-aside {
+    color: #1e1e1e;
 }

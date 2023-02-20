@@ -6,7 +6,7 @@ FROM nginx:alpine
 # Update the index of available packages
 # Upgrade the currently installed packages
 # Install openssl
-RUN apk update && apk upgrade && apk add --no-cache\
+RUN apk -U upgrade && apk add --no-cache\
 	openssl
 
 # Generate an auto-signed SSL key/certificate pair

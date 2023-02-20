@@ -1,61 +1,108 @@
-import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import AppNavbar from "./AppNavBar";
-import AppFooter from "./AppFooter";
 import axios from "axios";
-import { WebsocketProvider, socket } from "../Websockets/WebsocketContext";
+import React, { useEffect, useState } from "react";
+import { ChatParent } from "./Home/Chat/ChatParent";
+import { socket } from "../Contexts/WebsocketContext";
+import ConfirmProfile from "./Settings/ConfirmProfile";
 
-function App() {
-    const [firstLoad, setFirstLoad] = useState(true);
-    const [username, setUsername] = useState("");
-    const [userImage, setUserImage] = useState("");
-    const [doubleAuth, setDoubleAuth] = useState(true);
+export const UserContext = React.createContext({
+    username: "",
+    editUsername: (newUsername: string) => {},
+    avatar: "",
+    editAvatar: (newAvatar: string) => {},
+    firstLog: false,
+    setFirstLog: (newValue: boolean) => {},
+    doubleAuth: true,
+    editDoubleAuth: (newValue: boolean) => {},
+    friends: [],
+    setFriends: (newFriends: []) => {},
+    blocked: [],
+    setBlocked: (newFriends: []) => {},
+});
 
-    let user = {
-        username,
-        setUsername: setUsername,
-        userImage,
-        setUserImage: setUserImage,
-        doubleAuth,
-        setDoubleAuth: setDoubleAuth,
-    };
+export const App = () => {
+    const [username, editUsername] = useState("");
+    const [avatar, editAvatar] = useState("");
+    const [doubleAuth, editDoubleAuth] = useState(true);
+    const [friends, setFriends] = useState([]);
+    const [blocked, setBlocked] = useState([]);
+    const [firstLog, setFirstLog] = useState(false);
+    const [friendUpdate, setFriendUpdate] = useState(false);
 
     useEffect(() => {
-        const getProfile = async () => {
-            setFirstLoad(false);
-            await axios
-                .get("/api/profile")
-                .then((response) => {
-                    user["setUsername"](response.data.username);
-                    user["setDoubleAuth"](response.data.twoFactorsAuth);
-                    user["setUserImage"](
-                        "/api/profile/" + response.data.username + "/image"
-                    );
-					console.log("EMIT", socket.id, response.data.username);
-                    socket.emit("userStatus", {
-                        status: "Online",
-                        socket: socket.id,
-                        username: response.data.username,
-                    });
-                })
-                .catch((error) => {
-                    console.log(error.response);
-                    return;
+        axios
+            .get("/api/profile")
+            .then((response) => {
+                editUsername(response.data.username);
+                editAvatar("/api/profile/" + response.data.username + "/image");
+                editDoubleAuth(response.data.twoFactorsAuth);
+                setFirstLog(response.data.firstLog);
+                socket.emit("userStatus", {
+                    status: "Online",
+                    socket: socket.id,
+                    username: response.data.username,
                 });
-        };
-        if (firstLoad) {
-            getProfile();
-        }
-    });
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+        axios
+            .get("/api/profile/friends")
+            .then((response) => {
+                setFriends(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }, []);
 
-    return (
-        <WebsocketProvider value={socket}>
-            <AppNavbar user={user} />
-            <section id="app-content">
-                <Outlet context={user} />
-            </section>
-            <AppFooter />
-        </WebsocketProvider>
-    );
-}
-export default App;
+    useEffect(() => {
+        socket.on("userUpdate", () => {
+            setFriendUpdate(!friendUpdate);
+        });
+        axios
+            .get("/api/profile/friends")
+            .then((response) => {
+                setFriends(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+        axios
+            .get("/api/profile/blocked")
+            .then((response) => {
+                setBlocked(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }, [friendUpdate]);
+
+    const value = {
+        username,
+        editUsername,
+        avatar,
+        editAvatar,
+        firstLog,
+        setFirstLog,
+        doubleAuth,
+        editDoubleAuth,
+        friends,
+        setFriends,
+        blocked,
+        setBlocked,
+    };
+
+    if (firstLog === true) {
+        return (
+            <UserContext.Provider value={value as any}>
+                <ConfirmProfile />
+            </UserContext.Provider>
+        );
+    } else {
+        return (
+            <UserContext.Provider value={value as any}>
+                <ChatParent />
+            </UserContext.Provider>
+        );
+    }
+};
