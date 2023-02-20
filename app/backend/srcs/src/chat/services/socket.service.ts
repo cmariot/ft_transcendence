@@ -5,12 +5,15 @@ import { UsersService } from "../../users/services/users.service";
 export class SocketService {
     constructor(private userService: UsersService) {}
 
-    async UserConnection(username: string, sockectID: string, status: string) {
+    async UserConnection(username: string, sockectID: string, status: string): Promise<string>{
+		let user;
         if (username && sockectID && status === "Online") {
-            this.userService.setSocketID(username, sockectID, status);
+            user = await this.userService.setSocketID(username, sockectID, status);
         }
 		if (sockectID && status === "Offline") {
-            this.userService.userDisconnection(sockectID);
+            user = await this.userService.userDisconnection(sockectID);
         }
+		console.log("User Status : ", username, status);
+		return (user);
     }
 }

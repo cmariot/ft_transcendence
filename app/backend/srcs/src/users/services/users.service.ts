@@ -117,7 +117,7 @@ export class UsersService {
         }
     }
 
-    async setSocketID(username: string, socket: string, status: string) {
+    async setSocketID(username: string, socket: string, status: string) : Promise <string> {
         let user: UserEntity = await this.getByUsername(username);
         await this.user_status(user.username, status);
         user.socketId = socket;
@@ -125,17 +125,19 @@ export class UsersService {
             { uuid: user.uuid },
             { socketId: user.socketId }
         );
+		return (user.username);
     }
-    async userDisconnection(socket: string) {
+    async userDisconnection(socket: string) : Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
+			user.status = "Offline";
 			await this.userRepository.update(
 				{ uuid: user.uuid },
 				{ status: "Offline"}
 			);
-            return user.username;
+            return (user.username);
         }
-        return "User not register";
+        return ("User not register");
     }
 
     async generateDoubleAuthCode(uuid: string) {
