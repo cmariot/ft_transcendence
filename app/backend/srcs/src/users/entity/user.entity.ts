@@ -62,8 +62,8 @@ export class UserEntity {
     @Column({default: "Offline"})
     status: string;
 
-    @Column({ nullable: true })
-    socketId: string;
+    @Column("text", {array: true, nullable: true })
+    socketId: string[];
 
     @Column("text", { array: true, nullable: true })
     friend: string[];

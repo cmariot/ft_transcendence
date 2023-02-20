@@ -5,7 +5,7 @@ import {
     StreamableFile,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, FindOneOptions, Like, ILike, MoreThan, Not, Equal, LessThan, MoreThanOrEqual, LessThanOrEqual, FindOperator } from 'typeorm';
 import { CreatedFrom, UserEntity } from "../entity/user.entity";
 import {} from "typeorm";
 import { RegisterDto } from "src/auth/dtos/register.dto";
@@ -84,8 +84,18 @@ export class UsersService {
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ socketId: socket });
-    }
+		let user : UserEntity[] = await this.userRepository.find();
+		let i = 0;
+		while(user[i])
+		{
+			if (user[i].socketId){
+				if(user[i].socketId.find((element) => element === socket))
+					return user[i];
+			}
+			i++;
+		}
+		return null;
+	}
 
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
@@ -115,12 +125,15 @@ export class UsersService {
                 { status: "Online"}
             );
         }
+		console.log(user);
     }
 
     async setSocketID(username: string, socket: string, status: string) : Promise <string> {
         let user: UserEntity = await this.getByUsername(username);
         await this.user_status(user.username, status);
-        user.socketId = socket;
+		if (!user.socketId) user.socketId = new Array();
+		if (!user.socketId.find((element) => element === socket))
+        	user.socketId.push(socket);
         await this.userRepository.update(
             { uuid: user.uuid },
             { socketId: user.socketId }
@@ -129,15 +142,26 @@ export class UsersService {
     }
     async userDisconnection(socket: string) : Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
-        if (user) {
-			user.status = "Offline";
+		console.log("user: ", user);
+		if (user){
+			let index = user.socketId.findIndex((element) => element === socket);
+			if (index > -1){
+				user.socketId.splice(index, 1);
+			}
 			await this.userRepository.update(
-				{ uuid: user.uuid },
-				{ status: "Offline"}
-			);
-            return (user.username);
-        }
-        return ("User not register");
+					{ uuid: user.uuid },
+					{ socketId: user.socketId }
+				);
+			if (user.socketId.length === 0) {
+				user.status = "Offline";
+				await this.userRepository.update(
+					{ uuid: user.uuid },
+					{ status: "Offline"}
+				);
+				return (user.username);
+			}
+		}
+        return ("gnagnagna");
     }
 
     async generateDoubleAuthCode(uuid: string) {

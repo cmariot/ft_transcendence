@@ -33,29 +33,6 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
-    newChannelAvailable(@MessageBody() data: any) {
-        console.log("newChannelAvailable");
-        this.server.emit("newChannelAvailable", {
-            content: data,
-        });
-    }
-
-    userJoinChannel(channel: string, username: string) {
-        console.log("userJoinChannel");
-        this.server.emit("userChannelConnection", {
-            channel: channel,
-            username: username,
-        });
-    }
-
-    send_message(channel: string, username: string, message: string) {
-        this.server.emit("newMessage", {
-            channel: channel,
-            username: username,
-            message: message,
-        });
-    }
-
     @SubscribeMessage("userStatus")
     async userStatus(@MessageBody() data: any) {
         let user = await this.socketService.UserConnection(

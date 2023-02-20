@@ -13,7 +13,6 @@ export class SocketService {
 		if (sockectID && status === "Offline") {
             user = await this.userService.userDisconnection(sockectID);
         }
-		console.log("User Status : ", username, status);
 		return (user);
     }
 }
