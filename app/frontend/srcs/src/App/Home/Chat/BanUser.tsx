@@ -6,6 +6,7 @@ import { ChatContext } from "./ChatParent";
 const BanUser = () => {
     const chat = useContext(ChatContext);
     const [newBanName, setNewBan] = useState("");
+    const [banDuration, setBanDuration] = useState("600"); // default 10 minutes
     const [update, setUpdate] = useState(false);
 
     function handleNewsBanChange(event: ChangeEvent<HTMLInputElement>) {
@@ -13,6 +14,14 @@ const BanUser = () => {
         const { id, value } = event.target;
         if (id === "new-ban") {
             setNewBan(value);
+        }
+    }
+
+    function handleBanTimeChange(event: any) {
+        event.preventDefault();
+        const { id, value } = event.target;
+        if (id === "mute-duration") {
+            setBanDuration(value);
         }
     }
 
@@ -31,6 +40,7 @@ const BanUser = () => {
             .post("/api/chat/ban", {
                 channelName: chat.currentChannel,
                 username: newBanName,
+                duration: banDuration,
             })
             .then(() => {
                 let previousBanned: string[] = chat.currentChannelBan;
@@ -49,6 +59,7 @@ const BanUser = () => {
             .post("/api/chat/unban", {
                 channelName: chat.currentChannel,
                 username: username,
+                duration: "0",
             })
             .then(() => {
                 let previousBanned: string[] = chat.currentChannelBan;
@@ -94,6 +105,18 @@ const BanUser = () => {
                         value={newBanName}
                         placeholder="ban username"
                     />
+                    <select
+                        name="ban-duration"
+                        id="mute-duration"
+                        onChange={(event) => {
+                            handleBanTimeChange(event);
+                        }}
+                    >
+                        <option value="600">10 minutes</option>
+                        <option value="86400">24 hours</option>
+                        <option value="604800">7 days</option>
+                        <option value="0">no limit</option>
+                    </select>
                     <input type="submit" value="ban" />
                 </form>
                 {currentBannedUsers()}

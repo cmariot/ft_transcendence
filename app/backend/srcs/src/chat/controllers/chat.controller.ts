@@ -221,7 +221,91 @@ export class ChatController {
     }
 
     // ban
+    @Post("ban")
+    @UseGuards(isLogged)
+    async ban_user(@Req() req, @Body() muteOptions: muteOptionsDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let mutedUser = await this.userService.getByUsername(
+            muteOptions.username
+        );
+        if (!mutedUser) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            muteOptions.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_and_admins",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException("You are not authorized");
+        }
+        if (mutedUser.uuid === targetChannel.channelOwner) {
+            throw new UnauthorizedException("You cannot ban this user.");
+        }
+        if (mutedUser.uuid === req.user.uuid) {
+            throw new UnauthorizedException("You cannot ban yourself.");
+        }
+        return this.chatService.ban(
+            user,
+            mutedUser,
+            targetChannel,
+            muteOptions
+        );
+    }
+
     // unban
+    @Post("unban")
+    @UseGuards(isLogged)
+    async unban_user(@Req() req, @Body() muteOptions: muteOptionsDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let mutedUser = await this.userService.getByUsername(
+            muteOptions.username
+        );
+        if (!mutedUser) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            muteOptions.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_and_admins",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException("You are not authorized");
+        }
+        if (mutedUser.uuid === targetChannel.channelOwner) {
+            throw new UnauthorizedException("You cannot mute this user.");
+        }
+        if (mutedUser.uuid === req.user.uuid) {
+            throw new UnauthorizedException("You cannot unban yourself.");
+        }
+        return this.chatService.unban(
+            user,
+            mutedUser,
+            targetChannel,
+            muteOptions
+        );
+    }
+
     // mute
     @Post("mute")
     @UseGuards(isLogged)
@@ -253,6 +337,9 @@ export class ChatController {
         }
         if (mutedUser.uuid === targetChannel.channelOwner) {
             throw new UnauthorizedException("You cannot mute this user.");
+        }
+        if (mutedUser.uuid === req.user.uuid) {
+            throw new UnauthorizedException("You cannot mute yourself.");
         }
         return this.chatService.mute(
             user,
@@ -293,6 +380,9 @@ export class ChatController {
         }
         if (mutedUser.uuid === targetChannel.channelOwner) {
             throw new UnauthorizedException("You cannot mute this user.");
+        }
+        if (mutedUser.uuid === req.user.uuid) {
+            throw new UnauthorizedException("You cannot unmute yourself.");
         }
         return this.chatService.unmute(
             user,

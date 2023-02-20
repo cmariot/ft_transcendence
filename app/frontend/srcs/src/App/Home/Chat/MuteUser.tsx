@@ -81,7 +81,7 @@ const MuteUser = () => {
                         <li className="admin-channel" key={index}>
                             <p className="admin-channel-username">{mute}</p>
                             <button onClick={() => unmute(mute, index)}>
-                                unMute
+                                unmute
                             </button>
                         </li>
                     ))}

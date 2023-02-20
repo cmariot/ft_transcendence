@@ -373,6 +373,36 @@ export class ChatService {
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
+
+        let i = 0;
+        while (i < channel.mutted_users.length) {
+            if (channel.mutted_users[i].uuid === userID) {
+                console.log(channel.mutted_users[i]);
+                let now = Date.now();
+                if (parseInt(channel.mutted_users[i].mute_duration) === 0) {
+                    // perm mute
+                    throw new UnauthorizedException(
+                        "You are not allowed to send a message in this channel."
+                    );
+                } else if (
+                    now - parseInt(channel.mutted_users[i].mute_date) <
+                    parseInt(channel.mutted_users[i].mute_duration) * 1000
+                ) {
+                    throw new UnauthorizedException(
+                        "You are not allowed to send a message in this channel."
+                    );
+                } else {
+                    let muted = channel.mutted_users;
+                    muted.splice(i, 1);
+                    await this.chatRepository.update(
+                        { uuid: channel.uuid },
+                        { mutted_users: muted }
+                    );
+                }
+                break;
+            }
+            i++;
+        }
         let user = await this.userService.getByID(userID);
         if (!channel || !user) throw new UnauthorizedException();
         if (channel.channelType === ChannelType.PUBLIC) {
@@ -695,6 +725,67 @@ export class ChatService {
         );
     }
 
+    async ban(
+        user: UserEntity,
+        mutedUser: UserEntity,
+        targetChannel: ChatEntity,
+        muteOptions: muteOptionsDTO
+    ) {
+        let currentBanned = targetChannel.banned_users;
+        let i = 0;
+        let found = false;
+        while (i < currentBanned.length) {
+            if (mutedUser.uuid === currentBanned[i].uuid) {
+                currentBanned[i].ban_date = Date.now().toString();
+                currentBanned[i].ban_duration = muteOptions.duration.toString();
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            console.log(muteOptions.duration.toString());
+            currentBanned.push({
+                uuid: mutedUser.uuid,
+                ban_date: Date.now().toString(),
+                ban_duration: muteOptions.duration.toString(),
+            });
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { banned_users: currentBanned }
+        );
+    }
+
+    async unban(
+        user: UserEntity,
+        mutedUser: UserEntity,
+        targetChannel: ChatEntity,
+        muteOptions: muteOptionsDTO
+    ) {
+        let currentBanned = targetChannel.banned_users;
+        let i = 0;
+        let found = false;
+        while (i < currentBanned.length) {
+            if (mutedUser.uuid === currentBanned[i].uuid) {
+                currentBanned.splice(i, 1);
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            throw new HttpException(
+                "This user wasn't banned",
+                HttpStatus.FOUND
+            );
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { banned_users: currentBanned }
+        );
+    }
+
     async mute(
         user: UserEntity,
         mutedUser: UserEntity,
@@ -714,6 +805,7 @@ export class ChatService {
             i++;
         }
         if (found === false) {
+            console.log(muteOptions.duration.toString());
             currentMuted.push({
                 uuid: mutedUser.uuid,
                 mute_date: Date.now().toString(),

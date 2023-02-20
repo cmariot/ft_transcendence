@@ -321,8 +321,24 @@
     width: -moz-available;
 }
 
-/* Élément | https://localhost:8443/ */
-
 #edit-admins-menu > section:nth-child(2) > form:nth-child(1) {
     margin-block: 20px;
+}
+
+#form-mute-user {
+    display: flex;
+    flex-direction: column;
+    width: -moz-available;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin-top: 20px;
+}
+
+#new-mute-input {
+    width: -moz-available;
+}
+
+#mute-duration {
+    width: -moz-available;
 }
