@@ -37,7 +37,6 @@ export const App = () => {
                 editAvatar("/api/profile/" + response.data.username + "/image");
                 editDoubleAuth(response.data.twoFactorsAuth);
                 setFirstLog(response.data.firstLog);
-				console.log("AAAAAAAAAAAAAAAAAAAAH", socket.id);
 				if (!socket.connected){
 					socket.on("connect", () => {
 						console.log("TEST : ", response.data.username);
