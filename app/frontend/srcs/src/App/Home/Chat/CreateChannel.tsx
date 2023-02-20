@@ -129,7 +129,7 @@ const CreateChannel = () => {
                 <button onClick={cancelCreateChannel}>cancel</button>
             </header>
             <section className="chat-section">
-                <form id="chat-create-channel-form" className="chat-main">
+                <form id="chat-edit-password-form" className="chat-main">
                     <input
                         id="new-channel-name"
                         type="text"

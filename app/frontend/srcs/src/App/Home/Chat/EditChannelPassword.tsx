@@ -32,7 +32,7 @@ const EditChannelPassword = () => {
         const newValue: boolean = !protectedChannel;
         setProtectedChannel(newValue);
         const channelPassordInput = document.getElementById(
-            "new-channel-password"
+            "require-channel-password"
         );
         if (newValue === true) {
             if (channelPassordInput) {
@@ -147,7 +147,7 @@ const EditChannelPassword = () => {
                     <label>
                         Password required
                         <input
-                            id="new-channel-password-required"
+                            id="require-channel-password"
                             type="checkbox"
                             checked={protectedChannel}
                             onChange={handleNewChannelTypeChange}

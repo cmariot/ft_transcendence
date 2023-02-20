@@ -147,13 +147,23 @@ const ChatConv = () => {
                     <button onClick={closeChat}>return to channels list</button>
                 </>
             );
+        } else if (chat.currentChannelType === "private") {
+            return (
+                <>
+                    <button onClick={leaveChannel}>
+                        leave this channel and delete it
+                    </button>
+                    <button onClick={closeChat}>return to channels list</button>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <button onClick={leaveChannel}>leave</button>
+                    <button onClick={closeChat}>return to channels list</button>
+                </>
+            );
         }
-        return (
-            <>
-                <button onClick={leaveChannel}>leave</button>
-                <button onClick={closeChat}>return to channels list</button>
-            </>
-        );
     }
     return (
         <menu id="chat-conversation" className="chat-menu">

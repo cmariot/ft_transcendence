@@ -40,7 +40,7 @@ const ChannelsList = () => {
                     }
                 })
                 .catch(function (error) {
-                    console.log(error.response.message);
+                    alert(error.response.data.message);
                 });
         }
     }

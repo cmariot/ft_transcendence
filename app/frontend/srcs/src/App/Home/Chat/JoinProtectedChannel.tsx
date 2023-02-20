@@ -24,7 +24,7 @@ const JoinProtected = () => {
             })
             .then((response) => {
                 setPassword("");
-
+                // utiliser response, l'user peut etre admin ou ban !
                 chat.setChannelOwner(false);
                 chat.setCurrentChannelAdmins([]);
                 chat.changeCurrentChannel(chat.targetChannel);

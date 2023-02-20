@@ -304,6 +304,38 @@ export class ChatService {
         let user = await this.userService.getByID(userID);
         if (!user) throw new UnauthorizedException();
 
+        // Check if banned
+        if (channel.banned_users) {
+            let i = 0;
+            while (i < channel.banned_users.length) {
+                if (channel.banned_users[i].uuid === user.uuid) {
+                    let now = Date.now();
+                    if (parseInt(channel.banned_users[i].ban_duration) === 0) {
+                        // perm ban
+                        throw new UnauthorizedException(
+                            "You are not allowed to join this channel."
+                        );
+                    } else if (
+                        now - parseInt(channel.banned_users[i].ban_date) <
+                        parseInt(channel.banned_users[i].ban_duration) * 1000
+                    ) {
+                        throw new UnauthorizedException(
+                            "You are not allowed to join this channel."
+                        );
+                    } else {
+                        let banned = channel.banned_users;
+                        banned.splice(i, 1);
+                        await this.chatRepository.update(
+                            { uuid: channel.uuid },
+                            { banned_users: banned }
+                        );
+                    }
+                    break;
+                }
+                i++;
+            }
+        }
+
         if (channel.channelType == ChannelType.PRIVATE) {
             let index_in_authorized_channels = channels.findIndex((element) => {
                 if (element.channelName === channelName) return 1;
@@ -377,7 +409,6 @@ export class ChatService {
         let i = 0;
         while (i < channel.mutted_users.length) {
             if (channel.mutted_users[i].uuid === userID) {
-                console.log(channel.mutted_users[i]);
                 let now = Date.now();
                 if (parseInt(channel.mutted_users[i].mute_duration) === 0) {
                     // perm mute

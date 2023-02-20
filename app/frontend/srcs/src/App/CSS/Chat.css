@@ -76,6 +76,7 @@
     margin-inline: 5px;
 }
 
+#chat-create-sprivate-form,
 #chat-create-channel-form {
     display: flex;
     flex-direction: column;
@@ -86,7 +87,8 @@
     margin: 10px;
 }
 
-#chat-create-channel-form > label:nth-child(3) {
+#chat-create-channel-form > label:nth-child(3),
+#chat-create-private-form > label:nth-child(3) {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -341,4 +343,47 @@
 
 #mute-duration {
     width: -moz-available;
+}
+
+#edit-ban > section:nth-child(2) > form:nth-child(1) {
+    padding: 5px;
+    margin-top: 15px;
+}
+
+#new-ban {
+    width: -moz-available;
+}
+
+#channel-ban-list {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: -moz-available;
+    overflow-y: scroll;
+    padding: 5px;
+}
+
+#chat-edit-password-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: -moz-available;
+}
+
+#chat-menu-options {
+    justify-content: flex-start;
+}
+
+#edit-ban > section:nth-child(2) > form:nth-child(1) {
+    /* margin-top: 15px; */
+    margin-block: 20px;
+}
+
+#form-mute-user {
+    /* margin-top: 20px; */
+    margin-block: 20px;
 }

@@ -60,7 +60,8 @@ input {
 
 /* Élément | https://localhost:8443/ */
 
-#chat-create-channel-form > label:nth-child(4) {
+#chat-create-channel-form > label:nth-child(4),
+#chat-create-private-form > label:nth-child(4) {
     margin-block: 10px;
 }
 
@@ -393,7 +394,8 @@ textarea {
 
 /* Feuille de style intégrée #7 | https://localhost:8443/ */
 
-#chat-create-channel-form > label:nth-child(4) {
+#chat-create-channel-form > label:nth-child(4),
+#chat-create-private-form > label:nth-child(4) {
     display: flex;
     justify-content: center;
     align-items: center;

@@ -107,7 +107,7 @@ const BanUser = () => {
                     />
                     <select
                         name="ban-duration"
-                        id="mute-duration"
+                        id="ban-duration"
                         onChange={(event) => {
                             handleBanTimeChange(event);
                         }}

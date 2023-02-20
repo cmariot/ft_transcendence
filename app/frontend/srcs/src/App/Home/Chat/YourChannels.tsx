@@ -27,7 +27,7 @@ const YourChannels = () => {
                 }
             })
             .catch(function (error) {
-                console.log(error);
+                console.log("joinChannel error: ", error);
             });
     }
 

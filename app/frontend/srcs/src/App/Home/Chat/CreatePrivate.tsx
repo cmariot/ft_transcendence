@@ -11,7 +11,7 @@ const CreatePrivate = () => {
     function handleNewChannelNameChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
         const { id, value } = event.target;
-        if (id === "new-channel-name") {
+        if (id === "new-private-name") {
             setNewChannelName(value);
         }
     }
@@ -64,9 +64,9 @@ const CreatePrivate = () => {
                 <button onClick={cancelCreatePrivate}>cancel</button>
             </header>
             <section className="chat-section">
-                <div id="chat-create-channel-form" className="chat-main">
+                <div id="chat-create-private-form" className="chat-main">
                     <input
-                        id="new-channel-name"
+                        id="new-private-name"
                         type="text"
                         placeholder="Channel's name"
                         value={newChannelName}
