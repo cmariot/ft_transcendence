@@ -420,14 +420,16 @@ export class UsersService {
 
     async friendslist(userid: string) {
         let user = await this.getByID(userid);
+		if (!user)
+			return ("no User");
         let list: { username: string; status: string }[] = new Array();
         if (!user.friend) return list;
         let i = 0;
         while (i < user.friend.length) {
             let id = user.friend[i];
-            let friendUsername = await this.getUsernameById(id);
-            if (friendUsername !== null)
-                list.push({ username: friendUsername, status: "online" });
+            let friend = await this.getByID(id);
+            if (friend !== null)
+                list.push({ username: friend.username, status: friend.status});
             i++;
         }
         return list;
