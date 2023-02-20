@@ -93,7 +93,9 @@ const EditAdmins = () => {
                         value={newAdminName}
                         placeholder="new admin username"
                     />
-                    <input type="submit" value="add" />
+                    <button type="submit" value="add">
+                        add
+                    </button>
                 </form>
                 {currentChannelAdmins()}
             </section>

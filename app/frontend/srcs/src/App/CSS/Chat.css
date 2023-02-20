@@ -379,11 +379,58 @@
 }
 
 #edit-ban > section:nth-child(2) > form:nth-child(1) {
-    /* margin-top: 15px; */
     margin-block: 20px;
 }
 
 #form-mute-user {
-    /* margin-top: 20px; */
     margin-block: 20px;
+}
+
+#edit-ban > section:nth-child(2) > form:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    width: -moz-available;
+    justify-content: center;
+    align-items: center;
+}
+
+#ban-duration {
+    width: -moz-available;
+}
+
+#chat-create-channel-form > label:nth-child(1) {
+    margin: 5px;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#edit-ban > section:nth-child(2) > form:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    width: -moz-available;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#ban-duration {
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/ */
+
+#chat-create-channel-form > label:nth-child(1) {
+    margin: 5px;
+}
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+#chat-create-private-form {
+    /* width: -moz-available; */
+    height: 100%;
+    width: -moz-available;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

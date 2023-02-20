@@ -31,15 +31,11 @@ const EditChannelPassword = () => {
         setNewChannelPassword("");
         const newValue: boolean = !protectedChannel;
         setProtectedChannel(newValue);
-        const channelPassordInput = document.getElementById(
-            "require-channel-password"
-        );
-        if (newValue === true) {
-            if (channelPassordInput) {
-                channelPassordInput.style.display = "inline";
-            }
-        } else {
-            if (channelPassordInput) {
+        const channelPassordInput = document.getElementById("new-password");
+        if (channelPassordInput) {
+            if (newValue === true) {
+                channelPassordInput.style.display = "block";
+            } else {
                 channelPassordInput.style.display = "none";
             }
         }

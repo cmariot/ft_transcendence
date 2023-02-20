@@ -50,7 +50,6 @@ const ChatMessages = () => {
             .post("/api/profile/block", { username: username })
             .then(async (response) => {
                 user.setBlocked(response.data);
-                console.log(response.data);
             })
             .catch((error) => {
                 console.log(error.data);
