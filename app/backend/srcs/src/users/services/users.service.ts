@@ -125,8 +125,28 @@ export class UsersService {
                 { status: "Online"}
             );
         }
-		console.log(user);
     }
+
+	async setStatus(socket: string, status: string) {
+		let user: UserEntity = await this.getBySocket(socket);
+		if (user)
+		{
+			if (status === "In_Game"){
+				await this.userRepository.update(
+            		{ uuid: user.uuid },
+            		{ status: "In_Game" }
+        		);
+			}
+			if (status === "MatchMaking"){
+				await this.userRepository.update(
+            		{ uuid: user.uuid },
+            		{ status: "MatchMaking" }
+        		);
+			}
+			return (user.username);
+		}
+		return null;
+	}
 
     async setSocketID(username: string, socket: string, status: string) : Promise <string> {
         let user: UserEntity = await this.getByUsername(username);
@@ -142,7 +162,6 @@ export class UsersService {
     }
     async userDisconnection(socket: string) : Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
-		console.log("user: ", user);
 		if (user){
 			let index = user.socketId.findIndex((element) => element === socket);
 			if (index > -1){
@@ -161,7 +180,7 @@ export class UsersService {
 				return (user.username);
 			}
 		}
-        return ("gnagnagna");
+        return ("good bye");
     }
 
     async generateDoubleAuthCode(uuid: string) {

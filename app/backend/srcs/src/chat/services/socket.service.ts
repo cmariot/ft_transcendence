@@ -13,6 +13,13 @@ export class SocketService {
 		if (sockectID && status === "Offline") {
             user = await this.userService.userDisconnection(sockectID);
         }
+		if (sockectID && status === "In_Game") {
+            user = await this.userService.setStatus(sockectID, status);
+        }
+		if (sockectID && status === "MatchMaking") {
+            user = await this.userService.setStatus(sockectID, status);
+        }
+		console.log("Status : ", user, status);
 		return (user);
     }
 }
