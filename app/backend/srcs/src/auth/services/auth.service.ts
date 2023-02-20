@@ -5,15 +5,7 @@ import {
     Res,
     UnauthorizedException,
 } from "@nestjs/common";
-<<<<<<< HEAD
 import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
-=======
-import {
-    CreatedFrom,
-    Status,
-    UserEntity,
-} from "../../users/entity/user.entity";
->>>>>>> Chat
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -54,15 +46,6 @@ export class AuthService {
                     })
                     .redirect("https://localhost:8443/double-authentification");
             } else if (type === "authentification") {
-<<<<<<< HEAD
-                res.cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                    sameSite: "none",
-                    secure: true,
-                }).redirect("https://localhost:8443/");
-
-=======
-                this.usersService.user_status(user.username, Status.ONLINE);
                 res.clearCookie("authentification")
                     .clearCookie("email_validation")
                     .clearCookie("double_authentification")
@@ -72,7 +55,6 @@ export class AuthService {
                         secure: true,
                     })
                     .redirect("https://localhost:8443/");
->>>>>>> Chat
             } else {
                 throw new UnauthorizedException();
             }

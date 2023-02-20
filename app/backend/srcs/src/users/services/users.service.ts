@@ -14,7 +14,6 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-import { ChatGateway } from "src/chat/gateways/ChatGateway";
 import { SocketService } from "src/chat/services/socket.service";
 @Injectable()
 export class UsersService {
@@ -88,7 +87,16 @@ export class UsersService {
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ socketId: socket });
+        let user: UserEntity[] = await this.userRepository.find();
+        let i = 0;
+        while (user[i]) {
+            if (user[i].socketId) {
+                if (user[i].socketId.find((element) => element === socket))
+                    return user[i];
+            }
+            i++;
+        }
+        return null;
     }
 
     async encode_password(rawPassword: string): Promise<string> {
@@ -125,6 +133,26 @@ export class UsersService {
         }
     }
 
+    async setStatus(socket: string, status: string) {
+        let user: UserEntity = await this.getBySocket(socket);
+        if (user) {
+            if (status === "In_Game") {
+                await this.userRepository.update(
+                    { uuid: user.uuid },
+                    { status: "In_Game" }
+                );
+            }
+            if (status === "MatchMaking") {
+                await this.userRepository.update(
+                    { uuid: user.uuid },
+                    { status: "MatchMaking" }
+                );
+            }
+            return user.username;
+        }
+        return null;
+    }
+
     async setSocketID(
         username: string,
         socket: string,
@@ -132,7 +160,9 @@ export class UsersService {
     ): Promise<string> {
         let user: UserEntity = await this.getByUsername(username);
         await this.user_status(user.username, status);
-        user.socketId = socket;
+        if (!user.socketId) user.socketId = new Array();
+        if (!user.socketId.find((element) => element === socket))
+            user.socketId.push(socket);
         await this.userRepository.update(
             { uuid: user.uuid },
             { socketId: user.socketId }
@@ -142,14 +172,26 @@ export class UsersService {
     async userDisconnection(socket: string): Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
-            user.status = "Offline";
+            let index = user.socketId.findIndex(
+                (element) => element === socket
+            );
+            if (index > -1) {
+                user.socketId.splice(index, 1);
+            }
             await this.userRepository.update(
                 { uuid: user.uuid },
-                { status: "Offline" }
+                { socketId: user.socketId }
             );
-            return user.username;
+            if (user.socketId.length === 0) {
+                user.status = "Offline";
+                await this.userRepository.update(
+                    { uuid: user.uuid },
+                    { status: "Offline" }
+                );
+                return user.username;
+            }
         }
-        return "User not register";
+        return "good bye";
     }
 
     async generateDoubleAuthCode(uuid: string) {

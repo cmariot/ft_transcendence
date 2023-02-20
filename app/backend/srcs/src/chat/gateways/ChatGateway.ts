@@ -8,10 +8,11 @@ import {
 import { Server } from "socket.io";
 import { SocketService } from "../services/socket.service";
 import { UsersService } from "src/users/services/users.service";
+import { ChatService } from "../services/chat.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
     constructor(
-        private socketService: SocketService,
+        private chatService: ChatService,
         private userService: UsersService
     ) {}
 
@@ -20,7 +21,6 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-            console.log("SOCKET SERVER: ", socket.id);
             socket.on("disconnect", async () => {
                 let username;
                 username = await this.userService.userDisconnection(socket.id);
@@ -68,7 +68,7 @@ export class ChatGateway implements OnModuleInit {
 
     @SubscribeMessage("userStatus")
     async userStatus(@MessageBody() data: any) {
-        let user = await this.socketService.UserConnection(
+        let user = await this.chatService.UserConnection(
             data.username,
             data.socket,
             data.status
@@ -77,7 +77,6 @@ export class ChatGateway implements OnModuleInit {
     }
 
     async sendStatus(username: string, status: string) {
-        console.log("Send user Status : ", username, status);
         this.server.emit("userStatus", {
             username: username,
             status: status,
