@@ -11,10 +11,7 @@ import { UsersService } from "src/users/services/users.service";
 import { ChatService } from "../services/chat.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
-    constructor(
-        private chatService: ChatService,
-        private userService: UsersService
-    ) {}
+    constructor(private userService: UsersService) {}
 
     @WebSocketServer()
     server: Server;
@@ -68,11 +65,26 @@ export class ChatGateway implements OnModuleInit {
 
     @SubscribeMessage("userStatus")
     async userStatus(@MessageBody() data: any) {
-        let user = await this.chatService.UserConnection(
-            data.username,
-            data.socket,
-            data.status
-        );
+        let username: string = data.username;
+        let socketID: string = data.socket;
+        let status: string = data.status;
+        let user;
+        if (username && socketID && status === "Online") {
+            user = await this.userService.setSocketID(
+                username,
+                socketID,
+                status
+            );
+        }
+        if (socketID && status === "Offline") {
+            user = await this.userService.userDisconnection(socketID);
+        }
+        if (socketID && status === "In_Game") {
+            user = await this.userService.setStatus(socketID, status);
+        }
+        if (socketID && status === "MatchMaking") {
+            user = await this.userService.setStatus(socketID, status);
+        }
         this.sendStatus(user, data.status);
     }
 
