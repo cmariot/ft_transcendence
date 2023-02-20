@@ -223,7 +223,6 @@ export class ChatController {
     // ban
     // unban
     // mute
-
     @Post("mute")
     @UseGuards(isLogged)
     async mute_user(@Req() req, @Body() muteOptions: muteOptionsDTO) {
@@ -251,7 +250,8 @@ export class ChatController {
             ) === "Unauthorized"
         ) {
             throw new UnauthorizedException("You are not authorized");
-        } else if (mutedUser.uuid === targetChannel.channelOwner) {
+        }
+        if (mutedUser.uuid === targetChannel.channelOwner) {
             throw new UnauthorizedException("You cannot mute this user.");
         }
         return this.chatService.mute(
@@ -263,4 +263,42 @@ export class ChatController {
     }
 
     // unmute
+    @Post("unmute")
+    @UseGuards(isLogged)
+    async unmute_user(@Req() req, @Body() muteOptions: muteOptionsDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let mutedUser = await this.userService.getByUsername(
+            muteOptions.username
+        );
+        if (!mutedUser) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            muteOptions.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_and_admins",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException("You are not authorized");
+        }
+        if (mutedUser.uuid === targetChannel.channelOwner) {
+            throw new UnauthorizedException("You cannot mute this user.");
+        }
+        return this.chatService.unmute(
+            user,
+            mutedUser,
+            targetChannel,
+            muteOptions
+        );
+    }
 }

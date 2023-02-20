@@ -29,6 +29,8 @@ const ChannelsList = () => {
                     chat.setChannelOwner(response.data.channel_owner);
                     chat.setChannelAdmin(response.data.channel_admin);
                     chat.setCurrentChannelAdmins(response.data.channel_admins);
+                    chat.setCurrentChannelMute(response.data.muted_users);
+                    chat.setCurrentChannelBan(response.data.banned_users);
                     const current =
                         document.getElementById("chat-channels-list");
                     const menu = document.getElementById("chat-conversation");

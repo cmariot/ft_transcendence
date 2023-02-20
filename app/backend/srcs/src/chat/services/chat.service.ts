@@ -254,11 +254,41 @@ export class ChatService {
                 i++;
             }
         }
+        let banned_users: string[] = [];
+        let muted_users: string[] = [];
+        if (admin === true) {
+            if (channel.mutted_users) {
+                let i = 0;
+                while (i < channel.mutted_users.length) {
+                    let username = await this.userService.getUsernameById(
+                        channel.mutted_users[i].uuid
+                    );
+                    if (username) {
+                        muted_users.push(username);
+                    }
+                    i++;
+                }
+            }
+            if (channel.banned_users) {
+                let i = 0;
+                while (i < channel.banned_users.length) {
+                    let username = await this.userService.getUsernameById(
+                        channel.banned_users[i].uuid
+                    );
+                    if (username) {
+                        banned_users.push(username);
+                    }
+                    i++;
+                }
+            }
+        }
         return {
             messages: returned_messages,
             channel_owner: owner,
             channel_admin: admin,
             channel_admins: admins,
+            banned_users: banned_users,
+            muted_users: muted_users,
         };
     }
 
@@ -689,6 +719,32 @@ export class ChatService {
                 mute_date: Date.now().toString(),
                 mute_duration: muteOptions.duration.toString(),
             });
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { mutted_users: currentMuted }
+        );
+    }
+
+    async unmute(
+        user: UserEntity,
+        mutedUser: UserEntity,
+        targetChannel: ChatEntity,
+        muteOptions: muteOptionsDTO
+    ) {
+        let currentMuted = targetChannel.mutted_users;
+        let i = 0;
+        let found = false;
+        while (i < currentMuted.length) {
+            if (mutedUser.uuid === currentMuted[i].uuid) {
+                currentMuted.splice(i, 1);
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },

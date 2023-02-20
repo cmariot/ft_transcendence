@@ -30,6 +30,8 @@ const ChatConv = () => {
                 chat.setCurrentChannelMessages([]);
                 chat.changeCurrentChannel("");
                 chat.changeCurrentChannelType("");
+                chat.setCurrentChannelMute([]);
+                chat.setCurrentChannelBan([]);
                 closeChat();
             })
             .catch(function (error) {

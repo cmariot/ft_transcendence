@@ -33,7 +33,11 @@ const ChatMessages = () => {
                     chat.setCurrentChannelMessages(response.data.data.messages);
                     chat.setChannelOwner(response.data.data.channel_owner);
                     chat.changeCurrentChannelType("private");
-                    chat.setCurrentChannelAdmins([]);
+                    chat.setCurrentChannelAdmins(
+                        response.data.data.channel_admins
+                    );
+                    chat.setCurrentChannelMute(response.data.data.muted_users);
+                    chat.setCurrentChannelBan(response.data.data.banned_users);
                 }
             })
             .catch((error) => {

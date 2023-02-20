@@ -30,6 +30,8 @@ const JoinProtected = () => {
                 chat.changeCurrentChannel(chat.targetChannel);
                 chat.changeCurrentChannelType("protected");
                 chat.setCurrentChannelMessages(response.data.messages);
+                chat.setCurrentChannelMute([]);
+                chat.setCurrentChannelBan([]);
                 const current = document.getElementById("chat-join-protected");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

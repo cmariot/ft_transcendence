@@ -44,10 +44,10 @@ const MuteUser = () => {
                 duration: muteDuration,
             })
             .then(() => {
-                //let previousMute: string[] = chat.currentChannelMute;
-                //previousMute.push(newMute);
-                //chat.setCurrentChannelMute(previousMute);
-                //setNewMute("");
+                let previousMute: string[] = chat.currentChannelMute;
+                previousMute.push(newMute);
+                chat.setCurrentChannelMute(previousMute);
+                setNewMute("");
             })
             .catch((error) => {
                 alert(error.response.data.message);
@@ -59,6 +59,7 @@ const MuteUser = () => {
             .post("/api/chat/unmute", {
                 channelName: chat.currentChannel,
                 username: username,
+                duration: "0",
             })
             .then(() => {
                 let previousMute: string[] = chat.currentChannelMute;
