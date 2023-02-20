@@ -69,6 +69,7 @@ export class ChatGateway implements OnModuleInit {
         let socketID: string = data.socket;
         let status: string = data.status;
         let user;
+		console.log("DAAAAAAAAATA : ",data);
         if (username && socketID && status === "Online") {
             user = await this.userService.setSocketID(
                 username,
