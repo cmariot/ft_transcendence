@@ -41,7 +41,7 @@ export class ChatEntity {
     users: { uuid: string }[];
 
     @Column("jsonb", { default: [] })
-    banned_users: { uuid: string }[];
+    banned_users: { uuid: string; ban_date: string; ban_duration: string }[];
 
     @Column("jsonb", { default: [] })
     mutted_users: { uuid: string; mute_date: string; mute_duration: string }[];

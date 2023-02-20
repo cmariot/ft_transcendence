@@ -16,6 +16,8 @@ import {
     channelDTO,
     updateChannelDTO,
 } from "../dtos/channelId.dto";
+import { UserEntity } from "src/users/entity/user.entity";
+import { muteOptionsDTO } from "../dtos/admin.dto";
 
 @Injectable()
 export class ChatService {
@@ -660,6 +662,37 @@ export class ChatService {
         await this.chatRepository.update(
             { uuid: channel.uuid },
             { channelAdministrators: currentAdmin }
+        );
+    }
+
+    async mute(
+        user: UserEntity,
+        mutedUser: UserEntity,
+        targetChannel: ChatEntity,
+        muteOptions: muteOptionsDTO
+    ) {
+        let currentMuted = targetChannel.mutted_users;
+        let i = 0;
+        let found = false;
+        while (i < currentMuted.length) {
+            if (mutedUser.uuid === currentMuted[i].uuid) {
+                currentMuted[i].mute_date = Date.now().toString();
+                currentMuted[i].mute_duration = muteOptions.duration.toString();
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            currentMuted.push({
+                uuid: mutedUser.uuid,
+                mute_date: Date.now().toString(),
+                mute_duration: muteOptions.duration.toString(),
+            });
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { mutted_users: currentMuted }
         );
     }
 }

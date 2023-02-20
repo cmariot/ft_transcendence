@@ -79,6 +79,24 @@ const ChatConv = () => {
         }
     }
 
+    function displayBanMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("edit-ban");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
+    function displayMuteMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("edit-mute");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
     function adminPannel() {
         if (
             (chat.channelOwner === true || chat.channelAdmin === true) &&
@@ -86,8 +104,12 @@ const ChatConv = () => {
         ) {
             return (
                 <>
-                    <button>mute an user</button>
-                    <button>ban an user</button>
+                    <button onClick={() => displayMuteMenu()}>
+                        mute an user
+                    </button>
+                    <button onClick={() => displayBanMenu()}>
+                        ban an user
+                    </button>
                 </>
             );
         }

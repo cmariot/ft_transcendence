@@ -26,6 +26,7 @@ import {
     usernameDTO,
 } from "../dtos/channelId.dto";
 import { UsersService } from "src/users/services/users.service";
+import { muteOptionsDTO } from "../dtos/admin.dto";
 
 @Controller("chat")
 export class ChatController {
@@ -218,4 +219,48 @@ export class ChatController {
             user.uuid
         );
     }
+
+    // ban
+    // unban
+    // mute
+
+    @Post("mute")
+    @UseGuards(isLogged)
+    async mute_user(@Req() req, @Body() muteOptions: muteOptionsDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let mutedUser = await this.userService.getByUsername(
+            muteOptions.username
+        );
+        if (!mutedUser) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            muteOptions.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_and_admins",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException("You are not authorized");
+        } else if (mutedUser.uuid === targetChannel.channelOwner) {
+            throw new UnauthorizedException("You cannot mute this user.");
+        }
+        return this.chatService.mute(
+            user,
+            mutedUser,
+            targetChannel,
+            muteOptions
+        );
+    }
+
+    // unmute
 }
