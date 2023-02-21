@@ -127,3 +127,66 @@
 #friend-list-main > p:nth-child(1) {
     color: #1e1e1e;
 }
+
+.friend-status-online {
+    width: 10px;
+    height: 10px;
+    border: 1px #737373 solid;
+    border-radius: 50%;
+    background-color: rgb(48, 180, 48);
+}
+
+/* Inline #14 | https://localhost:8443/friends */
+
+.friend-middle-div {
+    align-items: center;
+    justify-content: center;
+}
+
+/* Inline #14 | https://localhost:8443/friends */
+
+.friend-middle-div {
+    justify-content: center;
+    align-items: center;
+}
+
+.friend-status-offline {
+    width: 10px;
+    height: 10px;
+    border: 1px #737373 solid;
+    border-radius: 50%;
+    background-color: grey;
+}
+
+.friend-status-in-game {
+    width: 10px;
+    height: 10px;
+    border: 1px #737373 solid;
+    border-radius: 50%;
+    background-color: rgb(51, 63, 228);
+}
+
+.friend-status-matchmaking {
+    width: 10px;
+    height: 10px;
+    border: 1px #737373 solid;
+    border-radius: 50%;
+    background-color: gold;
+}
+
+#friend-list {
+    /* width: 100%; */
+    width: -moz-available;
+}
+
+.friend {
+    /* align-items: \\; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+
+#friend-list {
+    width: auto;
+}

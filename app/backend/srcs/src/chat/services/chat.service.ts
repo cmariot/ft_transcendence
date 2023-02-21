@@ -174,6 +174,7 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.newChannelAvailable();
             }
+            this.chatGateway.connectToChannel(channel);
             return this.convertChannelMessages(uuid, channel.messages, channel);
         } else if (newChannel.channelType === ChannelType.PRIVATE) {
             console.log("ici : ", newChannel);
@@ -194,6 +195,7 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.newChannelAvailable();
             }
+            this.chatGateway.connectToChannel(channel);
             return this.convertChannelMessages(uuid, channel.messages, channel);
         }
         return null;
@@ -364,6 +366,7 @@ export class ChatService {
                     channel.channelName,
                     user.username
                 );
+                this.chatGateway.connectToChannel(channel);
                 return this.convertChannelMessages(
                     userID,
                     channels[index_in_authorized_channels].messages,
@@ -388,6 +391,8 @@ export class ChatService {
                     { users: channel_users }
                 );
             }
+
+            this.chatGateway.connectToChannel(channel);
             this.chatGateway.newChannelAvailable();
             return this.convertChannelMessages(
                 user.uuid,
@@ -397,12 +402,14 @@ export class ChatService {
         } else if (channel.channelType === ChannelType.PROTECTED) {
             let allowed_users = channel.users;
             let i = 0;
+
             while (i < allowed_users.length) {
                 if (allowed_users[i].uuid === user.uuid) {
                     this.chatGateway.userJoinChannel(
                         channel.channelName,
                         user.username
                     );
+                    this.chatGateway.connectToChannel(channel);
                     return this.convertChannelMessages(
                         user.uuid,
                         channel.messages,
@@ -554,6 +561,7 @@ export class ChatService {
         }
         this.chatGateway.userJoinChannel(channel.channelName, user.username);
         this.chatGateway.newChannelAvailable();
+        this.chatGateway.connectToChannel(channel);
         return this.convertChannelMessages(uuid, channel.messages, channel);
     }
 
@@ -585,6 +593,8 @@ export class ChatService {
                                         channels[i].messages,
                                         channels[i]
                                     );
+
+                                this.chatGateway.connectToChannel(channels[i]);
                                 return {
                                     channelName: channels[i].channelName,
                                     data: messages,

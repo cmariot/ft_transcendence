@@ -105,4 +105,6 @@ export class ChatGateway implements OnModuleInit {
             status: status,
         });
     }
+
+    connectToChannel(channel: any) {}
 }

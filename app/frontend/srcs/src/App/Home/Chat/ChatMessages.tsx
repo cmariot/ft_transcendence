@@ -87,23 +87,23 @@ const ChatMessages = () => {
 
     useEffect(() => {
         socket.on("newChatMessage", (socket) => {
-            const socketChannel: string = socket.channel;
-            if (socketChannel === chat.currentChannel) {
-                const previousMessages: {
-                    username: string;
-                    message: string;
-                }[] = [];
-                chat.currentChannelMessages.forEach((val) =>
-                    previousMessages.push(Object.assign({}, val))
-                );
-                previousMessages.push(
-                    Object.assign(
-                        {},
-                        { username: socket.username, message: socket.message }
-                    )
-                );
-                chat.setCurrentChannelMessages(previousMessages);
-            }
+            //const socketChannel: string = socket.channel;
+            //if (socketChannel === chat.currentChannel) {
+            const previousMessages: {
+                username: string;
+                message: string;
+            }[] = [];
+            chat.currentChannelMessages.forEach((val) =>
+                previousMessages.push(Object.assign({}, val))
+            );
+            previousMessages.push(
+                Object.assign(
+                    {},
+                    { username: socket.username, message: socket.message }
+                )
+            );
+            chat.setCurrentChannelMessages(previousMessages);
+            //}
         });
     }, [chat]);
 

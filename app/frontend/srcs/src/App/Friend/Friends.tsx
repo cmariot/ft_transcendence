@@ -108,6 +108,26 @@ export default function Friends(props: any) {
         setBlocked(user.blocked);
     }, [user.blocked]);
 
+    function displayStatus(status: string) {
+        if (status === "Online") {
+            return <div title="online" className="friend-status-online"></div>;
+        } else if (status === "Offline") {
+            return (
+                <div title="offline" className="friend-status-offline"></div>
+            );
+        } else if (status === "In_Game") {
+            return (
+                <div title="in a game" className="friend-status-in-game"></div>
+            );
+        } else if (status === "MatchMaking") {
+            return (
+                <div
+                    title="searching for a game"
+                    className="friend-status-matchmaking"
+                ></div>
+            );
+        }
+    }
     // Voir ce qui est obligatoire au niveau du sujet a modif si necessaire
     // - Photo de profil des amis : Ok mais pas mis a jour automatiquement lorsqu'ils la changent
     // - Status : utiliser socket pour le mettre a jour automatiquement
@@ -150,11 +170,9 @@ export default function Friends(props: any) {
                                         alt="Friend's avatar"
                                     />
                                     <div className="friend-middle-div">
+                                        {displayStatus(friend["status"])}
                                         <p className="friend-username">
                                             <b>{friend["username"]}</b>
-                                        </p>
-                                        <p className="friend-status">
-                                            {friend["status"]}
                                         </p>
                                     </div>
                                     <div>

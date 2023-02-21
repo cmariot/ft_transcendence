@@ -72,6 +72,9 @@ export const App = () => {
         socket.on("userUpdate", () => {
             setFriendUpdate(!friendUpdate);
         });
+        socket.on("userStatus", () => {
+            setFriendUpdate(!friendUpdate);
+        });
         axios
             .get("/api/profile/friends")
             .then((response) => {
