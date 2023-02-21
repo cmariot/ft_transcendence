@@ -70,7 +70,6 @@ create_frontend()
 {
 	echo "PORT=\"${FRONTEND_PORT}\""						> ./app/frontend/.env
 	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
-	echo "GENERATE_SOURCEMAP=false"							>> ./app/frontend/.env
 	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""		>> ./app/frontend/.env
 	
 }
