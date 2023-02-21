@@ -209,6 +209,7 @@ export class ChatService {
             throw new UnauthorizedException();
         }
         let blocked_users = user.blocked;
+        let banned_users = channel.banned_users;
         let returned_messages: { username: string; message: string }[] = [];
         let i = 0;
         while (i < initial_messages.length) {
@@ -220,10 +221,27 @@ export class ChatService {
                     initial_messages[i].uuid
                 );
                 if (chat_user) {
-                    returned_messages.push({
-                        username: chat_user.username,
-                        message: initial_messages[i].message,
-                    });
+                    let i = 0;
+                    let found = false;
+                    while (i < banned_users.length) {
+                        if ((banned_users[i].uuid = chat_user.uuid)) {
+                            found = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    if (found === true) {
+                        returned_messages.push({
+                            username: chat_user.username,
+                            message: "deleted message",
+                        });
+                        found = false;
+                    } else {
+                        returned_messages.push({
+                            username: chat_user.username,
+                            message: initial_messages[i].message,
+                        });
+                    }
                 }
             }
             i++;
@@ -254,8 +272,8 @@ export class ChatService {
                 i++;
             }
         }
-        let banned_users: string[] = [];
-        let muted_users: string[] = [];
+        let banned_users_list: string[] = [];
+        let muted_users_list: string[] = [];
         if (admin === true) {
             if (channel.mutted_users) {
                 let i = 0;
@@ -264,7 +282,7 @@ export class ChatService {
                         channel.mutted_users[i].uuid
                     );
                     if (username) {
-                        muted_users.push(username);
+                        muted_users_list.push(username);
                     }
                     i++;
                 }
@@ -276,7 +294,7 @@ export class ChatService {
                         channel.banned_users[i].uuid
                     );
                     if (username) {
-                        banned_users.push(username);
+                        banned_users_list.push(username);
                     }
                     i++;
                 }
@@ -287,8 +305,8 @@ export class ChatService {
             channel_owner: owner,
             channel_admin: admin,
             channel_admins: admins,
-            banned_users: banned_users,
-            muted_users: muted_users,
+            banned_users: banned_users_list,
+            muted_users: muted_users_list,
         };
     }
 
@@ -790,6 +808,8 @@ export class ChatService {
             targetChannel.channelName,
             muteOptions.username
         );
+
+        this.chatGateway.newChannelAvailable();
     }
 
     async unban(
