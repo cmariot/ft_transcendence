@@ -10,12 +10,7 @@ import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
-import { IsUUID } from "class-validator";
-import {
-    addAdminDTO,
-    channelDTO,
-    updateChannelDTO,
-} from "../dtos/channelId.dto";
+import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
 import { muteOptionsDTO } from "../dtos/admin.dto";
 
@@ -172,12 +167,10 @@ export class ChatService {
             }
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                this.chatGateway.newChannelAvailable();
+                this.chatGateway.channelUpdate();
             }
-            this.chatGateway.connectToChannel(channel);
             return this.convertChannelMessages(uuid, channel.messages, channel);
         } else if (newChannel.channelType === ChannelType.PRIVATE) {
-            console.log("ici : ", newChannel);
             let uuid_array: { uuid: string }[] = [];
             uuid_array.push({ uuid: newChannel.channelOwner });
             let i = 0;
@@ -193,9 +186,8 @@ export class ChatService {
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                this.chatGateway.newChannelAvailable();
+                this.chatGateway.channelUpdate();
             }
-            this.chatGateway.connectToChannel(channel);
             return this.convertChannelMessages(uuid, channel.messages, channel);
         }
         return null;
@@ -366,7 +358,6 @@ export class ChatService {
                     channel.channelName,
                     user.username
                 );
-                this.chatGateway.connectToChannel(channel);
                 return this.convertChannelMessages(
                     userID,
                     channels[index_in_authorized_channels].messages,
@@ -392,8 +383,11 @@ export class ChatService {
                 );
             }
 
-            this.chatGateway.connectToChannel(channel);
-            this.chatGateway.newChannelAvailable();
+            this.chatGateway.channelUpdate();
+            this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
             return this.convertChannelMessages(
                 user.uuid,
                 channel.messages,
@@ -409,7 +403,6 @@ export class ChatService {
                         channel.channelName,
                         user.username
                     );
-                    this.chatGateway.connectToChannel(channel);
                     return this.convertChannelMessages(
                         user.uuid,
                         channel.messages,
@@ -560,8 +553,7 @@ export class ChatService {
             );
         }
         this.chatGateway.userJoinChannel(channel.channelName, user.username);
-        this.chatGateway.newChannelAvailable();
-        this.chatGateway.connectToChannel(channel);
+        this.chatGateway.channelUpdate();
         return this.convertChannelMessages(uuid, channel.messages, channel);
     }
 
@@ -594,7 +586,6 @@ export class ChatService {
                                         channels[i]
                                     );
 
-                                this.chatGateway.connectToChannel(channels[i]);
                                 return {
                                     channelName: channels[i].channelName,
                                     data: messages,
@@ -639,11 +630,11 @@ export class ChatService {
                     throw new UnauthorizedException();
                 }
             }
-            this.chatGateway.newChannelAvailable();
+            this.chatGateway.channelUpdate();
         } else if (channel.channelType === ChannelType.PRIVATE) {
             this.chatRepository.delete({ uuid: channel.uuid });
         }
-        this.chatGateway.newChannelAvailable();
+        this.chatGateway.channelUpdate();
     }
 
     async upodateChannelPassword(
@@ -709,7 +700,7 @@ export class ChatService {
         } else {
             throw new UnauthorizedException();
         }
-        this.chatGateway.newChannelAvailable();
+        this.chatGateway.channelUpdate();
         return "updated";
     }
 
@@ -819,7 +810,7 @@ export class ChatService {
             muteOptions.username
         );
 
-        this.chatGateway.newChannelAvailable();
+        this.chatGateway.channelUpdate();
     }
 
     async unban(

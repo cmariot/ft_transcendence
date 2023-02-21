@@ -18,7 +18,6 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-            console.log("WTF", socket.id);
             socket.on("disconnect", async () => {
                 let username;
                 username = await this.userService.userDisconnection(socket.id);
@@ -29,20 +28,27 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
-    newChannelAvailable() {
-        console.log("Backend emit 'newChannelAvailable' with data: ");
+    channelUpdate() {
         this.server.emit("newChannelAvailable");
     }
 
     async userJoinChannel(channel: string, username: string) {
-        console.log(
-            "Backend emit 'userChannelConnection' with data: ",
-            channel,
-            username
-        );
-        //let user = await this.userService.getByUsername(username);
-        // remove user from previousChannel.currentUsers
-        // add user in channel.currentUsers
+        console.log(username, "connected to", channel);
+
+        let user = await this.userService.getByUsername(username);
+        if (!user) {
+            return;
+        }
+        let i = 0;
+        while (i < user.socketId.length) {
+            let socket_key = user.socketId[i];
+            let socket = this.server.sockets.sockets.get(socket_key);
+            if (socket && socket.join) {
+                socket.join(channel);
+            }
+            i++;
+        }
+
         this.server.emit("userChannelConnection", {
             channel: channel,
             username: username,
@@ -56,7 +62,7 @@ export class ChatGateway implements OnModuleInit {
             username,
             message
         );
-        this.server.emit("newChatMessage", {
+        this.server.to(channel).emit("newChatMessage", {
             channel: channel,
             username: username,
             message: message,
@@ -65,7 +71,6 @@ export class ChatGateway implements OnModuleInit {
     }
 
     ban_user(channel: string, username: string) {
-        console.log(username, "has been ban from", channel);
         this.server.emit("banUser", {
             channel: channel,
             username: username,
@@ -78,8 +83,7 @@ export class ChatGateway implements OnModuleInit {
         let username: string = data.username;
         let socketID: string = data.socket;
         let status: string = data.status;
-        let user;
-        console.log("DAAAAAAAAATA : ", data);
+        let user: string;
         if (username && socketID && status === "Online") {
             user = await this.userService.setSocketID(
                 username,
@@ -105,6 +109,4 @@ export class ChatGateway implements OnModuleInit {
             status: status,
         });
     }
-
-    connectToChannel(channel: any) {}
 }
