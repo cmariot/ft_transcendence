@@ -18,7 +18,7 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         this.server.on("connection", (socket) => {
-			console.log("WTF", socket.id);
+            console.log("WTF", socket.id);
             socket.on("disconnect", async () => {
                 let username;
                 username = await this.userService.userDisconnection(socket.id);
@@ -64,13 +64,22 @@ export class ChatGateway implements OnModuleInit {
         return message;
     }
 
+    ban_user(channel: string, username: string) {
+        console.log(username, "has been ban from", channel);
+        this.server.emit("banUser", {
+            channel: channel,
+            username: username,
+        });
+        return username;
+    }
+
     @SubscribeMessage("userStatus")
     async userStatus(@MessageBody() data: any) {
         let username: string = data.username;
         let socketID: string = data.socket;
         let status: string = data.status;
         let user;
-		console.log("DAAAAAAAAATA : ",data);
+        console.log("DAAAAAAAAATA : ", data);
         if (username && socketID && status === "Online") {
             user = await this.userService.setSocketID(
                 username,

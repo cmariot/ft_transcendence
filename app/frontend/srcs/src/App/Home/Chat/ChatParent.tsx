@@ -43,6 +43,8 @@ export const ChatContext = React.createContext({
     ) => {},
     conversationUser: "",
     startConversationWith: (newChannel: string) => {},
+    ban: false,
+    setBan: (newValue: boolean) => {},
 });
 
 export const ChatParent = () => {
@@ -80,10 +82,19 @@ export const ChatParent = () => {
     >(new Map<string, { channelType: string }>());
     const [conversationUser, startConversationWith] = useState("");
     const [firstLoad, setFirstLoad] = useState(true);
+    const [ban, setBan] = useState(false);
 
     useEffect(() => {
         socket.on("newChannelAvailable", () => {
             setFirstLoad(!firstLoad);
+        });
+        socket.on("banUser", (socket) => {
+            if (
+                socket.username === user.username &&
+                socket.channel === currentChannel
+            ) {
+                setBan(true);
+            }
         });
     });
 
@@ -182,6 +193,8 @@ export const ChatParent = () => {
         setCurrentChannelMessages,
         conversationUser,
         startConversationWith,
+        ban,
+        setBan,
     };
 
     return (

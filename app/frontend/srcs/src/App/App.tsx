@@ -32,30 +32,28 @@ export const App = () => {
     useEffect(() => {
         axios
             .get("/api/profile")
-        	.then((response : any) => {
+            .then((response: any) => {
                 editUsername(response.data.username);
                 editAvatar("/api/profile/" + response.data.username + "/image");
                 editDoubleAuth(response.data.twoFactorsAuth);
                 setFirstLog(response.data.firstLog);
-				if (!socket.connected){
-					socket.on("connect", () => {
-						console.log("TEST : ", response.data.username);
-						console.log(socket.connected);
-						socket.emit("userStatus", {
-							status: "Online",
-							socket: socket.id,
-							username: response.data.username,
-						});
-					});
-				}
-				else{
-					socket.emit("userStatus", {
-						status: "Online",
-						socket: socket.id,
-						username: response.data.username,
-					});
-				}
-				
+                if (!socket.connected) {
+                    socket.on("connect", () => {
+                        console.log("TEST : ", response.data.username);
+                        console.log(socket.connected);
+                        socket.emit("userStatus", {
+                            status: "Online",
+                            socket: socket.id,
+                            username: response.data.username,
+                        });
+                    });
+                } else {
+                    socket.emit("userStatus", {
+                        status: "Online",
+                        socket: socket.id,
+                        username: response.data.username,
+                    });
+                }
             })
             .catch((error) => {
                 console.log(error.response);

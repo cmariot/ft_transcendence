@@ -23,6 +23,22 @@ const ChatConv = () => {
         }
     }
 
+    useEffect(() => {
+        if (chat.ban === true) {
+            const current = document.getElementById("chat-conversation");
+            const current2 = document.getElementById("chat-menu-options");
+            const menu = document.getElementById("chat-your-channels");
+            if (menu && current && current2) {
+                current.style.display = "none";
+                menu.style.display = "flex";
+                if (current2.style.display === "flex") {
+                    toogleChatMenu();
+                }
+            }
+            chat.setBan(false);
+        }
+    }, [chat, chat.ban]);
+
     async function leaveChannel() {
         await axios
             .post("/api/chat/leave", { channelName: chat.currentChannel })

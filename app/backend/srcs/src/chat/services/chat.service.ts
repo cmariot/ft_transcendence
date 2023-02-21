@@ -786,6 +786,10 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
+        this.chatGateway.ban_user(
+            targetChannel.channelName,
+            muteOptions.username
+        );
     }
 
     async unban(
