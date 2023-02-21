@@ -129,7 +129,13 @@ const CreateChannel = () => {
                 <button onClick={cancelCreateChannel}>cancel</button>
             </header>
             <section className="chat-section">
-                <form id="chat-edit-password-form" className="chat-main">
+                <form
+                    onSubmit={(event) => {
+                        submitCreateChannelForm(event);
+                    }}
+                    id="chat-edit-password-form"
+                    className="chat-main"
+                >
                     <input
                         id="new-channel-name"
                         type="text"
@@ -159,13 +165,15 @@ const CreateChannel = () => {
                 </form>
             </section>
             <footer className="chat-footer">
-                <input
+                <button
                     id="submit-create-channel"
                     className="button"
                     type="submit"
                     value="create"
-                    onClick={submitCreateChannelForm}
-                />
+                    onClick={(event) => submitCreateChannelForm(event)}
+                >
+                    create
+                </button>
             </footer>
         </menu>
     );

@@ -41,6 +41,14 @@ const UserProfile = () => {
         navigate(-1);
     }
 
+    function friendOrUnriend() {
+        return <button>add friend</button>;
+    }
+
+    function blockOrUnblock() {
+        return <button>block</button>;
+    }
+
     function displayProfileOrError() {
         if (found) {
             return (
@@ -53,8 +61,8 @@ const UserProfile = () => {
                     />
                     <h3>{username}</h3>
                     <div>
-                        <button>add friend</button>
-                        <button>block</button>
+                        {friendOrUnriend()}
+                        {blockOrUnblock()}
                         <button onClick={() => goToPrevious()}>cancel</button>
                     </div>
                 </>

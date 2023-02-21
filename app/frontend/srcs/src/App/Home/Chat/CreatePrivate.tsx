@@ -64,7 +64,13 @@ const CreatePrivate = () => {
                 <button onClick={cancelCreatePrivate}>cancel</button>
             </header>
             <section className="chat-section">
-                <div id="chat-create-private-form" className="chat-main">
+                <form
+                    onSubmit={(event) => {
+                        submitCreateChannelForm(event);
+                    }}
+                    id="chat-create-private-form"
+                    className="chat-main"
+                >
                     <input
                         id="new-private-name"
                         type="text"
@@ -74,7 +80,7 @@ const CreatePrivate = () => {
                         autoComplete="off"
                         required
                     />
-                </div>
+                </form>
             </section>
             <footer className="chat-footer">
                 <input
@@ -82,7 +88,9 @@ const CreatePrivate = () => {
                     className="button"
                     type="submit"
                     value="create"
-                    onClick={submitCreateChannelForm}
+                    onClick={(event) => {
+                        submitCreateChannelForm(event);
+                    }}
                 />
             </footer>
         </menu>

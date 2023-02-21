@@ -23,21 +23,21 @@ const JoinProtected = () => {
                 channelPassword: password,
             })
             .then((response) => {
-                setPassword("");
-                // utiliser response, l'user peut etre admin ou ban !
-                chat.setChannelOwner(false);
-                chat.setCurrentChannelAdmins([]);
                 chat.changeCurrentChannel(chat.targetChannel);
                 chat.changeCurrentChannelType("protected");
                 chat.setCurrentChannelMessages(response.data.messages);
-                chat.setCurrentChannelMute([]);
-                chat.setCurrentChannelBan([]);
+                chat.setChannelOwner(response.data.channel_owner);
+                chat.setChannelAdmin(response.data.channel_admin);
+                chat.setCurrentChannelAdmins(response.data.channel_admins);
+                chat.setCurrentChannelMute(response.data.muted_users);
+                chat.setCurrentChannelBan(response.data.banned_users);
                 const current = document.getElementById("chat-join-protected");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {
                     current.style.display = "none";
                     menu.style.display = "flex";
                 }
+                setPassword("");
             })
             .catch((error) => {
                 setPassword("");

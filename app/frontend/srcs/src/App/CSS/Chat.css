@@ -291,6 +291,7 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    width: -webkit-fill-available;
     width: -moz-available;
     height: 100%;
     display: flex;
@@ -320,6 +321,7 @@
 }
 
 .admin-channel {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -330,6 +332,7 @@
 #form-mute-user {
     display: flex;
     flex-direction: column;
+    width: -webkit-fill-available;
     width: -moz-available;
     justify-content: center;
     align-items: center;
@@ -338,10 +341,12 @@
 }
 
 #new-mute-input {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 #mute-duration {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -351,6 +356,7 @@
 }
 
 #new-ban {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -360,6 +366,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: -webkit-fill-available;
     width: -moz-available;
     overflow-y: scroll;
     padding: 5px;
@@ -371,6 +378,7 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -389,12 +397,14 @@
 #edit-ban > section:nth-child(2) > form:nth-child(1) {
     display: flex;
     flex-direction: column;
+    width: -webkit-fill-available;
     width: -moz-available;
     justify-content: center;
     align-items: center;
 }
 
 #ban-duration {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -407,6 +417,7 @@
 #edit-ban > section:nth-child(2) > form:nth-child(1) {
     display: flex;
     flex-direction: column;
+    width: -webkit-fill-available;
     width: -moz-available;
     justify-content: center;
     align-items: center;
@@ -415,6 +426,7 @@
 /* Élément | https://localhost:8443/ */
 
 #ban-duration {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -429,6 +441,7 @@
 #chat-create-private-form {
     /* width: -moz-available; */
     height: 100%;
+    width: -webkit-fill-available;
     width: -moz-available;
     display: flex;
     justify-content: center;

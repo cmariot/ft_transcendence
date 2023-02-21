@@ -139,7 +139,13 @@ const EditChannelPassword = () => {
                 <button onClick={cancelEdit}>cancel</button>
             </header>
             <section className="chat-section">
-                <form id="chat-create-channel-form" className="chat-main">
+                <form
+                    onSubmit={(event) => {
+                        submitChannelEdit(event);
+                    }}
+                    id="chat-create-channel-form"
+                    className="chat-main"
+                >
                     <label>
                         Password required
                         <input
@@ -158,7 +164,7 @@ const EditChannelPassword = () => {
                     className="button"
                     type="submit"
                     value="update"
-                    onClick={submitChannelEdit}
+                    onClick={(event) => submitChannelEdit(event)}
                 />
             </footer>
         </menu>

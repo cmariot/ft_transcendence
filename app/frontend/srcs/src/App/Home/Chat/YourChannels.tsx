@@ -118,7 +118,7 @@ const YourChannels = () => {
                 </button>
             </header>
             <section className="chat-section">{displayChannels()}</section>
-            <footer className="chat-footer">(status user)</footer>
+            <footer className="chat-footer"></footer>
         </menu>
     );
 };
