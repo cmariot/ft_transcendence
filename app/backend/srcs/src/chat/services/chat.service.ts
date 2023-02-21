@@ -154,6 +154,10 @@ export class ChatService {
             );
         }
         newChannel.channelOwner = uuid;
+        let user = await this.userService.getByID(uuid);
+        if (!user) {
+            throw new HttpException("Invalid user", HttpStatus.FOUND);
+        }
         if (
             newChannel.channelType === ChannelType.PROTECTED ||
             newChannel.channelType === ChannelType.PUBLIC
@@ -169,6 +173,10 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.channelUpdate();
             }
+            this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
             return this.convertChannelMessages(uuid, channel.messages, channel);
         } else if (newChannel.channelType === ChannelType.PRIVATE) {
             let uuid_array: { uuid: string }[] = [];
@@ -188,6 +196,10 @@ export class ChatService {
             if (channel) {
                 this.chatGateway.channelUpdate();
             }
+            this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
             return this.convertChannelMessages(uuid, channel.messages, channel);
         }
         return null;
@@ -215,14 +227,14 @@ export class ChatService {
                     initial_messages[i].uuid
                 );
                 if (chat_user) {
-                    let i = 0;
+                    let j = 0;
                     let found = false;
-                    while (i < banned_users.length) {
-                        if ((banned_users[i].uuid = chat_user.uuid)) {
+                    while (j < banned_users.length) {
+                        if ((banned_users[j].uuid = initial_messages[i].uuid)) {
                             found = true;
                             break;
                         }
-                        i++;
+                        j++;
                     }
                     if (found === true) {
                         returned_messages.push({

@@ -6,9 +6,7 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
-import { SocketService } from "../services/socket.service";
 import { UsersService } from "src/users/services/users.service";
-import { ChatService } from "../services/chat.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
     constructor(private userService: UsersService) {}
@@ -33,8 +31,6 @@ export class ChatGateway implements OnModuleInit {
     }
 
     async userJoinChannel(channel: string, username: string) {
-        console.log(username, "connected to", channel);
-
         let user = await this.userService.getByUsername(username);
         if (!user) {
             return;
@@ -44,15 +40,14 @@ export class ChatGateway implements OnModuleInit {
             let socket_key = user.socketId[i];
             let socket = this.server.sockets.sockets.get(socket_key);
             if (socket && socket.join) {
+                var iterator = socket.rooms.values();
+                for (let j = 0; j < socket.rooms.size; j++) {
+                    socket.leave(iterator.next().value);
+                }
                 socket.join(channel);
             }
             i++;
         }
-
-        this.server.emit("userChannelConnection", {
-            channel: channel,
-            username: username,
-        });
     }
 
     send_message(channel: string, username: string, message: string) {
