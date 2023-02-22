@@ -63,7 +63,7 @@ const CreateChannel = () => {
         }
     }
 
-    const submitCreateChannelForm = async (event: any) => {
+    const submitCreateChannelForm = (event: any) => {
         event.preventDefault();
         if (newChannelName.length === 0) {
             alert("You must set a name for your new channel");
@@ -77,7 +77,7 @@ const CreateChannel = () => {
         } else {
             newChannelType = "public";
         }
-        await axios
+        axios
             .post(url, {
                 channelName: newChannelName,
                 channelType: newChannelType,
@@ -130,9 +130,7 @@ const CreateChannel = () => {
             </header>
             <section className="chat-section">
                 <form
-                    onSubmit={(event) => {
-                        submitCreateChannelForm(event);
-                    }}
+                    onSubmit={submitCreateChannelForm}
                     id="chat-edit-password-form"
                     className="chat-main"
                 >
@@ -162,15 +160,16 @@ const CreateChannel = () => {
                             onChange={handleNewChannelTypeChange}
                         />
                     </label>
+                    <input type="submit" hidden />
                 </form>
             </section>
             <footer className="chat-footer">
                 <button
+                    type="submit"
                     id="submit-create-channel"
                     className="button"
-                    type="submit"
                     value="create"
-                    onClick={(event) => submitCreateChannelForm(event)}
+                    onClick={submitCreateChannelForm}
                 >
                     create
                 </button>

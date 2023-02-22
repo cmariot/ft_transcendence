@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { ChatParent } from "./Home/Chat/ChatParent";
 import { socket } from "../Contexts/WebsocketContext";
 import ConfirmProfile from "./Settings/ConfirmProfile";
-import { Socket } from "socket.io-client";
 
 export const UserContext = React.createContext({
     username: "",
@@ -39,8 +38,6 @@ export const App = () => {
                 setFirstLog(response.data.firstLog);
                 if (!socket.connected) {
                     socket.on("connect", () => {
-                        console.log("TEST : ", response.data.username);
-                        console.log(socket.connected);
                         socket.emit("userStatus", {
                             status: "Online",
                             socket: socket.id,

@@ -396,7 +396,7 @@ export class ChatService {
             }
 
             this.chatGateway.channelUpdate();
-            this.chatGateway.userJoinChannel(
+            await this.chatGateway.userJoinChannel(
                 channel.channelName,
                 user.username
             );
@@ -627,6 +627,10 @@ export class ChatService {
             channel.channelType === ChannelType.PROTECTED
         ) {
             if (channel.channelOwner === uuid) {
+                this.chatGateway.deleted_channel(
+                    channel.channelName,
+                    user.username
+                );
                 this.chatRepository.delete({ uuid: channel.uuid });
             } else {
                 let index = channel.users.findIndex(
@@ -644,6 +648,10 @@ export class ChatService {
             }
             this.chatGateway.channelUpdate();
         } else if (channel.channelType === ChannelType.PRIVATE) {
+            this.chatGateway.deleted_channel(
+                channel.channelName,
+                user.username
+            );
             this.chatRepository.delete({ uuid: channel.uuid });
         }
         this.chatGateway.channelUpdate();

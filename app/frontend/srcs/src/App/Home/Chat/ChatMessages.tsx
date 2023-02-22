@@ -87,25 +87,32 @@ const ChatMessages = () => {
 
     useEffect(() => {
         socket.on("newChatMessage", (socket) => {
-            //const socketChannel: string = socket.channel;
-            //if (socketChannel === chat.currentChannel) {
-            const previousMessages: {
-                username: string;
-                message: string;
-            }[] = [];
-            chat.currentChannelMessages.forEach((val) =>
-                previousMessages.push(Object.assign({}, val))
-            );
-            previousMessages.push(
-                Object.assign(
-                    {},
-                    { username: socket.username, message: socket.message }
-                )
-            );
-            chat.setCurrentChannelMessages(previousMessages);
-            //}
+            const socketChannel: string = socket.channel;
+            const socketUser: string = socket.username;
+            if (socketChannel === chat.currentChannel) {
+                let blocked: any[] = user.blocked;
+                for (let i = 0; i < blocked.length; i++) {
+                    if (socketUser === blocked[i].username) {
+                        return;
+                    }
+                }
+                const previousMessages: {
+                    username: string;
+                    message: string;
+                }[] = [];
+                chat.currentChannelMessages.forEach((val) =>
+                    previousMessages.push(Object.assign({}, val))
+                );
+                previousMessages.push(
+                    Object.assign(
+                        {},
+                        { username: socket.username, message: socket.message }
+                    )
+                );
+                chat.setCurrentChannelMessages(previousMessages);
+            }
         });
-    }, [chat]);
+    }, [chat, user.blocked]);
 
     return (
         <ul id="chat-main-ul">

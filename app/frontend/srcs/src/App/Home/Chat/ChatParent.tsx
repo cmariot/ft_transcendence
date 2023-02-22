@@ -45,6 +45,8 @@ export const ChatContext = React.createContext({
     startConversationWith: (newChannel: string) => {},
     ban: false,
     setBan: (newValue: boolean) => {},
+    channelDeleted: false,
+    setChannelDeleted: (newValue: boolean) => {},
 });
 
 export const ChatParent = () => {
@@ -83,6 +85,7 @@ export const ChatParent = () => {
     const [conversationUser, startConversationWith] = useState("");
     const [firstLoad, setFirstLoad] = useState(true);
     const [ban, setBan] = useState(false);
+    const [channelDeleted, setChannelDeleted] = useState(false);
 
     useEffect(() => {
         socket.on("newChannelAvailable", () => {
@@ -94,6 +97,12 @@ export const ChatParent = () => {
                 socket.channel === currentChannel
             ) {
                 setBan(true);
+            }
+        });
+        socket.on("channelDeleted", (socket) => {
+            if (socket.channel === currentChannel) {
+                console.log("DELETED = true");
+                setChannelDeleted(true);
             }
         });
     });
@@ -195,6 +204,8 @@ export const ChatParent = () => {
         startConversationWith,
         ban,
         setBan,
+        channelDeleted,
+        setChannelDeleted,
     };
 
     return (

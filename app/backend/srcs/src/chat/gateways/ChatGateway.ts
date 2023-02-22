@@ -17,8 +17,9 @@ export class ChatGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on("connection", (socket) => {
             socket.on("disconnect", async () => {
-                let username;
-                username = await this.userService.userDisconnection(socket.id);
+                let username = await this.userService.userDisconnection(
+                    socket.id
+                );
                 if (username) {
                     this.sendStatus(username, "Offline");
                 }
@@ -39,7 +40,7 @@ export class ChatGateway implements OnModuleInit {
         while (i < user.socketId.length) {
             let socket_key = user.socketId[i];
             let socket = this.server.sockets.sockets.get(socket_key);
-            if (socket && socket.join) {
+            if (socket) {
                 for (let room of socket.rooms) {
                     let valid = true;
                     for (
@@ -71,7 +72,9 @@ export class ChatGateway implements OnModuleInit {
             "Backend emit 'newChatMessage' with data: ",
             channel,
             username,
-            message
+            message,
+            "to the chatroom",
+            channel
         );
         this.server.to("chatroom_" + channel).emit("newChatMessage", {
             channel: channel,
@@ -83,6 +86,15 @@ export class ChatGateway implements OnModuleInit {
 
     ban_user(channel: string, username: string) {
         this.server.emit("banUser", {
+            channel: channel,
+            username: username,
+        });
+        return username;
+    }
+
+    deleted_channel(channel: string, username: string) {
+        console.log("Emit !");
+        this.server.emit("channelDeleted", {
             channel: channel,
             username: username,
         });

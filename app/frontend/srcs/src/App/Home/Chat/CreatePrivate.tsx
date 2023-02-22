@@ -81,6 +81,7 @@ const CreatePrivate = () => {
                         required
                     />
                 </form>
+                <input type="submit" hidden />
             </section>
             <footer className="chat-footer">
                 <input

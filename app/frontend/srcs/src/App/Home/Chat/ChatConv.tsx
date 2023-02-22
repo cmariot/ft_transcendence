@@ -35,9 +35,24 @@ const ChatConv = () => {
                     toogleChatMenu();
                 }
             }
+            chat.changeCurrentChannel("");
             chat.setBan(false);
         }
-    }, [chat, chat.ban]);
+        if (chat.channelDeleted === true) {
+            const current = document.getElementById("chat-conversation");
+            const current2 = document.getElementById("chat-menu-options");
+            const menu = document.getElementById("chat-your-channels");
+            if (menu && current && current2) {
+                current.style.display = "none";
+                menu.style.display = "flex";
+                if (current2.style.display === "flex") {
+                    toogleChatMenu();
+                }
+            }
+            chat.changeCurrentChannel("");
+            chat.setChannelDeleted(false);
+        }
+    }, [chat]);
 
     async function leaveChannel() {
         await axios

@@ -31,6 +31,11 @@ const ChannelsList = () => {
                     chat.setCurrentChannelAdmins(response.data.channel_admins);
                     chat.setCurrentChannelMute(response.data.muted_users);
                     chat.setCurrentChannelBan(response.data.banned_users);
+
+                    let userchannels = chat.userChannels;
+                    userchannels.set(channel, { channelType: channelType });
+                    chat.updateUserChannels(userchannels);
+
                     const current =
                         document.getElementById("chat-channels-list");
                     const menu = document.getElementById("chat-conversation");
