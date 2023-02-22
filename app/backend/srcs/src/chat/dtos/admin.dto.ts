@@ -19,3 +19,12 @@ export class muteOptionsDTO {
     @IsNotEmpty()
     duration: number;
 }
+export class kickOptionsDTO {
+    @IsNotEmpty()
+    @IsString()
+    channelName: string;
+
+    @IsString()
+    @IsNotEmpty()
+    username: string;
+}

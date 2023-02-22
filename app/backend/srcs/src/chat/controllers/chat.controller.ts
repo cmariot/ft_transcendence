@@ -26,7 +26,7 @@ import {
     usernameDTO,
 } from "../dtos/channelId.dto";
 import { UsersService } from "src/users/services/users.service";
-import { muteOptionsDTO } from "../dtos/admin.dto";
+import { kickOptionsDTO, muteOptionsDTO } from "../dtos/admin.dto";
 
 @Controller("chat")
 export class ChatController {
@@ -261,6 +261,41 @@ export class ChatController {
             targetChannel,
             muteOptions
         );
+    }
+
+    @Post("kick")
+    @UseGuards(isLogged)
+    async kick_user(@Req() req, @Body() options: kickOptionsDTO) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new HttpException("Who are you ?", HttpStatus.FOUND);
+        }
+        let kickedUser = await this.userService.getByUsername(options.username);
+        if (!kickedUser) {
+            throw new HttpException("User not found", HttpStatus.FOUND);
+        }
+        let targetChannel = await this.chatService.getByName(
+            options.channelName
+        );
+        if (!targetChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        if (
+            this.chatService.checkPermission(
+                req.user.uuid,
+                "owner_and_admins",
+                targetChannel
+            ) === "Unauthorized"
+        ) {
+            throw new UnauthorizedException("You are not authorized");
+        }
+        if (kickedUser.uuid === targetChannel.channelOwner) {
+            throw new UnauthorizedException("You cannot ban this user.");
+        }
+        if (kickedUser.uuid === req.user.uuid) {
+            throw new UnauthorizedException("You cannot ban yourself.");
+        }
+        return this.chatService.kick(user, kickedUser, targetChannel, options);
     }
 
     // unban

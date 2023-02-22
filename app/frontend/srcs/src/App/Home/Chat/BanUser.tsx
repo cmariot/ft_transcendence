@@ -46,7 +46,6 @@ const BanUser = () => {
                 let previousBanned: string[] = chat.currentChannelBan;
                 previousBanned.push(newBanName);
                 chat.setCurrentChannelBan(previousBanned);
-                chat.setCurrentChannelAdmins(previousBanned);
                 setNewBan("");
             })
             .catch((error) => {

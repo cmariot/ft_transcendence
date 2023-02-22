@@ -96,6 +96,16 @@ export const ChatParent = () => {
                 socket.username === user.username &&
                 socket.channel === currentChannel
             ) {
+                setFirstLoad(!firstLoad);
+                setBan(true);
+            }
+        });
+        socket.on("kickUser", (socket) => {
+            if (
+                socket.username === user.username &&
+                socket.channel === currentChannel
+            ) {
+                setFirstLoad(!firstLoad);
                 setBan(true);
             }
         });

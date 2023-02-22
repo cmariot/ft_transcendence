@@ -9,6 +9,7 @@ import EditChannelPassword from "./EditChannelPassword";
 import EditAdmins from "./EditAdmins";
 import BanUser from "./BanUser";
 import MuteUser from "./MuteUser";
+import KickUser from "./KickUser";
 
 // List of menus for the chat, by default all are hidden except 'YourChannels'
 const Chat = () => {
@@ -23,6 +24,7 @@ const Chat = () => {
             <EditChannelPassword />
             <EditAdmins />
             <BanUser />
+            <KickUser />
             <MuteUser />
         </div>
     );

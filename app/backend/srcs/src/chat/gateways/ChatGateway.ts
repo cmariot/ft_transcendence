@@ -84,6 +84,14 @@ export class ChatGateway implements OnModuleInit {
         return username;
     }
 
+    kick_user(channelName: string, username: string) {
+        this.server.emit("kickUser", {
+            channel: channelName,
+            username: username,
+        });
+        return username;
+    }
+
     deleted_channel(channel: string, username: string) {
         console.log("Emit !");
         this.server.emit("channelDeleted", {

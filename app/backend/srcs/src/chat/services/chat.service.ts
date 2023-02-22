@@ -12,7 +12,7 @@ import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
-import { muteOptionsDTO } from "../dtos/admin.dto";
+import { kickOptionsDTO, muteOptionsDTO } from "../dtos/admin.dto";
 
 @Injectable()
 export class ChatService {
@@ -848,8 +848,36 @@ export class ChatService {
             targetChannel.channelName,
             muteOptions.username
         );
-
         this.chatGateway.channelUpdate();
+    }
+
+    async kick(
+        user: UserEntity,
+        kickedUser: UserEntity,
+        targetChannel: ChatEntity,
+        options: kickOptionsDTO
+    ) {
+        if (
+            targetChannel.channelType === "protected" ||
+            targetChannel.channelType === "public"
+        ) {
+            let current_users = targetChannel.users;
+            let index = -1;
+            for (let i = 0; i < current_users.length; i++) {
+                if (current_users[i].uuid === kickedUser.uuid) {
+                    index = i;
+                    this.leave_channel(
+                        targetChannel.channelName,
+                        current_users[i].uuid
+                    );
+                    return this.chatGateway.kick_user(
+                        targetChannel.channelName,
+                        kickedUser.username
+                    );
+                }
+            }
+        }
+        throw new HttpException("User not found", HttpStatus.FOUND);
     }
 
     async unban(

@@ -130,6 +130,15 @@ const ChatConv = () => {
         }
     }
 
+    function displayKickMenu() {
+        const current = document.getElementById("chat-conversation");
+        const menu = document.getElementById("edit-kick");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
     function adminPannel() {
         if (
             (chat.channelOwner === true || chat.channelAdmin === true) &&
@@ -139,6 +148,9 @@ const ChatConv = () => {
                 <>
                     <button onClick={() => displayMuteMenu()}>
                         mute an user
+                    </button>
+                    <button onClick={() => displayKickMenu()}>
+                        kick an user
                     </button>
                     <button onClick={() => displayBanMenu()}>
                         ban an user
