@@ -132,4 +132,12 @@ export class ChatGateway implements OnModuleInit {
             status: status,
         });
     }
+
+    updateChannelAdmin(username: string, channel: string, value: boolean) {
+        this.server.emit("channelAdminUpdate", {
+            username: username,
+            channel: channel,
+            value: value,
+        });
+    }
 }

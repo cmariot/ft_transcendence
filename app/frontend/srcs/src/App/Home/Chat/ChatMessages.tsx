@@ -91,9 +91,12 @@ const ChatMessages = () => {
             const socketUser: string = socket.username;
             if (socketChannel === chat.currentChannel) {
                 let blocked: any[] = user.blocked;
+
+                let found = false;
                 for (let i = 0; i < blocked.length; i++) {
                     if (socketUser === blocked[i].username) {
-                        return;
+                        found = true;
+                        break;
                     }
                 }
                 const previousMessages: {
@@ -103,13 +106,18 @@ const ChatMessages = () => {
                 chat.currentChannelMessages.forEach((val) =>
                     previousMessages.push(Object.assign({}, val))
                 );
-                previousMessages.push(
-                    Object.assign(
-                        {},
-                        { username: socket.username, message: socket.message }
-                    )
-                );
-                chat.setCurrentChannelMessages(previousMessages);
+                if (found === false) {
+                    previousMessages.push(
+                        Object.assign(
+                            {},
+                            {
+                                username: socket.username,
+                                message: socket.message,
+                            }
+                        )
+                    );
+                    chat.setCurrentChannelMessages(previousMessages);
+                }
             }
         });
     }, [chat, user.blocked]);

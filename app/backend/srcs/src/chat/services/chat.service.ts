@@ -764,6 +764,16 @@ export class ChatService {
             i++;
         }
         currentAdmin.push({ uuid: newAdminUUID });
+
+        let newAdmin = await this.userService.getByID(newAdminUUID);
+        if (!newAdmin) {
+            return;
+        }
+        this.chatGateway.updateChannelAdmin(
+            newAdmin.username,
+            channel.channelName,
+            true
+        );
         await this.chatRepository.update(
             { uuid: channel.uuid },
             { channelAdministrators: currentAdmin }
@@ -789,6 +799,15 @@ export class ChatService {
             }
             i++;
         }
+        let newAdmin = await this.userService.getByID(newAdminUUID);
+        if (!newAdmin) {
+            return;
+        }
+        this.chatGateway.updateChannelAdmin(
+            newAdmin.username,
+            channel.channelName,
+            false
+        );
         await this.chatRepository.update(
             { uuid: channel.uuid },
             { channelAdministrators: currentAdmin }

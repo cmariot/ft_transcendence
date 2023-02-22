@@ -101,8 +101,15 @@ export const ChatParent = () => {
         });
         socket.on("channelDeleted", (socket) => {
             if (socket.channel === currentChannel) {
-                console.log("DELETED = true");
                 setChannelDeleted(true);
+            }
+        });
+        socket.on("channelAdminUpdate", (socket) => {
+            if (
+                socket.channel === currentChannel &&
+                socket.username === user.username
+            ) {
+                setChannelAdmin(socket.value);
             }
         });
     });
