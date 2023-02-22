@@ -62,15 +62,15 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-    @Column({default: "Offline"})
+    @Column({ default: "Offline" })
     status: string;
 
-    @Column("text", {array: true, nullable: true })
+    @Column("text", { array: true, default: [] })
     socketId: string[];
 
-    @Column("text", { array: true, nullable: true })
+    @Column("text", { array: true, default: [] })
     friend: string[];
 
-    @Column("text", { array: true, nullable: true })
+    @Column("text", { array: true, default: [] })
     blocked: string[];
 }

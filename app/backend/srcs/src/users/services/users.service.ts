@@ -420,8 +420,7 @@ export class UsersService {
 
     async friendslist(userid: string) {
         let user = await this.getByID(userid);
-		if (!user)
-			return ("no User");
+        if (!user) return "no User";
         let list: { username: string; status: string }[] = new Array();
         if (!user.friend) return list;
         let i = 0;
@@ -429,7 +428,7 @@ export class UsersService {
             let id = user.friend[i];
             let friend = await this.getByID(id);
             if (friend !== null)
-                list.push({ username: friend.username, status: friend.status});
+                list.push({ username: friend.username, status: friend.status });
             i++;
         }
         return list;
@@ -455,26 +454,34 @@ export class UsersService {
 
     async blockUser(userId: string, friend: string) {
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!user) {
+            return [];
+        }
+        if (userId === friend) {
             throw new HttpException(
                 "You cannot block yourself",
                 HttpStatus.BAD_REQUEST
             );
-        if (!user.blocked) user.blocked = new Array();
-        else {
-            if (user.blocked.find((element) => element === friend)) {
+        }
+        let list = user.blocked;
+        if (!list) {
+            list = [];
+        } else {
+            if (list.find((element) => element === friend)) {
                 throw new HttpException(
                     "Already blocked",
                     HttpStatus.BAD_REQUEST
                 );
             }
         }
-        user.blocked.push(friend);
+        list.push(friend);
         await this.userRepository.update(
             { uuid: user.uuid },
-            { blocked: user.blocked }
+            { blocked: list }
         );
-        return this.blockedList(user.uuid);
+        let blocked_list = await this.blockedList(user.uuid);
+        console.log(blocked_list);
+        return blocked_list;
     }
 
     async blockedList(uuid: string) {

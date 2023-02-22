@@ -938,4 +938,16 @@ export class ChatService {
             { mutted_users: currentMuted }
         );
     }
+
+    async getMessages(channelName: string, uuid: string) {
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (!channel) throw new UnauthorizedException();
+        return await this.convertChannelMessages(
+            uuid,
+            channel.messages,
+            channel
+        );
+    }
 }

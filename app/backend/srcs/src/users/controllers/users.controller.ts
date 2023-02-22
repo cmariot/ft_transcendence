@@ -163,7 +163,8 @@ export class UsersController {
         let block = await this.userService.getByUsername(Username.username);
         if (!block)
             throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
-        return await this.userService.blockUser(req.user.uuid, block.uuid);
+        let list = await this.userService.blockUser(req.user.uuid, block.uuid);
+        return list;
     }
 
     @Get("blocked")

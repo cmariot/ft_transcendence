@@ -447,3 +447,9 @@
     justify-content: center;
     align-items: center;
 }
+
+/* Feuille de style intégrée #8 | https://localhost:8443/ */
+
+#chat-main-ul {
+    list-style-type: none;
+}

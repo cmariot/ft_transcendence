@@ -391,4 +391,13 @@ export class ChatController {
             muteOptions
         );
     }
+
+    @Post("messages")
+    @UseGuards(isLogged)
+    async getMessages(@Req() req, @Body() channel: channelDTO) {
+        return await this.chatService.getMessages(
+            channel.channelName,
+            req.user.uuid
+        );
+    }
 }

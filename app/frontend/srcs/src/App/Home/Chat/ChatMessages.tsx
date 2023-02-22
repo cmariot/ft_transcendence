@@ -1,7 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import "../../CSS/Chat.css";
 import { ChatContext } from "./ChatParent";
-import { socket } from "../../../Contexts/WebsocketContext";
 import { UserContext } from "../../App";
 import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -50,16 +49,23 @@ const ChatMessages = () => {
             .post("/api/profile/block", { username: username })
             .then(async (response) => {
                 user.setBlocked(response.data);
-            })
-            .catch((error) => {
-                console.log(error.data);
-            });
-        await axios
-            .post("/api/chat/connect", {
-                channelName: chat.currentChannel,
-            })
-            .then((response) => {
-                chat.setCurrentChannelMessages(response.data.messages);
+                await axios
+                    .post("/api/chat/connect", {
+                        channelName: chat.currentChannel,
+                    })
+                    .then((response) => {
+                        chat.setCurrentChannelMessages(response.data.messages);
+                        chat.setChannelOwner(response.data.channel_owner);
+                        chat.setChannelAdmin(response.data.channel_admin);
+                        chat.setCurrentChannelAdmins(
+                            response.data.channel_admins
+                        );
+                        chat.setCurrentChannelMute(response.data.muted_users);
+                        chat.setCurrentChannelBan(response.data.banned_users);
+                    })
+                    .catch((error) => {
+                        console.log(error.data);
+                    });
             })
             .catch((error) => {
                 console.log(error.data);
@@ -84,43 +90,6 @@ const ChatMessages = () => {
             );
         }
     }
-
-    useEffect(() => {
-        socket.on("newChatMessage", (socket) => {
-            const socketChannel: string = socket.channel;
-            const socketUser: string = socket.username;
-            if (socketChannel === chat.currentChannel) {
-                let blocked: any[] = user.blocked;
-
-                let found = false;
-                for (let i = 0; i < blocked.length; i++) {
-                    if (socketUser === blocked[i].username) {
-                        found = true;
-                        break;
-                    }
-                }
-                const previousMessages: {
-                    username: string;
-                    message: string;
-                }[] = [];
-                chat.currentChannelMessages.forEach((val) =>
-                    previousMessages.push(Object.assign({}, val))
-                );
-                if (found === false) {
-                    previousMessages.push(
-                        Object.assign(
-                            {},
-                            {
-                                username: socket.username,
-                                message: socket.message,
-                            }
-                        )
-                    );
-                    chat.setCurrentChannelMessages(previousMessages);
-                }
-            }
-        });
-    }, [chat, user.blocked]);
 
     return (
         <ul id="chat-main-ul">

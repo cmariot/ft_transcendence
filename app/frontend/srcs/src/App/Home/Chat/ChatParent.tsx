@@ -115,6 +115,20 @@ export const ChatParent = () => {
     });
 
     useEffect(() => {
+        socket.on("newChatMessage", (socket) => {
+            const socketChannel: string = socket.channel;
+            if (socketChannel === currentChannel) {
+                axios
+                    .post("/api/chat/messages", { channelName: socket.channel })
+                    .then((response) =>
+                        setCurrentChannelMessages(response.data.messages)
+                    )
+                    .catch((error) => console.log(error.data));
+            }
+        });
+    }, [currentChannel]);
+
+    useEffect(() => {
         axios
             .get("/api/chat/channels")
             .then((response) => {
