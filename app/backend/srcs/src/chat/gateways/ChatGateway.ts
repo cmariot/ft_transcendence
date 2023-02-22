@@ -40,11 +40,27 @@ export class ChatGateway implements OnModuleInit {
             let socket_key = user.socketId[i];
             let socket = this.server.sockets.sockets.get(socket_key);
             if (socket && socket.join) {
-                var iterator = socket.rooms.values();
-                for (let j = 0; j < socket.rooms.size; j++) {
-                    socket.leave(iterator.next().value);
+                for (let room of socket.rooms) {
+                    let valid = true;
+                    for (
+                        let k = 0;
+                        k < "chatroom_".length && k < room[k].length;
+                        k++
+                    ) {
+                        if (room[k] !== "chatroom_"[k]) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (valid === true && room.length > "chatroom_".length) {
+                        console.log("Leave the room ", room);
+                        socket.leave(room);
+                    }
                 }
-                socket.join(channel);
+
+                let room_name: string = "chatroom_" + channel;
+                console.log("Join the room ", room_name);
+                socket.join(room_name);
             }
             i++;
         }
@@ -57,7 +73,7 @@ export class ChatGateway implements OnModuleInit {
             username,
             message
         );
-        this.server.to(channel).emit("newChatMessage", {
+        this.server.to("chatroom_" + channel).emit("newChatMessage", {
             channel: channel,
             username: username,
             message: message,
