@@ -28,6 +28,7 @@ export const App = () => {
     const [blocked, setBlocked] = useState([]);
     const [firstLog, setFirstLog] = useState(false);
     const [friendUpdate, setFriendUpdate] = useState(false);
+    const [logged, setLogged] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -66,10 +67,16 @@ export const App = () => {
                 console.log(error.response);
             });
         socket.on("userLogout", () => {
-            console.log("LAAAAA");
-            //navigate("/login");
+            setLogged(!logged);
         });
-    }, []);
+    }, [logged]);
+
+    useEffect(() => {
+        if (logged === false) {
+            navigate("/login");
+            setLogged(true);
+        }
+    }, [navigate, logged]);
 
     useEffect(() => {
         socket.on("userUpdate", () => {

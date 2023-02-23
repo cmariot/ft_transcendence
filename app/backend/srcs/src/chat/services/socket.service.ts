@@ -22,7 +22,7 @@ export class SocketService {
     async disconnect_user(socketId: string) {
         let socket = this.server.sockets.sockets.get(socketId);
         if (socket) {
-            socket.emit("userLogout", {});
+            socket.emit("userLogout");
         }
     }
 }

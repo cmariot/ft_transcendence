@@ -2,6 +2,7 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
+    Req,
     Res,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -10,13 +11,14 @@ import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { MailerService } from "@nestjs-modules/mailer";
+import { SocketService } from "src/chat/services/socket.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
-        private readonly mailerService: MailerService
+        private socketService: SocketService
     ) {}
 
     sign_cookie(user: UserEntity, type: string): string {
@@ -32,7 +34,14 @@ export class AuthService {
     // authentification : Acces a l'app
     // email_validation : Doit valider son email
     // double_authentification : Doit valider sa connexion
-    create_cookie(user: UserEntity, type: string, @Res() res) {
+    create_cookie(user: UserEntity, type: string, @Req() req, @Res() res) {
+        if (req.cookies["authentification"]) {
+            let i = 0;
+            while (i < user.socketId.length) {
+                this.socketService.disconnect_user(user.socketId[i]);
+                i++;
+            }
+        }
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
@@ -79,7 +88,8 @@ export class AuthService {
             twoFactorsAuth: boolean;
             valideEmail: boolean;
         },
-        res
+        @Req() req,
+        @Res() res
     ): Promise<UserEntity> {
         let user = await this.usersService.getByUsername(user_42.username);
         if (user && user.createdFrom !== CreatedFrom.OAUTH42) {
@@ -88,23 +98,34 @@ export class AuthService {
         let bdd_user = await this.usersService.getById42(user_42.id42);
         if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
             if (bdd_user.twoFactorsAuth) {
-                this.create_cookie(bdd_user, "double_authentification", res);
+                this.create_cookie(
+                    bdd_user,
+                    "double_authentification",
+                    req,
+                    res
+                );
                 await this.usersService.generateDoubleAuthCode(bdd_user.uuid);
             } else {
-                this.create_cookie(bdd_user, "authentification", res);
+                this.create_cookie(bdd_user, "authentification", req, res);
             }
             return bdd_user;
         } else {
             let new_user: UserEntity = await this.usersService.saveUser(
                 user_42
             );
-            this.create_cookie(new_user, "authentification", res);
+            this.create_cookie(new_user, "authentification", req, res);
             return new_user;
         }
     }
 
-    async signin_local_user(username: string, password: string, res) {
+    async signin_local_user(
+        @Req() req,
+        username: string,
+        password: string,
+        @Res() res
+    ) {
         let user: UserEntity = await this.usersService.getByUsername(username);
+        console.log("Input password : ", password);
         if (
             user &&
             user.createdFrom === CreatedFrom.REGISTER &&
@@ -112,12 +133,12 @@ export class AuthService {
         ) {
             if (user.valideEmail === false) {
                 await this.usersService.resendEmail(user.uuid);
-                this.create_cookie(user, "email_validation", res);
+                this.create_cookie(user, "email_validation", req, res);
             } else if (user.twoFactorsAuth === true) {
-                this.create_cookie(user, "double_authentification", res);
+                this.create_cookie(user, "double_authentification", req, res);
                 await this.usersService.generateDoubleAuthCode(user.uuid);
             } else {
-                this.create_cookie(user, "authentification", res);
+                this.create_cookie(user, "authentification", req, res);
             }
             return;
         }

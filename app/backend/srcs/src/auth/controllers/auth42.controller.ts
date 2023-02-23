@@ -25,6 +25,7 @@ export class AuthController {
     async forty_two_redirect(@Request() req, @Response() res) {
         let user = await this.authService.signin_or_register_42_user(
             req.user,
+            req,
             res
         );
         if (user === null) {

@@ -42,7 +42,7 @@ export class DoubleAuthController {
             if (user.doubleAuthentificationCode.length != 6) {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
-            this.authService.create_cookie(user, "authentification", res);
+            this.authService.create_cookie(user, "authentification", req, res);
             this.userService.delete2faCode(req.user.uuid);
             return "OK";
         }

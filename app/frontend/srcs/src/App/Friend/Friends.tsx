@@ -204,15 +204,27 @@ export default function Friends(props: any) {
                                         <menu className="friend-menu">
                                             <ul className="friend-menu-ul">
                                                 <li className="friend-menu-li">
-                                                    Invite to play
+                                                    <button
+                                                        className="friend-menu-button"
+                                                        onClick={() =>
+                                                            profile(
+                                                                friend[
+                                                                    "username"
+                                                                ]
+                                                            )
+                                                        }
+                                                    >
+                                                        Invite to play
+                                                    </button>
                                                 </li>
                                                 <li className="friend-menu-li">
-                                                    <button>
+                                                    <button className="friend-menu-button">
                                                         Direct Message
                                                     </button>
                                                 </li>
                                                 <li className="friend-menu-li">
                                                     <button
+                                                        className="friend-menu-button"
                                                         onClick={() =>
                                                             profile(
                                                                 friend[
@@ -226,6 +238,7 @@ export default function Friends(props: any) {
                                                 </li>
                                                 <li className="friend-menu-li">
                                                     <button
+                                                        className="friend-menu-button"
                                                         onClick={() =>
                                                             removeFriend(
                                                                 friend[
@@ -240,6 +253,7 @@ export default function Friends(props: any) {
                                                 </li>
                                                 <li className="friend-menu-li">
                                                     <button
+                                                        className="friend-menu-button"
                                                         onClick={() =>
                                                             blockUser(
                                                                 friend[

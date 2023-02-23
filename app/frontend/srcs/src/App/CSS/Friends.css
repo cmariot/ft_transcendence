@@ -61,9 +61,11 @@
     padding: 0px;
     margin: 0px;
     position: absolute;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 0px 15px 15px;
+    background-color: #a3a3a3;
+    border: 3px solid #737373;
+    border-radius: 10px;
+    padding: 10px;
+    justify-content: center;
 }
 
 .friend-menu-ul {
@@ -73,10 +75,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    width: -moz-available;
 }
-
-/* Feuille de style intégrée #11 | https://localhost:8443/friends */
 
 #friend-list {
     padding: 10px;
@@ -109,7 +110,6 @@
     margin-block: 15px;
 }
 #friend-list {
-    /* border: 1px solid black; */
     border: 3px solid #737373;
 }
 
@@ -118,11 +118,8 @@
 }
 
 #add-friend {
-    /* border: 1px solid black; */
     border: 3px solid #737373;
 }
-
-/* Élément | https://localhost:8443/friends */
 
 #friend-list-main > p:nth-child(1) {
     color: #1e1e1e;
@@ -136,14 +133,10 @@
     background-color: rgb(48, 180, 48);
 }
 
-/* Inline #14 | https://localhost:8443/friends */
-
 .friend-middle-div {
     align-items: center;
     justify-content: center;
 }
-
-/* Inline #14 | https://localhost:8443/friends */
 
 .friend-middle-div {
     justify-content: center;
@@ -175,12 +168,10 @@
 }
 
 #friend-list {
-    /* width: 100%; */
     width: -moz-available;
 }
 
 .friend {
-    /* align-items: \\; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,4 +180,92 @@
 
 #friend-list {
     width: auto;
+}
+
+.friend-menu-display {
+    width: 150px;
+}
+
+.friend-menu-li {
+    width: -moz-available;
+}
+
+.friend-menu-button {
+    width: -moz-available;
+}
+
+.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
+    width: -moz-available;
+}
+
+/* Feuille de style intégrée #14 | https://localhost:8443/friends */
+
+.friend-menu-display {
+    width: 150px;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/friends */
+
+.friend-menu-li {
+    width: -moz-available;
+}
+
+.friend-menu-button {
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+#friend-list {
+    width: 500px;
+    padding: 20px;
+}
+
+/* Feuille de style intégrée #14 | https://localhost:8443/friends */
+
+.friend {
+    /* width: auto; */
+    width: -moz-available;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+#add-friend {
+    width: 500px;
+}
+
+.friend-menu-display {
+    width: 150px;
+}
+
+.friend-menu-li {
+    width: -moz-available;
+}
+
+.friend-menu-button {
+    width: -moz-available;
+}
+
+.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
+    width: -moz-available;
+}
+
+#friend-list-main > ul:nth-child(1) {
+    width: 500px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.friend {
+    width: -moz-available;
+}
+
+#add-friend {
+    width: 500px;
 }

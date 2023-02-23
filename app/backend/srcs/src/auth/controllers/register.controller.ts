@@ -25,13 +25,14 @@ export class RegisterController {
     ) {}
 
     @Post()
-    async register(@Body() registerDto: RegisterDto, @Res() res) {
+    async register(@Body() registerDto: RegisterDto, @Res() res, @Req() req) {
         res.clearCookie();
         let user: UserEntity = await this.userService.register(registerDto);
         if (user) {
             return this.authService.create_cookie(
                 user,
                 "email_validation",
+                req,
                 res
             );
         }
@@ -69,6 +70,7 @@ export class RegisterController {
             return this.authService.create_cookie(
                 user,
                 "authentification",
+                req,
                 res
             );
         }
