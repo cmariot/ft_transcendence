@@ -18,4 +18,11 @@ export class SocketService {
             username: username,
         });
     }
+
+    async disconnect_user(socketId: string) {
+        let socket = this.server.sockets.sockets.get(socketId);
+        if (socket) {
+            socket.emit("userLogout", {});
+        }
+    }
 }

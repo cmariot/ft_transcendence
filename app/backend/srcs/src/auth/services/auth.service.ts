@@ -64,8 +64,6 @@ export class AuthService {
                 .clearCookie("double_authentification")
                 .cookie(type, cookie_value, {
                     maxAge: 1000 * 60 * 60 * 2, // 2 hours
-                    sameSite: "none",
-                    secure: true,
                 })
                 .send(type);
         }

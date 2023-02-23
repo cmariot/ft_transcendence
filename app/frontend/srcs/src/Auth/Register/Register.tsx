@@ -76,7 +76,7 @@ export default function Register() {
                 </p>
             </aside>
 
-            <form id="register-form">
+            <form id="register-form" autoComplete="off">
                 <h3>Register</h3>
                 <input
                     id="username-register"

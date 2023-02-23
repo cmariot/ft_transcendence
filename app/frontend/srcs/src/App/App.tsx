@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ChatParent } from "./Home/Chat/ChatParent";
 import { socket } from "../Contexts/WebsocketContext";
 import ConfirmProfile from "./Settings/ConfirmProfile";
+import { useNavigate } from "react-router-dom";
 
 export const UserContext = React.createContext({
     username: "",
@@ -27,6 +28,7 @@ export const App = () => {
     const [blocked, setBlocked] = useState([]);
     const [firstLog, setFirstLog] = useState(false);
     const [friendUpdate, setFriendUpdate] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios
@@ -63,6 +65,10 @@ export const App = () => {
             .catch((error) => {
                 console.log(error.response);
             });
+        socket.on("userLogout", () => {
+            console.log("LAAAAA");
+            //navigate("/login");
+        });
     }, []);
 
     useEffect(() => {

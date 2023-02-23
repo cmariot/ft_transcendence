@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import "../CSS/Friends.css";
 import { UserContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 export default function Friends(props: any) {
     let user = useContext(UserContext);
@@ -128,6 +129,24 @@ export default function Friends(props: any) {
             );
         }
     }
+
+    const navigate = useNavigate();
+    async function profile(username: string) {
+        navigate("/profile/" + username);
+    }
+
+    async function blockUser(username: string, index: number) {
+        toogleMenu(index);
+        await axios
+            .post("/api/profile/block", { username: username })
+            .then(async (response) => {
+                user.setBlocked(response.data);
+            })
+            .catch((error) => {
+                console.log(error.data);
+            });
+    }
+
     // Voir ce qui est obligatoire au niveau du sujet a modif si necessaire
     // - Photo de profil des amis : Ok mais pas mis a jour automatiquement lorsqu'ils la changent
     // - Status : utiliser socket pour le mettre a jour automatiquement
@@ -142,7 +161,7 @@ export default function Friends(props: any) {
         <div id="friends">
             <aside id="add-friend">
                 <h2>Add a new friend</h2>
-                <form onSubmit={addFriend}>
+                <form onSubmit={addFriend} autoComplete="off">
                     <input
                         type="text"
                         value={newFriend}
@@ -188,10 +207,22 @@ export default function Friends(props: any) {
                                                     Invite to play
                                                 </li>
                                                 <li className="friend-menu-li">
-                                                    Direct Message
+                                                    <button>
+                                                        Direct Message
+                                                    </button>
                                                 </li>
                                                 <li className="friend-menu-li">
-                                                    Profile
+                                                    <button
+                                                        onClick={() =>
+                                                            profile(
+                                                                friend[
+                                                                    "username"
+                                                                ]
+                                                            )
+                                                        }
+                                                    >
+                                                        Profile
+                                                    </button>
                                                 </li>
                                                 <li className="friend-menu-li">
                                                     <button
@@ -208,7 +239,18 @@ export default function Friends(props: any) {
                                                     </button>
                                                 </li>
                                                 <li className="friend-menu-li">
-                                                    Block
+                                                    <button
+                                                        onClick={() =>
+                                                            blockUser(
+                                                                friend[
+                                                                    "username"
+                                                                ],
+                                                                index
+                                                            )
+                                                        }
+                                                    >
+                                                        Block
+                                                    </button>
                                                 </li>
                                             </ul>
                                         </menu>

@@ -57,7 +57,7 @@ const Validate = () => {
                 <button onClick={resendCode}>Resend code</button>
             </aside>
 
-            <form id="validation-form">
+            <form id="validation-form" autoComplete="off">
                 <h3>Enter the code you received by email</h3>
                 <input
                     type="text"

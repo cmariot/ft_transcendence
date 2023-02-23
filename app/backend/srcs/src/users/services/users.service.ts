@@ -172,24 +172,21 @@ export class UsersService {
     async userDisconnection(socket: string): Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
-            let index = user.socketId.findIndex(
-                (element) => element === socket
-            );
-            if (index > -1) {
-                user.socketId.splice(index, 1);
+            let i = 0;
+            while (i < user.socketId.length) {
+                await this.socketService.disconnect_user(user.socketId[i]);
+                i++;
             }
             await this.userRepository.update(
                 { uuid: user.uuid },
-                { socketId: user.socketId }
+                { socketId: [] }
             );
-            if (user.socketId.length === 0) {
-                user.status = "Offline";
-                await this.userRepository.update(
-                    { uuid: user.uuid },
-                    { status: "Offline" }
-                );
-                return user.username;
-            }
+            user.status = "Offline";
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { status: "Offline" }
+            );
+            return user.username;
         }
         return "good bye";
     }

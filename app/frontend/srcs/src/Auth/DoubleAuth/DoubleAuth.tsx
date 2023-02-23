@@ -58,7 +58,7 @@ const DoubleAuth = () => {
                 <button onClick={resend2faCode}>Resend code</button>
             </aside>
 
-            <form id="validation-2fa-form">
+            <form id="validation-2fa-form" autoComplete="off">
                 <h3>Enter the code you received by email</h3>
                 <input
                     type="text"
@@ -66,6 +66,7 @@ const DoubleAuth = () => {
                     placeholder="Check your emails"
                     onChange={handleValidate2faChange}
                     autoFocus
+                    autoComplete="off"
                     required
                 />
                 <div id="form-2fa-choices">
