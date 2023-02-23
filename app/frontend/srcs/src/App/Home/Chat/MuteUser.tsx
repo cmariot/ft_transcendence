@@ -97,7 +97,7 @@ const MuteUser = () => {
                 <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section id="mute-menu-section" className="chat-section">
-                <form id="form-mute-user" onSubmit={(event) => muteUser(event)}>
+                <form id="form-mute-user" onSubmit={(event) => muteUser(event)} autoComplete="off">
                     <input
                         type="text"
                         id="new-mute-input"

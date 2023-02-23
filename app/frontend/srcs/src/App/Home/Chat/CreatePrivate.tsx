@@ -70,6 +70,7 @@ const CreatePrivate = () => {
                     }}
                     id="chat-create-private-form"
                     className="chat-main"
+autoComplete="off"
                 >
                     <input
                         id="new-private-name"

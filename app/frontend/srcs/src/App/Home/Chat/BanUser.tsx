@@ -96,7 +96,7 @@ const BanUser = () => {
                 <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section className="chat-section">
-                <form onSubmit={(event) => banUser(event)}>
+                <form onSubmit={(event) => banUser(event)} autoComplete="off">
                     <input
                         type="text"
                         id="new-ban"

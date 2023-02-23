@@ -39,7 +39,7 @@ const ChatMessage = () => {
     }
 
     return (
-        <form onSubmit={sendMessage} id="send-message-form">
+        <form onSubmit={sendMessage} id="send-message-form" autoComplete="off">
             <input
                 id="chat-message-input"
                 type="text"

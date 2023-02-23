@@ -46,7 +46,7 @@ const KickUser = () => {
                 <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section className="chat-section">
-                <form onSubmit={(event) => kickUser(event)}>
+                <form onSubmit={(event) => kickUser(event)} autoComplete="off">
                     <input
                         type="text"
                         id="new-kick"

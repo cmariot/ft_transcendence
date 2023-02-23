@@ -43,7 +43,7 @@ export default function EditUsername() {
 
     return (
         <div id="username-main">
-            <form id="username-form">
+            <form id="username-form" autoComplete="off">
                 <input
                     id="username"
                     type="text"

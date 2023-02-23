@@ -85,7 +85,7 @@ const EditAdmins = () => {
                 <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section className="chat-section">
-                <form onSubmit={(event) => addAdministrator(event)}>
+                <form onSubmit={(event) => addAdministrator(event)} autoComplete="off">
                     <input
                         type="text"
                         id="new-admin-channel"

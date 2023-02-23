@@ -70,7 +70,9 @@ const JoinProtected = () => {
                 id="join-protected-channel-section"
             >
                 <p>Enter the {chat.targetChannel}'s password :</p>
-                <form onSubmit={submitProtectedForm}>
+                <form onSubmit={submitProtectedForm}
+                autoComplete="off"
+                >
                     <input
                         type="password"
                         id="password-protected-channel"

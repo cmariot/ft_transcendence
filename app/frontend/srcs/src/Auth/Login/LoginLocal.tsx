@@ -65,7 +65,7 @@ const LoginLocal = () => {
     return (
         <div>
             <h3>Login</h3>
-            <form id="login-local-form">
+            <form id="login-local-form" autoComplete="off">
                 <input
                     type="text"
                     id="username"
