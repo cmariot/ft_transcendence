@@ -326,7 +326,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
-        //this.socketService.userUpdate(newUsername);
+        this.socketService.userUpdate(newUsername);
         return "Username updated.";
     }
 

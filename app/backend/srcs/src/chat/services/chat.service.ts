@@ -68,9 +68,21 @@ export class ChatService {
                 while (j < channels[i].users.length) {
                     if (channels[i].users[j].uuid === user.uuid) {
                         // user has joined this channel
-                        userChannels.push(channels[i]);
-                        found = true;
-                        break;
+                        let k = 0;
+                        let banned = false;
+                        while (k < channels[i].banned_users.length) {
+                            if (
+                                channels[i].banned_users[k].uuid === user.uuid
+                            ) {
+                                banned = true;
+                                break;
+                            }
+                            k++;
+                        }
+                        if (banned === false) {
+                            userChannels.push(channels[i]);
+                            found = true;
+                        }
                     }
                     j++;
                 }

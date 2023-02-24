@@ -4,9 +4,11 @@ import axios from "axios";
 import { ChatContext } from "./ChatParent";
 import ChatMessage from "./ChatMessage";
 import ChatMessages from "./ChatMessages";
+import { UserContext } from "../../App";
 
 const ChatConv = () => {
     const chat = useContext(ChatContext);
+    const user = useContext(UserContext);
 
     function closeChat() {
         const current = document.getElementById("chat-conversation");
@@ -27,6 +29,9 @@ const ChatConv = () => {
         if (chat.ban === true) {
             const current = document.getElementById("chat-conversation");
             const current2 = document.getElementById("chat-menu-options");
+            const current3 = document.getElementById("edit-kick");
+            const current4 = document.getElementById("edit-mute");
+            const current5 = document.getElementById("edit-ban");
             const menu = document.getElementById("chat-your-channels");
             if (menu && current && current2) {
                 current.style.display = "none";
@@ -34,6 +39,15 @@ const ChatConv = () => {
                 if (current2.style.display === "flex") {
                     toogleChatMenu();
                 }
+            }
+            if (current3) {
+                current3.style.display = "none";
+            }
+            if (current4) {
+                current4.style.display = "none";
+            }
+            if (current5) {
+                current5.style.display = "none";
             }
             chat.changeCurrentChannel("");
             chat.setBan(false);

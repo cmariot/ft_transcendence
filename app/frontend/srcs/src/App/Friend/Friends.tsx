@@ -103,7 +103,7 @@ export default function Friends(props: any) {
 
     useEffect(() => {
         setFriends(user.friends);
-    }, [user.friends]);
+    }, [user.friends, user.friendUpdate]);
 
     useEffect(() => {
         setBlocked(user.blocked);
@@ -145,6 +145,14 @@ export default function Friends(props: any) {
             .catch((error) => {
                 console.log(error.data);
             });
+    }
+
+    function directMessage(username: string, index: number) {
+        let menus = document.getElementsByClassName("friend-menu");
+        if (menus[index].classList.contains("friend-menu-display")) {
+            menus[index].classList.remove("friend-menu-display");
+        }
+        navigate("/");
     }
 
     // Voir ce qui est obligatoire au niveau du sujet a modif si necessaire
@@ -211,8 +219,16 @@ export default function Friends(props: any) {
                                                 </button>
                                             </li>
                                             <li className="friend-menu-li">
-                                                <button className="friend-menu-button">
-                                                    Direct Message (todo)
+                                                <button
+                                                    className="friend-menu-button"
+                                                    onClick={() =>
+                                                        directMessage(
+                                                            friend["username"],
+                                                            index
+                                                        )
+                                                    }
+                                                >
+                                                    Direct message
                                                 </button>
                                             </li>
                                             <li className="friend-menu-li">

@@ -18,6 +18,7 @@ export const UserContext = React.createContext({
     setFriends: (newFriends: []) => {},
     blocked: [],
     setBlocked: (newFriends: []) => {},
+    friendUpdate: false,
 });
 
 export const App = () => {
@@ -116,6 +117,7 @@ export const App = () => {
         setFriends,
         blocked,
         setBlocked,
+        friendUpdate,
     };
 
     if (firstLog === true) {

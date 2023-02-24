@@ -453,3 +453,7 @@
 #chat-main-ul {
     list-style-type: none;
 }
+
+#channel-admins-list {
+    gap: 5px;
+}

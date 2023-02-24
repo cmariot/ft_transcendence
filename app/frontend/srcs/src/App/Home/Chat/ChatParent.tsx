@@ -97,6 +97,20 @@ export const ChatParent = () => {
                 socket.channel === currentChannel
             ) {
                 setFirstLoad(!firstLoad);
+                let currentUserChannels = userChannels;
+                let currentAvailableChannels = availableChannels;
+
+                if (currentUserChannels.has(socket.channelName) === true) {
+                    currentUserChannels.delete(socket.channelName);
+                    updateUserChannels(currentUserChannels);
+                }
+                if (
+                    currentAvailableChannels.has(socket.channelName) === false
+                ) {
+                    currentAvailableChannels.delete(socket.channelName);
+                    updateAvailableChannels(currentAvailableChannels);
+                }
+
                 setBan(true);
             }
         });

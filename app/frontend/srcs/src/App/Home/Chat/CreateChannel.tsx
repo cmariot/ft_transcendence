@@ -132,6 +132,7 @@ const CreateChannel = () => {
                 <form
                     onSubmit={submitCreateChannelForm}
                     id="chat-edit-password-form"
+                    autoComplete="off"
                     className="chat-main"
                 >
                     <input
@@ -148,8 +149,8 @@ const CreateChannel = () => {
                         type="password"
                         placeholder="Channel's password"
                         value={newChannelPassword}
-                        onChange={handleNewChannelPasswordChange}
                         autoComplete="off"
+                        onChange={handleNewChannelPasswordChange}
                     />
                     <label>
                         Require a password

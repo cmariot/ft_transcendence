@@ -35,6 +35,8 @@ const JoinProtected = () => {
                 userchannels.set(chat.targetChannel, {
                     channelType: "protected",
                 });
+                let availablechannels = chat.availableChannels;
+                availablechannels.delete(chat.targetChannel);
                 chat.updateUserChannels(userchannels);
                 const current = document.getElementById("chat-join-protected");
                 const menu = document.getElementById("chat-conversation");
