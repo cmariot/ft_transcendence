@@ -1,11 +1,14 @@
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import { useState, useEffect, useContext } from "react";
 import "../CSS/Friends.css";
 import { UserContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import { ChatContext } from "../Home/Chat/ChatParent";
 
-export default function Friends(props: any) {
+export default function Friends() {
     let user = useContext(UserContext);
+    let chat = useContext(ChatContext);
+
     const [newFriend, setNewFriend] = useState("");
     const [friends, setFriends] = useState(user.friends);
     const [blocked, setBlocked] = useState(user.blocked);
@@ -147,12 +150,47 @@ export default function Friends(props: any) {
             });
     }
 
-    function directMessage(username: string, index: number) {
+    async function directMessage(username: string, index: number) {
         let menus = document.getElementsByClassName("friend-menu");
         if (menus[index].classList.contains("friend-menu-display")) {
             menus[index].classList.remove("friend-menu-display");
         }
         navigate("/");
+        await axios
+            .post("/api/chat/direct-message", { username: username })
+            .then((response) => {
+                if (response.status === HttpStatusCode.NoContent) {
+                    chat.startConversationWith(username);
+                    const current =
+                        document.getElementById("chat-your-channels");
+                    const menu = document.getElementById("chat-create-private");
+                    if (menu && current) {
+                        current.style.display = "none";
+                        menu.style.display = "flex";
+                    }
+                    return;
+                } else {
+                    const current =
+                        document.getElementById("chat-your-channels");
+                    const menu = document.getElementById("chat-conversation");
+                    if (menu && current) {
+                        current.style.display = "none";
+                        menu.style.display = "flex";
+                    }
+                    chat.changeCurrentChannel(response.data.channelName);
+                    chat.setCurrentChannelMessages(response.data.data.messages);
+                    chat.setChannelOwner(response.data.data.channel_owner);
+                    chat.changeCurrentChannelType("private");
+                    chat.setCurrentChannelAdmins(
+                        response.data.data.channel_admins
+                    );
+                    chat.setCurrentChannelMute(response.data.data.muted_users);
+                    chat.setCurrentChannelBan(response.data.data.banned_users);
+                }
+            })
+            .catch((error) => {
+                console.log("Catch : ", error);
+            });
     }
 
     // Voir ce qui est obligatoire au niveau du sujet a modif si necessaire
