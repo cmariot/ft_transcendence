@@ -42,6 +42,7 @@ export class AuthService {
                 i++;
             }
         }
+		this.usersService.clearSocket(user.uuid);
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
