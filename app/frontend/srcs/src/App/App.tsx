@@ -67,6 +67,7 @@ export const App = () => {
                 console.log(error.response);
             });
         socket.on("userLogout", () => {
+			console.log("USER DECO !!!!!");
             setLogged(!logged);
         });
     }, [logged]);

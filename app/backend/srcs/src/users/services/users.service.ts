@@ -169,7 +169,16 @@ export class UsersService {
         );
         return user.username;
     }
-    async userDisconnection(socket: string): Promise<string> {
+
+	async clearSocket(userUuid: string){
+		this.userRepository.update(
+			{uuid: userUuid},
+			{socketId: [] }
+		)
+	}
+
+    
+	async userDisconnection(socket: string): Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
             let i = 0;
