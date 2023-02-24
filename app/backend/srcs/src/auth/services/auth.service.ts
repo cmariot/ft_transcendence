@@ -10,8 +10,8 @@ import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { MailerService } from "@nestjs-modules/mailer";
 import { SocketService } from "src/chat/services/socket.service";
+import { LoginDto } from "../dtos/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -118,18 +118,15 @@ export class AuthService {
         }
     }
 
-    async signin_local_user(
-        @Req() req,
-        username: string,
-        password: string,
-        @Res() res
-    ) {
-        let user: UserEntity = await this.usersService.getByUsername(username);
-        console.log("Input password : ", password);
+    async signin_local_user(loginDto: LoginDto, @Req() req, @Res() res) {
+        let user: UserEntity = await this.usersService.getByUsername(
+            loginDto.username
+        );
+        console.log("Input password : ", loginDto.password);
         if (
             user &&
             user.createdFrom === CreatedFrom.REGISTER &&
-            (await bcrypt.compare(password, user.password)) === true
+            (await bcrypt.compare(loginDto.password, user.password)) === true
         ) {
             if (user.valideEmail === false) {
                 await this.usersService.resendEmail(user.uuid);

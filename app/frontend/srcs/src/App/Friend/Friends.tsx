@@ -70,7 +70,7 @@ export default function Friends(props: any) {
                         <ul id="friend-list">
                             <h2>blocked list</h2>
                             {blocked.map((blocked, index) => (
-                                <li className="friend" key={index}>
+                                <li className="friend blocked" key={index}>
                                     <img
                                         src={
                                             "/api/profile/" +
@@ -179,96 +179,82 @@ export default function Friends(props: any) {
                             <h2>Friends list</h2>
                             {friends.map((friend, index) => (
                                 <li className="friend" key={index}>
-                                    <img
-                                        src={
-                                            "/api/profile/" +
-                                            friend["username"] +
-                                            "/image"
-                                        }
-                                        className="friend-profile-picture"
-                                        alt="Friend's avatar"
-                                    />
-                                    <div className="friend-middle-div">
-                                        {displayStatus(friend["status"])}
-                                        <p className="friend-username">
-                                            <b>{friend["username"]}</b>
-                                        </p>
-                                    </div>
-                                    <div>
+                                    <div className="div-friend-list">
+                                        <img
+                                            src={
+                                                "/api/profile/" +
+                                                friend["username"] +
+                                                "/image"
+                                            }
+                                            className="friend-profile-picture"
+                                            alt="Friend's avatar"
+                                        />
+                                        <div className="friend-middle-div">
+                                            {displayStatus(friend["status"])}
+                                            <p className="friend-username">
+                                                <b>{friend["username"]}</b>
+                                            </p>
+                                        </div>
+
                                         <button
                                             className="friend-profile-button"
                                             onClick={() => toogleMenu(index)}
                                         >
                                             Menu
                                         </button>
-                                        <menu className="friend-menu">
-                                            <ul className="friend-menu-ul">
-                                                <li className="friend-menu-li">
-                                                    <button
-                                                        className="friend-menu-button"
-                                                        onClick={() =>
-                                                            profile(
-                                                                friend[
-                                                                    "username"
-                                                                ]
-                                                            )
-                                                        }
-                                                    >
-                                                        Invite to play
-                                                    </button>
-                                                </li>
-                                                <li className="friend-menu-li">
-                                                    <button className="friend-menu-button">
-                                                        Direct Message
-                                                    </button>
-                                                </li>
-                                                <li className="friend-menu-li">
-                                                    <button
-                                                        className="friend-menu-button"
-                                                        onClick={() =>
-                                                            profile(
-                                                                friend[
-                                                                    "username"
-                                                                ]
-                                                            )
-                                                        }
-                                                    >
-                                                        Profile
-                                                    </button>
-                                                </li>
-                                                <li className="friend-menu-li">
-                                                    <button
-                                                        className="friend-menu-button"
-                                                        onClick={() =>
-                                                            removeFriend(
-                                                                friend[
-                                                                    "username"
-                                                                ],
-                                                                index
-                                                            )
-                                                        }
-                                                    >
-                                                        Remove Friend
-                                                    </button>
-                                                </li>
-                                                <li className="friend-menu-li">
-                                                    <button
-                                                        className="friend-menu-button"
-                                                        onClick={() =>
-                                                            blockUser(
-                                                                friend[
-                                                                    "username"
-                                                                ],
-                                                                index
-                                                            )
-                                                        }
-                                                    >
-                                                        Block
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </menu>
                                     </div>
+                                    <menu className="friend-menu">
+                                        <ul className="friend-menu-ul">
+                                            <li className="friend-menu-li">
+                                                <button className="friend-menu-button">
+                                                    Invite to play (todo)
+                                                </button>
+                                            </li>
+                                            <li className="friend-menu-li">
+                                                <button className="friend-menu-button">
+                                                    Direct Message (todo)
+                                                </button>
+                                            </li>
+                                            <li className="friend-menu-li">
+                                                <button
+                                                    className="friend-menu-button"
+                                                    onClick={() =>
+                                                        profile(
+                                                            friend["username"]
+                                                        )
+                                                    }
+                                                >
+                                                    Profile
+                                                </button>
+                                            </li>
+                                            <li className="friend-menu-li">
+                                                <button
+                                                    className="friend-menu-button"
+                                                    onClick={() =>
+                                                        removeFriend(
+                                                            friend["username"],
+                                                            index
+                                                        )
+                                                    }
+                                                >
+                                                    Remove Friend
+                                                </button>
+                                            </li>
+                                            <li className="friend-menu-li">
+                                                <button
+                                                    className="friend-menu-button"
+                                                    onClick={() =>
+                                                        blockUser(
+                                                            friend["username"],
+                                                            index
+                                                        )
+                                                    }
+                                                >
+                                                    Block
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </menu>
                                 </li>
                             ))}
                         </ul>

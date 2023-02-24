@@ -60,10 +60,7 @@
     display: flex;
     padding: 0px;
     margin: 0px;
-    position: absolute;
     background-color: #a3a3a3;
-    border: 3px solid #737373;
-    border-radius: 10px;
     padding: 10px;
     justify-content: center;
 }
@@ -194,10 +191,6 @@
     width: -moz-available;
 }
 
-.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
-    width: -moz-available;
-}
-
 /* Feuille de style intégrée #14 | https://localhost:8443/friends */
 
 .friend-menu-display {
@@ -215,10 +208,6 @@
 }
 
 /* Élément | https://localhost:8443/friends */
-
-.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
-    width: -moz-available;
-}
 
 /* Élément | https://localhost:8443/friends */
 
@@ -252,10 +241,6 @@
     width: -moz-available;
 }
 
-.friend-menu-display > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1) {
-    width: -moz-available;
-}
-
 #friend-list-main > ul:nth-child(1) {
     width: 500px;
     padding: 20px;
@@ -268,4 +253,69 @@
 
 #add-friend {
     width: 500px;
+}
+
+.div-friend-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Feuille de style intégrée #14 | https://localhost:8443/friends */
+
+.friend {
+    display: flex;
+    flex-direction: column;
+}
+
+.friend-menu-display {
+    width: -moz-available;
+}
+
+.div-friend-list {
+    justify-content: space-between;
+    width: -moz-available;
+}
+
+.friend-profile-picture {
+    /* margin: 20px; */
+    margin-block: 20px;
+    margin-inline: 0;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/friends */
+
+.friend-menu-button {
+    text-align: center;
+}
+
+.friend-menu-button {
+    margin-inline: 0;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/friends */
+
+.friend.blocked {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Feuille de style intégrée #15 | https://localhost:8443/friends */
+
+.friend-middle-div {
+    width: -moz-available;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.friend-username {
+    margin-left: 10px;
+}
+
+/* Élément | https://localhost:8443/friends */
+
+#add-friend > form:nth-child(2) > input:nth-child(1) {
+    width: 70%;
 }

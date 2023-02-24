@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
@@ -37,6 +37,10 @@ const ChatMessage = () => {
                 );
             });
     }
+
+    useEffect(() => {
+        setMessage("");
+    }, [chat.currentChannel]);
 
     return (
         <form onSubmit={sendMessage} id="send-message-form" autoComplete="off">

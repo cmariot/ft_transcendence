@@ -290,10 +290,10 @@ export class ChatController {
             throw new UnauthorizedException("You are not authorized");
         }
         if (kickedUser.uuid === targetChannel.channelOwner) {
-            throw new UnauthorizedException("You cannot ban this user.");
+            throw new UnauthorizedException("You cannot kick this user.");
         }
         if (kickedUser.uuid === req.user.uuid) {
-            throw new UnauthorizedException("You cannot ban yourself.");
+            throw new UnauthorizedException("You cannot kick yourself.");
         }
         return this.chatService.kick(user, kickedUser, targetChannel, options);
     }
@@ -328,7 +328,7 @@ export class ChatController {
             throw new UnauthorizedException("You are not authorized");
         }
         if (mutedUser.uuid === targetChannel.channelOwner) {
-            throw new UnauthorizedException("You cannot mute this user.");
+            throw new UnauthorizedException("You cannot unban this user.");
         }
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unban yourself.");
@@ -414,7 +414,7 @@ export class ChatController {
             throw new UnauthorizedException("You are not authorized");
         }
         if (mutedUser.uuid === targetChannel.channelOwner) {
-            throw new UnauthorizedException("You cannot mute this user.");
+            throw new UnauthorizedException("You cannot unmute this user.");
         }
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unmute yourself.");

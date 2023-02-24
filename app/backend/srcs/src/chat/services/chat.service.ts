@@ -316,6 +316,47 @@ export class ChatService {
         };
     }
 
+    async join_protected_channel(
+        channelName: string,
+        channelPassword: string,
+        uuid: string
+    ) {
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (channel.channelType === ChannelType.PUBLIC) {
+            this.join_channel(channelName, uuid);
+        }
+        if (!channel || channel.channelType !== ChannelType.PROTECTED)
+            throw new UnauthorizedException("Invalid channel");
+        let user = await this.userService.getByID(uuid);
+        if (!user) throw new UnauthorizedException("Invalid user");
+        const isMatch = await bcrypt.compare(
+            channelPassword,
+            channel.channelPassword
+        );
+        if (!isMatch) throw new UnauthorizedException("Invalid password");
+
+        let channel_users = channel.users;
+        let i = 0;
+        let found = false;
+        while (i < channel_users.length) {
+            if (channel_users[i].uuid === user.uuid) {
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            channel_users.push({ uuid: user.uuid });
+            await this.chatRepository.update(
+                { channelName: channel.channelName },
+                { users: channel_users }
+            );
+        }
+        return this.join_channel(channelName, uuid);
+    }
+
     async join_channel(channelName: string, userID: string) {
         let channels = await this.chatRepository.find();
         if (channels.length === 0) {
@@ -527,46 +568,6 @@ export class ChatService {
         } else {
             throw new UnauthorizedException();
         }
-    }
-
-    async join_protected_channel(
-        channelName: string,
-        channelPassword: string,
-        uuid: string
-    ) {
-        let channel = await this.chatRepository.findOneBy({
-            channelName: channelName,
-        });
-        if (!channel || channel.channelType !== ChannelType.PROTECTED)
-            throw new UnauthorizedException("Invalid channel");
-        let user = await this.userService.getByID(uuid);
-        if (!user) throw new UnauthorizedException("Invalid user");
-        const isMatch = await bcrypt.compare(
-            channelPassword,
-            channel.channelPassword
-        );
-        if (!isMatch) throw new UnauthorizedException("Invalid password");
-
-        let channel_users = channel.users;
-        let i = 0;
-        let found = false;
-        while (i < channel_users.length) {
-            if (channel_users[i].uuid === user.uuid) {
-                found = true;
-                break;
-            }
-            i++;
-        }
-        if (found === false) {
-            channel_users.push({ uuid: user.uuid });
-            this.chatRepository.update(
-                { channelName: channel.channelName },
-                { users: channel_users }
-            );
-        }
-        this.chatGateway.userJoinChannel(channel.channelName, user.username);
-        this.chatGateway.channelUpdate();
-        return this.convertChannelMessages(uuid, channel.messages, channel);
     }
 
     async getConversationWith(username: string, uuid: string) {
