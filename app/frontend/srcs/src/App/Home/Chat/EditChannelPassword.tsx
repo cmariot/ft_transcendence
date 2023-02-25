@@ -145,7 +145,7 @@ const EditChannelPassword = () => {
                     }}
                     id="chat-create-channel-form"
                     className="chat-main"
-autoComplete="off"
+                    autoComplete="off"
                 >
                     <label>
                         Password required
