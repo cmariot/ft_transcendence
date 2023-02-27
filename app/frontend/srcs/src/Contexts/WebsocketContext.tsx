@@ -6,7 +6,7 @@ if (host === undefined) {
     console.log(
         "Error, you must define the websocket host in the frontend .env file."
     );
-    throw new Error();
+    host = "https://localhost:8443";
 }
 
 export const socket = io(host);

@@ -159,26 +159,25 @@ export class UsersService {
         status: string
     ): Promise<string> {
         let user: UserEntity = await this.getByUsername(username);
-        await this.user_status(user.username, status);
-        if (!user.socketId) user.socketId = new Array();
-        if (!user.socketId.find((element) => element === socket))
-            user.socketId.push(socket);
-        await this.userRepository.update(
-            { uuid: user.uuid },
-            { socketId: user.socketId }
-        );
-        return user.username;
+        if (user) {
+            await this.user_status(user.username, status);
+            if (!user.socketId) user.socketId = new Array();
+            if (!user.socketId.find((element) => element === socket))
+                user.socketId.push(socket);
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { socketId: user.socketId }
+            );
+            return user.username;
+        }
+        throw new HttpException("Invalid user", HttpStatus.FOUND);
     }
 
-	async clearSocket(userUuid: string){
-		this.userRepository.update(
-			{uuid: userUuid},
-			{socketId: [] }
-		)
-	}
+    async clearSocket(userUuid: string) {
+        this.userRepository.update({ uuid: userUuid }, { socketId: [] });
+    }
 
-    
-	async userDisconnection(socket: string): Promise<string> {
+    async userDisconnection(socket: string): Promise<string> {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
             let i = 0;

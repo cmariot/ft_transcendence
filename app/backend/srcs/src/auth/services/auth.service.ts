@@ -64,7 +64,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .redirect("https://e2r4p12.clusters.42paris.fr:8443/");
+                    .redirect(process.env.HOST);
             } else {
                 throw new UnauthorizedException();
             }

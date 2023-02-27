@@ -4,11 +4,9 @@ import axios from "axios";
 import { ChatContext } from "./ChatParent";
 import ChatMessage from "./ChatMessage";
 import ChatMessages from "./ChatMessages";
-import { UserContext } from "../../App";
 
 const ChatConv = () => {
     const chat = useContext(ChatContext);
-    const user = useContext(UserContext);
 
     function closeChat() {
         const current = document.getElementById("chat-conversation");
