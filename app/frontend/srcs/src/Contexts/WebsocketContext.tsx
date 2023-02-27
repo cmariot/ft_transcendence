@@ -1,6 +1,15 @@
 import { createContext } from "react";
 import { io, Socket } from "socket.io-client";
 
-export const socket = io("https://localhost:8443");
+let host: any = process.env.SOCKETHOST;
+if (host === undefined) {
+    console.log(
+        "Error, you must define the websocket host in the frontend .env file."
+    );
+    throw new Error();
+}
+
+export const socket = io(host);
+
 export const Websocketcontext = createContext<Socket>(socket);
 export const WebsocketProvider = Websocketcontext.Provider;

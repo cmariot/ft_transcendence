@@ -42,7 +42,7 @@ export class AuthService {
                 i++;
             }
         }
-		this.usersService.clearSocket(user.uuid);
+        this.usersService.clearSocket(user.uuid);
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
@@ -54,7 +54,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .redirect("https://localhost:8443/double-authentification");
+                    .redirect(process.env.HOST + "/double-authentification");
             } else if (type === "authentification") {
                 res.clearCookie("authentification")
                     .clearCookie("email_validation")
@@ -64,7 +64,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .redirect("https://localhost:8443/");
+                    .redirect("https://e2r4p12.clusters.42paris.fr:8443/");
             } else {
                 throw new UnauthorizedException();
             }

@@ -29,7 +29,7 @@ export class AuthController {
             res
         );
         if (user === null) {
-            res.redirect("https://localhost:8443/unavailable-username");
+            res.redirect(process.env.HOST + "/unavailable-username");
             throw new HttpException(
                 "This username is already registered, try to register manually",
                 HttpStatus.NOT_FOUND

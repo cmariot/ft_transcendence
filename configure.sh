@@ -64,6 +64,8 @@ create_backend()
 	read email_pass
 	echo "EMAIL_PASS=\"$email_pass\""						>> ./app/backend/.env
 
+	echo "HOST=https://$(hostname):$REVERSE_PROXY_PORT"		>> ./app/backend/.env
+
 }
 
 create_frontend()
@@ -72,6 +74,7 @@ create_frontend()
 	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
 	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""		>> ./app/frontend/.env
 	
+	echo "SOCKETHOST=$(hostname):$REVERSE_PROXY_PORT"		>> ./app/frontend/.env
 }
 
 create_pgadmin()
