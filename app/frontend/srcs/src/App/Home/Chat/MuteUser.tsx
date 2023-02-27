@@ -43,10 +43,8 @@ const MuteUser = () => {
                 username: newMute,
                 duration: muteDuration,
             })
-            .then(() => {
-                let previousMute: string[] = chat.currentChannelMute;
-                previousMute.push(newMute);
-                chat.setCurrentChannelMute(previousMute);
+            .then((response) => {
+                chat.setCurrentChannelMute(response.data);
                 setNewMute("");
             })
             .catch((error) => {
@@ -61,10 +59,8 @@ const MuteUser = () => {
                 username: username,
                 duration: "0",
             })
-            .then(() => {
-                let previousMute: string[] = chat.currentChannelMute;
-                previousMute.splice(index, 1);
-                chat.setCurrentChannelMute(previousMute);
+            .then((response) => {
+                chat.setCurrentChannelMute(response.data);
                 setUpdate(!update);
             })
             .catch((error) => {
@@ -97,7 +93,11 @@ const MuteUser = () => {
                 <button onClick={() => returnToChatMenu()}>return</button>
             </header>
             <section id="mute-menu-section" className="chat-section">
-                <form id="form-mute-user" onSubmit={(event) => muteUser(event)} autoComplete="off">
+                <form
+                    id="form-mute-user"
+                    onSubmit={(event) => muteUser(event)}
+                    autoComplete="off"
+                >
                     <input
                         type="text"
                         id="new-mute-input"

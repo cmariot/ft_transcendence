@@ -862,6 +862,14 @@ export class ChatService {
             muteOptions.username
         );
         this.chatGateway.channelUpdate();
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
     }
 
     async kick(
@@ -920,6 +928,15 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
+        this.chatGateway.channelUpdate();
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
     }
 
     async mute(
@@ -952,6 +969,15 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
+        this.chatGateway.channelUpdate();
+        let mute_usernames_list: string[] = [];
+        for (let j = 0; j < currentMuted.length; j++) {
+            let user = await this.userService.getByID(currentMuted[j].uuid);
+            if (user && user.username) {
+                mute_usernames_list.push(user.username);
+            }
+        }
+        return mute_usernames_list;
     }
 
     async unmute(
@@ -978,6 +1004,15 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
+        this.chatGateway.channelUpdate();
+        let mute_usernames_list: string[] = [];
+        for (let j = 0; j < currentMuted.length; j++) {
+            let user = await this.userService.getByID(currentMuted[j].uuid);
+            if (user && user.username) {
+                mute_usernames_list.push(user.username);
+            }
+        }
+        return mute_usernames_list;
     }
 
     async getMessages(channelName: string, uuid: string) {

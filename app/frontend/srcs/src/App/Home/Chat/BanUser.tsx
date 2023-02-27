@@ -42,10 +42,8 @@ const BanUser = () => {
                 username: newBanName,
                 duration: banDuration,
             })
-            .then(() => {
-                let previousBanned: string[] = chat.currentChannelBan;
-                previousBanned.push(newBanName);
-                chat.setCurrentChannelBan(previousBanned);
+            .then((response) => {
+                chat.setCurrentChannelBan(response.data);
                 setNewBan("");
             })
             .catch((error) => {
@@ -60,10 +58,8 @@ const BanUser = () => {
                 username: username,
                 duration: "0",
             })
-            .then(() => {
-                let previousBanned: string[] = chat.currentChannelBan;
-                previousBanned.splice(index, 1);
-                chat.setCurrentChannelBan(previousBanned);
+            .then((response) => {
+                chat.setCurrentChannelBan(response.data);
                 setUpdate(!update);
             })
             .catch((error) => {
