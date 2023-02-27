@@ -6,15 +6,46 @@ import { ChatContext } from "./ChatParent";
 const CreateChannel = () => {
     const chat = useContext(ChatContext);
 
-    const [newChannelName, setNewChannelName] = useState("");
-    const [protectedChannel, setProtectedChannel] = useState(false);
-    const [newChannelPassword, setNewChannelPassword] = useState("");
+    const [channelName, setChannelName] = useState("");
+    const [channelType, setChannelType] = useState("public");
+    const [channelPassword, setNewChannelPassword] = useState("");
+
+    function cancelCreateChannel() {
+        const current = document.getElementById("chat-create-channel");
+        const menu = document.getElementById("chat-channels-list");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
+    function handleTypeChange(event: any) {
+        event.preventDefault();
+        const { id, value } = event.target;
+        if (id === "channel-type-select") {
+            setChannelType(value);
+        }
+    }
+
+    function passwordIfProtected() {
+        if (channelType === "protected") {
+            return (
+                <input
+                    id="new-channel-password"
+                    type="password"
+                    placeholder="Channel's password"
+                    value={channelPassword}
+                    onChange={handleNewChannelPasswordChange}
+                />
+            );
+        }
+    }
 
     function handleNewChannelNameChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
         const { id, value } = event.target;
         if (id === "new-channel-name") {
-            setNewChannelName(value);
+            setChannelName(value);
         }
     }
 
@@ -28,73 +59,36 @@ const CreateChannel = () => {
         }
     }
 
-    function handleNewChannelTypeChange() {
-        setNewChannelPassword("");
-        const newValue: boolean = !protectedChannel;
-        setProtectedChannel(newValue);
-        const channelPassordInput = document.getElementById(
-            "new-channel-password"
-        );
-        if (newValue === true) {
-            if (channelPassordInput) {
-                channelPassordInput.style.display = "inline";
-            }
-        } else {
-            if (channelPassordInput) {
-                channelPassordInput.style.display = "none";
-            }
-        }
-    }
-
-    function cancelCreateChannel() {
-        const current = document.getElementById("chat-create-channel");
-        const menu = document.getElementById("chat-channels-list");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
-    function getBackendUrl(): string {
-        if (protectedChannel === false) {
-            return "/api/chat/create/public";
-        } else {
-            return "/api/chat/create/protected";
-        }
-    }
-
     const submitCreateChannelForm = (event: any) => {
         event.preventDefault();
-        if (newChannelName.length === 0) {
-            alert("You must set a name for your new channel");
-            return;
-        }
-        const url: string = getBackendUrl();
-        if (url === "") return;
-        let newChannelType: string;
-        if (protectedChannel === true) {
-            newChannelType = "protected";
+        let url: string;
+        if (channelType === "public") {
+            url = "/api/chat/create/public";
+        } else if (channelType === "protected") {
+            url = "/api/chat/create/protected";
+        } else if (channelType === "privateChannel") {
+            url = "/api/chat/create/privatechannel";
         } else {
-            newChannelType = "public";
+            return;
         }
         axios
             .post(url, {
-                channelName: newChannelName,
-                channelType: newChannelType,
-                channelPassword: newChannelPassword,
+                channelName: channelName,
+                channelType: channelType,
+                channelPassword: channelPassword,
             })
             .then(function () {
                 const updatedUserChannels = new Map<
                     string,
                     { channelType: string }
                 >(chat.userChannels);
-                updatedUserChannels.set(newChannelName, {
-                    channelType: newChannelType,
+                updatedUserChannels.set(channelName, {
+                    channelType: channelType,
                 });
                 chat.updateUserChannels(updatedUserChannels);
                 chat.setCurrentChannelMessages([]);
-                chat.changeCurrentChannel(newChannelName);
-                chat.changeCurrentChannelType(newChannelType);
+                chat.changeCurrentChannel(channelName);
+                chat.changeCurrentChannelType(channelType);
                 chat.setChannelOwner(true);
                 chat.setCurrentChannelAdmins([]);
                 chat.setCurrentChannelMute([]);
@@ -105,17 +99,8 @@ const CreateChannel = () => {
                     current.style.display = "none";
                     menu.style.display = "flex";
                 }
-                if (protectedChannel) {
-                    const channelPasswordInput = document.getElementById(
-                        "new-channel-password"
-                    );
-                    if (channelPasswordInput) {
-                        channelPasswordInput.style.display = "none";
-                    }
-                }
-                setNewChannelName("");
+                setChannelName("");
                 setNewChannelPassword("");
-                setProtectedChannel(false);
             })
             .catch(function (error) {
                 alert(error.response.data.message);
@@ -135,32 +120,24 @@ const CreateChannel = () => {
                     autoComplete="off"
                     className="chat-main"
                 >
+                    <select
+                        name="channel-type"
+                        id="channel-type-select"
+                        onChange={(event) => handleTypeChange(event)}
+                    >
+                        <option value="public">public</option>
+                        <option value="protected">protected</option>
+                        <option value="privateChannel">private</option>
+                    </select>
                     <input
                         id="new-channel-name"
                         type="text"
                         placeholder="Channel's name"
-                        value={newChannelName}
+                        value={channelName}
                         onChange={handleNewChannelNameChange}
-                        autoComplete="off"
                         required
                     />
-                    <input
-                        id="new-channel-password"
-                        type="password"
-                        placeholder="Channel's password"
-                        value={newChannelPassword}
-                        autoComplete="off"
-                        onChange={handleNewChannelPasswordChange}
-                    />
-                    <label>
-                        Require a password
-                        <input
-                            id="new-channel-password-required"
-                            type="checkbox"
-                            checked={protectedChannel}
-                            onChange={handleNewChannelTypeChange}
-                        />
-                    </label>
+                    {passwordIfProtected()}
                     <input type="submit" hidden />
                 </form>
             </section>

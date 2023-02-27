@@ -108,7 +108,9 @@ export class ChatService {
                                 while (l < blocked_users.length) {
                                     if (
                                         channels[i].allowed_users[k].uuid ===
-                                        blocked_users[l]
+                                            blocked_users[l] &&
+                                        channels[i].channelType ===
+                                            ChannelType.PRIVATE
                                     ) {
                                         found = true;
                                         break;
@@ -170,7 +172,20 @@ export class ChatService {
         if (!user) {
             throw new HttpException("Invalid user", HttpStatus.FOUND);
         }
-        if (
+        if (newChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
+            let uuid_array: { uuid: string }[] = [];
+            uuid_array.push({ uuid: newChannel.channelOwner });
+            newChannel.allowed_users = uuid_array;
+            const channel = await this.chatRepository.save(newChannel);
+            if (channel) {
+                this.chatGateway.channelUpdate();
+            }
+            this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
+            return this.convertChannelMessages(uuid, channel.messages, channel);
+        } else if (
             newChannel.channelType === ChannelType.PROTECTED ||
             newChannel.channelType === ChannelType.PUBLIC
         ) {
@@ -214,7 +229,7 @@ export class ChatService {
             );
             return this.convertChannelMessages(uuid, channel.messages, channel);
         }
-        return null;
+        throw new HttpException("Invalid channel type.", HttpStatus.FOUND);
     }
 
     async convertChannelMessages(
@@ -413,12 +428,29 @@ export class ChatService {
             }
         }
 
-        if (channel.channelType == ChannelType.PRIVATE) {
+        if (
+            channel.channelType === ChannelType.PRIVATE ||
+            channel.channelType === ChannelType.PRIVATE_CHANNEL
+        ) {
             let index_in_authorized_channels = channels.findIndex((element) => {
                 if (element.channelName === channelName) return 1;
             });
             if (index_in_authorized_channels !== -1) {
                 channel = channels[index_in_authorized_channels];
+
+                let allowed_user = channel.allowed_users.findIndex(
+                    (element) => {
+                        if (element.uuid === user.uuid) return 1;
+                    }
+                );
+
+                if (allowed_user === -1) {
+                    throw new HttpException(
+                        "Unauthorized.",
+                        HttpStatus.UNAUTHORIZED
+                    );
+                }
+
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -554,7 +586,10 @@ export class ChatService {
                 i++;
             }
             throw new HttpException("Unauthorized.", HttpStatus.UNAUTHORIZED);
-        } else if (channel.channelType === ChannelType.PRIVATE) {
+        } else if (
+            channel.channelType === ChannelType.PRIVATE ||
+            channel.channelType === ChannelType.PRIVATE_CHANNEL
+        ) {
             let allowed_users = channel.allowed_users;
             let i = 0;
             while (i < allowed_users.length) {

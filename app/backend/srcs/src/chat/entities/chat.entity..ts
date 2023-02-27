@@ -1,10 +1,10 @@
-import { Exclude } from "class-transformer";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export enum ChannelType {
     PRIVATE = "private",
     PUBLIC = "public",
     PROTECTED = "protected",
+    PRIVATE_CHANNEL = "privateChannel",
 }
 
 @Entity()

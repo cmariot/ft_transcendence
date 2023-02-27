@@ -94,10 +94,6 @@
     align-items: center;
 }
 
-#new-channel-password {
-    display: none;
-}
-
 .chat-footer {
     display: flex;
     justify-content: center;

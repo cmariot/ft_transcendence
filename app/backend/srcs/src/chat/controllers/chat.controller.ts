@@ -43,16 +43,38 @@ export class ChatController {
 
     @Post("create/public")
     @UseGuards(isLogged)
-    create_public_channel(@Req() req, @Body() newChannel: PublicChannelDTO) {
+    async create_public_channel(
+        @Req() req,
+        @Body() newChannel: PublicChannelDTO
+    ) {
         if (newChannel.channelType !== ChannelType.PUBLIC) {
             throw new UnauthorizedException();
         }
         return this.chatService.create_channel(newChannel, req.user.uuid);
     }
 
+    @Post("create/privatechannel")
+    @UseGuards(isLogged)
+    async create_private_channel(
+        @Req() req,
+        @Body() newChannel: PrivateChannelDTO
+    ) {
+        if (newChannel.channelType !== ChannelType.PRIVATE_CHANNEL) {
+            throw new UnauthorizedException();
+        }
+        let result = await this.chatService.create_channel(
+            newChannel,
+            req.user.uuid
+        );
+        return result;
+    }
+
     @Post("create/private")
     @UseGuards(isLogged)
-    create_private_channel(@Req() req, @Body() newChannel: PrivateChannelDTO) {
+    async create_private_conv(
+        @Req() req,
+        @Body() newChannel: PrivateChannelDTO
+    ) {
         if (newChannel.channelType !== ChannelType.PRIVATE) {
             throw new UnauthorizedException();
         }
