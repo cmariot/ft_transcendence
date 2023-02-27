@@ -12,7 +12,11 @@ import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
-import { kickOptionsDTO, muteOptionsDTO } from "../dtos/admin.dto";
+import {
+    AddOptionsDTO,
+    kickOptionsDTO,
+    muteOptionsDTO,
+} from "../dtos/admin.dto";
 
 @Injectable()
 export class ChatService {
@@ -382,11 +386,42 @@ export class ChatService {
             );
         }
         return this.join_channel(channelName, uuid);
-	}
-	
-	async addPrivateChannel(addUser: AddUserOptions, uuid: string) {
-		let user:
-	}
+    }
+
+    async addPrivateChannel(addUser: AddOptionsDTO, uuid: string) {
+        let user = await this.userService.getByUsername(addUser.username);
+        if (!user) {
+            throw new UnauthorizedException("Invalid user");
+        }
+        let channel = await this.getByName(addUser.channelName);
+        if (!channel) {
+            throw new UnauthorizedException("Invalid channel");
+        }
+        for (let i = 0; i < channel.banned_users.length; i++) {
+            if (channel.banned_users[i].uuid === user.uuid) {
+                throw new UnauthorizedException("Banned user");
+            }
+        }
+        for (let i = 0; i < channel.allowed_users.length; i++) {
+            if (channel.allowed_users[i].uuid === user.uuid) {
+                throw new UnauthorizedException("Already allowed");
+            }
+        }
+        let users = channel.allowed_users;
+        users.push({ uuid: user.uuid });
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { allowed_users: users }
+        );
+        let users_list: string[] = [];
+        for (let i = 0; i < users.length; i++) {
+            let user = await this.userService.getByID(users[i].uuid);
+            if (user && user.username) {
+                users_list.push(user.username);
+            }
+        }
+        return users_list;
+    }
 
     async join_channel(channelName: string, userID: string) {
         let channels = await this.chatRepository.find();
@@ -705,6 +740,19 @@ export class ChatService {
                 user.username
             );
             this.chatRepository.delete({ uuid: channel.uuid });
+        } else if (channel.channelType === "privateChannel") {
+            let index = channel.allowed_users.findIndex(
+                (element) => element.uuid === user.uuid
+            );
+            if (index !== -1) {
+                channel.allowed_users.splice(index, 1);
+                await this.chatRepository.update(
+                    { channelName: channelName },
+                    { allowed_users: channel.allowed_users }
+                );
+            } else {
+                throw new UnauthorizedException();
+            }
         }
         this.chatGateway.channelUpdate();
     }
@@ -936,6 +984,22 @@ export class ChatService {
                     );
                 }
             }
+        } else if (targetChannel.channelType === "privateChannel") {
+            let current_users = targetChannel.allowed_users;
+            let index = -1;
+            for (let i = 0; i < current_users.length; i++) {
+                if (current_users[i].uuid === kickedUser.uuid) {
+                    index = i;
+                    this.leave_channel(
+                        targetChannel.channelName,
+                        current_users[i].uuid
+                    );
+                    return this.chatGateway.kick_user(
+                        targetChannel.channelName,
+                        kickedUser.username
+                    );
+                }
+            }
         }
         throw new HttpException("User not found", HttpStatus.FOUND);
     }
@@ -997,7 +1061,6 @@ export class ChatService {
             i++;
         }
         if (found === false) {
-            console.log(muteOptions.duration.toString());
             currentMuted.push({
                 uuid: mutedUser.uuid,
                 mute_date: Date.now().toString(),

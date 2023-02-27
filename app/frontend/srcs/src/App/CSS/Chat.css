@@ -454,19 +454,36 @@
     gap: 5px;
 }
 
-/* Élément | https://localhost:8443/ */
-
 #edit-kick > section:nth-child(2) {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Élément | https://localhost:8443/ */
-
 #edit-kick > section:nth-child(2) > form:nth-child(1) {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#channel-type-select {
+    width: -moz-available;
+}
+
+#new-channel-name {
+    text-align: left;
+    width: -moz-available;
+}
+
+/* Feuille de style intégrée #11 | https://mbp.local:8443/ */
+
+#new-channel-password {
+    /* text-align: center; */
+    text-align: left;
+    width: -moz-available;
+}
+
+#new-channel-name {
+    text-align: left;
 }
