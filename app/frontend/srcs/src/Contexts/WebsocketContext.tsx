@@ -9,6 +9,5 @@ if (host === undefined) {
 }
 
 export const socket = io(host);
-
 export const Websocketcontext = createContext<Socket>(socket);
 export const WebsocketProvider = Websocketcontext.Provider;

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity.";
-import { Repository } from "typeorm";
+import { AddUserOptions, Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
@@ -382,7 +382,11 @@ export class ChatService {
             );
         }
         return this.join_channel(channelName, uuid);
-    }
+	}
+	
+	async addPrivateChannel(addUser: AddUserOptions, uuid: string) {
+		let user:
+	}
 
     async join_channel(channelName: string, userID: string) {
         let channels = await this.chatRepository.find();
