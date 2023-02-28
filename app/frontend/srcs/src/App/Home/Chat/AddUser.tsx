@@ -32,12 +32,44 @@ const AddUser = () => {
                 channelName: chat.currentChannel,
             })
             .then((response) => {
-                console.log(response.data);
+                chat.setCurrentChannelUsers(response.data);
                 setNewUser("");
             })
             .catch((error) => {
                 alert(error.response.data.message);
             });
+    }
+
+    async function kickUser(username: string) {
+        await axios
+            .post("/api/chat/kick", {
+                channelName: chat.currentChannel,
+                username: username,
+            })
+            .then((response) => {
+                if (chat.currentChannelType === "privateChannel") {
+                    chat.setCurrentChannelUsers(response.data);
+                }
+            })
+            .catch((error) => {
+                alert(error.response.data.message);
+            });
+    }
+
+    function currentUsers() {
+        if (chat.currentChannelUsers.length) {
+            return (
+                <ul id="channel-users-list">
+                    <p>Channel users :</p>
+                    {chat.currentChannelUsers.map((user, index) => (
+                        <li className="admin-channel" key={index}>
+                            <p className="admin-channel-username">{user}</p>
+                            <button onClick={() => kickUser(user)}>kick</button>
+                        </li>
+                    ))}
+                </ul>
+            );
+        } else return <p>You are alone in this channel.</p>;
     }
 
     return (
@@ -62,6 +94,7 @@ const AddUser = () => {
                         add
                     </button>
                 </form>
+                {currentUsers()}
             </section>
             <footer className="chat-footer"></footer>
         </menu>

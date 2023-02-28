@@ -2,9 +2,11 @@ import { ChangeEvent, useContext, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
+import { UserContext } from "../../App";
 
 const CreateChannel = () => {
     const chat = useContext(ChatContext);
+    const user = useContext(UserContext);
 
     const [channelName, setChannelName] = useState("");
     const [channelType, setChannelType] = useState("public");
@@ -93,6 +95,7 @@ const CreateChannel = () => {
                 chat.setCurrentChannelAdmins([]);
                 chat.setCurrentChannelMute([]);
                 chat.setCurrentChannelBan([]);
+                chat.setCurrentChannelUsers([]);
                 const current = document.getElementById("chat-create-channel");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

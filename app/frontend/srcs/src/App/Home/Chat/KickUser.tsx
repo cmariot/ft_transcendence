@@ -31,7 +31,10 @@ const KickUser = () => {
                 channelName: chat.currentChannel,
                 username: newKickName,
             })
-            .then(() => {
+            .then((response) => {
+                if (chat.currentChannelType === "privateChannel") {
+                    chat.setCurrentChannelUsers(response.data);
+                }
                 setNewKickName("");
             })
             .catch((error) => {

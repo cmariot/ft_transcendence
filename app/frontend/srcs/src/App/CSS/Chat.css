@@ -487,3 +487,26 @@
 #new-channel-name {
     text-align: left;
 }
+
+/* Élément | https://mbp.local:8443/ */
+
+#channel-users-list {
+    padding: 0;
+    width: -moz-available;
+}
+
+/* Élément | https://mbp.local:8443/ */
+
+#add-user-menu > section:nth-child(2) > form:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-block: 15px;
+}
+
+#channel-users-list {
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+}

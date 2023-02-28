@@ -95,7 +95,6 @@ export class ChatGateway implements OnModuleInit {
             channel: channelName,
             username: username,
         });
-        return username;
     }
 
     deleted_channel(channel: string, username: string) {

@@ -19,6 +19,9 @@ const YourChannels = () => {
                 chat.setCurrentChannelAdmins(response.data.channel_admins);
                 chat.setCurrentChannelMute(response.data.muted_users);
                 chat.setCurrentChannelBan(response.data.banned_users);
+                chat.setCurrentChannelUsers(
+                    response.data.private_channel_users
+                );
                 const current = document.getElementById("chat-your-channels");
                 const menu = document.getElementById("chat-conversation");
                 if (menu && current) {

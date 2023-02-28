@@ -330,6 +330,7 @@ export class ChatService {
         }
         let banned_users_list: string[] = [];
         let muted_users_list: string[] = [];
+        let private_users_list: string[] = [];
         if (admin === true) {
             if (channel.mutted_users) {
                 let i = 0;
@@ -355,6 +356,24 @@ export class ChatService {
                     i++;
                 }
             }
+
+            if (
+                channel.channelType === ChannelType.PRIVATE_CHANNEL &&
+                channel.allowed_users
+            ) {
+                let i = 0;
+                while (i < channel.allowed_users.length) {
+                    if (channel.allowed_users[i].uuid !== uuid) {
+                        let username = await this.userService.getUsernameById(
+                            channel.allowed_users[i].uuid
+                        );
+                        if (username) {
+                            private_users_list.push(username);
+                        }
+                    }
+                    i++;
+                }
+            }
         }
         return {
             messages: returned_messages,
@@ -363,6 +382,7 @@ export class ChatService {
             channel_admins: admins,
             banned_users: banned_users_list,
             muted_users: muted_users_list,
+            private_channel_users: private_users_list,
         };
     }
 
@@ -434,9 +454,11 @@ export class ChatService {
         );
         let users_list: string[] = [];
         for (let i = 0; i < users.length; i++) {
-            let user = await this.userService.getByID(users[i].uuid);
-            if (user && user.username) {
-                users_list.push(user.username);
+            if (users[i].uuid !== channel.channelOwner) {
+                let user = await this.userService.getByID(users[i].uuid);
+                if (user && user.username) {
+                    users_list.push(user.username);
+                }
             }
         }
         this.chatGateway.channelUpdate();
@@ -1013,20 +1035,39 @@ export class ChatService {
                     );
                 }
             }
-        } else if (targetChannel.channelType === "privateChannel") {
+        } else if (targetChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
             let current_users = targetChannel.allowed_users;
             let index = -1;
             for (let i = 0; i < current_users.length; i++) {
                 if (current_users[i].uuid === kickedUser.uuid) {
                     index = i;
-                    this.leave_channel(
+                    await this.leave_channel(
                         targetChannel.channelName,
                         current_users[i].uuid
                     );
-                    return this.chatGateway.kick_user(
+                    this.chatGateway.kick_user(
                         targetChannel.channelName,
                         kickedUser.username
                     );
+                    let users_list: string[] = [];
+                    let j = 0;
+                    while (j < targetChannel.allowed_users.length) {
+                        if (
+                            targetChannel.allowed_users[j].uuid !== user.uuid &&
+                            targetChannel.allowed_users[j].uuid !==
+                                kickedUser.uuid
+                        ) {
+                            let username =
+                                await this.userService.getUsernameById(
+                                    targetChannel.allowed_users[j].uuid
+                                );
+                            if (username) {
+                                users_list.push(username);
+                            }
+                        }
+                        j++;
+                    }
+                    return users_list;
                 }
             }
         }
