@@ -9,6 +9,7 @@ const ChatConv = () => {
     const chat = useContext(ChatContext);
 
     function closeChat() {
+        chat.changeCurrentChannel("");
         const current = document.getElementById("chat-conversation");
         const current2 = document.getElementById("chat-menu-options");
         const menu = document.getElementById("chat-your-channels");
@@ -31,22 +32,78 @@ const ChatConv = () => {
             const current4 = document.getElementById("edit-mute");
             const current5 = document.getElementById("edit-ban");
             const menu = document.getElementById("chat-your-channels");
-            if (menu && current && current2) {
-                current.style.display = "none";
-                menu.style.display = "flex";
-                if (current2.style.display === "flex") {
-                    toogleChatMenu();
+            if (
+                (current &&
+                    current.style &&
+                    current.style.display &&
+                    current.style.display === "flex") ||
+                (current2 &&
+                    current2.style &&
+                    current2.style.display &&
+                    current2.style.display === "flex") ||
+                (current3 &&
+                    current3.style &&
+                    current3.style.display &&
+                    current3.style.display === "flex") ||
+                (current4 &&
+                    current4.style &&
+                    current4.style.display &&
+                    current4.style.display === "flex") ||
+                (current5 &&
+                    current5.style &&
+                    current5.style.display &&
+                    current5.style.display === "flex")
+            ) {
+                if (
+                    menu &&
+                    menu.style &&
+                    menu.style.display &&
+                    menu.style.display === "none"
+                ) {
+                    menu.style.display = "flex";
                 }
             }
-            if (current3) {
+            if (
+                current &&
+                current.style &&
+                current.style.display &&
+                current.style.display === "flex"
+            ) {
+                current.style.display = "none";
+            }
+            if (
+                current2 &&
+                current2.style &&
+                current2.style.display &&
+                current2.style.display === "flex"
+            ) {
+                toogleChatMenu();
+            }
+            if (
+                current3 &&
+                current3.style &&
+                current3.style.display &&
+                current3.style.display === "flex"
+            ) {
                 current3.style.display = "none";
             }
-            if (current4) {
+            if (
+                current4 &&
+                current4.style &&
+                current4.style.display &&
+                current4.style.display === "flex"
+            ) {
                 current4.style.display = "none";
             }
-            if (current5) {
+            if (
+                current5 &&
+                current5.style &&
+                current5.style.display &&
+                current5.style.display === "flex"
+            ) {
                 current5.style.display = "none";
             }
+
             chat.changeCurrentChannel("");
             chat.setBan(false);
         }

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity.";
-import { AddUserOptions, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
@@ -625,6 +625,7 @@ export class ChatService {
                         { uuid: channel.uuid },
                         { mutted_users: muted }
                     );
+                    this.chatGateway.channelUpdate();
                 }
                 break;
             }
@@ -999,7 +1000,6 @@ export class ChatService {
             targetChannel.channelName,
             muteOptions.username
         );
-        this.chatGateway.channelUpdate();
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
             let user = await this.userService.getByID(currentBanned[j].uuid);

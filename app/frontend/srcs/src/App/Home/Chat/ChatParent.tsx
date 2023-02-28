@@ -115,7 +115,6 @@ export const ChatParent = () => {
                     currentAvailableChannels.delete(socket.channelName);
                     updateAvailableChannels(currentAvailableChannels);
                 }
-
                 setBan(true);
             }
         });
