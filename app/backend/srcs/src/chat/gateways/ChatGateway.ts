@@ -28,6 +28,7 @@ export class ChatGateway implements OnModuleInit {
     }
 
     channelUpdate() {
+        console.log("newChannelAvailable");
         this.server.emit("newChannelAvailable");
     }
 
@@ -68,6 +69,11 @@ export class ChatGateway implements OnModuleInit {
     }
 
     send_message(channel: string, username: string, message: string) {
+        console.log("newChatMessage", {
+            channel: channel,
+            username: username,
+            message: message,
+        });
         this.server.to("chatroom_" + channel).emit("newChatMessage", {
             channel: channel,
             username: username,
