@@ -188,9 +188,6 @@ const ChatConv = () => {
                     <button onClick={() => displayMuteMenu()}>
                         mute an user
                     </button>
-                    <button onClick={() => displayKickMenu()}>
-                        kick an user
-                    </button>
                 </>
             );
         }
@@ -219,7 +216,7 @@ const ChatConv = () => {
         ) {
             return (
                 <button onClick={() => displayEditAddUserMenu()}>
-                    add user
+                    users list
                 </button>
             );
         }

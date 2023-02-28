@@ -116,12 +116,13 @@ const YourChannels = () => {
         <menu id="chat-your-channels" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Chat</p>
+            </header>
+            <section className="chat-section">{displayChannels()}</section>
+            <footer className="chat-footer">
                 <button onClick={() => viewChannelsList()}>
                     more channels
                 </button>
-            </header>
-            <section className="chat-section">{displayChannels()}</section>
-            <footer className="chat-footer"></footer>
+            </footer>
         </menu>
     );
 };
