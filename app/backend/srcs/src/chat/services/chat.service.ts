@@ -61,7 +61,8 @@ export class ChatService {
             // user is the channel owner
             if (
                 channels[i].channelOwner === user.uuid &&
-                channels[i].channelType !== ChannelType.PRIVATE
+                channels[i].channelType !== ChannelType.PRIVATE &&
+                channels[i].channelType !== ChannelType.PRIVATE_CHANNEL
             ) {
                 userChannels.push(channels[i]);
             } else if (
@@ -115,6 +116,14 @@ export class ChatService {
                                             blocked_users[l] &&
                                         channels[i].channelType ===
                                             ChannelType.PRIVATE
+                                    ) {
+                                        found = true;
+                                        break;
+                                    } else if (
+                                        channels[i].channelType ===
+                                            ChannelType.PRIVATE_CHANNEL &&
+                                        blocked_users[l] ===
+                                            channels[i].channelOwner
                                     ) {
                                         found = true;
                                         break;
