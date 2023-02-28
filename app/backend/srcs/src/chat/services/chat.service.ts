@@ -420,6 +420,7 @@ export class ChatService {
                 users_list.push(user.username);
             }
         }
+        this.chatGateway.channelUpdate();
         return users_list;
     }
 
@@ -741,17 +742,25 @@ export class ChatService {
             );
             this.chatRepository.delete({ uuid: channel.uuid });
         } else if (channel.channelType === "privateChannel") {
-            let index = channel.allowed_users.findIndex(
-                (element) => element.uuid === user.uuid
-            );
-            if (index !== -1) {
-                channel.allowed_users.splice(index, 1);
-                await this.chatRepository.update(
-                    { channelName: channelName },
-                    { allowed_users: channel.allowed_users }
+            if (channel.channelOwner === uuid) {
+                this.chatGateway.deleted_channel(
+                    channel.channelName,
+                    user.username
                 );
+                this.chatRepository.delete({ uuid: channel.uuid });
             } else {
-                throw new UnauthorizedException();
+                let index = channel.allowed_users.findIndex(
+                    (element) => element.uuid === user.uuid
+                );
+                if (index !== -1) {
+                    channel.allowed_users.splice(index, 1);
+                    await this.chatRepository.update(
+                        { channelName: channelName },
+                        { allowed_users: channel.allowed_users }
+                    );
+                } else {
+                    throw new UnauthorizedException();
+                }
             }
         }
         this.chatGateway.channelUpdate();
