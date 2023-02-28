@@ -280,18 +280,18 @@ export class ChatService {
                     let j = 0;
                     let found = false;
                     while (j < banned_users.length) {
-                        if ((banned_users[j].uuid = initial_messages[i].uuid)) {
+                        if (banned_users[j].uuid === initial_messages[i].uuid) {
                             found = true;
                             break;
                         }
                         j++;
                     }
                     if (found === true) {
+                        found = false;
                         returned_messages.push({
                             username: chat_user.username,
                             message: "deleted message",
                         });
-                        found = false;
                     } else {
                         returned_messages.push({
                             username: chat_user.username,

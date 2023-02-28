@@ -188,6 +188,9 @@ const ChatConv = () => {
                     <button onClick={() => displayMuteMenu()}>
                         mute an user
                     </button>
+                    <button onClick={() => displayEditAddUserMenu()}>
+                        users list
+                    </button>
                 </>
             );
         }
@@ -215,9 +218,11 @@ const ChatConv = () => {
             chat.currentChannelType === "privateChannel"
         ) {
             return (
-                <button onClick={() => displayEditAddUserMenu()}>
-                    users list
-                </button>
+                <>
+                    <button onClick={() => displayEditAdminsMenu()}>
+                        edit channel's administrators
+                    </button>
+                </>
             );
         }
         return null;

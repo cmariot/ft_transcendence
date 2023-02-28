@@ -2,11 +2,9 @@ import { ChangeEvent, useContext, useState } from "react";
 import "../../CSS/Chat.css";
 import axios from "axios";
 import { ChatContext } from "./ChatParent";
-import { UserContext } from "../../App";
 
 const CreateChannel = () => {
     const chat = useContext(ChatContext);
-    const user = useContext(UserContext);
 
     const [channelName, setChannelName] = useState("");
     const [channelType, setChannelType] = useState("public");
@@ -80,14 +78,25 @@ const CreateChannel = () => {
                 channelPassword: channelPassword,
             })
             .then(function () {
-                const updatedUserChannels = new Map<
-                    string,
-                    { channelType: string }
-                >(chat.userChannels);
-                updatedUserChannels.set(channelName, {
-                    channelType: channelType,
-                });
-                chat.updateUserChannels(updatedUserChannels);
+                if (channelType === "public" || channelType === "protected") {
+                    const updatedUserChannels = new Map<
+                        string,
+                        { channelType: string }
+                    >(chat.userChannels);
+                    updatedUserChannels.set(channelName, {
+                        channelType: channelType,
+                    });
+                    chat.updateUserChannels(updatedUserChannels);
+                } else {
+                    const updatedUserPrivateChannels = new Map<
+                        string,
+                        { channelType: string }
+                    >(chat.userPrivateChannels);
+                    updatedUserPrivateChannels.set(channelName, {
+                        channelType: channelType,
+                    });
+                    chat.updateUserPrivateChannels(updatedUserPrivateChannels);
+                }
                 chat.setCurrentChannelMessages([]);
                 chat.changeCurrentChannel(channelName);
                 chat.changeCurrentChannelType(channelType);
