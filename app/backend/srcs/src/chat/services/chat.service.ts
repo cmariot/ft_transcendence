@@ -10,7 +10,7 @@ import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
-import { updateChannelDTO } from "../dtos/channelId.dto";
+import { channelDTO, updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
 import {
     AddOptionsDTO,
@@ -785,7 +785,7 @@ export class ChatService {
                 user.username
             );
             this.chatRepository.delete({ uuid: channel.uuid });
-        } else if (channel.channelType === "privateChannel") {
+        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
             if (channel.channelOwner === uuid) {
                 this.chatGateway.deleted_channel(
                     channel.channelName,
@@ -802,6 +802,7 @@ export class ChatService {
                         { channelName: channelName },
                         { allowed_users: channel.allowed_users }
                     );
+                    this.chatGateway.leave_private(user.username, channelName);
                 } else {
                     throw new UnauthorizedException();
                 }
@@ -1198,5 +1199,24 @@ export class ChatService {
             channel.messages,
             channel
         );
+    }
+
+    async private_channel_users(uuid: string, channel: string) {
+        let currentChannel = await this.getByName(channel);
+        if (!currentChannel) {
+            throw new HttpException("Invalid channel", HttpStatus.FOUND);
+        }
+        let is_authorized = false;
+        if (currentChannel.channelOwner === uuid) {
+            is_authorized = true;
+            console.log("Owner found");
+        } else if (
+            currentChannel.channelAdministrators.find(
+                (element) => element.uuid === uuid
+            ) !== undefined
+        ) {
+            is_authorized = true;
+            console.log("Admin found");
+        }
     }
 }

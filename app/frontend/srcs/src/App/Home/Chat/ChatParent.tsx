@@ -138,6 +138,21 @@ export const ChatParent = () => {
                 socket.username === user.username
             ) {
                 setChannelAdmin(socket.value);
+
+                axios.post("/api/chat/private/get_users", {
+                    channelName: socket.channel,
+                });
+                //setCurrentChannelUsers(current_users);
+            }
+        });
+        socket.on("userLeaveChannel", (socket) => {
+            let current_users: string[] = currentChannelUsers;
+            let index = current_users.findIndex(
+                (element) => element === socket.username
+            );
+            if (index !== -1) {
+                current_users.splice(index, 1);
+                setCurrentChannelUsers(current_users);
             }
         });
     });

@@ -38,7 +38,6 @@ const YourChannels = () => {
         if (chat.userPrivateChannels.size > 0) {
             return (
                 <>
-                    <p>Private messages :</p>
                     {Array.from(chat.userPrivateChannels).map((item, index) => (
                         <button
                             className="channel-selection-button"
@@ -61,7 +60,6 @@ const YourChannels = () => {
         if (chat.userChannels.size > 0) {
             return (
                 <>
-                    <p>Your channels :</p>
                     {Array.from(chat.userChannels).map((item, index) => (
                         <button
                             className="channel-selection-button"
@@ -115,13 +113,11 @@ const YourChannels = () => {
     return (
         <menu id="chat-your-channels" className="chat-menu">
             <header className="chat-header">
-                <p className="chat-header-tittle">Chat</p>
+                <p className="chat-header-tittle">Your channels</p>
             </header>
             <section className="chat-section">{displayChannels()}</section>
             <footer className="chat-footer">
-                <button onClick={() => viewChannelsList()}>
-                    more channels
-                </button>
+                <button onClick={() => viewChannelsList()}>add channel</button>
             </footer>
         </menu>
     );

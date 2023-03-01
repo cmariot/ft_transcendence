@@ -139,4 +139,11 @@ export class ChatGateway implements OnModuleInit {
             value: value,
         });
     }
+
+    leave_private(username: string, channelName: string) {
+        this.server.emit("userLeaveChannel", {
+            username: username,
+            channel: channelName,
+        });
+    }
 }

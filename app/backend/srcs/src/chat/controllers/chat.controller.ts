@@ -470,4 +470,13 @@ export class ChatController {
             req.user.uuid
         );
     }
+
+    @Post("/private/get_users")
+    @UseGuards(isLogged)
+    async get_private_channel_users(@Req() req, @Body() channel: channelDTO) {
+        return await this.chatService.private_channel_users(
+            req.user.uuid,
+            channel.channelName
+        );
+    }
 }

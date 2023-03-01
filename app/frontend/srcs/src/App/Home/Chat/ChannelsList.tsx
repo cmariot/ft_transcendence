@@ -111,7 +111,9 @@ const ChannelsList = () => {
             </header>
             <section className="chat-section">{displayChannelsList()}</section>
             <footer className="chat-footer">
-                <button onClick={() => createChannelMenu()}>new channel</button>
+                <button onClick={() => createChannelMenu()}>
+                    create channel
+                </button>
             </footer>
         </menu>
     );
