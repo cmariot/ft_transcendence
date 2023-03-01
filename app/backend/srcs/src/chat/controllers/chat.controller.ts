@@ -156,6 +156,7 @@ export class ChatController {
         if (privateconv != null) {
             return privateconv;
         }
+
         throw new HttpException(
             "Please create a new private conversation",
             HttpStatus.NO_CONTENT

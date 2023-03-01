@@ -722,6 +722,7 @@ export class ChatService {
                                     friend.uuid &&
                                 channels[i].allowed_users.length === 2
                             ) {
+                                //join ici
                                 let messages =
                                     await this.convertChannelMessages(
                                         uuid,

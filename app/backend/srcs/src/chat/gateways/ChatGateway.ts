@@ -68,6 +68,7 @@ export class ChatGateway implements OnModuleInit {
     }
 
     send_message(channel: string, username: string, message: string) {
+        console.log("Emit ok");
         this.server.to("chatroom_" + channel).emit("newChatMessage", {
             channel: channel,
             username: username,

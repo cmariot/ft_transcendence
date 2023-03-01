@@ -140,6 +140,7 @@ const ChatConv = () => {
     }
 
     function toogleChatMenu() {
+        console.log("Chat context =", chat);
         const menu = document.getElementById("chat-menu-options");
         const messages = document.getElementById("chat-messages-list");
         const input = document.getElementById("send-message-form");
