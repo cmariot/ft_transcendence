@@ -138,10 +138,16 @@ export const ChatParent = () => {
                 socket.username === user.username
             ) {
                 setChannelAdmin(socket.value);
-
-                axios.post("/api/chat/private/get_users", {
-                    channelName: socket.channel,
-                });
+                axios
+                    .post("/api/chat/private/get_users", {
+                        channelName: socket.channel,
+                    })
+                    .then((response) => {
+                        console.log(response.data);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
                 //setCurrentChannelUsers(current_users);
             }
         });
