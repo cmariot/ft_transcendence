@@ -25,7 +25,7 @@ const ChatConv = () => {
     }
 
     useEffect(() => {
-        if (chat.ban === true) {
+        if (chat.ban === true || chat.channelDeleted === true) {
             const current = document.getElementById("chat-conversation");
             const current2 = document.getElementById("chat-menu-options");
             const current3 = document.getElementById("edit-kick");
@@ -105,21 +105,11 @@ const ChatConv = () => {
             }
 
             chat.changeCurrentChannel("");
-            chat.setBan(false);
-        }
-        if (chat.channelDeleted === true) {
-            const current = document.getElementById("chat-conversation");
-            const current2 = document.getElementById("chat-menu-options");
-            const menu = document.getElementById("chat-your-channels");
-            if (menu && current && current2) {
-                current.style.display = "none";
-                menu.style.display = "flex";
-                if (current2.style.display === "flex") {
-                    toogleChatMenu();
-                }
+            if (chat.ban === true) {
+                chat.setBan(false);
+            } else if (chat.channelDeleted === true) {
+                chat.setChannelDeleted(false);
             }
-            chat.changeCurrentChannel("");
-            chat.setChannelDeleted(false);
         }
     }, [chat]);
 
