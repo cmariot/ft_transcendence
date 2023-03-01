@@ -31,6 +31,7 @@ const ChatConv = () => {
             const current3 = document.getElementById("edit-kick");
             const current4 = document.getElementById("edit-mute");
             const current5 = document.getElementById("edit-ban");
+            const current6 = document.getElementById("add-user-menu");
             const menu = document.getElementById("chat-your-channels");
             if (
                 (current &&
@@ -102,6 +103,14 @@ const ChatConv = () => {
                 current5.style.display === "flex"
             ) {
                 current5.style.display = "none";
+            }
+            if (
+                current6 &&
+                current6.style &&
+                current6.style.display &&
+                current6.style.display === "flex"
+            ) {
+                current6.style.display = "none";
             }
 
             chat.changeCurrentChannel("");
