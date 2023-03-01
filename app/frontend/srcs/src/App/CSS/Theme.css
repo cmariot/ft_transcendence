@@ -68,7 +68,7 @@ input {
 /* Élément | https://localhost:8443/ */
 
 #new-channel-name {
-    text-align: center;
+    text-align: left;
 }
 
 /* Feuille de style intégrée #14 | https://localhost:8443/ */
@@ -298,7 +298,7 @@ textarea {
 /* Élément | https://localhost:8443/ */
 
 #new-channel-password {
-    text-align: center;
+    text-align: left;
 }
 
 #root {
