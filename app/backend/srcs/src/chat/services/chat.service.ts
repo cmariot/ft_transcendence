@@ -786,9 +786,9 @@ export class ChatService {
                                     channel.channelAdministrators,
                             }
                         );
-                    } else {
-                        throw new UnauthorizedException();
                     }
+                } else {
+                    throw new UnauthorizedException();
                 }
             }
             this.chatGateway.channelUpdate();

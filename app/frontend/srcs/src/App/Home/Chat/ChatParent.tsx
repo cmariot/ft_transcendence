@@ -93,6 +93,9 @@ export const ChatParent = () => {
     const [channelDeleted, setChannelDeleted] = useState(false);
 
     useEffect(() => {
+        socket.on("newChannelAvailable", () => {
+            setFirstLoad(!firstLoad);
+        });
         socket.on("banUser", (socket) => {
             if (
                 socket.username === user.username &&
@@ -136,14 +139,14 @@ export const ChatParent = () => {
             ) {
                 setChannelAdmin(socket.value);
 
-                //axios
-                //.post("/api/chat/private/get_users", {
-                //channelName: socket.channel,
-                //})
-                //.then((response) => {
-                //setCurrentChannelUsers(response.data);
-                //})
-                //.catch((error) => console.log(error.data));
+                axios
+                    .post("/api/chat/private/get_users", {
+                        channelName: socket.channel,
+                    })
+                    .then((response) => {
+                        setCurrentChannelUsers(response.data);
+                    })
+                    .catch((error) => console.log(error.data));
             }
         });
         socket.on("userLeaveChannel", (socket) => {
