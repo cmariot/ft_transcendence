@@ -894,7 +894,6 @@ export class ChatService {
       { uuid: channel.uuid },
       { channelAdministrators: currentAdmin }
     );
-    this.chatGateway.updateChannelAdmin(newAdmin, channel.channelName, true);
   }
 
   async removeAdmin(
