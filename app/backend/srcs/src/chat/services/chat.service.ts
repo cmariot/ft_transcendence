@@ -953,7 +953,6 @@ export class ChatService {
       i++;
     }
     if (found === false) {
-      console.log(muteOptions.duration.toString());
       currentBanned.push({
         uuid: mutedUser.uuid,
         ban_date: Date.now().toString(),
@@ -1043,7 +1042,8 @@ export class ChatService {
     targetChannel: ChatEntity,
     muteOptions: muteOptionsDTO
   ) {
-    let currentBanned = targetChannel.banned_users;
+    let channel = this.getByName(targetChannel.channelName);
+    let currentBanned = (await channel).banned_users;
     let i = 0;
     let found = false;
     while (i < currentBanned.length) {
@@ -1055,7 +1055,7 @@ export class ChatService {
       i++;
     }
     if (found === false) {
-      throw new HttpException("This user wasn't banned", HttpStatus.FOUND);
+      return null;
     }
     await this.chatRepository.update(
       { uuid: targetChannel.uuid },
@@ -1154,10 +1154,12 @@ export class ChatService {
     targetChannel: ChatEntity,
     muteOptions: muteOptionsDTO
   ) {
-    let currentMuted = targetChannel.mutted_users;
+    let channel = this.getByName(targetChannel.channelName);
+    let currentMuted = (await channel).mutted_users;
     let i = 0;
     let found = false;
     while (i < currentMuted.length) {
+      console.log(mutedUser.uuid, " === ", currentMuted[i].uuid);
       if (mutedUser.uuid === currentMuted[i].uuid) {
         currentMuted.splice(i, 1);
         found = true;
@@ -1166,7 +1168,7 @@ export class ChatService {
       i++;
     }
     if (found === false) {
-      throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
+      return null;
     }
     await this.chatRepository.update(
       { uuid: targetChannel.uuid },

@@ -338,7 +338,16 @@ export class ChatController {
     if (mutedUser.uuid === req.user.uuid) {
       throw new UnauthorizedException("You cannot unban yourself.");
     }
-    return this.chatService.unban(user, mutedUser, targetChannel, muteOptions);
+    let users_list = await this.chatService.unban(
+      user,
+      mutedUser,
+      targetChannel,
+      muteOptions
+    );
+    if (users_list) {
+      return users_list;
+    }
+    return new HttpException("This user wasn't banned", HttpStatus.FOUND);
   }
 
   // mute
@@ -410,7 +419,16 @@ export class ChatController {
     if (mutedUser.uuid === req.user.uuid) {
       throw new UnauthorizedException("You cannot unmute yourself.");
     }
-    return this.chatService.unmute(user, mutedUser, targetChannel, muteOptions);
+    let users_list = await this.chatService.unmute(
+      user,
+      mutedUser,
+      targetChannel,
+      muteOptions
+    );
+    if (users_list) {
+      return users_list;
+    }
+    return new HttpException("This user wasn't muted", HttpStatus.FOUND);
   }
 
   @Post("messages")
