@@ -26,91 +26,49 @@ const ChatConv = () => {
 
     useEffect(() => {
         if (chat.ban === true || chat.channelDeleted === true) {
-            const current = document.getElementById("chat-conversation");
-            const current2 = document.getElementById("chat-menu-options");
-            const current3 = document.getElementById("edit-kick");
-            const current4 = document.getElementById("edit-mute");
-            const current5 = document.getElementById("edit-ban");
-            const current6 = document.getElementById("add-user-menu");
-            const menu = document.getElementById("chat-your-channels");
-            if (
-                (current &&
-                    current.style &&
-                    current.style.display &&
-                    current.style.display === "flex") ||
-                (current2 &&
-                    current2.style &&
-                    current2.style.display &&
-                    current2.style.display === "flex") ||
-                (current3 &&
-                    current3.style &&
-                    current3.style.display &&
-                    current3.style.display === "flex") ||
-                (current4 &&
-                    current4.style &&
-                    current4.style.display &&
-                    current4.style.display === "flex") ||
-                (current5 &&
-                    current5.style &&
-                    current5.style.display &&
-                    current5.style.display === "flex")
-            ) {
+            let array: string[] = [
+                "chat-conversation",
+                "edit-kick",
+                "edit-mute",
+                "edit-ban",
+                "add-user-menu",
+            ];
+
+            // Hide the current chat menu if open
+            let i = 0;
+            while (i < array.length) {
+                const element = document.getElementById(array[i]);
                 if (
-                    menu &&
-                    menu.style &&
-                    menu.style.display &&
-                    menu.style.display === "none"
+                    element &&
+                    element.style &&
+                    element.style.display &&
+                    element.style.display === "flex"
                 ) {
-                    menu.style.display = "flex";
+                    element.style.display = "none";
                 }
+                i++;
             }
+
+            // Close the chat menu if open
+            const chatMenu = document.getElementById("chat-menu-options");
             if (
-                current &&
-                current.style &&
-                current.style.display &&
-                current.style.display === "flex"
-            ) {
-                current.style.display = "none";
-            }
-            if (
-                current2 &&
-                current2.style &&
-                current2.style.display &&
-                current2.style.display === "flex"
+                chatMenu &&
+                chatMenu.style &&
+                chatMenu.style.display &&
+                chatMenu.style.display === "flex"
             ) {
                 toogleChatMenu();
             }
+
+            // Display the user channels list
+            const menu = document.getElementById("chat-your-channels");
             if (
-                current3 &&
-                current3.style &&
-                current3.style.display &&
-                current3.style.display === "flex"
+                menu &&
+                menu.style &&
+                menu.style.display &&
+                menu.style.display === "none"
             ) {
-                current3.style.display = "none";
-            }
-            if (
-                current4 &&
-                current4.style &&
-                current4.style.display &&
-                current4.style.display === "flex"
-            ) {
-                current4.style.display = "none";
-            }
-            if (
-                current5 &&
-                current5.style &&
-                current5.style.display &&
-                current5.style.display === "flex"
-            ) {
-                current5.style.display = "none";
-            }
-            if (
-                current6 &&
-                current6.style &&
-                current6.style.display &&
-                current6.style.display === "flex"
-            ) {
-                current6.style.display = "none";
+                menu.style.display = "flex";
             }
 
             chat.changeCurrentChannel("");
@@ -139,7 +97,6 @@ const ChatConv = () => {
     }
 
     function toogleChatMenu() {
-        console.log("Chat context =", chat);
         const menu = document.getElementById("chat-menu-options");
         const messages = document.getElementById("chat-messages-list");
         const input = document.getElementById("send-message-form");
