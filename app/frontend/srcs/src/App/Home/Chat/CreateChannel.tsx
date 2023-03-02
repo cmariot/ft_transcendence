@@ -12,7 +12,7 @@ const CreateChannel = () => {
 
     function cancelCreateChannel() {
         const current = document.getElementById("chat-create-channel");
-        const menu = document.getElementById("chat-channels-list");
+        const menu = document.getElementById("chat-your-channels");
         if (menu && current) {
             current.style.display = "none";
             menu.style.display = "flex";

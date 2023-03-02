@@ -33,3 +33,7 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+#app-nav-bar > a:nth-child(1) {
+    text-decoration: none;
+}

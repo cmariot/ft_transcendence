@@ -110,14 +110,26 @@ const YourChannels = () => {
         }
     }
 
+    function createChannelMenu() {
+        const current = document.getElementById("chat-your-channels");
+        const menu = document.getElementById("chat-create-channel");
+        if (menu && current) {
+            current.style.display = "none";
+            menu.style.display = "flex";
+        }
+    }
+
     return (
         <menu id="chat-your-channels" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Your channels</p>
+                <button onClick={() => createChannelMenu()}>new channel</button>
             </header>
             <section className="chat-section">{displayChannels()}</section>
             <footer className="chat-footer">
-                <button onClick={() => viewChannelsList()}>add channel</button>
+                <button onClick={() => viewChannelsList()}>
+                    browse channels
+                </button>
             </footer>
         </menu>
     );

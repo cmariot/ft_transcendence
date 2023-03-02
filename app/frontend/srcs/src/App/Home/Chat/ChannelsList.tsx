@@ -59,15 +59,6 @@ const ChannelsList = () => {
         }
     }
 
-    function createChannelMenu() {
-        const current = document.getElementById("chat-channels-list");
-        const menu = document.getElementById("chat-create-channel");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     function displayIfProtected(channelType: string) {
         if (channelType === "protected") return <>(protected)</>;
     }
@@ -107,13 +98,10 @@ const ChannelsList = () => {
         <menu id="chat-channels-list" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Available channels</p>
-                <button onClick={() => closeChannelsListMenu()}>cancel</button>
             </header>
             <section className="chat-section">{displayChannelsList()}</section>
             <footer className="chat-footer">
-                <button onClick={() => createChannelMenu()}>
-                    create channel
-                </button>
+                <button onClick={() => closeChannelsListMenu()}>cancel</button>
             </footer>
         </menu>
     );
