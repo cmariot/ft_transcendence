@@ -1007,19 +1007,27 @@ export class ChatService {
             if (mutedUser.uuid === currentBanned[i].uuid) {
                 currentBanned[i].ban_date = Date.now().toString();
                 currentBanned[i].ban_duration = muteOptions.duration.toString();
+
                 found = true;
                 break;
             }
             i++;
         }
         if (found === false) {
-            console.log(muteOptions.duration.toString());
             currentBanned.push({
                 uuid: mutedUser.uuid,
                 ban_date: Date.now().toString(),
                 ban_duration: muteOptions.duration.toString(),
             });
         }
+
+        if (muteOptions.duration > 0) {
+            setTimeout(() => {
+                // Room a faire pour envoyer aux bons clients
+                this.chatGateway.unbanEvent(targetChannel.channelName);
+            }, muteOptions.duration * 1000);
+        }
+
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
@@ -1130,6 +1138,20 @@ export class ChatService {
             { banned_users: currentBanned }
         );
         this.chatGateway.channelUpdate();
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
+    }
+
+    async banList(channelName: string) {
+        let channel = await this.getByName(channelName);
+        if (!channel) throw new UnauthorizedException("Invalid channel");
+        let currentBanned = channel.banned_users;
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
             let user = await this.userService.getByID(currentBanned[j].uuid);

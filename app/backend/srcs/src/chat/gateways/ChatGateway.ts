@@ -146,4 +146,8 @@ export class ChatGateway implements OnModuleInit {
             channel: channelName,
         });
     }
+
+    unbanEvent(channelName: string) {
+        this.server.emit("unbanUser", { channelName: channelName });
+    }
 }

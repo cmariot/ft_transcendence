@@ -167,6 +167,14 @@ export const ChatParent = () => {
                 setCurrentChannelAdmins(current_admins);
             }
         });
+
+        // To do :
+        // - [ ] Envoyer event au bon timing,
+        // - [ ] Envoyer l'event aux utilisateurs concernes (admins et owner channel)
+        // - [ ] Faire une route protegee, accessible uniquemenent aux owners + admins et qui permet d'avoir la liste des bans si channel === currentChannel
+        socket.on("unbanUser", (socket) => {
+            console.log("An user has been unbanned", socket);
+        });
     });
 
     useEffect(() => {

@@ -46,21 +46,39 @@ export class AuthService {
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {
             if (type === "double_authentification") {
-                res.clearCookie("authentification")
-                    .clearCookie("email_validation")
-                    .clearCookie("double_authentification")
+                res.clearCookie("authentification", {
+                    sameSite: "none",
+                    secure: true,
+                })
+                    .clearCookie("email_validation", {
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .clearCookie("double_authentification", {
+                        sameSite: "none",
+                        secure: true,
+                    })
                     .cookie(type, cookie_value, {
-                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        maxAge: 1000 * 60 * 60 * 12, // 12 hours
                         sameSite: "none",
                         secure: true,
                     })
                     .redirect(process.env.HOST + "/double-authentification");
             } else if (type === "authentification") {
-                res.clearCookie("authentification")
-                    .clearCookie("email_validation")
-                    .clearCookie("double_authentification")
+                res.clearCookie("authentification", {
+                    sameSite: "none",
+                    secure: true,
+                })
+                    .clearCookie("email_validation", {
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .clearCookie("double_authentification", {
+                        sameSite: "none",
+                        secure: true,
+                    })
                     .cookie(type, cookie_value, {
-                        maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                        maxAge: 1000 * 60 * 60 * 12, // 12 hours
                         sameSite: "none",
                         secure: true,
                     })
@@ -69,11 +87,22 @@ export class AuthService {
                 throw new UnauthorizedException();
             }
         } else {
-            res.clearCookie("authentification")
-                .clearCookie("email_validation")
-                .clearCookie("double_authentification")
+            res.clearCookie("authentification", {
+                sameSite: "none",
+                secure: true,
+            })
+                .clearCookie("email_validation", {
+                    sameSite: "none",
+                    secure: true,
+                })
+                .clearCookie("double_authentification", {
+                    sameSite: "none",
+                    secure: true,
+                })
                 .cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 2, // 2 hours
+                    maxAge: 1000 * 60 * 60 * 12, // 12 hours
+                    sameSite: "none",
+                    secure: true,
                 })
                 .send(type);
         }
