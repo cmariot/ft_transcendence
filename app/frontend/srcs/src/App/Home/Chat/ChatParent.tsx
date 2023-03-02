@@ -168,12 +168,12 @@ export const ChatParent = () => {
             }
         });
 
-        // To do :
-        // - [ ] Envoyer event au bon timing,
-        // - [ ] Envoyer l'event aux utilisateurs concernes (admins et owner channel)
-        // - [ ] Faire une route protegee, accessible uniquemenent aux owners + admins et qui permet d'avoir la liste des bans si channel === currentChannel
-        socket.on("unbanUser", (socket) => {
-            console.log("An user has been unbanned", socket);
+        socket.on("unban/unmute", (socket) => {
+            if (socket.status === "mute") {
+                setCurrentChannelMute(socket.users_list);
+            } else if (socket.status === "ban") {
+                setCurrentChannelBan(socket.users_list);
+            }
         });
     });
 

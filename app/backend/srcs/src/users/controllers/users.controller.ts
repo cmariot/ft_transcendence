@@ -115,8 +115,8 @@ export class UsersController {
 
     @Get("image")
     @UseGuards(isLogged)
-    getProfileImage(@Req() req) {
-        return this.userService.getProfileImage(req.user.uuid);
+    async getProfileImage(@Req() req) {
+        return await this.userService.getProfileImage(req.user.uuid);
     }
 
     @Get("2fa")

@@ -381,6 +381,9 @@ export class UsersService {
 
     async getProfileImage(uuid: string): Promise<StreamableFile> {
         let user = await this.getByID(uuid);
+        if (!user) {
+            throw new HttpException("Invalid user.", HttpStatus.FOUND);
+        }
         if (user.profileImage === null) {
             let file = createReadStream(
                 join(process.cwd(), "./default/profile_image.png")

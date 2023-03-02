@@ -746,6 +746,20 @@ export class ChatService {
         return null;
     }
 
+    async banList(channelName: string) {
+        let channel = await this.getByName(channelName);
+        if (!channel) throw new UnauthorizedException("Invalid channel");
+        let currentBanned = channel.banned_users;
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
+    }
+
     async leave_channel(channelName: string, uuid: string) {
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
@@ -1007,7 +1021,6 @@ export class ChatService {
             if (mutedUser.uuid === currentBanned[i].uuid) {
                 currentBanned[i].ban_date = Date.now().toString();
                 currentBanned[i].ban_duration = muteOptions.duration.toString();
-
                 found = true;
                 break;
             }
@@ -1020,14 +1033,17 @@ export class ChatService {
                 ban_duration: muteOptions.duration.toString(),
             });
         }
-
         if (muteOptions.duration > 0) {
             setTimeout(() => {
-                // Room a faire pour envoyer aux bons clients
-                this.chatGateway.unbanEvent(targetChannel.channelName);
+                this.timeout(
+                    user,
+                    mutedUser,
+                    targetChannel,
+                    muteOptions,
+                    "ban"
+                );
             }, muteOptions.duration * 1000);
         }
-
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
@@ -1116,7 +1132,8 @@ export class ChatService {
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
     ) {
-        let currentBanned = targetChannel.banned_users;
+        let channel = this.getByName(targetChannel.channelName);
+        let currentBanned = (await channel).banned_users;
         let i = 0;
         let found = false;
         while (i < currentBanned.length) {
@@ -1128,10 +1145,7 @@ export class ChatService {
             i++;
         }
         if (found === false) {
-            throw new HttpException(
-                "This user wasn't banned",
-                HttpStatus.FOUND
-            );
+            return null;
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
@@ -1148,18 +1162,38 @@ export class ChatService {
         return ban_usernames_list;
     }
 
-    async banList(channelName: string) {
-        let channel = await this.getByName(channelName);
-        if (!channel) throw new UnauthorizedException("Invalid channel");
-        let currentBanned = channel.banned_users;
-        let ban_usernames_list: string[] = [];
-        for (let j = 0; j < currentBanned.length; j++) {
-            let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
-            }
+    async timeout(
+        user: UserEntity,
+        mutedUser: UserEntity,
+        targetChannel: ChatEntity,
+        muteOptions: muteOptionsDTO,
+        event: string
+    ) {
+        // check if the mute/ban is really at 0
+        let users_list;
+        if (event === "mute") {
+            users_list = await this.unmute(
+                user,
+                mutedUser,
+                targetChannel,
+                muteOptions
+            );
         }
-        return ban_usernames_list;
+        if (event === "ban") {
+            users_list = await this.unban(
+                user,
+                mutedUser,
+                targetChannel,
+                muteOptions
+            );
+        }
+        if (users_list !== null) {
+            this.chatGateway.send_unmute_or_unban(
+                targetChannel.channelName,
+                users_list,
+                event
+            );
+        }
     }
 
     async mute(
@@ -1187,6 +1221,17 @@ export class ChatService {
                 mute_duration: muteOptions.duration.toString(),
             });
         }
+        if (muteOptions.duration > 0) {
+            setTimeout(() => {
+                this.timeout(
+                    user,
+                    mutedUser,
+                    targetChannel,
+                    muteOptions,
+                    "mute"
+                );
+            }, muteOptions.duration * 1000);
+        }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
@@ -1208,7 +1253,8 @@ export class ChatService {
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
     ) {
-        let currentMuted = targetChannel.mutted_users;
+        let channel = this.getByName(targetChannel.channelName);
+        let currentMuted = (await channel).mutted_users;
         let i = 0;
         let found = false;
         while (i < currentMuted.length) {
@@ -1220,7 +1266,7 @@ export class ChatService {
             i++;
         }
         if (found === false) {
-            throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
+            return null;
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },

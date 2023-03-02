@@ -132,6 +132,17 @@ export class ChatGateway implements OnModuleInit {
         });
     }
 
+    async send_unmute_or_unban(
+        channel: string,
+        users_list: string[],
+        status: string
+    ) {
+        this.server.to("chatroom_" + channel).emit("unban/unmute", {
+            status: status,
+            users_list: users_list,
+        });
+    }
+
     updateChannelAdmin(username: string, channel: string, value: boolean) {
         this.server.emit("channelAdminUpdate", {
             username: username,
@@ -145,9 +156,5 @@ export class ChatGateway implements OnModuleInit {
             username: username,
             channel: channelName,
         });
-    }
-
-    unbanEvent(channelName: string) {
-        this.server.emit("unbanUser", { channelName: channelName });
     }
 }
