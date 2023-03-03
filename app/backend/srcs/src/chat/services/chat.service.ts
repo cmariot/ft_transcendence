@@ -1148,6 +1148,16 @@ export class ChatService {
         let found = false;
         while (i < currentBanned.length) {
             if (mutedUser.uuid === currentBanned[i].uuid) {
+                if (parseInt(currentBanned[i].ban_duration) === 0) {
+                    return null;
+                }
+                let now = Date.now();
+                if (
+                    now - parseInt(currentBanned[i].ban_date) <
+                    parseInt(currentBanned[i].ban_duration) * 1000
+                ) {
+                    return null;
+                }
                 currentBanned.splice(i, 1);
                 found = true;
                 break;
@@ -1267,7 +1277,7 @@ export class ChatService {
                     muteOptions,
                     "mute"
                 );
-            }, Number(5) * 1000);
+            }, muteOptions.duration * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
@@ -1294,8 +1304,19 @@ export class ChatService {
         let currentMuted = (await channel).mutted_users;
         let i = 0;
         let found = false;
+
         while (i < currentMuted.length) {
             if (mutedUser.uuid === currentMuted[i].uuid) {
+                if (parseInt(currentMuted[i].mute_duration) === 0) {
+                    return null;
+                }
+                let now = Date.now();
+                if (
+                    now - parseInt(currentMuted[i].mute_date) <
+                    parseInt(currentMuted[i].mute_duration) * 1000
+                ) {
+                    return null;
+                }
                 currentMuted.splice(i, 1);
                 found = true;
                 break;
