@@ -68,16 +68,16 @@ export const App = () => {
                 console.log(error.response);
             });
         socket.on("userLogout", () => {
-            setLogged(!logged);
-        });
-    }, [logged]);
+            console.log("User logged out");
 
-    useEffect(() => {
-        if (logged === false) {
             navigate("/login");
-            setLogged(true);
-        }
-    }, [navigate, logged]);
+            setLogged(!logged);
+
+            if (logged === false) {
+                setLogged(true);
+            }
+        });
+    }, [logged, navigate]);
 
     useEffect(() => {
         socket.on("userUpdate", () => {

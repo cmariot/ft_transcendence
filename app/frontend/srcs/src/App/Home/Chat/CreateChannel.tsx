@@ -149,6 +149,7 @@ const CreateChannel = () => {
                         placeholder="Channel's name"
                         value={channelName}
                         onChange={handleNewChannelNameChange}
+                        autoComplete="off"
                         required
                     />
                     {passwordIfProtected()}
