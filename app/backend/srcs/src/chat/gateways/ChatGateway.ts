@@ -133,6 +133,7 @@ export class ChatGateway implements OnModuleInit {
       if (socket) {
         socket.emit("unban/unmute", {
           status: status,
+          channel: channel,
           users_list: users_list,
         });
       }

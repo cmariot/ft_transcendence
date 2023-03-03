@@ -1089,14 +1089,24 @@ export class ChatService {
   }
 
   async get_Admin_Owner(channel: ChatEntity) {
+    let target_uuidList: string[] = null;
     let target_list: string[] = null;
     if (channel) {
       if (channel.channelOwner) {
-        target_list = [];
-        target_list.push(channel.channelOwner);
+        target_uuidList = [];
+        target_uuidList.push(channel.channelOwner);
       }
       for (let i = 0; i < channel.channelAdministrators.length; i++) {
-        target_list.push(channel.channelAdministrators[i].uuid);
+        target_uuidList.push(channel.channelAdministrators[i].uuid);
+      }
+      if (target_uuidList.length > 0) {
+        target_list = [];
+        for (let i = 0; i < target_uuidList.length; i++) {
+          let user = this.userService.getByID(target_uuidList[i]);
+          for (let j = 0; j < (await user).socketId.length; j++) {
+            target_list.push((await user).socketId[j]);
+          }
+        }
       }
     }
     return target_list;
@@ -1167,7 +1177,7 @@ export class ChatService {
     if (muteOptions.duration > 0) {
       setTimeout(() => {
         this.timeout(user, mutedUser, targetChannel, muteOptions, "mute");
-      }, muteOptions.duration * 1000);
+      }, Number(5) * 1000);
     }
     await this.chatRepository.update(
       { uuid: targetChannel.uuid },
