@@ -960,21 +960,22 @@ export class ChatService {
             );
         }
         let found = false;
-        console.log("ADMIN");
         if (
             channel.channelType === ChannelType.PUBLIC ||
             channel.channelType === ChannelType.PROTECTED
         ) {
-            for (let i = 0; channel.users.length; i++) {
-                if (newAdminUUID === channel.users[i].uuid) {
-                    found = true;
-                }
+            if (
+                channel.users.find((element) => element.uuid === newAdminUUID)
+            ) {
+                found = true;
             }
         } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
-            for (let i = 0; channel.users.length; i++) {
-                if (newAdminUUID === channel.allowed_users[i].uuid) {
-                    found = true;
-                }
+            if (
+                channel.allowed_users.find(
+                    (element) => element.uuid === newAdminUUID
+                )
+            ) {
+                found = true;
             }
         }
         if (found === false) {
@@ -1203,12 +1204,12 @@ export class ChatService {
         return ban_usernames_list;
     }
 
-    async get_Admin_Owner(channel: ChatEntity) {
+    async get_Admin_Owner(channel: ChatEntity, mode: string) {
         let target_uuidList: string[] = null;
         let target_list: string[] = null;
         if (channel) {
-            if (channel.channelOwner) {
-                target_uuidList = [];
+            target_uuidList = [];
+            if (channel.channelOwner && mode === "normal") {
                 target_uuidList.push(channel.channelOwner);
             }
             for (let i = 0; i < channel.channelAdministrators.length; i++) {
@@ -1216,10 +1217,19 @@ export class ChatService {
             }
             if (target_uuidList.length > 0) {
                 target_list = [];
-                for (let i = 0; i < target_uuidList.length; i++) {
-                    let user = this.userService.getByID(target_uuidList[i]);
-                    for (let j = 0; j < (await user).socketId.length; j++) {
-                        target_list.push((await user).socketId[j]);
+                if (mode === "normal") {
+                    for (let i = 0; i < target_uuidList.length; i++) {
+                        let user = this.userService.getByID(target_uuidList[i]);
+                        for (let j = 0; j < (await user).socketId.length; j++) {
+                            target_list.push((await user).socketId[j]);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < target_uuidList.length; i++) {
+                        let user = await this.userService.getUsernameById(
+                            target_uuidList[i]
+                        );
+                        target_list.push(user);
                     }
                 }
             }
@@ -1252,7 +1262,10 @@ export class ChatService {
             );
         }
         if (users_list !== null) {
-            let target_list = await this.get_Admin_Owner(targetChannel);
+            let target_list = await this.get_Admin_Owner(
+                targetChannel,
+                "normal"
+            );
             if (target_list) {
                 this.chatGateway.send_unmute_or_unban(
                     targetChannel.channelName,
