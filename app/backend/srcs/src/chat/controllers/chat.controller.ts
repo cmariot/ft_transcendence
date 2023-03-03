@@ -483,7 +483,9 @@ export class ChatController {
     @Post("/channel/banned")
     @UseGuards(isLogged)
     async get_banned_channel_users(@Req() req, @Body() channel: channelDTO) {
-        // a proteger
-        return await this.chatService.banList(channel.channelName);
+        return await this.chatService.banList(
+            channel.channelName,
+            req.user.uuid
+        );
     }
 }

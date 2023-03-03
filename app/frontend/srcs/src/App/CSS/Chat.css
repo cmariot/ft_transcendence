@@ -439,21 +439,25 @@
 }
 
 #channel-type-select {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 #new-channel-name {
     text-align: left;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 #new-channel-password {
     text-align: left;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 #channel-users-list {
     padding: 0;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 

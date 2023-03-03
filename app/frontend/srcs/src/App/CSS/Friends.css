@@ -25,7 +25,6 @@
     border-radius: 15px;
     width: -webkit-fill-available;
     width: -moz-available;
-    width: -webkit-fill-available;
     margin: 5px;
     padding-inline: 35px;
     width: 100%;
@@ -73,6 +72,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -165,6 +165,8 @@
 }
 
 #friend-list {
+    width: -webkit-fill-available;
+
     width: -moz-available;
 }
 
@@ -184,10 +186,12 @@
 }
 
 .friend-menu-li {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 .friend-menu-button {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -196,10 +200,12 @@
 }
 
 .friend-menu-li {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 .friend-menu-button {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -209,6 +215,7 @@
 }
 
 .friend {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -221,10 +228,12 @@
 }
 
 .friend-menu-li {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 .friend-menu-button {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -235,6 +244,7 @@
 }
 
 .friend {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -254,11 +264,13 @@
 }
 
 .friend-menu-display {
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
 .div-friend-list {
     justify-content: space-between;
+    width: -webkit-fill-available;
     width: -moz-available;
 }
 
@@ -282,6 +294,7 @@
 }
 
 .friend-middle-div {
+    width: -webkit-fill-available;
     width: -moz-available;
     display: flex;
     justify-content: flex-start;

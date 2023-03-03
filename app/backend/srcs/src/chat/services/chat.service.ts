@@ -746,15 +746,29 @@ export class ChatService {
         return null;
     }
 
-    async banList(channelName: string) {
+    async banList(channelName: string, uuid: string) {
         let channel = await this.getByName(channelName);
         if (!channel) throw new UnauthorizedException("Invalid channel");
         let currentBanned = channel.banned_users;
         let ban_usernames_list: string[] = [];
-        for (let j = 0; j < currentBanned.length; j++) {
-            let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
+        let is_authorized = false;
+        if (channel.channelOwner === uuid) {
+            is_authorized = true;
+        } else if (
+            channel.channelAdministrators.find(
+                (element) => element.uuid === uuid
+            ) !== undefined
+        ) {
+            is_authorized = true;
+        }
+        if (is_authorized === true) {
+            for (let j = 0; j < currentBanned.length; j++) {
+                let user = await this.userService.getByID(
+                    currentBanned[j].uuid
+                );
+                if (user && user.username) {
+                    ban_usernames_list.push(user.username);
+                }
             }
         }
         return ban_usernames_list;

@@ -110,7 +110,7 @@ const BanUser = () => {
                         <option value="600">10 minutes</option>
                         <option value="86400">24 hours</option>
                         <option value="604800">7 days</option>
-                        <option value="0">no limit</option>
+                        <option value="0">ban def</option>
                     </select>
                     <input type="submit" value="ban" />
                 </form>
