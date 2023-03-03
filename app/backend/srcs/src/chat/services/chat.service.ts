@@ -959,6 +959,27 @@ export class ChatService {
                 HttpStatus.FOUND
             );
         }
+        let found = false;
+        console.log("ADMIN");
+        if (
+            channel.channelType === ChannelType.PUBLIC ||
+            channel.channelType === ChannelType.PROTECTED
+        ) {
+            for (let i = 0; channel.users.length; i++) {
+                if (newAdminUUID === channel.users[i].uuid) {
+                    found = true;
+                }
+            }
+        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
+            for (let i = 0; channel.users.length; i++) {
+                if (newAdminUUID === channel.allowed_users[i].uuid) {
+                    found = true;
+                }
+            }
+        }
+        if (found === false) {
+            throw new HttpException("Not in the Channel", HttpStatus.FOUND);
+        }
         let currentAdmin = channel.channelAdministrators;
         let i = 0;
         while (i < currentAdmin.length) {
