@@ -1088,6 +1088,20 @@ export class ChatService {
     return ban_usernames_list;
   }
 
+  async get_Admin_Owner(channel: ChatEntity) {
+    let target_list: string[] = null;
+    if (channel) {
+      if (channel.channelOwner) {
+        target_list = [];
+        target_list.push(channel.channelOwner);
+      }
+      for (let i = 0; i < channel.channelAdministrators.length; i++) {
+        target_list.push(channel.channelAdministrators[i].uuid);
+      }
+    }
+    return target_list;
+  }
+
   async timeout(
     user: UserEntity,
     mutedUser: UserEntity,
@@ -1113,11 +1127,15 @@ export class ChatService {
       );
     }
     if (users_list !== null) {
-      this.chatGateway.send_unmute_or_unban(
-        targetChannel.channelName,
-        users_list,
-        event
-      );
+      let target_list = await this.get_Admin_Owner(targetChannel);
+      if (target_list) {
+        this.chatGateway.send_unmute_or_unban(
+          targetChannel.channelName,
+          users_list,
+          target_list,
+          event
+        );
+      }
     }
   }
 
