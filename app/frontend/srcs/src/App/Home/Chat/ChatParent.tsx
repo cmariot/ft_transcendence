@@ -173,8 +173,6 @@ export const ChatParent = () => {
                 setCurrentChannelMute(socket.users_list);
             } else if (socket.status === "ban") {
                 setCurrentChannelBan(socket.users_list);
-            } else if (socket.status === "kick") {
-                setCurrentChannelAdmins(socket.users_list);
             }
         });
     });
