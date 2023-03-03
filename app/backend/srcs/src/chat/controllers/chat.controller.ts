@@ -368,12 +368,16 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unban yourself.");
         }
-        return this.chatService.unban(
+        let list = await this.chatService.unban(
             user,
             mutedUser,
             targetChannel,
             muteOptions
         );
+        if (!list) {
+            throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
+        }
+        return list;
     }
 
     // mute

@@ -465,6 +465,33 @@ export class ChatService {
         return users_list;
     }
 
+    async banList(channelName: string, uuid: string) {
+        let channel = await this.getByName(channelName);
+        if (!channel) throw new UnauthorizedException("Invalid channel");
+        let currentBanned = channel.banned_users;
+        let ban_usernames_list: string[] = [];
+        let is_authorized = false;
+        if (channel.channelOwner === uuid) {
+            is_authorized = true;
+        } else if (
+            channel.channelAdministrators.find(
+                (element) => element.uuid === uuid
+            ) !== undefined
+        ) {
+            is_authorized = true;
+        }
+        if (is_authorized === true) {
+            for (let j = 0; j < currentBanned.length; j++) {
+                let user = await this.userService.getByID(
+                    currentBanned[j].uuid
+                );
+                if (user && user.username) {
+                    ban_usernames_list.push(user.username);
+                }
+            }
+        }
+        return ban_usernames_list;
+    }
     async join_channel(channelName: string, userID: string) {
         let channels = await this.chatRepository.find();
         if (channels.length === 0) {
@@ -744,34 +771,6 @@ export class ChatService {
             i++;
         }
         return null;
-    }
-
-    async banList(channelName: string, uuid: string) {
-        let channel = await this.getByName(channelName);
-        if (!channel) throw new UnauthorizedException("Invalid channel");
-        let currentBanned = channel.banned_users;
-        let ban_usernames_list: string[] = [];
-        let is_authorized = false;
-        if (channel.channelOwner === uuid) {
-            is_authorized = true;
-        } else if (
-            channel.channelAdministrators.find(
-                (element) => element.uuid === uuid
-            ) !== undefined
-        ) {
-            is_authorized = true;
-        }
-        if (is_authorized === true) {
-            for (let j = 0; j < currentBanned.length; j++) {
-                let user = await this.userService.getByID(
-                    currentBanned[j].uuid
-                );
-                if (user && user.username) {
-                    ban_usernames_list.push(user.username);
-                }
-            }
-        }
-        return ban_usernames_list;
     }
 
     async leave_channel(channelName: string, uuid: string) {
@@ -1176,6 +1175,30 @@ export class ChatService {
         return ban_usernames_list;
     }
 
+    async get_Admin_Owner(channel: ChatEntity) {
+        let target_uuidList: string[] = null;
+        let target_list: string[] = null;
+        if (channel) {
+            if (channel.channelOwner) {
+                target_uuidList = [];
+                target_uuidList.push(channel.channelOwner);
+            }
+            for (let i = 0; i < channel.channelAdministrators.length; i++) {
+                target_uuidList.push(channel.channelAdministrators[i].uuid);
+            }
+            if (target_uuidList.length > 0) {
+                target_list = [];
+                for (let i = 0; i < target_uuidList.length; i++) {
+                    let user = this.userService.getByID(target_uuidList[i]);
+                    for (let j = 0; j < (await user).socketId.length; j++) {
+                        target_list.push((await user).socketId[j]);
+                    }
+                }
+            }
+        }
+        return target_list;
+    }
+
     async timeout(
         user: UserEntity,
         mutedUser: UserEntity,
@@ -1183,7 +1206,6 @@ export class ChatService {
         muteOptions: muteOptionsDTO,
         event: string
     ) {
-        // check if the mute/ban is really at 0
         let users_list;
         if (event === "mute") {
             users_list = await this.unmute(
@@ -1202,11 +1224,15 @@ export class ChatService {
             );
         }
         if (users_list !== null) {
-            this.chatGateway.send_unmute_or_unban(
-                targetChannel.channelName,
-                users_list,
-                event
-            );
+            let target_list = await this.get_Admin_Owner(targetChannel);
+            if (target_list) {
+                this.chatGateway.send_unmute_or_unban(
+                    targetChannel.channelName,
+                    users_list,
+                    target_list,
+                    event
+                );
+            }
         }
     }
 
@@ -1244,7 +1270,7 @@ export class ChatService {
                     muteOptions,
                     "mute"
                 );
-            }, muteOptions.duration * 1000);
+            }, Number(5) * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
