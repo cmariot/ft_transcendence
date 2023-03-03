@@ -488,7 +488,6 @@ export class UsersService {
             { blocked: list }
         );
         let blocked_list = await this.blockedList(user.uuid);
-        console.log(blocked_list);
         return blocked_list;
     }
 

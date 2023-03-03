@@ -186,13 +186,11 @@ export class ChatService {
             throw new HttpException("Invalid user", HttpStatus.FOUND);
         }
         if (newChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
-            console.log("Create private channel");
             let uuid_array: { uuid: string }[] = [];
             uuid_array.push({ uuid: newChannel.channelOwner });
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                console.log("Saved :", channel);
                 this.chatGateway.channelUpdate();
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
@@ -699,7 +697,6 @@ export class ChatService {
             channel.channelType === ChannelType.PRIVATE ||
             channel.channelType === ChannelType.PRIVATE_CHANNEL
         ) {
-            console.log("Send message");
             let allowed_users = channel.allowed_users;
             let i = 0;
             while (i < allowed_users.length) {

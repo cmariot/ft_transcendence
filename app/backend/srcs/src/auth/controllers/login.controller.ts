@@ -8,7 +8,6 @@ export class LoginController {
 
     @Post()
     async login(@Body() loginDto: LoginDto, @Res() res, @Req() req) {
-        console.log(loginDto);
         return this.authService.signin_local_user(loginDto, req, res);
     }
 }

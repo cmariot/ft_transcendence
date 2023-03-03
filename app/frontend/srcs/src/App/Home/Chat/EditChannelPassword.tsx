@@ -57,8 +57,6 @@ const EditChannelPassword = () => {
 
     const submitChannelEdit = async (event: any) => {
         event.preventDefault();
-        console.log("channel :", chat.currentChannel, chat.currentChannelType);
-        console.log("new values :", protectedChannel, newChannelPassword);
         await axios
             .post("/api/chat/updateChannel", {
                 channelName: chat.currentChannel,

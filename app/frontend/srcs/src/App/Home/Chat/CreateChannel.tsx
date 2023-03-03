@@ -132,6 +132,8 @@ const CreateChannel = () => {
                     autoComplete="off"
                     className="chat-main"
                 >
+                    <label>Channel type :</label>
+
                     <select
                         name="channel-type"
                         id="channel-type-select"

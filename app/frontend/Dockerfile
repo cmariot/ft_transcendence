@@ -9,6 +9,9 @@ RUN apk -U upgrade
 # Create the frontend directory
 WORKDIR /srcs
 
+# Add '/srcs/node_modules/.bin' to $PATH
+ENV PATH /srcs/node_modules/.bin:$PATH
+
 # Copy the frontend files
 COPY ./srcs .
 COPY ./entrypoint.sh /

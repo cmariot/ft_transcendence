@@ -474,3 +474,9 @@
     display: flex;
     flex-direction: column;
 }
+
+#chat-edit-password-form > label:nth-child(1) {
+    margin-left: 5px;
+    width: -moz-available;
+    text-align: left;
+}

@@ -189,7 +189,7 @@ export default function Friends() {
                 }
             })
             .catch((error) => {
-                console.log("Catch : ", error);
+                console.log(error);
             });
     }
 

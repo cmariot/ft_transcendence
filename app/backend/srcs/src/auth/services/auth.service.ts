@@ -152,7 +152,6 @@ export class AuthService {
         let user: UserEntity = await this.usersService.getByUsername(
             loginDto.username
         );
-        console.log("Input password : ", loginDto.password);
         if (
             user &&
             user.createdFrom === CreatedFrom.REGISTER &&
