@@ -20,7 +20,7 @@ const BanUser = () => {
     function handleBanTimeChange(event: any) {
         event.preventDefault();
         const { id, value } = event.target;
-        if (id === "mute-duration") {
+        if (id === "ban-duration") {
             setBanDuration(value);
         }
     }

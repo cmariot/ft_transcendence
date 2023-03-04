@@ -1046,6 +1046,7 @@ export class ChatService {
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
     ) {
+        console.log(muteOptions);
         let currentBanned = targetChannel.banned_users;
         let i = 0;
         let found = false;
@@ -1065,7 +1066,8 @@ export class ChatService {
                 ban_duration: muteOptions.duration.toString(),
             });
         }
-        if (muteOptions.duration === 0) {
+        if (muteOptions.duration == 0) {
+            this.removeAdmin(targetChannel, mutedUser.uuid, user.uuid);
             let updateChannel: ChatEntity = await this.getByName(
                 targetChannel.channelName
             );
