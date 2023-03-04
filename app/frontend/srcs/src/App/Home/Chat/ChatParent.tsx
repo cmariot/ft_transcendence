@@ -149,6 +149,11 @@ export const ChatParent = () => {
                     .catch((error) => console.log(error.data));
             }
         });
+        socket.on("UpdateAdmin", (socket) => {
+            if (currentChannel === socket.channel_name && socket.admin_list) {
+                setCurrentChannelAdmins(socket.admin_list);
+            }
+        });
         socket.on("userLeaveChannel", (socket) => {
             let current_users: string[] = currentChannelUsers;
             let index = current_users.findIndex(

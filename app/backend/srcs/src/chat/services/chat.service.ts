@@ -1109,9 +1109,19 @@ export class ChatService {
             for (let i = 0; i < current_users.length; i++) {
                 if (current_users[i].uuid === kickedUser.uuid) {
                     index = i;
-                    this.leave_channel(
+                    await this.leave_channel(
                         targetChannel.channelName,
                         current_users[i].uuid
+                    );
+                    let updateChannel: ChatEntity = await this.getByName(
+                        targetChannel.channelName
+                    );
+                    let admin_list = await this.get_Admin_list(updateChannel);
+                    let target_list = await this.get_Admin_Owner(updateChannel);
+                    await this.chatGateway.set_admin(
+                        admin_list,
+                        target_list,
+                        targetChannel.channelName
                     );
                     return this.chatGateway.kick_user(
                         targetChannel.channelName,
@@ -1204,32 +1214,37 @@ export class ChatService {
         return ban_usernames_list;
     }
 
-    async get_Admin_Owner(channel: ChatEntity, mode: string) {
+    async get_Admin_list(channel: ChatEntity) {
+        let uuidlist: string[] = [];
+        let username_list: string[] = [];
+        for (let i = 0; i < channel.channelAdministrators.length; i++) {
+            uuidlist.push(channel.channelAdministrators[i].uuid);
+        }
+        if (uuidlist.length > 0) {
+            for (let i = 0; i < uuidlist.length; i++) {
+                username_list.push(
+                    await this.userService.getUsernameById(uuidlist[i])
+                );
+            }
+        }
+        return username_list;
+    }
+
+    async get_Admin_Owner(channel: ChatEntity) {
         let target_uuidList: string[] = null;
         let target_list: string[] = null;
-        if (channel) {
+        if (channel && channel.channelOwner) {
             target_uuidList = [];
-            if (channel.channelOwner && mode === "normal") {
-                target_uuidList.push(channel.channelOwner);
-            }
+            target_uuidList.push(channel.channelOwner);
             for (let i = 0; i < channel.channelAdministrators.length; i++) {
                 target_uuidList.push(channel.channelAdministrators[i].uuid);
             }
             if (target_uuidList.length > 0) {
                 target_list = [];
-                if (mode === "normal") {
-                    for (let i = 0; i < target_uuidList.length; i++) {
-                        let user = this.userService.getByID(target_uuidList[i]);
-                        for (let j = 0; j < (await user).socketId.length; j++) {
-                            target_list.push((await user).socketId[j]);
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < target_uuidList.length; i++) {
-                        let user = await this.userService.getUsernameById(
-                            target_uuidList[i]
-                        );
-                        target_list.push(user);
+                for (let i = 0; i < target_uuidList.length; i++) {
+                    let user = this.userService.getByID(target_uuidList[i]);
+                    for (let j = 0; j < (await user).socketId.length; j++) {
+                        target_list.push((await user).socketId[j]);
                     }
                 }
             }
@@ -1262,10 +1277,7 @@ export class ChatService {
             );
         }
         if (users_list !== null) {
-            let target_list = await this.get_Admin_Owner(
-                targetChannel,
-                "normal"
-            );
+            let target_list = await this.get_Admin_Owner(targetChannel);
             if (target_list) {
                 this.chatGateway.send_unmute_or_unban(
                     targetChannel.channelName,
