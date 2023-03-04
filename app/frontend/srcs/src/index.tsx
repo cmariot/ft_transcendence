@@ -3,103 +3,105 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import "./index.css";
-import Auth from "./Auth/Auth";
 import ErrorPage from "./Utils/ErrorPage";
-import Login from "./Auth/Login/Login";
-import Register from "./Auth/Register/Register";
-import Validate from "./Auth/Register/Validate";
-import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
-import Home from "./App/Home/Home";
-import Profile from "./App/Profile/Profile";
-import Friends from "./App/Friend/Friends";
-import Settings from "./App/Settings/Settings";
+
+import Auth from "./pages/Auth/Auth";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import Validate from "./pages/Register/Validate";
+import DoubleAuth from "./pages/DoubleAuth/DoubleAuth";
+import Home from "./pages/Home/Home";
+import Profile from "./pages/Profile/Profile";
+import Friends from "./pages/Friend/Friends";
+import Settings from "./pages/Settings/Settings";
+
 import ProtectedPage from "./Utils/ProtectedPage";
 import ProtectedValidation from "./Utils/ProtectedValidation";
 import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
-import { App } from "./App/App";
-import UserProfile, { loader } from "./App/Profile/UserProfile";
-import UnavailableUsername42 from "./Auth/Login/UnavailableUsername42";
+import { App } from "./pages/App/App";
+import UserProfile, { loader } from "./pages/Profile/UserProfile";
+import UnavailableUsername42 from "./pages/Login/UnavailableUsername42";
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        errorElement: <ErrorPage />,
-        element: <ProtectedPage />,
+  {
+    path: "/",
+    errorElement: <ErrorPage />,
+    element: <ProtectedPage />,
+    children: [
+      {
+        element: <App />,
         children: [
-            {
-                element: <App />,
-                children: [
-                    {
-                        index: true,
-                        element: <Home />,
-                    },
-                    {
-                        path: "profile",
-                        element: <Profile />,
-                    },
-                    {
-                        path: "profile/:user",
-                        element: <UserProfile />,
-                        loader: loader,
-                    },
-                    {
-                        path: "friends",
-                        element: <Friends />,
-                    },
-                    {
-                        path: "settings",
-                        element: <Settings />,
-                    },
-                ],
-            },
+          {
+            index: true,
+            element: <Home />,
+          },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          {
+            path: "profile/:user",
+            element: <UserProfile />,
+            loader: loader,
+          },
+          {
+            path: "friends",
+            element: <Friends />,
+          },
+          {
+            path: "settings",
+            element: <Settings />,
+          },
         ],
-    },
-    {
-        path: "/",
-        errorElement: <ErrorPage />,
-        element: <Auth />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    errorElement: <ErrorPage />,
+    element: <Auth />,
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "unavailable-username",
+        element: <UnavailableUsername42 />,
+      },
+      {
+        path: "validate",
+        element: <ProtectedValidation />,
         children: [
-            {
-                path: "login",
-                element: <Login />,
-            },
-            {
-                path: "register",
-                element: <Register />,
-            },
-            {
-                path: "unavailable-username",
-                element: <UnavailableUsername42 />,
-            },
-            {
-                path: "validate",
-                element: <ProtectedValidation />,
-                children: [
-                    {
-                        path: "",
-                        element: <Validate />,
-                    },
-                ],
-            },
-            {
-                path: "double-authentification",
-                element: <ProtectedDoubleAuth />,
-                children: [
-                    {
-                        path: "",
-                        element: <DoubleAuth />,
-                    },
-                ],
-            },
+          {
+            path: "",
+            element: <Validate />,
+          },
         ],
-    },
+      },
+      {
+        path: "double-authentification",
+        element: <ProtectedDoubleAuth />,
+        children: [
+          {
+            path: "",
+            element: <DoubleAuth />,
+          },
+        ],
+      },
+    ],
+  },
 ]);
 
 const root = ReactDOM.createRoot(
-    document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
-    <React.StrictMode>
-        <RouterProvider router={router} />
-    </React.StrictMode>
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
 );
