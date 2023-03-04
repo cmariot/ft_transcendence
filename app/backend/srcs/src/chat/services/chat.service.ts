@@ -1065,6 +1065,18 @@ export class ChatService {
                 ban_duration: muteOptions.duration.toString(),
             });
         }
+        if (muteOptions.duration === 0) {
+            let updateChannel: ChatEntity = await this.getByName(
+                targetChannel.channelName
+            );
+            let admin_list = await this.get_Admin_list(updateChannel);
+            let target_list = await this.get_Admin_Owner(updateChannel);
+            await this.chatGateway.set_admin(
+                admin_list,
+                target_list,
+                targetChannel.channelName
+            );
+        }
         if (muteOptions.duration > 0) {
             setTimeout(() => {
                 this.timeout(
@@ -1180,16 +1192,6 @@ export class ChatService {
         let found = false;
         while (i < currentBanned.length) {
             if (mutedUser.uuid === currentBanned[i].uuid) {
-                if (parseInt(currentBanned[i].ban_duration) === 0) {
-                    return null;
-                }
-                let now = Date.now();
-                if (
-                    now - parseInt(currentBanned[i].ban_date) <
-                    parseInt(currentBanned[i].ban_duration) * 1000
-                ) {
-                    return null;
-                }
                 currentBanned.splice(i, 1);
                 found = true;
                 break;

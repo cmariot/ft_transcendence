@@ -138,7 +138,6 @@ export const ChatParent = () => {
                 socket.username === user.username
             ) {
                 setChannelAdmin(socket.value);
-
                 axios
                     .post("/api/chat/private/get_users", {
                         channelName: socket.channel,
