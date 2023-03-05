@@ -11,10 +11,6 @@
     clip-path: circle();
 }
 
-#edit-picture-input {
-    display: none;
-}
-
 #edit-picture > label:nth-child(2) {
     margin: 5px;
     border-radius: 5px;

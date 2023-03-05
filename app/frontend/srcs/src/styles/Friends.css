@@ -51,10 +51,6 @@
     margin: 5px;
 }
 
-.friend-menu {
-    display: none;
-}
-
 .friend-menu-display {
     display: flex;
     padding: 0px;

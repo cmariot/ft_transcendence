@@ -15,7 +15,6 @@
 }
 
 .chat-menu {
-    display: none;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -204,7 +203,6 @@
 }
 
 #chat-menu-options {
-    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -221,7 +219,6 @@
 }
 
 .chat-user-message-options {
-    display: none;
     justify-content: flex-start;
     align-items: center;
 }
@@ -261,10 +258,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.chat-menu-adminmenus {
-    display: none;
 }
 
 #channel-admins-list {
