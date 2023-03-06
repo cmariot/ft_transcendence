@@ -13,18 +13,6 @@ import KickUser from "./KickUser";
 import AddUser from "./AddUser";
 import "../../../styles/Chat.css";
 
-export const CHANNELS_LIST = "CHANNELS_LIST";
-export const JOINPROTECTED = "";
-export const CREATECHANNEL = "";
-export const CREATEPRIVATE = "";
-export const CHATCONV = "";
-export const EDITCHANNELPASSWORD = "";
-export const EDITADMINS = "";
-export const ADDUSER = "";
-export const BANUSER = "";
-export const KICKUSER = "";
-export const MUTEUSER = "";
-// List of menus for the chat, by default all are hidden except 'YourChannels'
 const Chat = () => {
     const [currentMenu, setCurrentMenu] = useState<string | null>(null);
 

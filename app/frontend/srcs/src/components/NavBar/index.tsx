@@ -7,9 +7,8 @@ import { UserContext } from "../../Contexts/UserProvider";
 export const NavBar = () => {
     let user = useContext(UserContext);
 
-    const isConnected: boolean = user.isLogged === true;
-    if (isConnected) {
-        return <AppNavbar user={user} />;
+    if (user.isLogged) {
+        return <AppNavbar />;
     } else {
         return <AuthNavbar />;
     }

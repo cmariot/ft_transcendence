@@ -109,8 +109,7 @@ export class UsersController {
         const user = await this.userService.getByUsername(params.username);
         if (!user)
             throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-
-        return this.userService.getProfileImage(user.uuid);
+        return await this.userService.getProfileImage(user.uuid);
     }
 
     @Get("image")

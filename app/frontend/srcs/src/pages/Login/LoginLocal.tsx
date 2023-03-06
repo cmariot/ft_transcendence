@@ -1,14 +1,11 @@
 import axios from "axios";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../Utils/GetCookie";
-import { UserContext } from "../../Contexts/UserProvider";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
-    const user = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -35,30 +32,18 @@ const LoginLocal = () => {
                 password: password,
             })
             .then(() => {
-                const email_validation_token = getCookie("email_validation");
-                if (email_validation_token) {
-                    setUsername("");
-                    setPassword("");
-                    navigate("/validate");
-                    return;
-                }
-                const token2fa = getCookie("double_authentification");
-                if (token2fa) {
-                    setUsername("");
-                    setPassword("");
-                    navigate("/double-authentification");
-                    return;
-                }
-                const token = getCookie("authentification");
-                if (!token || token === "undefined") {
-                    setUsername("");
-                    setPassword("");
+                setUsername("");
+                setPassword("");
+                if (getCookie("email_validation")) {
+                    return navigate("/validate");
+                } else if (getCookie("double_authentification")) {
+                    return navigate("/double-authentification");
+                } else if (getCookie("authentification")) {
+                    return navigate("/");
+                } else {
                     alert("Unable to login. Please try again.");
-                    return;
+                    return navigate("/login");
                 }
-
-                user.setIsLogged(true);
-                navigate("/");
             })
             .catch((error) => {
                 setUsername("");

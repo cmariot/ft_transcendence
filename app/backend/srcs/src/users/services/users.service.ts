@@ -388,8 +388,7 @@ export class UsersService {
             let file = createReadStream(
                 join(process.cwd(), "./default/profile_image.png")
             );
-            const stream = new StreamableFile(file);
-            return stream;
+            return new StreamableFile(file);
         } else {
             let file = createReadStream(
                 join(
@@ -397,8 +396,7 @@ export class UsersService {
                     "./uploads/profile_pictures/" + user.profileImage
                 )
             );
-            const stream = new StreamableFile(file);
-            return stream;
+            return new StreamableFile(file);
         }
     }
 

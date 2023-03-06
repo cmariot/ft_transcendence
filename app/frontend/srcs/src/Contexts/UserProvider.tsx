@@ -1,13 +1,13 @@
 import { createContext, useState } from "react";
 
 export type UserContextType = {
-    username: any;
-    avatar: any;
-    firstLog: any;
-    doubleAuth: any;
-    friends: any;
-    blocked: any;
-    friendUpdate: any;
+    username: string;
+    avatar: string;
+    firstLog: boolean;
+    doubleAuth: boolean;
+    friends: string[];
+    blocked: string[];
+    friendUpdate: boolean;
 };
 
 export const UserContext = createContext({

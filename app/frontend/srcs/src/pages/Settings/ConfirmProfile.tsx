@@ -8,9 +8,6 @@ import EditUsername from "./EditUsername";
 import EnableDoubleAuth from "./EnableDoubleAuth";
 import { UserContext } from "../../Contexts/UserProvider";
 
-// import AuthNavbar from "../../components/NavBar/AuthNavBar";
-// import AuthFooter from "../../components/AppFooter/AuthFooter";
-
 export default function ConfirmProfile() {
     const user = useContext(UserContext);
     const navigate = useNavigate();
@@ -27,7 +24,6 @@ export default function ConfirmProfile() {
 
     return (
         <>
-            {/* <AuthNavbar /> */}
             <main>
                 <section>
                     <h2>It's a pleasure to have a new player !</h2>
@@ -46,7 +42,6 @@ export default function ConfirmProfile() {
                     <EnableDoubleAuth />
                 </section>
             </main>
-            {/* <AuthFooter /> */}
         </>
     );
 }
