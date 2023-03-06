@@ -20,9 +20,9 @@ const UserProfile = () => {
 
     useEffect(() => {
         if (user.username === username) {
-            navigate("/profile");
-            return;
+            return navigate("/profile");
         }
+
         axios
             .get("/api/profile/" + username + "/image")
             .then((response) => {
@@ -126,7 +126,7 @@ const UserProfile = () => {
             }
             i++;
         }
-        if (already_blocked === true) {
+        if (already_blocked) {
             return <button onClick={() => unblock(username)}>unblock</button>;
         } else {
             return <button onClick={() => blockUser(username)}>block</button>;
@@ -138,11 +138,13 @@ const UserProfile = () => {
             return (
                 <>
                     <h2>{username}'s profile</h2>
-                    <img
-                        id="profile-user-picture"
-                        src={userImage}
-                        alt="user-imag"
-                    />
+                    {userImage && (
+                        <img
+                            id="profile-user-picture"
+                            src={userImage}
+                            alt="user-imag"
+                        />
+                    )}
                     <h3>{username}</h3>
                     <div>
                         {friendOrUnfriend(username)}

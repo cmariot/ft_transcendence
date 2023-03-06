@@ -20,10 +20,10 @@ export const Menu = () => {
             await axios.get("/api/logout");
             menu.close();
             user.setIsLogged(false);
-            socket.emit("userStatus", {
-                status: "Offline",
-                socket: socket.id,
-            });
+            //socket.emit("userStatus", {
+            //    status: "Offline",
+            //    socket: socket.id,
+            //});
             return navigate("/login");
         } catch (error) {
             console.log(error);

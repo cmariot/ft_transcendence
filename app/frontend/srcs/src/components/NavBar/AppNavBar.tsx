@@ -15,17 +15,21 @@ const AppNavBar = () => {
                     <Link to="/" onClick={() => menu.close()}>
                         ft_transcendence
                     </Link>
-                    <div id="nav-user-infos">
-                        <button onClick={() => menu.toogle()}>
-                            {user?.username}
-                        </button>
-                        <img
-                            id="nav-user-picture"
-                            src={user?.avatar}
-                            onClick={() => menu.toogle()}
-                            alt="Menu"
-                        />
-                    </div>
+                    {user?.username && user?.avatar ? (
+                        <div id="nav-user-infos">
+                            <button onClick={() => menu.toogle()}>
+                                {user?.username}
+                            </button>
+                            <img
+                                id="nav-user-picture"
+                                src={user?.avatar}
+                                onClick={() => menu.toogle()}
+                                alt="Menu"
+                            />
+                        </div>
+                    ) : (
+                        <button onClick={() => menu.toogle()}>menu</button>
+                    )}
                 </nav>
             </header>
         </>

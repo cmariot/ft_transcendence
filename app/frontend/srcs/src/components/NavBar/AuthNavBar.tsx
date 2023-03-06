@@ -4,7 +4,7 @@ import "../../styles/AuthNavbar.css";
 const AuthNavbar = () => {
     return (
         <nav id="auth-nav-bar">
-            <Link to="/">ft_transcendence</Link>
+            <Link to="/login">ft_transcendence</Link>
         </nav>
     );
 };

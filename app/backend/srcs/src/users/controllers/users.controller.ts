@@ -51,7 +51,6 @@ export class UsersController {
             return {
                 uuid: completeUser.uuid,
                 username: completeUser.username,
-                email: completeUser.email,
                 twoFactorsAuth: completeUser.twoFactorsAuth,
                 firstLog: completeUser.firstLog,
             };

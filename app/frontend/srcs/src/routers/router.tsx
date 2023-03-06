@@ -11,9 +11,9 @@ import UserProfile, { loader } from "../pages/Profile/UserProfile";
 import Friends from "../pages/Friend/Friends";
 import Settings from "../pages/Settings/Settings";
 import ConfirmProfile from "../pages/Settings/ConfirmProfile";
-import { DoubleAuthProtectedRoute } from "../components/ProtectedRoutes/DoubleAuthProtectedRoute";
-import { AuthProtectedRoute } from "../components/ProtectedRoutes/AuthProtectedRoute";
-import { EmailProtectedRoute } from "../components/ProtectedRoutes/EmailProtectedRoute";
+import ProtectedPage from "../Utils/ProtectedPage";
+import ProtectedValidation from "../Utils/ProtectedValidation";
+import ProtectedDoubleAuth from "../Utils/ProtectedDoubleAuth";
 
 export const router = createBrowserRouter([
     {
@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
                 element: <Register />,
             },
             {
-                element: <AuthProtectedRoute />,
+                element: <ProtectedPage />,
                 children: [
                     {
                         index: true,
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
                 ],
             },
             {
-                element: <EmailProtectedRoute />,
+                element: <ProtectedValidation />,
                 children: [
                     {
                         path: "validate",
@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
                 ],
             },
             {
-                element: <DoubleAuthProtectedRoute />,
+                element: <ProtectedDoubleAuth />,
                 children: [
                     {
                         path: "double-authentification",

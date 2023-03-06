@@ -9,11 +9,5 @@ import "../../styles/AuthFooter.css";
 
 export const Footer = () => {
     let user = useContext(UserContext);
-
-    const isConnected: boolean = user.isLogged === true;
-    if (isConnected) {
-        return <AppFooter />;
-    } else {
-        return <AuthFooter />;
-    }
+    return user.isLogged ? <AppFooter /> : <AuthFooter />;
 };

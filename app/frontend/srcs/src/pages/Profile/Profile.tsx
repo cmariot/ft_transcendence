@@ -10,11 +10,13 @@ const Profile = () => {
     return (
         <main id="profile">
             <h2>Your profile</h2>
-            <img
-                id="profile-user-picture"
-                src={user.avatar}
-                alt="Your avatar"
-            />
+            {user.avatar && (
+                <img
+                    id="profile-user-picture"
+                    src={user.avatar}
+                    alt="Your avatar"
+                />
+            )}
             <h3>{user.username}</h3>
             <button
                 onClick={() => {

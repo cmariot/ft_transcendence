@@ -1,33 +1,36 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getCookie } from "./GetCookie";
 import axios from "axios";
+import { UserContext } from "../Contexts/UserProvider";
 
-const ProtectedValidation = () => {
-    const navigate = useNavigate();
+export default function ProtectedValidation() {
+    const user = useContext(UserContext);
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const validateConnexion = async () => {
-            const userToken = getCookie("email_validation");
-            if (!userToken || userToken === "undefined") {
-                setIsAuthorized(false);
-                return navigate("/");
-            }
-            await axios
-                .get("/api/authorization/email")
-                .then(function () {
-                    setIsAuthorized(true);
-                    return;
-                })
-                .catch(function () {
-                    setIsAuthorized(false);
-                    return navigate("/");
-                });
-        };
-        validateConnexion();
-    }, [isAuthorized, navigate]);
+        const userToken = getCookie("email_validation");
+        if (!userToken || userToken === "undefined") {
+            setIsAuthorized(false);
+            return navigate("/");
+        }
+        (async () => {
+            try {
+                const [validateEmailResponse] = await Promise.all([
+                    axios.get("/api/authorization/email"),
+                ]);
 
-    return <>{isAuthorized === true ? <Outlet /> : null}</>;
-};
-export default ProtectedValidation;
+                if (validateEmailResponse.status === 200) {
+                    setIsAuthorized(true);
+                }
+            } catch (error) {
+                user.setIsLogged(false);
+                user.setFirstLog(false);
+                navigate("/login");
+            }
+        })();
+    }, [navigate, user]);
+
+    return isAuthorized ? <Outlet /> : null;
+}

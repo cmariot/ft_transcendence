@@ -110,13 +110,11 @@ const YourChannels = ({ onChangeMenu }: ChannelsListProps) => {
         <menu id="chat-your-channels" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Your channels</p>
-                <button onClick={() => createChannelMenu()}>new channel</button>
+                <button onClick={() => createChannelMenu()}>new</button>
             </header>
             <section className="chat-section">{displayChannels()}</section>
             <footer className="chat-footer">
-                <button onClick={() => viewChannelsList()}>
-                    browse channels
-                </button>
+                <button onClick={() => viewChannelsList()}>browse</button>
             </footer>
         </menu>
     );

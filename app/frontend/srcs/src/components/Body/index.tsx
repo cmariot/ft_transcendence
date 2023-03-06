@@ -8,8 +8,6 @@ import { MenuContext } from "../../Contexts/MenuProviders";
 export const Body = () => {
     const menu = useContext(MenuContext);
 
-    console.log("Body");
-
     return (
         <>
             <NavBar />

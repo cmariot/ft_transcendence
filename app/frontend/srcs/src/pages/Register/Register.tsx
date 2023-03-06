@@ -84,7 +84,6 @@ export default function Register() {
                     placeholder="Username"
                     value={username}
                     onChange={(event) => handleInputChange(event)}
-                    autoComplete="off"
                     autoFocus
                     required
                 />
@@ -94,7 +93,6 @@ export default function Register() {
                     value={password}
                     onChange={(event) => handleInputChange(event)}
                     placeholder="Password"
-                    autoComplete="off"
                     required
                 />
                 <input
