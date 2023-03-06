@@ -7,12 +7,15 @@ import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { AppController } from "./app.controller";
 import { ChatModule } from "./chat/chat.module";
-import { ChatEntity } from "./chat/entities/chat.entity.";
+import { ChatEntity } from "./chat/entities/chat.entity";
+import { GameEntity } from "./game/entities/game.entity";
+import { GameModule } from "./game/game.module";
 
 @Module({
     imports: [
         AuthModule,
         ChatModule,
+        GameModule,
         ConfigModule,
         MailerModule.forRoot({
             transport: {
@@ -32,7 +35,7 @@ import { ChatEntity } from "./chat/entities/chat.entity.";
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_SCHEMA,
-            entities: [ChatEntity, UserEntity],
+            entities: [ChatEntity, UserEntity, GameEntity],
             synchronize: true,
         }),
         UsersModule,

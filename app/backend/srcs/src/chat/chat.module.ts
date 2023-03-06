@@ -6,11 +6,15 @@ import { SocketService } from "./services/socket.service";
 import { UsersService } from "src/users/services/users.service";
 import { UsersModule } from "src/users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ChatEntity } from "./entities/chat.entity.";
+import { ChatEntity } from "./entities/chat.entity";
 import { UserEntity } from "src/users/entity/user.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ChatEntity, UserEntity]), UsersModule, ChatModule],
+    imports: [
+        TypeOrmModule.forFeature([ChatEntity, UserEntity]),
+        UsersModule,
+        ChatModule,
+    ],
     providers: [SocketService, ChatGateway, ChatService, UsersService],
     controllers: [ChatController],
 })

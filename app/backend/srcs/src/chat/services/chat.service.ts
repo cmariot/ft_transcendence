@@ -5,7 +5,7 @@ import {
     UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ChannelType, ChatEntity } from "../entities/chat.entity.";
+import { ChannelType, ChatEntity } from "../entities/chat.entity";
 import { Repository } from "typeorm";
 import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
