@@ -1,10 +1,10 @@
-import { useState, useContext, createContext, useEffect } from "react";
-import { UserContext } from "../../App/App";
-import { socket } from "../../../Contexts/WebsocketContext";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
+import { socket } from "../../../Contexts/WebsocketContext";
+import { UserContext } from "../../../Contexts/UserProvider";
 
-export const ChatContext = createContext({
+export const ChatContext = React.createContext({
     currentChannel: "",
     changeCurrentChannel: (newChannel: string) => {},
     currentChannelType: "",

@@ -12,7 +12,7 @@ const ProtectedPage = () => {
             const userToken = getCookie("authentification");
             if (!userToken || userToken === "undefined") {
                 setIsLoggedIn(false);
-                return navigate("/login");
+                return navigate("/");
             }
             axios
                 .get("/api/authorization/logged")
@@ -21,7 +21,7 @@ const ProtectedPage = () => {
                 })
                 .catch(function () {
                     setIsLoggedIn(false);
-                    return navigate("/login");
+                    return navigate("/");
                 });
         };
         validateConnexion();

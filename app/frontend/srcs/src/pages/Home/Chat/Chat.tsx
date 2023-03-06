@@ -32,12 +32,6 @@ const Chat = () => {
         setCurrentMenu(newCurrentMenu);
     };
 
-    // function chat() {
-    //     } else if (currentMenu === "MuteUser") {
-    //         return <MuteUser onChangeMenu={handleChangeCurrentMenu} />;
-    //     }
-    // }
-
     return (
         <div id="chat">
             {(currentMenu === null || currentMenu === "YourChannels") && (

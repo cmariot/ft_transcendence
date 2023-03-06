@@ -7,7 +7,7 @@ function Login42() {
         try {
             window.open("/api/auth/42", "_self");
         } catch (e) {
-            navigate("/login");
+            navigate("/");
             alert("error");
             console.error(e);
         }

@@ -39,12 +39,7 @@ const JoinProtected = ({ onChangeMenu }: ChannelsListProps) => {
                 let availablechannels = chat.availableChannels;
                 availablechannels.delete(chat.targetChannel);
                 chat.updateUserChannels(userchannels);
-                const current = document.getElementById("chat-join-protected");
-                const menu = document.getElementById("chat-conversation");
-                if (menu && current) {
-                    current.style.display = "none";
-                    menu.style.display = "flex";
-                }
+                onChangeMenu("ChatConv");
                 setPassword("");
             })
             .catch((error) => {
@@ -54,12 +49,7 @@ const JoinProtected = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function closeJoinMenu() {
-        const current = document.getElementById("chat-join-protected");
-        const menu = document.getElementById("chat-channels-list");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
+        onChangeMenu("ChannelsList");
     }
 
     return (

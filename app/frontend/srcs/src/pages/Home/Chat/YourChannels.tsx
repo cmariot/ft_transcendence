@@ -24,7 +24,7 @@ const YourChannels = ({ onChangeMenu }: ChannelsListProps) => {
                 chat.setCurrentChannelUsers(
                     response.data.private_channel_users
                 );
-                onChangeMenu("chatConversation");
+                onChangeMenu("ChatConv");
             })
             .catch(function (error) {
                 console.log("joinChannel error: ", error);

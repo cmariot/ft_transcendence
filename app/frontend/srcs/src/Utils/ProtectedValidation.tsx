@@ -12,7 +12,7 @@ const ProtectedValidation = () => {
             const userToken = getCookie("email_validation");
             if (!userToken || userToken === "undefined") {
                 setIsAuthorized(false);
-                return navigate("/login");
+                return navigate("/");
             }
             await axios
                 .get("/api/authorization/email")
@@ -22,7 +22,7 @@ const ProtectedValidation = () => {
                 })
                 .catch(function () {
                     setIsAuthorized(false);
-                    return navigate("/login");
+                    return navigate("/");
                 });
         };
         validateConnexion();

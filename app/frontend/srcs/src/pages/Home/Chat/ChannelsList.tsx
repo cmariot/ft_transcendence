@@ -40,7 +40,7 @@ const ChannelsList = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function closeChannelsListMenu() {
-        onChangeMenu("yourChannels");
+        onChangeMenu("YourChannels");
     }
 
     function displayIfProtected(channelType: string) {

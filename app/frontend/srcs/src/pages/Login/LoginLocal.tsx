@@ -1,11 +1,14 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../Utils/GetCookie";
+import { UserContext } from "../../Contexts/UserProvider";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+
+    const user = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -53,6 +56,8 @@ const LoginLocal = () => {
                     alert("Unable to login. Please try again.");
                     return;
                 }
+
+                user.setIsLogged(true);
                 navigate("/");
             })
             .catch((error) => {

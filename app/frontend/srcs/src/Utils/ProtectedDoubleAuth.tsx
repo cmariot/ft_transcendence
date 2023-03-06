@@ -11,7 +11,7 @@ const ProtectedDoubleAuth = (props: any) => {
         const validateConnexion = async () => {
             const userToken = getCookie("double_authentification");
             if (!userToken || userToken === "undefined") {
-                return navigate("/login");
+                return navigate("/");
             }
             await axios
                 .get("/api/authorization/double-authentification")
@@ -20,7 +20,7 @@ const ProtectedDoubleAuth = (props: any) => {
                     return;
                 })
                 .catch(function () {
-                    return navigate("/login");
+                    return navigate("/");
                 });
         };
         validateConnexion();

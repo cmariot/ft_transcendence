@@ -11,18 +11,7 @@ const ChatConv = ({ onChangeMenu }: ChannelsListProps) => {
 
     function closeChat() {
         chat.changeCurrentChannel("");
-        const current = document.getElementById("chat-conversation");
-        const current2 = document.getElementById("chat-menu-options");
-        const menu = document.getElementById("chat-your-channels");
-        if (menu && current && current2) {
-            // Close the chat conv
-            current.style.display = "none";
-            menu.style.display = "flex";
-            // Close the chat menu if open
-            if (current2.style.display === "flex") {
-                toogleChatMenu();
-            }
-        }
+        onChangeMenu("YourChannels");
     }
 
     useEffect(() => {

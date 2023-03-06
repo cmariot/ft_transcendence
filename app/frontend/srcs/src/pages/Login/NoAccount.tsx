@@ -2,14 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 function NoAccount() {
     const navigate = useNavigate();
-    function register() {
-        navigate("/register");
-    }
 
     return (
         <div>
             <h3>You don't have an account ?</h3>
-            <button className="button" onClick={register}>
+            <button className="button" onClick={() => navigate("/register")}>
                 Create one
             </button>
         </div>

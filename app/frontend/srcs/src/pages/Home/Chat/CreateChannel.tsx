@@ -11,12 +11,7 @@ const CreateChannel = ({ onChangeMenu }: ChannelsListProps) => {
     const [channelPassword, setNewChannelPassword] = useState("");
 
     function cancelCreateChannel() {
-        const current = document.getElementById("chat-create-channel");
-        const menu = document.getElementById("chat-your-channels");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
+        onChangeMenu("YourChannels");
     }
 
     function handleTypeChange(event: any) {
@@ -105,12 +100,7 @@ const CreateChannel = ({ onChangeMenu }: ChannelsListProps) => {
                 chat.setCurrentChannelMute([]);
                 chat.setCurrentChannelBan([]);
                 chat.setCurrentChannelUsers([]);
-                const current = document.getElementById("chat-create-channel");
-                const menu = document.getElementById("chat-conversation");
-                if (menu && current) {
-                    current.style.display = "none";
-                    menu.style.display = "flex";
-                }
+                onChangeMenu("ChatConv");
                 setChannelName("");
                 setNewChannelPassword("");
             })

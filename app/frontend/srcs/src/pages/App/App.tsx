@@ -1,146 +1,80 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ChatParent } from "../Home/Chat/ChatParent";
 import { socket } from "../../Contexts/WebsocketContext";
 import ConfirmProfile from "../Settings/ConfirmProfile";
 import { useNavigate } from "react-router-dom";
-
-export type UserContextType = {
-  username: any;
-  avatar: any;
-  firstLog: any;
-  doubleAuth: any;
-  friends: any;
-  blocked: any;
-  friendUpdate: any;
-};
-
-export const UserContext = React.createContext({
-  username: "",
-  editUsername: (newUsername: string) => {},
-  avatar: "",
-  editAvatar: (newAvatar: string) => {},
-  firstLog: false,
-  setFirstLog: (newValue: boolean) => {},
-  doubleAuth: true,
-  editDoubleAuth: (newValue: boolean) => {},
-  friends: [],
-  setFriends: (newFriends: []) => {},
-  blocked: [],
-  setBlocked: (newFriends: []) => {},
-  friendUpdate: false,
-});
+import { UserContext } from "../../Contexts/UserProvider";
 
 export const App = () => {
-  const [username, editUsername] = useState("");
-  const [avatar, editAvatar] = useState("");
-  const [doubleAuth, editDoubleAuth] = useState(true);
-  const [friends, setFriends] = useState([]);
-  const [blocked, setBlocked] = useState([]);
-  const [firstLog, setFirstLog] = useState(false);
-  const [friendUpdate, setFriendUpdate] = useState(false);
-  const [logged, setLogged] = useState(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    axios
-      .get("/api/profile")
-      .then((response: any) => {
-        editUsername(response.data.username);
-        editAvatar("/api/profile/" + response.data.username + "/image");
-        editDoubleAuth(response.data.twoFactorsAuth);
-        setFirstLog(response.data.firstLog);
-        if (!socket.connected) {
-          socket.on("connect", () => {
-            socket.emit("userStatus", {
-              status: "Online",
-              socket: socket.id,
-              username: response.data.username,
-            });
-          });
-        } else {
-          socket.emit("userStatus", {
-            status: "Online",
-            socket: socket.id,
-            username: response.data.username,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-    axios
-      .get("/api/profile/friends")
-      .then((response) => {
-        setFriends(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-    socket.on("userLogout", () => {
-      console.log("User logged out");
-
-      navigate("/login");
-      setLogged(!logged);
-
-      if (logged === false) {
-        setLogged(true);
-      }
-    });
-  }, [logged, navigate]);
-
-  useEffect(() => {
-    socket.on("userUpdate", () => {
-      setFriendUpdate(!friendUpdate);
-    });
-    socket.on("userStatus", () => {
-      setFriendUpdate(!friendUpdate);
-    });
-    axios
-      .get("/api/profile/friends")
-      .then((response) => {
-        setFriends(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-    axios
-      .get("/api/profile/blocked")
-      .then((response) => {
-        setBlocked(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-  }, [friendUpdate]);
-
-  const value = {
-    username,
-    editUsername,
-    avatar,
-    editAvatar,
-    firstLog,
-    setFirstLog,
-    doubleAuth,
-    editDoubleAuth,
-    friends,
-    setFriends,
-    blocked,
-    setBlocked,
-    friendUpdate,
-  };
-
-  if (firstLog === true) {
-    return (
-      <UserContext.Provider value={value as any}>
-        <ConfirmProfile />
-      </UserContext.Provider>
-    );
-  } else {
-    return (
-      <UserContext.Provider value={value as any}>
-        <ChatParent />
-      </UserContext.Provider>
-    );
-  }
+    //    const user = useContext(UserContext);
+    //
+    //    useEffect(() => {
+    //        (async () => {
+    //            try {
+    //                const [profileResponse, friendsResponse] = await Promise.all([
+    //                    axios.get("/api/profile"),
+    //                    axios.get("/api/profile/friends"),
+    //                ]);
+    //
+    //                const username = profileResponse.data.username;
+    //                const avatar =
+    //                    "/api/profile/" + profileResponse.data.username + "/image";
+    //                const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
+    //                const firstLog = profileResponse.data.firstLog;
+    //
+    //                if (profileResponse.status === 200) {
+    //                    user.editUsername(username);
+    //                    user.editAvatar(avatar);
+    //                    user.editDoubleAuth(twoFactorsAuth);
+    //                    user.setFirstLog(firstLog);
+    //
+    //                    if (!socket.connected) {
+    //                        socket.on("connect", () => {
+    //                            socket.emit("userStatus", {
+    //                                status: "Online",
+    //                                socket: socket.id,
+    //                                username: username,
+    //                                // =
+    //                                // username,
+    //                            });
+    //                        });
+    //                    } else {
+    //                        socket.emit("userStatus", {
+    //                            status: "Online",
+    //                            socket: socket.id,
+    //                            username,
+    //                        });
+    //                    }
+    //
+    //                    //socket.on("userLogout", () => {
+    //                    //    console.log("User logged out");
+    //
+    //                    //    navigate("/");
+    //                    //    setLogged(!logged);
+    //                    //    if (logged === false) {
+    //                    //        setLogged(true);
+    //                    //    }
+    //                    //});
+    //                }
+    //
+    //                user.setFriends(friendsResponse.data);
+    //            } catch (error) {
+    //                console.error(error);
+    //            }
+    //        })();
+    //    });
+    //useEffect(() => {
+    //    socket.on("userUpdate", () => {
+    //        setFriendUpdate(!friendUpdate);
+    //    });
+    //    socket.on("userStatus", () => {
+    //        setFriendUpdate(!friendUpdate);
+    //    });
+    //});
+    //if (firstLog === true) {
+    //    return <ConfirmProfile />;
+    //} else {
+    //    return <ChatParent />;
+    //}
 };
