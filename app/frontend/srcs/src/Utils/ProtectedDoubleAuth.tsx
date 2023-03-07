@@ -25,7 +25,7 @@ export default function ProtectedDoubleAuth() {
                 }
             } catch (error) {
                 user.setIsLogged(false);
-                user.setFirstLog(false);
+                user.setIsFirstLog(false);
                 navigate("/login");
             }
         })();

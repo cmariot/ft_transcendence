@@ -90,7 +90,7 @@ export class ChatGateway implements OnModuleInit {
     }
 
     deleted_channel(channel: string, username: string) {
-        this.server.emit("channelDeleted", {
+        this.server.emit("isChannelDeleted", {
             channel: channel,
             username: username,
         });
@@ -147,8 +147,8 @@ export class ChatGateway implements OnModuleInit {
         }
     }
 
-    updateChannelAdmin(username: string, channel: string, value: boolean) {
-        this.server.emit("channelAdminUpdate", {
+    updateisChannelAdmin(username: string, channel: string, value: boolean) {
+        this.server.emit("isChannelAdminUpdate", {
             username: username,
             channel: channel,
             value: value,

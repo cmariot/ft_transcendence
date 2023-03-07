@@ -304,3 +304,15 @@
 #add-friend > form:nth-child(2) > input:nth-child(1) {
     width: 70%;
 }
+
+.friend-menu {
+    padding: 0;
+}
+
+.friend-profile-button {
+    margin: 0;
+}
+
+#friend-list-main {
+    flex-direction: column;
+}

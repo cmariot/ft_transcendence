@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const EditAdmins = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const EditAdmins = () => {
     const chat = useContext(ChatContext);
     const [newAdminName, setNewAdmin] = useState("");
     const [update, setUpdate] = useState(false);
@@ -30,13 +28,13 @@ const EditAdmins = ({ onChangeMenu }: ChannelsListProps) => {
         event.preventDefault();
         await axios
             .post("/api/chat/admin/add", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 newAdminUsername: newAdminName,
             })
             .then(() => {
-                let previousAdmins: string[] = chat.currentChannelAdmins;
+                let previousAdmins: string[] = chat.admins;
                 previousAdmins.push(newAdminName);
-                chat.setCurrentChannelAdmins(previousAdmins);
+                chat.setAdmins(previousAdmins);
                 setNewAdmin("");
             })
             .catch((error) => {
@@ -47,13 +45,13 @@ const EditAdmins = ({ onChangeMenu }: ChannelsListProps) => {
     async function removeAdmin(username: string, index: number) {
         await axios
             .post("/api/chat/admin/remove", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 newAdminUsername: username,
             })
             .then(() => {
-                let previousAdmins: string[] = chat.currentChannelAdmins;
+                let previousAdmins: string[] = chat.admins;
                 previousAdmins.splice(index, 1);
-                chat.setCurrentChannelAdmins(previousAdmins);
+                chat.setAdmins(previousAdmins);
                 setUpdate(!update);
             })
             .catch((error) => {
@@ -61,12 +59,12 @@ const EditAdmins = ({ onChangeMenu }: ChannelsListProps) => {
             });
     }
 
-    function currentChannelAdmins() {
-        if (chat.currentChannelAdmins.length) {
+    function admins() {
+        if (chat.admins.length) {
             return (
                 <ul id="channel-admins-list">
                     <p>Administrators :</p>
-                    {chat.currentChannelAdmins.map((admin, index) => (
+                    {chat.admins.map((admin, index) => (
                         <li className="admin-channel" key={index}>
                             <p className="admin-channel-username">{admin}</p>
                             <button onClick={() => removeAdmin(admin, index)}>
@@ -101,7 +99,7 @@ const EditAdmins = ({ onChangeMenu }: ChannelsListProps) => {
                         add
                     </button>
                 </form>
-                {currentChannelAdmins()}
+                {admins()}
             </section>
             <footer className="chat-footer"></footer>
         </menu>

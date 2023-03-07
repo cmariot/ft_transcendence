@@ -20,13 +20,14 @@ export default function ProtectedValidation() {
                 const [validateEmailResponse] = await Promise.all([
                     axios.get("/api/authorization/email"),
                 ]);
-
                 if (validateEmailResponse.status === 200) {
                     setIsAuthorized(true);
+                    user.setIsLogged(true);
+                    user.setIsFirstLog(true);
                 }
             } catch (error) {
                 user.setIsLogged(false);
-                user.setFirstLog(false);
+                user.setIsFirstLog(false);
                 navigate("/login");
             }
         })();

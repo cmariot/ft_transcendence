@@ -29,7 +29,7 @@ export class ChatEntity {
     channelOwner: string;
 
     @Column("jsonb", { default: [] })
-    channelAdministrators: { uuid: string }[];
+    isChannelAdministrators: { uuid: string }[];
 
     @Column("jsonb", { default: [] })
     messages: { uuid: string; message: string }[];

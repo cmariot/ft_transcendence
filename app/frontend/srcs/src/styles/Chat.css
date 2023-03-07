@@ -42,7 +42,7 @@
 
 .chat-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     width: -webkit-fill-available;
     width: -moz-available;
@@ -63,17 +63,6 @@
 
 .chat-footer {
     height: 50px;
-}
-
-.chat-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: -webkit-fill-available;
-    width: -moz-available;
-    height: 50px;
-    padding-inline: 12px;
-    margin-inline: 5px;
 }
 
 #chat-create-sprivate-form,

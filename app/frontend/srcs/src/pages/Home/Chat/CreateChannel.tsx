@@ -1,17 +1,15 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const CreateChannel = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../Contexts/ChatProvider";
+
+const CreateChannel = () => {
     const chat = useContext(ChatContext);
     const [channelName, setChannelName] = useState("");
     const [channelType, setChannelType] = useState("public");
     const [channelPassword, setNewChannelPassword] = useState("");
 
     function cancelCreateChannel() {
-        onChangeMenu("YourChannels");
+        chat.setPage("YourChannels");
     }
 
     function handleTypeChange(event: any) {
@@ -92,17 +90,17 @@ const CreateChannel = ({ onChangeMenu }: ChannelsListProps) => {
                     });
                     chat.updateUserPrivateChannels(updatedUserPrivateChannels);
                 }
-                chat.setCurrentChannelMessages([]);
-                chat.changeCurrentChannel(channelName);
-                chat.changeCurrentChannelType(channelType);
-                chat.setChannelOwner(true);
-                chat.setCurrentChannelAdmins([]);
-                chat.setCurrentChannelMute([]);
-                chat.setCurrentChannelBan([]);
-                chat.setCurrentChannelUsers([]);
-                onChangeMenu("ChatConv");
                 setChannelName("");
                 setNewChannelPassword("");
+                chat.setMessages([]);
+                chat.setChannel(channelName);
+                chat.setChannelType(channelType);
+                chat.setisChannelOwner(true);
+                chat.setAdmins([]);
+                chat.setmutedUsers([]);
+                chat.setbannedUsers([]);
+                chat.setUsers([]);
+                chat.setPage("ChatConv");
             })
             .catch(function (error) {
                 alert(error.response.data.message);

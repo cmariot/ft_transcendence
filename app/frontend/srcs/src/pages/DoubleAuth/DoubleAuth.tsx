@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "../../styles/DoubleAuth.css";
 
@@ -31,16 +31,14 @@ const DoubleAuth = () => {
             });
     };
 
-    const resend2faCode = async (event: any) => {
-        event.preventDefault();
-        await axios.get("/api/second_auth/resend").catch(function (error) {
+    const resend2faCode = () => {
+        axios.get("/api/second_auth/resend").catch(function (error) {
             console.log(error);
         });
     };
 
-    const cancel2fa = async (event: any) => {
-        event.preventDefault();
-        await axios
+    const cancel2fa = () => {
+        axios
             .get("/api/second_auth/cancel")
             .then(function () {
                 navigate("/");
@@ -55,7 +53,7 @@ const DoubleAuth = () => {
             <aside id="validation-2fa-aside">
                 <h2>Double Authentification</h2>
                 <p>Check your emails, we just send you a verification code.</p>
-                <button onClick={resend2faCode}>Resend code</button>
+                <button onClick={() => resend2faCode()}>Resend code</button>
             </aside>
 
             <form id="validation-2fa-form" autoComplete="off">
@@ -64,21 +62,18 @@ const DoubleAuth = () => {
                     type="text"
                     id="double_auth_code"
                     placeholder="Check your emails"
-                    onChange={handleValidate2faChange}
+                    onChange={(event) => handleValidate2faChange(event)}
                     autoFocus
-                    autoComplete="off"
                     required
                 />
                 <div id="form-2fa-choices">
                     <input
                         type="submit"
                         className="button"
-                        onClick={submitValidate2faForm}
+                        onClick={(event) => submitValidate2faForm(event)}
                         value="Validate"
                     />
-                    <Link onClick={cancel2fa} to="">
-                        cancel
-                    </Link>
+                    <button onClick={() => cancel2fa()}>cancel</button>
                 </div>
             </form>
         </section>

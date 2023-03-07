@@ -79,17 +79,13 @@ const UserProfile = () => {
             }
             i++;
         }
-        if (already_friend === true) {
-            return (
-                <button onClick={() => removeFriend(username)}>
-                    remove friend
-                </button>
-            );
-        } else {
-            return (
-                <button onClick={() => addFriend(username)}>add friend</button>
-            );
-        }
+        return already_friend ? (
+            <button onClick={() => removeFriend(username)}>
+                remove friend
+            </button>
+        ) : (
+            <button onClick={() => addFriend(username)}>add friend</button>
+        );
     }
 
     async function unblock(username: string) {

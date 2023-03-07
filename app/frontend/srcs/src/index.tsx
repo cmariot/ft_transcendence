@@ -6,6 +6,7 @@ import "./styles/Theme.css";
 import { router } from "./routers/router";
 import { RouterProvider } from "react-router-dom";
 import MenuProvider from "./Contexts/MenuProviders";
+import ChatProvider from "./Contexts/ChatProvider";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -14,13 +15,13 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <UserProvider>
-            {/* <ChatProvider> */}
-            {/* <GameProvider> */}
-            <MenuProvider>
-                <RouterProvider router={router} />
-            </MenuProvider>
-            {/* <GameProvider> */}
-            {/* </ChatProvider> */}
+            <ChatProvider>
+                {/* <GameProvider> */}
+                <MenuProvider>
+                    <RouterProvider router={router} />
+                </MenuProvider>
+                {/* <GameProvider> */}
+            </ChatProvider>
         </UserProvider>
     </React.StrictMode>
 );

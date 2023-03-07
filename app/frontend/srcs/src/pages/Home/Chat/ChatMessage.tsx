@@ -1,6 +1,6 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
+import { ChatContext } from "../../../Contexts/ChatProvider";
 
 const ChatMessage = () => {
     const chat = useContext(ChatContext);
@@ -19,7 +19,7 @@ const ChatMessage = () => {
         if (message.length === 0) return;
         axios
             .post("/api/chat", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 message: message,
             })
             .then((response) => {
@@ -39,7 +39,7 @@ const ChatMessage = () => {
 
     useEffect(() => {
         setMessage("");
-    }, [chat.currentChannel]);
+    }, [chat.channel]);
 
     return (
         <form onSubmit={sendMessage} id="send-message-form" autoComplete="off">

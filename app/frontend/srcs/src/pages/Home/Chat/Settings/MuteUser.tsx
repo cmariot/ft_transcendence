@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const MuteUser = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const MuteUser = () => {
     const chat = useContext(ChatContext);
     const [newMute, setNewMute] = useState("");
     const [muteDuration, setMuteDuration] = useState("600"); // default 10 minutes
@@ -40,12 +38,12 @@ const MuteUser = ({ onChangeMenu }: ChannelsListProps) => {
         event.preventDefault();
         await axios
             .post("/api/chat/mute", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: newMute,
                 duration: muteDuration,
             })
             .then((response) => {
-                chat.setCurrentChannelMute(response.data);
+                chat.setmutedUsers(response.data);
                 setNewMute("");
             })
             .catch((error) => {
@@ -56,12 +54,12 @@ const MuteUser = ({ onChangeMenu }: ChannelsListProps) => {
     async function unmute(username: string, index: number) {
         await axios
             .post("/api/chat/unmute", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: username,
                 duration: "0",
             })
             .then((response) => {
-                chat.setCurrentChannelMute(response.data);
+                chat.setmutedUsers(response.data);
                 setUpdate(!update);
             })
             .catch((error) => {
@@ -70,11 +68,11 @@ const MuteUser = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function currentMutedUsers() {
-        if (chat.currentChannelMute.length) {
+        if (chat.mutedUsers.length) {
             return (
                 <ul id="channel-admins-list">
                     <p>Muted users :</p>
-                    {chat.currentChannelMute.map((mute, index) => (
+                    {chat.mutedUsers.map((mute, index) => (
                         <li className="admin-channel" key={index}>
                             <p className="admin-channel-username">{mute}</p>
                             <button onClick={() => unmute(mute, index)}>

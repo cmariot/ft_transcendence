@@ -307,8 +307,8 @@ export class ChatService {
             owner = true;
             admin = true;
             let i = 0;
-            while (i < channel.channelAdministrators.length) {
-                let id = channel.channelAdministrators[i].uuid;
+            while (i < channel.isChannelAdministrators.length) {
+                let id = channel.isChannelAdministrators[i].uuid;
                 let user = await this.userService.getByID(id);
                 if (user) {
                     admins.push(user.username);
@@ -316,10 +316,10 @@ export class ChatService {
                 i++;
             }
         }
-        if (owner === false && channel.channelAdministrators) {
+        if (owner === false && channel.isChannelAdministrators) {
             let i = 0;
-            while (i < channel.channelAdministrators.length) {
-                if (user.uuid === channel.channelAdministrators[i].uuid) {
+            while (i < channel.isChannelAdministrators.length) {
+                if (user.uuid === channel.isChannelAdministrators[i].uuid) {
                     admin = true;
                     break;
                 }
@@ -472,7 +472,7 @@ export class ChatService {
         if (channel.channelOwner === uuid) {
             is_authorized = true;
         } else if (
-            channel.channelAdministrators.find(
+            channel.isChannelAdministrators.find(
                 (element) => element.uuid === uuid
             ) !== undefined
         ) {
@@ -798,16 +798,16 @@ export class ChatService {
                         { channelName: channelName },
                         { users: channel.users }
                     );
-                    index = channel.channelAdministrators.findIndex(
+                    index = channel.isChannelAdministrators.findIndex(
                         (element) => element.uuid === user.uuid
                     );
                     if (index !== -1) {
-                        channel.channelAdministrators.splice(index, 1);
+                        channel.isChannelAdministrators.splice(index, 1);
                         await this.chatRepository.update(
                             { channelName: channelName },
                             {
-                                channelAdministrators:
-                                    channel.channelAdministrators,
+                                isChannelAdministrators:
+                                    channel.isChannelAdministrators,
                             }
                         );
                     }
@@ -839,16 +839,16 @@ export class ChatService {
                         { channelName: channelName },
                         { allowed_users: channel.allowed_users }
                     );
-                    index = channel.channelAdministrators.findIndex(
+                    index = channel.isChannelAdministrators.findIndex(
                         (element) => element.uuid === user.uuid
                     );
                     if (index !== -1) {
-                        channel.channelAdministrators.splice(index, 1);
+                        channel.isChannelAdministrators.splice(index, 1);
                         await this.chatRepository.update(
                             { channelName: channelName },
                             {
-                                channelAdministrators:
-                                    channel.channelAdministrators,
+                                isChannelAdministrators:
+                                    channel.isChannelAdministrators,
                             }
                         );
                     }
@@ -938,8 +938,8 @@ export class ChatService {
         }
         if (authorizationType === "owner_and_admins") {
             let i = 0;
-            while (i < targetChannel.channelAdministrators.length) {
-                if (uuid === targetChannel.channelAdministrators[i].uuid) {
+            while (i < targetChannel.isChannelAdministrators.length) {
+                if (uuid === targetChannel.isChannelAdministrators[i].uuid) {
                     return "Authorized";
                 }
                 i++;
@@ -981,7 +981,7 @@ export class ChatService {
         if (found === false) {
             throw new HttpException("Not in the Channel", HttpStatus.FOUND);
         }
-        let currentAdmin = channel.channelAdministrators;
+        let currentAdmin = channel.isChannelAdministrators;
         let i = 0;
         while (i < currentAdmin.length) {
             if (newAdminUUID === currentAdmin[i].uuid) {
@@ -995,14 +995,14 @@ export class ChatService {
         if (!newAdmin) {
             return;
         }
-        this.chatGateway.updateChannelAdmin(
+        this.chatGateway.updateisChannelAdmin(
             newAdmin.username,
             channel.channelName,
             true
         );
         await this.chatRepository.update(
             { uuid: channel.uuid },
-            { channelAdministrators: currentAdmin }
+            { isChannelAdministrators: currentAdmin }
         );
     }
 
@@ -1017,7 +1017,7 @@ export class ChatService {
                 HttpStatus.FOUND
             );
         }
-        let currentAdmin = channel.channelAdministrators;
+        let currentAdmin = channel.isChannelAdministrators;
         let i = 0;
         while (i < currentAdmin.length) {
             if (newAdminUUID === currentAdmin[i].uuid) {
@@ -1029,14 +1029,14 @@ export class ChatService {
         if (!newAdmin) {
             return;
         }
-        this.chatGateway.updateChannelAdmin(
+        this.chatGateway.updateisChannelAdmin(
             newAdmin.username,
             channel.channelName,
             false
         );
         await this.chatRepository.update(
             { uuid: channel.uuid },
-            { channelAdministrators: currentAdmin }
+            { isChannelAdministrators: currentAdmin }
         );
     }
 
@@ -1212,8 +1212,8 @@ export class ChatService {
             if (channel.channelOwner && mode === "normal") {
                 target_uuidList.push(channel.channelOwner);
             }
-            for (let i = 0; i < channel.channelAdministrators.length; i++) {
-                target_uuidList.push(channel.channelAdministrators[i].uuid);
+            for (let i = 0; i < channel.isChannelAdministrators.length; i++) {
+                target_uuidList.push(channel.isChannelAdministrators[i].uuid);
             }
             if (target_uuidList.length > 0) {
                 target_list = [];
@@ -1397,7 +1397,7 @@ export class ChatService {
         if (currentChannel.channelOwner === uuid) {
             is_authorized = true;
         } else if (
-            currentChannel.channelAdministrators.find(
+            currentChannel.isChannelAdministrators.find(
                 (element) => element.uuid === uuid
             ) !== undefined
         ) {

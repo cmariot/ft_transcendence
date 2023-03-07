@@ -1,22 +1,20 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const EditChannelPassword = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const EditChannelPassword = () => {
     const chat = useContext(ChatContext);
 
     const [protectedChannel, setProtectedChannel] = useState(false);
     const [newChannelPassword, setNewChannelPassword] = useState("");
 
     useEffect(() => {
-        if (chat.currentChannelType === "protected") {
+        if (chat.channelType === "protected") {
             setProtectedChannel(true);
-        } else if (chat.currentChannelType === "public") {
+        } else if (chat.channelType === "public") {
             setProtectedChannel(false);
         }
-    }, [chat.currentChannelType]);
+    }, [chat.channelType]);
 
     function handleNewChannelPasswordChange(
         event: ChangeEvent<HTMLInputElement>
@@ -30,22 +28,13 @@ const EditChannelPassword = ({ onChangeMenu }: ChannelsListProps) => {
 
     function handleNewChannelTypeChange() {
         setNewChannelPassword("");
-        const newValue: boolean = !protectedChannel;
-        setProtectedChannel(newValue);
-        const channelPassordInput = document.getElementById("new-password");
-        if (channelPassordInput) {
-            if (newValue === true) {
-                channelPassordInput.style.display = "block";
-            } else {
-                channelPassordInput.style.display = "none";
-            }
-        }
+        setProtectedChannel((prevState) => !prevState);
     }
 
     function cancelEdit() {
-        if (chat.currentChannelType === "protected") {
+        if (chat.channelType === "protected") {
             setProtectedChannel(true);
-        } else if (chat.currentChannelType === "public") {
+        } else if (chat.channelType === "public") {
             setProtectedChannel(false);
         }
         const current = document.getElementById("change-channel-password");
@@ -60,32 +49,25 @@ const EditChannelPassword = ({ onChangeMenu }: ChannelsListProps) => {
         event.preventDefault();
         await axios
             .post("/api/chat/updateChannel", {
-                channelName: chat.currentChannel,
-                channelType: chat.currentChannelType,
+                channelName: chat.channel,
+                channelType: chat.channelType,
                 newChannelType: protectedChannel,
                 newChannelPassword: newChannelPassword,
             })
             .then(function () {
                 if (
-                    chat.currentChannel === "protected" &&
+                    chat.channel === "protected" &&
                     protectedChannel === false
                 ) {
-                    chat.changeCurrentChannelType("public");
+                    chat.setChannelType("public");
                 } else if (
-                    chat.currentChannel === "public" &&
+                    chat.channel === "public" &&
                     protectedChannel === true
                 ) {
-                    chat.changeCurrentChannelType("protected");
+                    chat.setChannelType("protected");
                 }
                 setNewChannelPassword("");
-                const current = document.getElementById(
-                    "change-channel-password"
-                );
-                const menu = document.getElementById("chat-conversation");
-                if (menu && current) {
-                    current.style.display = "none";
-                    menu.style.display = "flex";
-                }
+                chat.setPage("ChatConv");
             })
             .catch(function (error) {
                 alert(error.response.data.message);
@@ -93,15 +75,9 @@ const EditChannelPassword = ({ onChangeMenu }: ChannelsListProps) => {
     };
 
     function passwordUpdate() {
-        if (
-            chat.currentChannelType === "public" &&
-            protectedChannel === false
-        ) {
+        if (chat.channelType === "public" && protectedChannel === false) {
             return null;
-        } else if (
-            chat.currentChannelType === "public" &&
-            protectedChannel === true
-        ) {
+        } else if (chat.channelType === "public" && protectedChannel === true) {
             return (
                 <input
                     id="new-password"
@@ -113,7 +89,7 @@ const EditChannelPassword = ({ onChangeMenu }: ChannelsListProps) => {
                 />
             );
         } else if (
-            chat.currentChannelType === "protected" &&
+            chat.channelType === "protected" &&
             protectedChannel === false
         ) {
             return null;

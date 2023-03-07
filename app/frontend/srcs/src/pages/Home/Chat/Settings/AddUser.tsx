@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const AddUser = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const AddUser = () => {
     const chat = useContext(ChatContext);
     const [newUser, setNewUser] = useState("");
 
@@ -30,10 +28,10 @@ const AddUser = ({ onChangeMenu }: ChannelsListProps) => {
         await axios
             .post("/api/chat/private/add-user", {
                 username: newUser,
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
             })
             .then((response) => {
-                chat.setCurrentChannelUsers(response.data);
+                chat.setUsers(response.data);
                 setNewUser("");
             })
             .catch((error) => {
@@ -44,12 +42,12 @@ const AddUser = ({ onChangeMenu }: ChannelsListProps) => {
     async function kickUser(username: string) {
         await axios
             .post("/api/chat/kick", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: username,
             })
             .then((response) => {
-                if (chat.currentChannelType === "privateChannel") {
-                    chat.setCurrentChannelUsers(response.data);
+                if (chat.channelType === "privateChannel") {
+                    chat.setUsers(response.data);
                 }
             })
             .catch((error) => {
@@ -58,11 +56,11 @@ const AddUser = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function currentUsers() {
-        if (chat.currentChannelUsers.length) {
+        if (chat.users.length) {
             return (
                 <ul id="channel-users-list">
                     <p>Channel users :</p>
-                    {chat.currentChannelUsers.map((user, index) => (
+                    {chat.users.map((user, index) => (
                         <li className="admin-channel" key={index}>
                             <p className="admin-channel-username">{user}</p>
                             <button onClick={() => kickUser(user)}>kick</button>

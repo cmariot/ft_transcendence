@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const CreatePrivate = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../Contexts/ChatProvider";
+
+const CreatePrivate = () => {
     const chat = useContext(ChatContext);
 
     const [newChannelName, setNewChannelName] = useState("");
@@ -18,12 +16,7 @@ const CreatePrivate = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function cancelCreatePrivate() {
-        const current = document.getElementById("chat-create-private");
-        const menu = document.getElementById("chat-channels-list");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
+        chat.setPage("YourChannels");
     }
 
     const submitCreateChannelForm = async (event: any) => {
@@ -36,22 +29,18 @@ const CreatePrivate = ({ onChangeMenu }: ChannelsListProps) => {
             .post("/api/chat/create/private", {
                 channelName: newChannelName,
                 channelType: "private",
-                allowed_users: [chat.conversationUser],
+                allowed_users: [chat.directMessageUser],
             })
-            .then(function (response) {
-                chat.changeCurrentChannel(newChannelName);
-                chat.changeCurrentChannelType("private");
-                chat.setCurrentChannelMessages([]);
-                chat.setChannelOwner(true);
-                chat.setCurrentChannelAdmins([]);
-                chat.setCurrentChannelMute([]);
-                chat.setCurrentChannelBan([]);
-                const current = document.getElementById("chat-create-private");
-                const menu = document.getElementById("chat-conversation");
-                if (menu && current) {
-                    current.style.display = "none";
-                    menu.style.display = "flex";
-                }
+            .then(function () {
+                chat.setChannel(newChannelName);
+                chat.setChannelType("private");
+                chat.setisChannelOwner(true);
+                chat.setMessages([]);
+                chat.setAdmins([]);
+                chat.setmutedUsers([]);
+                chat.setbannedUsers([]);
+                chat.closeMenu();
+                chat.setPage("ChatConv");
             })
             .catch(function (error) {
                 alert(error.response.data.message);

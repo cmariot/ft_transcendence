@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const KickUser = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const KickUser = () => {
     const chat = useContext(ChatContext);
     const [newKickName, setNewKickName] = useState("");
 
@@ -29,12 +27,12 @@ const KickUser = ({ onChangeMenu }: ChannelsListProps) => {
         event.preventDefault();
         await axios
             .post("/api/chat/kick", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: newKickName,
             })
             .then((response) => {
-                if (chat.currentChannelType === "privateChannel") {
-                    chat.setCurrentChannelUsers(response.data);
+                if (chat.channelType === "privateChannel") {
+                    chat.setUsers(response.data);
                 }
                 setNewKickName("");
             })

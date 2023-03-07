@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { ChatContext } from "./ChatParent";
 import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../Contexts/UserProvider";
+import { ChatContext } from "../../../Contexts/ChatProvider";
 
 const ChatMessages = () => {
     const chat = useContext(ChatContext);
@@ -23,7 +23,7 @@ const ChatMessages = () => {
             .post("/api/chat/direct-message", { username: username })
             .then((response) => {
                 if (response.status === HttpStatusCode.NoContent) {
-                    chat.startConversationWith(username);
+                    chat.setDirectMessageUser(username);
                     createPrivateMenu();
                     return;
                 } else {
@@ -32,29 +32,19 @@ const ChatMessages = () => {
                             channelName: response.data.channelName,
                         })
                         .then(function (response2) {
-                            chat.changeCurrentChannel(
-                                response.data.channelName
+                            chat.setChannel(response.data.channelName);
+                            chat.setChannelType(response.data.channelType);
+                            chat.setMessages(response2.data.messages);
+                            chat.setisChannelOwner(
+                                response2.data.channel_owner
                             );
-                            chat.changeCurrentChannelType(
-                                response.data.channelType
+                            chat.setisChannelAdmin(
+                                response2.data.channel_admin
                             );
-                            chat.setCurrentChannelMessages(
-                                response2.data.messages
-                            );
-                            chat.setChannelOwner(response2.data.channel_owner);
-                            chat.setChannelAdmin(response2.data.channel_admin);
-                            chat.setCurrentChannelAdmins(
-                                response2.data.channel_admins
-                            );
-                            chat.setCurrentChannelMute(
-                                response2.data.muted_users
-                            );
-                            chat.setCurrentChannelBan(
-                                response2.data.banned_users
-                            );
-                            chat.setCurrentChannelUsers(
-                                response2.data.private_channel_users
-                            );
+                            chat.setAdmins(response2.data.channel_admins);
+                            chat.setmutedUsers(response2.data.muted_users);
+                            chat.setbannedUsers(response2.data.banned_users);
+                            chat.setUsers(response2.data.private_channel_users);
                         })
                         .catch(function (error) {
                             console.log("joinChannel error: ", error);
@@ -73,17 +63,15 @@ const ChatMessages = () => {
                 user.setBlocked(response.data);
                 await axios
                     .post("/api/chat/connect", {
-                        channelName: chat.currentChannel,
+                        channelName: chat.channel,
                     })
                     .then((response) => {
-                        chat.setCurrentChannelMessages(response.data.messages);
-                        chat.setChannelOwner(response.data.channel_owner);
-                        chat.setChannelAdmin(response.data.channel_admin);
-                        chat.setCurrentChannelAdmins(
-                            response.data.channel_admins
-                        );
-                        chat.setCurrentChannelMute(response.data.muted_users);
-                        chat.setCurrentChannelBan(response.data.banned_users);
+                        chat.setMessages(response.data.messages);
+                        chat.setisChannelOwner(response.data.channel_owner);
+                        chat.setisChannelAdmin(response.data.channel_admin);
+                        chat.setAdmins(response.data.channel_admins);
+                        chat.setmutedUsers(response.data.muted_users);
+                        chat.setbannedUsers(response.data.banned_users);
                     })
                     .catch((error) => {
                         console.log(error.data);
@@ -100,7 +88,7 @@ const ChatMessages = () => {
 
     function messageMenu(username: string) {
         if (username !== user.username) {
-            if (chat.currentChannelType === "private") {
+            if (chat.channelType === "private") {
                 return (
                     <div className="chat-user-message-options">
                         <button>play</button>
@@ -133,7 +121,7 @@ const ChatMessages = () => {
 
     return (
         <ul id="chat-main-ul">
-            {chat.currentChannelMessages.map((item: any, index: any) => (
+            {chat.messages.map((item: any, index: any) => (
                 <li className="chat-main-li" key={index}>
                     <p className="chat-menu-channel chatMessages">
                         {item.username} :<br />

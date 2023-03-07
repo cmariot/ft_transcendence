@@ -38,14 +38,14 @@ export default function ProtectedPage() {
                         user.editAvatar(avatar);
                         user.editDoubleAuth(twoFactorsAuth);
                         user.setFriends(friends);
-                        user.setFirstLog(firstLog);
+                        user.setIsFirstLog(firstLog);
                         if (firstLog) {
                             return navigate("/welcome");
                         }
                     }
                 } catch (error) {
                     user.setIsLogged(false);
-                    user.setFirstLog(false);
+                    user.setIsFirstLog(false);
                     navigate("/login");
                 }
             })();

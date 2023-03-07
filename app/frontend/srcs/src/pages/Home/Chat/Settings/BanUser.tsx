@@ -1,10 +1,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "./ChatParent";
-type ChannelsListProps = {
-    onChangeMenu: (newCurrentMenu: string | null) => void;
-};
-const BanUser = ({ onChangeMenu }: ChannelsListProps) => {
+import { ChatContext } from "../../../../Contexts/ChatProvider";
+
+const BanUser = () => {
     const chat = useContext(ChatContext);
     const [newBanName, setNewBan] = useState("");
     const [banDuration, setBanDuration] = useState("600"); // default 10 minutes
@@ -39,12 +37,12 @@ const BanUser = ({ onChangeMenu }: ChannelsListProps) => {
         event.preventDefault();
         await axios
             .post("/api/chat/ban", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: newBanName,
                 duration: banDuration,
             })
             .then((response) => {
-                chat.setCurrentChannelBan(response.data);
+                chat.setbannedUsers(response.data);
                 setNewBan("");
             })
             .catch((error) => {
@@ -55,12 +53,12 @@ const BanUser = ({ onChangeMenu }: ChannelsListProps) => {
     async function unban(username: string, index: number) {
         await axios
             .post("/api/chat/unban", {
-                channelName: chat.currentChannel,
+                channelName: chat.channel,
                 username: username,
                 duration: "0",
             })
             .then((response) => {
-                chat.setCurrentChannelBan(response.data);
+                chat.setbannedUsers(response.data);
                 setUpdate(!update);
             })
             .catch((error) => {
@@ -69,11 +67,11 @@ const BanUser = ({ onChangeMenu }: ChannelsListProps) => {
     }
 
     function currentBannedUsers() {
-        if (chat.currentChannelBan.length) {
+        if (chat.bannedUsers.length) {
             return (
                 <ul id="channel-ban-list">
                     <p>Banned users :</p>
-                    {chat.currentChannelBan.map((ban, index) => (
+                    {chat.bannedUsers.map((ban, index) => (
                         <li className="admin-channel" key={index}>
                             <p className="admin-channel-username">{ban}</p>
                             <button onClick={() => unban(ban, index)}>

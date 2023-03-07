@@ -3,11 +3,11 @@ import { createContext, useState } from "react";
 export type UserContextType = {
     username: string;
     avatar: string;
-    firstLog: boolean;
     doubleAuth: boolean;
     friends: string[];
     blocked: string[];
-    friendUpdate: boolean;
+    isLogged: boolean;
+    isFirstLog: boolean;
 };
 
 export const UserContext = createContext({
@@ -15,17 +15,16 @@ export const UserContext = createContext({
     editUsername: (newUsername: string) => {},
     avatar: "",
     editAvatar: (newAvatar: string) => {},
-    firstLog: false,
-    setFirstLog: (newValue: boolean) => {},
-    isLogged: false,
-    setIsLogged: (newValue: boolean) => {},
     doubleAuth: true,
     editDoubleAuth: (newValue: boolean) => {},
     friends: [],
     setFriends: (newFriends: []) => {},
     blocked: [],
     setBlocked: (newFriends: []) => {},
-    friendUpdate: false,
+    isLogged: false,
+    setIsLogged: (newValue: boolean) => {},
+    isFirstLog: false,
+    setIsFirstLog: (newValue: boolean) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -35,27 +34,24 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [doubleAuth, editDoubleAuth] = useState(true);
     const [friends, setFriends] = useState([]);
     const [blocked, setBlocked] = useState([]);
-    const [firstLog, setFirstLog] = useState(false);
-    const [friendUpdate, setFriendUpdate] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
+    const [isFirstLog, setIsFirstLog] = useState(false);
 
     const value = {
         username,
         editUsername,
         avatar,
         editAvatar,
-        isLogged,
-        setIsLogged,
-        firstLog,
-        setFirstLog,
         doubleAuth,
         editDoubleAuth,
         friends,
         setFriends,
         blocked,
         setBlocked,
-        friendUpdate,
-        setFriendUpdate,
+        isLogged,
+        setIsLogged,
+        isFirstLog,
+        setIsFirstLog,
     };
 
     return (
