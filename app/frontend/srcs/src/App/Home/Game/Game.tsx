@@ -5,7 +5,7 @@ const Game = () => {
     const handleButtonClick = async () => {
         try {
             const response = await axios.post("/api/game/queue", {
-                username: "flee",
+                username: "Milou",
             });
             console.log(response.data);
         } catch (error) {

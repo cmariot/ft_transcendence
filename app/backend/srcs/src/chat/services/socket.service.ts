@@ -24,4 +24,11 @@ export class SocketService {
             socket.emit("userLogout");
         }
     }
+
+    async sendStatus(username: string, status: string) {
+        this.server.emit("userStatus", {
+            username: username,
+            status: status,
+        });
+    }
 }

@@ -6,10 +6,15 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
+import { GameService } from "src/game/services/game.service";
+import { UserEntity } from "src/users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {
-    constructor(private userService: UsersService) {}
+    constructor(
+        private userService: UsersService,
+        private gameService: GameService
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -17,6 +22,15 @@ export class ChatGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on("connection", (socket) => {
             socket.on("disconnect", async () => {
+                let user = await this.userService.getBySocket(socket.id);
+                if (user) {
+                    if (
+                        user.status === "MatchMaking" ||
+                        user.status === "In_Game"
+                    ) {
+                        this.gameService.handleDisconnect(user);
+                    }
+                }
                 let username = await this.userService.userDisconnection(
                     socket.id
                 );

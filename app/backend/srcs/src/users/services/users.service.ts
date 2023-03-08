@@ -525,4 +525,13 @@ export class UsersService {
         );
         return this.blockedList(user.uuid);
     }
+
+    async updatePlayerStatus(userID: string, status: string) {
+        let player = await this.getByID(userID);
+        await this.userRepository.update(
+            { uuid: player.uuid },
+            { status: status }
+        );
+        await this.socketService.sendStatus(player.username, status);
+    }
 }
