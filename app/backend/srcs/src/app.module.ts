@@ -16,6 +16,7 @@ import { GameModule } from "./game/game.module";
         AuthModule,
         ChatModule,
         GameModule,
+        UsersModule,
         ConfigModule,
         MailerModule.forRoot({
             transport: {
@@ -38,7 +39,6 @@ import { GameModule } from "./game/game.module";
             entities: [ChatEntity, UserEntity, GameEntity],
             synchronize: true,
         }),
-        UsersModule,
     ],
     controllers: [AppController],
 })

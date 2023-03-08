@@ -3,6 +3,7 @@ import {
     HttpStatus,
     Injectable,
     StreamableFile,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -54,7 +55,7 @@ export class UsersService {
     // Add an UserEntity into the database
     async saveUser(user): Promise<UserEntity> {
         if (user.createdFrom === CreatedFrom.REGISTER) {
-            this.sendVerificationMail(user);
+            await this.sendVerificationMail(user);
         }
         return await this.userRepository.save(user);
     }
@@ -187,31 +188,26 @@ export class UsersService {
             }
             await this.userRepository.update(
                 { uuid: user.uuid },
-                { socketId: [] }
-            );
-            user.status = "Offline";
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: "Offline" }
+                { socketId: [], status: "Offline" }
             );
             return user.username;
         }
-        return "good bye";
+        return null;
     }
 
     async generateDoubleAuthCode(uuid: string) {
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
-        await this.userRepository.update(
-            { uuid: uuid },
-            { doubleAuthentificationCode: randomNumber.toString() }
-        );
-        await this.userRepository.update(
-            { uuid: uuid },
-            { doubleAuthentificationCodeCreation: new Date() }
-        );
         let user = await this.getByID(uuid);
+        if (!user) return;
+        await this.userRepository.update(
+            { uuid: uuid },
+            {
+                doubleAuthentificationCode: randomNumber.toString(),
+                doubleAuthentificationCodeCreation: new Date(),
+            }
+        );
         this.mailerService
             .sendMail({
                 to: user.email, // list of receivers
@@ -322,8 +318,13 @@ export class UsersService {
         return user;
     }
 
-    async updateUsername(previousUsername: string, newUsername: string) {
-        let alreadyTaken = await this.getByUsername(newUsername);
+    async updateUsername(uuid: string, newUsername: string) {
+        let user: UserEntity = await this.getProfile(uuid);
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+        let previousUsername: string = user.username;
+        const alreadyTaken = await this.getByUsername(newUsername);
         if (alreadyTaken) {
             throw new HttpException(
                 "This username is already registered.",
@@ -334,7 +335,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
-        this.socketService.userUpdate(newUsername);
+        this.socketService.userUpdate(previousUsername, "username");
         return "Username updated.";
     }
 
@@ -362,144 +363,130 @@ export class UsersService {
     }
 
     async updateProfileImage(uuid: string, imageName: string) {
+        let user = await this.getByID(uuid);
+        if (user.profileImage !== null) {
+            await this.deletePreviousProfileImage(user.uuid);
+        }
         await this.userRepository.update(
             { uuid: uuid },
             { profileImage: imageName }
         );
-        let user = await this.getByID(uuid);
-        this.socketService.userUpdate(user.username);
+        this.socketService.userUpdate(user.username, "avatar");
         return "Image updated.";
     }
 
-    async updateDoubleAuth(uuid: string, newValue: boolean) {
+    async updateDoubleAuth(uuid: string) {
+        const user = await this.getByID(uuid);
+        if (!user)
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        const newValue = !user.twoFactorsAuth;
         await this.userRepository.update(
             { uuid: uuid },
             { twoFactorsAuth: newValue }
         );
-        return "Setting updated.";
+        return newValue ? "2fa activated" : "2fa disabled";
     }
 
-    async getProfileImage(uuid: string): Promise<StreamableFile> {
-        let user = await this.getByID(uuid);
-        if (!user) {
-            throw new HttpException("Invalid user.", HttpStatus.FOUND);
-        }
-        if (user.profileImage === null) {
-            let file = createReadStream(
-                join(process.cwd(), "./default/profile_image.png")
-            );
-            const stream = new StreamableFile(file);
-            return stream;
+    async getProfileImage(imageName: string | null): Promise<StreamableFile> {
+        let path: string;
+        if (imageName === null) {
+            path = join(process.cwd(), "./default/profile_image.png");
         } else {
-            let file = createReadStream(
-                join(
-                    process.cwd(),
-                    "./uploads/profile_pictures/" + user.profileImage
-                )
+            path = join(
+                process.cwd(),
+                "./uploads/profile_pictures/" + imageName
             );
-            const stream = new StreamableFile(file);
-            return stream;
         }
+        return new StreamableFile(createReadStream(path));
     }
 
-    async addFriend(userId: string, friend: string) {
+    async addFriend(userId: string, friendUsername: string) {
+        const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!friend || !user)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        const frienId = friend.uuid;
+        if (userId === frienId)
             throw new HttpException(
                 "Can't be friend with yourself",
                 HttpStatus.BAD_REQUEST
             );
-        if (!user.friend) user.friend = new Array();
-        else {
-            if (user.friend.find((element) => element === friend)) {
-                throw new HttpException(
-                    "Already friend",
-                    HttpStatus.BAD_REQUEST
-                );
-            }
+        else if (user.friend.find((friends) => friends === frienId)) {
+            throw new HttpException("Already friend", HttpStatus.BAD_REQUEST);
         }
-        user.friend.push(friend);
+        user.friend.push(frienId);
         await this.userRepository.update(
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return this.friendslist(userId);
+        return this.friendslist(user.friend);
     }
 
-    async friendslist(userid: string) {
-        let user = await this.getByID(userid);
-        if (!user) return "no User";
+    async friendslist(friends: string[]) {
         let list: { username: string; status: string }[] = new Array();
-        if (!user.friend) return list;
         let i = 0;
-        while (i < user.friend.length) {
-            let id = user.friend[i];
-            let friend = await this.getByID(id);
-            if (friend !== null)
+        while (i < friends.length) {
+            let friend = await this.getByID(friends[i]);
+            if (friend) {
                 list.push({ username: friend.username, status: friend.status });
+            }
             i++;
         }
         return list;
     }
 
-    async DelFriend(userId: string, friend: string) {
+    async DelFriend(userId: string, friendUsername: string) {
+        const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!friend || !user) {
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        }
+        const frienId = friend.uuid;
+        if (userId === frienId)
             throw new HttpException(
                 "Can't unfriend yourself",
                 HttpStatus.BAD_REQUEST
             );
-        let index = user.friend.findIndex((element) => element === friend);
+        let index = user.friend.findIndex((friends) => friends === frienId);
         if (index > -1) {
             user.friend.splice(index, 1);
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { friend: user.friend }
+            );
         }
-        await this.userRepository.update(
-            { uuid: user.uuid },
-            { friend: user.friend }
-        );
-        return this.friendslist(userId);
+        return this.friendslist(user.friend);
     }
 
-    async blockUser(userId: string, friend: string) {
+    async blockUser(userId: string, blockedUsername: string) {
+        let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!user) {
-            return [];
+        if (!block || !user) {
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
         }
-        if (userId === friend) {
+        const blockedId = block.uuid;
+        if (userId === blockedId) {
             throw new HttpException(
                 "You cannot block yourself",
                 HttpStatus.BAD_REQUEST
             );
+        } else if (user.blocked.find((blocked) => blocked === blockedId)) {
+            throw new HttpException("Already blocked", HttpStatus.BAD_REQUEST);
         }
         let list = user.blocked;
-        if (!list) {
-            list = [];
-        } else {
-            if (list.find((element) => element === friend)) {
-                throw new HttpException(
-                    "Already blocked",
-                    HttpStatus.BAD_REQUEST
-                );
-            }
-        }
-        list.push(friend);
+        list.push(blockedId);
         await this.userRepository.update(
             { uuid: user.uuid },
             { blocked: list }
         );
-        let blocked_list = await this.blockedList(user.uuid);
-        return blocked_list;
+        return await this.blockedList(list);
     }
 
-    async blockedList(uuid: string) {
-        let user: UserEntity = await this.getByID(uuid);
-        if (!user)
-            throw new HttpException("Invalid user", HttpStatus.BAD_REQUEST);
+    async blockedList(list: string[]) {
         let blocked: { username: string }[] = [];
         let i = 0;
-        if (user.blocked === null) return blocked;
-        while (i < user.blocked.length) {
-            let blocked_user = await this.getByID(user.blocked[i]);
+        while (i < list.length) {
+            let blocked_user = await this.getByID(list[i]);
             if (blocked_user) {
                 blocked.push({ username: blocked_user.username });
             }
@@ -508,30 +495,34 @@ export class UsersService {
         return blocked;
     }
 
-    async unBlock(userId: string, friend: string) {
+    async unBlock(userId: string, blockedUsername: string) {
+        let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!block || !user)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        const blockedId = block.uuid;
+        if (userId === blockedId)
             throw new HttpException(
                 "Can't unblock yourself",
                 HttpStatus.BAD_REQUEST
             );
-        let index = user.blocked.findIndex((element) => element === friend);
+        let index = user.blocked.findIndex((blocked) => blocked === blockedId);
         if (index > -1) {
             user.blocked.splice(index, 1);
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { blocked: user.blocked }
+            );
         }
-        await this.userRepository.update(
-            { uuid: user.uuid },
-            { blocked: user.blocked }
-        );
-        return this.blockedList(user.uuid);
+        return this.blockedList(user.blocked);
     }
 
-    async updatePlayerStatus(userID: string, status: string) {
-        let player = await this.getByID(userID);
-        await this.userRepository.update(
-            { uuid: player.uuid },
-            { status: status }
-        );
-        await this.socketService.sendStatus(player.username, status);
+    async updateStatus(uuid: string, status: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        if (!user)
+            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        await this.userRepository.update({ uuid: uuid }, { status: status });
+        await this.socketService.sendStatus(user.username, status);
+        return;
     }
 }

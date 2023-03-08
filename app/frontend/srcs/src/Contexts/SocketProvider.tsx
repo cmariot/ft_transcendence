@@ -26,24 +26,21 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     useEffect(() => {
         if (user.username.length && user.isLogged) {
             console.log(user.username, "is online");
-            setStatus("Online");
             socket.emit("userStatus", {
                 status: "Online",
                 socket: socket.id,
                 username: user.username,
             });
+            setStatus("Online");
         } else if (user.username.length && !user.isLogged) {
             console.log(user.username, "is offline");
-            setStatus("Offline");
             socket.emit("userStatus", {
                 status: "Offline",
                 socket: socket.id,
                 username: user.username,
             });
+            setStatus("Offline");
         }
-        return () => {
-            socket.off("userStatus");
-        };
     }, [user.isLogged, user.username]);
 
     useEffect(() => {
@@ -51,13 +48,22 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     }, [user, status]);
 
     useEffect(() => {
+        socket.on("userUpdate", (socket) => {
+            console.log(socket);
+            axios
+                .get("/api/profile/friends")
+                .then((response) => user.setFriends(response.data))
+                .catch((error) => console.log(error.data));
+        });
         socket.on("newChatMessage", (socket) => {
+            console.log(socket);
             axios
                 .post("/api/chat/messages", { channelName: socket.channel })
                 .then((response) => chat.setMessages(response.data.messages))
                 .catch((error) => console.log(error.data));
         });
         return () => {
+            socket.off("userUpdate");
             socket.off("newChatMessage");
         };
     });

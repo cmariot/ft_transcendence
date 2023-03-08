@@ -41,7 +41,7 @@ services:
         build: app/frontend/
         env_file: app/frontend/.env
         volumes:
-            - ./app/frontend/srcs:/srcs
+            - ./app/frontend/srcs:/development
         networks:
             - network
         expose:

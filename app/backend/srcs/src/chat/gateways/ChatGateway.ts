@@ -1,45 +1,12 @@
-import { OnModuleInit } from "@nestjs/common";
-import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-} from "@nestjs/websockets";
+import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
-import { GameService } from "src/game/services/game.service";
-import { UserEntity } from "src/users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
-export class ChatGateway implements OnModuleInit {
-    constructor(
-        private userService: UsersService,
-        private gameService: GameService
-    ) {}
+export class ChatGateway {
+    constructor(private userService: UsersService) {}
 
     @WebSocketServer()
     server: Server;
-
-    onModuleInit() {
-        this.server.on("connection", (socket) => {
-            socket.on("disconnect", async () => {
-                let user = await this.userService.getBySocket(socket.id);
-                if (user) {
-                    if (
-                        user.status === "MatchMaking" ||
-                        user.status === "In_Game"
-                    ) {
-                        this.gameService.handleDisconnect(user);
-                    }
-                }
-                let username = await this.userService.userDisconnection(
-                    socket.id
-                );
-                if (username) {
-                    this.sendStatus(username, "Offline");
-                }
-            });
-        });
-    }
 
     channelUpdate() {
         this.server.emit("newChannelAvailable");
@@ -109,38 +76,6 @@ export class ChatGateway implements OnModuleInit {
             username: username,
         });
         return username;
-    }
-
-    @SubscribeMessage("userStatus")
-    async userStatus(@MessageBody() data: any) {
-        let username: string = data.username;
-        let socketID: string = data.socket;
-        let status: string = data.status;
-        let user: string;
-        if (username && socketID && status === "Online") {
-            user = await this.userService.setSocketID(
-                username,
-                socketID,
-                status
-            );
-        }
-        if (socketID && status === "Offline") {
-            user = await this.userService.userDisconnection(socketID);
-        }
-        if (socketID && status === "In_Game") {
-            user = await this.userService.setStatus(socketID, status);
-        }
-        if (socketID && status === "MatchMaking") {
-            user = await this.userService.setStatus(socketID, status);
-        }
-        this.sendStatus(user, data.status);
-    }
-
-    async sendStatus(username: string, status: string) {
-        this.server.emit("userStatus", {
-            username: username,
-            status: status,
-        });
     }
 
     async send_unmute_or_unban(

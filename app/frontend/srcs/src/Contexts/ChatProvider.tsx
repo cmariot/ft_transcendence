@@ -126,11 +126,16 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
                 let availables = new Map<string, { channelType: string }>(
                     availableChannels
                 );
-                updateAvailableChannels(
-                    availables.set(channel, {
-                        channelType: channelType,
-                    })
-                );
+                if (
+                    !isChannelOwner &&
+                    (channelType === "public" || channelType === "protected")
+                ) {
+                    updateAvailableChannels(
+                        availables.set(channel, {
+                            channelType: channelType,
+                        })
+                    );
+                }
             }
         }
         setMessages([]);

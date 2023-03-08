@@ -32,13 +32,11 @@ export default function ConfirmProfile() {
                     <br />
                     Click on the button bellow to confirm your profile.
                 </h3>
-                <button onClick={() => confirmProfile()}>Let's play</button>
-            </section>
-            <section id="main-settings" className="settings-confirm-profile">
-                <h2>Edit your profile</h2>
                 <EditProfilePicture />
                 <EditUsername />
                 <EnableDoubleAuth />
+
+                <button onClick={() => confirmProfile()}>Let's play</button>
             </section>
         </main>
     );

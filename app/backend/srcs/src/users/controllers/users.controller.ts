@@ -11,6 +11,7 @@ import {
     Post,
     Req,
     Request,
+    StreamableFile,
     UnauthorizedException,
     UploadedFile,
     UseGuards,
@@ -22,7 +23,6 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";
-import { UserEntity } from "../entity/user.entity";
 import { isLogged } from "src/auth/guards/authentification.guards";
 
 // Storage for the upload images
@@ -43,32 +43,34 @@ export const storage = {
 export class UsersController {
     constructor(private userService: UsersService) {}
 
+    // Get your profile
     @Get()
     @UseGuards(isLogged)
     async profile(@Request() req) {
-        let completeUser = await this.userService.getProfile(req.user.uuid);
-        if (completeUser != null)
-            return {
-                uuid: completeUser.uuid,
-                username: completeUser.username,
-                email: completeUser.email,
-                twoFactorsAuth: completeUser.twoFactorsAuth,
-                firstLog: completeUser.firstLog,
-            };
-        throw new UnauthorizedException();
+        const user = await this.userService.getProfile(req.user.uuid);
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+        return {
+            uuid: user.uuid,
+            username: user.username,
+            email: user.email,
+            twoFactorsAuth: user.twoFactorsAuth,
+            firstLog: user.firstLog,
+        };
     }
 
+    // Update username
     @Post("update/username")
     @UseGuards(isLogged)
     async updateUsername(@Body() newUsernameDto: UsernameDto, @Request() req) {
-        let previousProfile: UserEntity = await this.userService.getProfile(
-            req.user.uuid
+        return this.userService.updateUsername(
+            req.user.uuid,
+            newUsernameDto.username
         );
-        let previousUsername: string = previousProfile.username;
-        let newUsername: string = newUsernameDto.username;
-        return this.userService.updateUsername(previousUsername, newUsername);
     }
 
+    // Update the profile image
     @Post("update/image")
     @UseGuards(isLogged)
     @UseInterceptors(FileInterceptor("file", storage))
@@ -86,101 +88,95 @@ export class UsersController {
         file: Express.Multer.File,
         @Req() req
     ) {
-        let user = await this.userService.getByID(req.user.uuid);
-        if (user.profileImage != null) {
-            this.userService.deletePreviousProfileImage(user.uuid);
-        }
-        await this.userService.updateProfileImage(req.user.uuid, file.filename);
-        return "OK";
+        return await this.userService.updateProfileImage(
+            req.user.uuid,
+            file.filename
+        );
     }
 
+    // Toogle 2fa
     @Post("update/doubleAuth")
     @UseGuards(isLogged)
     async toogleDoubleAuth(@Req() req) {
-        const user = await this.userService.getByID(req.user.uuid);
-        const newValue = !user.twoFactorsAuth;
-        await this.userService.updateDoubleAuth(req.user.uuid, newValue);
-        return "OK";
+        return await this.userService.updateDoubleAuth(req.user.uuid);
     }
 
+    // Get a profile image
     @Get(":username/image")
     @UseGuards(isLogged)
-    async getUserImage(@Param() params, @Req() req) {
+    async getUserImage(@Param() params): Promise<StreamableFile> {
         const user = await this.userService.getByUsername(params.username);
         if (!user)
             throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-
-        return this.userService.getProfileImage(user.uuid);
+        return await this.userService.getProfileImage(user.profileImage);
     }
 
+    // Get the user profile image
     @Get("image")
     @UseGuards(isLogged)
-    async getProfileImage(@Req() req) {
-        return await this.userService.getProfileImage(req.user.uuid);
+    async getProfileImage(@Req() req): Promise<StreamableFile> {
+        const user = await this.userService.getByID(req.user.uuid);
+        if (!user)
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        return await this.userService.getProfileImage(user.profileImage);
     }
 
-    @Get("2fa")
-    @UseGuards(isLogged)
-    async get2faenable(@Req() req) {
-        const user = await this.userService.getByID(req.uuid);
-        return user.twoFactorsAuth;
-    }
-
+    // Add an uuid to the friends list
     @Post("friends/add")
     @UseGuards(isLogged)
     async addFriend(@Body() Username: UsernameDto, @Req() req) {
-        let friend = await this.userService.getByUsername(Username.username);
-        if (!friend)
-            throw new HttpException(
-                "Friend not found !",
-                HttpStatus.BAD_REQUEST
-            );
-        return await this.userService.addFriend(req.user.uuid, friend.uuid);
+        return await this.userService.addFriend(
+            req.user.uuid,
+            Username.username
+        );
     }
 
+    // Get the friends list as username array
     @Get("friends")
     @UseGuards(isLogged)
     async friendlist(@Req() req) {
-        return await this.userService.friendslist(req.user.uuid);
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+        return await this.userService.friendslist(user.friend);
     }
 
+    // Remove an uuid from the friends
     @Post("friends/remove")
     @UseGuards(isLogged)
     async DeleteFriend(@Body() Username: UsernameDto, @Req() req) {
-        let friend = await this.userService.getByUsername(Username.username);
-        if (!friend)
-            throw new HttpException(
-                "Friend not found !",
-                HttpStatus.BAD_REQUEST
-            );
-        return await this.userService.DelFriend(req.user.uuid, friend.uuid);
+        return await this.userService.DelFriend(
+            req.user.uuid,
+            Username.username
+        );
     }
 
+    // Add an uuid to the list of blocked users
     @Post("block")
     @UseGuards(isLogged)
     async block_user(@Body() Username: UsernameDto, @Req() req) {
-        let block = await this.userService.getByUsername(Username.username);
-        if (!block)
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
-        let list = await this.userService.blockUser(req.user.uuid, block.uuid);
-        return list;
+        return await this.userService.blockUser(
+            req.user.uuid,
+            Username.username
+        );
     }
 
+    // Get the usernames list of blocked users
     @Get("blocked")
     @UseGuards(isLogged)
     async blocked_list(@Req() req) {
         return await this.userService.blockedList(req.user.uuid);
     }
 
+    // Remove an uuid from the blocked
     @Post("unblock")
     @UseGuards(isLogged)
     async unBlock(@Body() Username: UsernameDto, @Req() req) {
-        let block = await this.userService.getByUsername(Username.username);
-        if (!block)
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
-        return await this.userService.unBlock(req.user.uuid, block.uuid);
+        return await this.userService.unBlock(req.user.uuid, Username.username);
     }
 
+    // Set firstLog as false in the database
     @Get("confirm")
     @UseGuards(isLogged)
     confirm_profile(@Req() req) {

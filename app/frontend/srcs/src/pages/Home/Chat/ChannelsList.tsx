@@ -8,7 +8,7 @@ const ChannelsList = () => {
     async function joinChannel(channel: string, channelType: string) {
         if (channelType === "protected") {
             chat.setTargetChannel(channel);
-            chat.setPage("JoinProtectedChannel");
+            chat.setPage("JoinProtected");
         } else {
             await axios
                 .post("/api/chat/connect", { channelName: channel })

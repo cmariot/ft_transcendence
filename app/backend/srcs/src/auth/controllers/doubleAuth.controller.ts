@@ -51,13 +51,16 @@ export class DoubleAuthController {
 
     @Get("resend")
     @UseGuards(DoubleAuthGuard)
-    async resend(@Req() req) {
+    resend(@Req() req) {
         this.userService.generateDoubleAuthCode(req.user.uuid);
     }
 
     @Get("cancel")
     @UseGuards(DoubleAuthGuard)
-    async cancel2fa(@Res() res) {
-        res.clearCookie("double_authentification").send("Bye !");
+    cancel2fa(@Res() res) {
+        res.clearCookie("double_authentification", {
+            sameSite: "none",
+            secure: true,
+        }).send("Bye !");
     }
 }

@@ -3,7 +3,7 @@ import YourChannels from "./YourChannels";
 import ChannelsList from "./ChannelsList";
 import CreateChannel from "./CreateChannel";
 import ChatConv from "./ChatConv";
-import JoinProtected from "./JoinProtectedChannel";
+import JoinProtected from "./JoinProtected";
 import CreatePrivate from "./CreatePrivate";
 import EditChannelPassword from "./Settings/EditChannelPassword";
 import EditAdmins from "./Settings/EditAdmins";
