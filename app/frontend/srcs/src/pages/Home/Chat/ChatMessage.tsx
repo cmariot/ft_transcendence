@@ -22,7 +22,7 @@ const ChatMessage = () => {
                 channelName: chat.channel,
                 message: message,
             })
-            .then((response) => {
+            .then(() => {
                 setMessage("");
                 const chatMessages =
                     document.getElementById("chat-messages-list");
@@ -30,7 +30,7 @@ const ChatMessage = () => {
                     chatMessages.scrollTo(0, chatMessages.scrollHeight);
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 alert(
                     "You are not authorized to send a message on this channel."
                 );

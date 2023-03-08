@@ -14,6 +14,11 @@ export default function ProtectedPage() {
             if (!authCookie) {
                 return navigate("/login");
             }
+        }
+    }, [user.isLogged, navigate]);
+
+    useEffect(() => {
+        if (user.isLogged === false) {
             (async () => {
                 try {
                     const [profileResponse, friendsResponse] =
@@ -21,6 +26,15 @@ export default function ProtectedPage() {
                             axios.get("/api/profile"),
                             axios.get("/api/profile/friends"),
                         ]);
+
+                    if (
+                        friendsResponse.status !== 200 ||
+                        profileResponse.status !== 200
+                    ) {
+                        console.log("Cannot fetch your profile.");
+                        return navigate("/login");
+                    }
+
                     const username = profileResponse.data.username;
                     const avatar =
                         "/api/profile/" +
@@ -30,18 +44,14 @@ export default function ProtectedPage() {
                     const firstLog = profileResponse.data.firstLog;
                     const friends = friendsResponse.data;
 
-                    if (friendsResponse.status === 200) {
-                        user.setIsLogged(true);
-                    }
-                    if (profileResponse.status === 200) {
-                        user.editUsername(username);
-                        user.editAvatar(avatar);
-                        user.editDoubleAuth(twoFactorsAuth);
-                        user.setFriends(friends);
-                        user.setIsFirstLog(firstLog);
-                        if (firstLog) {
-                            return navigate("/welcome");
-                        }
+                    user.editUsername(username);
+                    user.editAvatar(avatar);
+                    user.editDoubleAuth(twoFactorsAuth);
+                    user.setFriends(friends);
+                    user.setIsLogged(true);
+                    user.setIsFirstLog(firstLog);
+                    if (firstLog) {
+                        return navigate("/welcome");
                     }
                 } catch (error) {
                     user.setIsLogged(false);

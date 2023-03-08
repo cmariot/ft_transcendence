@@ -7,8 +7,12 @@ const AdminPannel = () => {
     if (chat.channelType === "privateChannel") {
         return (
             <>
-                <button>mute an user</button>
-                <button>users list</button>
+                <button onClick={() => chat.setPage("MuteUser")}>
+                    mute an user
+                </button>
+                <button onClick={() => chat.setPage("AddUser")}>
+                    users list
+                </button>
             </>
         );
     } else if (
@@ -17,9 +21,15 @@ const AdminPannel = () => {
     ) {
         return (
             <>
-                <button>mute an user</button>
-                <button>kick an user</button>
-                <button>ban an user</button>
+                <button onClick={() => chat.setPage("MuteUser")}>
+                    mute an user
+                </button>
+                <button onClick={() => chat.setPage("KickUser")}>
+                    kick an user
+                </button>
+                <button onClick={() => chat.setPage("BanUser")}>
+                    ban an user
+                </button>
             </>
         );
     } else return null;

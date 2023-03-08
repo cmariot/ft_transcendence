@@ -1,45 +1,35 @@
 import axios from "axios";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ChangeEvent, useContext, useState } from "react";
 import { UserContext } from "../../Contexts/UserProvider";
 
 export default function EditUsername() {
     const user = useContext(UserContext);
-    const [username, setUsername] = useState(user.username);
-    const navigate = useNavigate();
+    const [newUsername, setNewUsername] = useState(user.username);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         if (id === "username") {
-            setUsername(value);
+            setNewUsername(value);
         }
     };
 
     const submitUsernameForm = async (event: any) => {
         event.preventDefault();
-        const newValue: string = username;
-        if (newValue === user.username) {
+        if (newUsername === user.username) {
             alert("Change your username");
             return;
         }
         await axios
             .post("/api/profile/update/username", {
-                username: newValue,
+                username: newUsername,
             })
             .then(function () {
-                user.editUsername(newValue);
-                setUsername(newValue);
-                navigate("/settings");
+                user.editUsername(newUsername);
             })
             .catch(function (error) {
-                setUsername(user.username);
                 alert(error.response.data.message);
             });
     };
-
-    useEffect(() => {
-        setUsername(user.username);
-    }, [user.username]);
 
     return (
         <div id="username-main">
@@ -48,7 +38,7 @@ export default function EditUsername() {
                     id="username"
                     type="text"
                     placeholder="New Username"
-                    value={username}
+                    value={newUsername}
                     onChange={handleInputChange}
                     autoComplete="off"
                     autoFocus

@@ -1,6 +1,5 @@
 import axios from "axios";
-import "../../styles/Settings.css";
-import "../../styles/Theme.css";
+import "../../styles/ConfirmProfile.css";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import EditProfilePicture from "./EditProfilePicture";
@@ -17,14 +16,15 @@ export default function ConfirmProfile() {
             .get("/api/profile/confirm")
             .then(() => {
                 user.setIsFirstLog(false);
+                user.setIsLogged(true);
                 navigate("/");
             })
             .catch(() => {});
     }
 
     return (
-        <main>
-            <section>
+        <main id="main-confirm-profile">
+            <section id="section-confirm-profile">
                 <h2>It's a pleasure to have a new player !</h2>
                 <h3>
                     As this is your first time visiting this site, check or edit
@@ -34,7 +34,7 @@ export default function ConfirmProfile() {
                 </h3>
                 <button onClick={() => confirmProfile()}>Let's play</button>
             </section>
-            <section id="main-settings">
+            <section id="main-settings" className="settings-confirm-profile">
                 <h2>Edit your profile</h2>
                 <EditProfilePicture />
                 <EditUsername />

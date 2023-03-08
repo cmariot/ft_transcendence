@@ -7,5 +7,5 @@ import { UserContext } from "../../Contexts/UserProvider";
 export const NavBar = () => {
     let user = useContext(UserContext);
 
-    return user.isLogged ? <AppNavbar /> : <AuthNavbar />;
+    return user.isLogged && !user.isFirstLog ? <AppNavbar /> : <AuthNavbar />;
 };

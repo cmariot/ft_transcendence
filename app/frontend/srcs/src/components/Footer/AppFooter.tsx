@@ -1,7 +1,12 @@
+import { useContext } from "react";
+import { UserContext } from "../../Contexts/UserProvider";
+
 const AppFooter = () => {
+    const user = useContext(UserContext);
+
     return (
         <footer id="app-footer">
-            <p>online users : 42</p>
+            {user.status !== "" && <p>status : {user.status}</p>}
         </footer>
     );
 };

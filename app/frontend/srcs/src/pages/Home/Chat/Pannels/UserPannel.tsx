@@ -15,13 +15,7 @@ const UserPannel = () => {
         await axios
             .post("/api/chat/leave", { channelName: chat.channel })
             .then(function () {
-                chat.setMessages([]);
-                chat.setChannel("");
-                chat.setChannelType("");
-                chat.setmutedUsers([]);
-                chat.setbannedUsers([]);
-                chat.closeMenu();
-                chat.setPage("YourChannels");
+                chat.leaveChannel(chat.channel, chat.channelType);
             })
             .catch(function (error) {
                 console.log(error.response.data);

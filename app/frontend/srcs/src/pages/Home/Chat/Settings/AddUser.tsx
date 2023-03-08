@@ -14,15 +14,6 @@ const AddUser = () => {
         }
     }
 
-    function returnToChatMenu() {
-        const current = document.getElementById("add-user-menu");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     async function addNewUser(event: any) {
         event.preventDefault();
         await axios
@@ -75,7 +66,7 @@ const AddUser = () => {
         <menu id="add-user-menu" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Add User</p>
-                <button onClick={() => returnToChatMenu()}>return</button>
+                <button onClick={() => chat.setPage("ChatConv")}>return</button>
             </header>
             <section className="chat-section">
                 <form

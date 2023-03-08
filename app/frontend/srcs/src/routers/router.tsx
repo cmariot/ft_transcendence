@@ -17,7 +17,6 @@ import ProtectedDoubleAuth from "../Utils/ProtectedDoubleAuth";
 
 export const router = createBrowserRouter([
     {
-        path: "/",
         element: <Body />,
         children: [
             {
@@ -32,7 +31,7 @@ export const router = createBrowserRouter([
                 element: <ProtectedPage />,
                 children: [
                     {
-                        index: true,
+                        path: "/",
                         element: <Home />,
                     },
                     {

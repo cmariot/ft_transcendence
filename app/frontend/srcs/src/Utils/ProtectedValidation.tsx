@@ -22,7 +22,7 @@ export default function ProtectedValidation() {
                 ]);
                 if (validateEmailResponse.status === 200) {
                     setIsAuthorized(true);
-                    user.setIsLogged(true);
+                    user.setIsLogged(false);
                     user.setIsFirstLog(true);
                 }
             } catch (error) {

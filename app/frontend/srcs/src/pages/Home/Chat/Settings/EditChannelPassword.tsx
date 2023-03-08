@@ -37,12 +37,7 @@ const EditChannelPassword = () => {
         } else if (chat.channelType === "public") {
             setProtectedChannel(false);
         }
-        const current = document.getElementById("change-channel-password");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
+        chat.setPage("ChatConv");
     }
 
     const submitChannelEdit = async (event: any) => {

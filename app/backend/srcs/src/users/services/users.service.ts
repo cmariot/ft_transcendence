@@ -384,22 +384,20 @@ export class UsersService {
         if (!user) {
             throw new HttpException("Invalid user.", HttpStatus.FOUND);
         }
-        if (user.profileImage === null) {
-            let file = createReadStream(
-                join(process.cwd(), "./default/profile_image.png")
+        let file: fs.ReadStream;
+        let imagePath: string;
+
+        if (user.profileImage) {
+            imagePath = join(
+                process.cwd(),
+                "./uploads/profile_pictures/" + user.profileImage
             );
-            let stream = new StreamableFile(file);
-            return stream;
         } else {
-            let file = createReadStream(
-                join(
-                    process.cwd(),
-                    "./uploads/profile_pictures/" + user.profileImage
-                )
-            );
-            let stream = new StreamableFile(file);
-            return stream;
+            imagePath = join(process.cwd(), "./default/profile_image.png");
         }
+        file = createReadStream(imagePath);
+        const stream = new StreamableFile(file);
+        return stream;
     }
 
     async addFriend(userId: string, friend: string) {

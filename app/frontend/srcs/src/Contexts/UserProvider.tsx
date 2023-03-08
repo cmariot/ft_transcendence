@@ -25,6 +25,8 @@ export const UserContext = createContext({
     setIsLogged: (newValue: boolean) => {},
     isFirstLog: false,
     setIsFirstLog: (newValue: boolean) => {},
+    status: "",
+    setStatus: (newStatus: string) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -36,6 +38,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [blocked, setBlocked] = useState([]);
     const [isLogged, setIsLogged] = useState(false);
     const [isFirstLog, setIsFirstLog] = useState(false);
+    const [status, setStatus] = useState("");
 
     const value = {
         username,
@@ -52,6 +55,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
         setIsLogged,
         isFirstLog,
         setIsFirstLog,
+        status,
+        setStatus,
     };
 
     return (

@@ -9,22 +9,13 @@ const ChatMessages = () => {
     const user = useContext(UserContext);
     const navigate = useNavigate();
 
-    function createPrivateMenu() {
-        const current = document.getElementById("chat-conversation");
-        const menu = document.getElementById("chat-create-private");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     async function directMessage(username: string) {
         await axios
             .post("/api/chat/direct-message", { username: username })
             .then((response) => {
                 if (response.status === HttpStatusCode.NoContent) {
                     chat.setDirectMessageUser(username);
-                    createPrivateMenu();
+                    chat.setPage("CreatePrivate");
                     return;
                 } else {
                     axios
@@ -45,6 +36,7 @@ const ChatMessages = () => {
                             chat.setmutedUsers(response2.data.muted_users);
                             chat.setbannedUsers(response2.data.banned_users);
                             chat.setUsers(response2.data.private_channel_users);
+                            chat.setPage("ChatConv");
                         })
                         .catch(function (error) {
                             console.log("joinChannel error: ", error);

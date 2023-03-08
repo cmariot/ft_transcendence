@@ -11,7 +11,6 @@ export default function Friends() {
     return (
         <div id="friends">
             <AddFriend />
-
             <main id="friend-list-main">
                 {!user.friends.length && !user.blocked.length && (
                     <p>Let's add some friends !</p>

@@ -31,5 +31,5 @@ export default function ProtectedDoubleAuth() {
         })();
     }, [navigate, user]);
 
-    return <>{isDoubleAuthorized === true ? <Outlet /> : null}</>;
+    return isDoubleAuthorized === true ? <Outlet /> : null;
 }

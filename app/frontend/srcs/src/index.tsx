@@ -7,6 +7,7 @@ import { router } from "./routers/router";
 import { RouterProvider } from "react-router-dom";
 import MenuProvider from "./Contexts/MenuProviders";
 import ChatProvider from "./Contexts/ChatProvider";
+import SocketProvider from "./Contexts/SocketProvider";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -18,7 +19,9 @@ root.render(
             <ChatProvider>
                 {/* <GameProvider> */}
                 <MenuProvider>
-                    <RouterProvider router={router} />
+                    <SocketProvider>
+                        <RouterProvider router={router} />
+                    </SocketProvider>
                 </MenuProvider>
                 {/* <GameProvider> */}
             </ChatProvider>

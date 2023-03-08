@@ -24,15 +24,6 @@ const BanUser = () => {
         }
     }
 
-    function returnToChatMenu() {
-        const current = document.getElementById("edit-ban");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     async function banUser(event: any) {
         event.preventDefault();
         await axios
@@ -88,7 +79,7 @@ const BanUser = () => {
         <menu id="edit-ban" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Ban</p>
-                <button onClick={() => returnToChatMenu()}>return</button>
+                <button onClick={() => chat.setPage("ChatConv")}>return</button>
             </header>
             <section className="chat-section">
                 <form onSubmit={(event) => banUser(event)} autoComplete="off">

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import YourChannels from "./YourChannels";
 import ChannelsList from "./ChannelsList";
 import CreateChannel from "./CreateChannel";
@@ -13,32 +13,9 @@ import KickUser from "./Settings/KickUser";
 import AddUser from "./Settings/AddUser";
 import "../../../styles/Chat.css";
 import { ChatContext } from "../../../Contexts/ChatProvider";
-import axios from "axios";
 
 const Chat = () => {
     const chat = useContext(ChatContext);
-
-    //useEffect(() => {
-    //    (async () => {
-    //        try {
-    //            const [channelsResponse] = await Promise.all([
-    //                axios.get("/api/chat/channels"),
-    //            ]);
-
-    //            if (channelsResponse.status === 200) {
-    //                chat.updateUserChannels(
-    //                    arrayToMap(channelsResponse.data.userChannels)
-    //                );
-    //                chat.updateUserPrivateChannels(
-    //                    arrayToMap(channelsResponse.data.userPrivateChannels)
-    //                );
-    //                chat.updateAvailableChannels(
-    //                    arrayToMap(channelsResponse.data.availableChannels)
-    //                );
-    //            }
-    //        } catch (error) {}
-    //    })();
-    //}, []);
 
     return (
         <div id="chat">

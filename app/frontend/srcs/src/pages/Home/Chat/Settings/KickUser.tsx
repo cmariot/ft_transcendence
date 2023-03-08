@@ -14,15 +14,6 @@ const KickUser = () => {
         }
     }
 
-    function returnToChatMenu() {
-        const current = document.getElementById("edit-kick");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     async function kickUser(event: any) {
         event.preventDefault();
         await axios
@@ -45,7 +36,7 @@ const KickUser = () => {
         <menu id="edit-kick" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Kick</p>
-                <button onClick={() => returnToChatMenu()}>return</button>
+                <button onClick={() => chat.setPage("ChatConv")}>return</button>
             </header>
             <section className="chat-section">
                 <form onSubmit={(event) => kickUser(event)} autoComplete="off">

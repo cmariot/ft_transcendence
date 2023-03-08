@@ -5,15 +5,23 @@ const OwnerPannel = () => {
     const chat = useContext(ChatContext);
 
     if (chat.channelType === "privateChannel") {
-        return <button>edit channel's administrators</button>;
+        return (
+            <button onClick={() => chat.setPage("EditAdmins")}>
+                edit channel's administrators
+            </button>
+        );
     } else if (
         chat.channelType === "public" ||
         chat.channelType === "protected"
     ) {
         return (
             <>
-                <button>edit channel's password</button>
-                <button>edit channel's administrators</button>
+                <button onClick={() => chat.setPage("EditChannelPassword")}>
+                    edit channel's password
+                </button>
+                <button onClick={() => chat.setPage("EditAdmins")}>
+                    edit channel's administrators
+                </button>
             </>
         );
     } else {

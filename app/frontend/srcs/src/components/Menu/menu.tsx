@@ -2,7 +2,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Contexts/UserProvider";
 import { useContext } from "react";
-import { socket } from "../../Contexts/WebsocketContext";
 import { MenuContext } from "../../Contexts/MenuProviders";
 
 export const Menu = () => {
@@ -20,10 +19,6 @@ export const Menu = () => {
             await axios.get("/api/logout");
             menu.close();
             user.setIsLogged(false);
-            //socket.emit("userStatus", {
-            //    status: "Offline",
-            //    socket: socket.id,
-            //});
             return navigate("/login");
         } catch (error) {
             console.log(error);

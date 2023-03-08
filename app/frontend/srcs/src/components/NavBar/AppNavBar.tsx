@@ -3,10 +3,17 @@ import "../../styles/AppNavBar.css";
 import { useContext } from "react";
 import { UserContext } from "../../Contexts/UserProvider";
 import { MenuContext } from "../../Contexts/MenuProviders";
+import { ChatContext } from "../../Contexts/ChatProvider";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);
     const user = useContext(UserContext);
+    const chat = useContext(ChatContext);
+
+    function toogleMenu() {
+        menu.toogle();
+        chat.closeMenu();
+    }
 
     return (
         <>
@@ -17,18 +24,18 @@ const AppNavBar = () => {
                     </Link>
                     {user?.username && user?.avatar ? (
                         <div id="nav-user-infos">
-                            <button onClick={() => menu.toogle()}>
+                            <button onClick={() => toogleMenu()}>
                                 {user?.username}
                             </button>
                             <img
                                 id="nav-user-picture"
                                 src={user?.avatar}
-                                onClick={() => menu.toogle()}
+                                onClick={() => toogleMenu()}
                                 alt="Menu"
                             />
                         </div>
                     ) : (
-                        <button onClick={() => menu.toogle()}>menu</button>
+                        <button onClick={() => toogleMenu()}>menu</button>
                     )}
                 </nav>
             </header>

@@ -15,15 +15,6 @@ const EditAdmins = () => {
         }
     }
 
-    function returnToChatMenu() {
-        const current = document.getElementById("edit-admins-menu");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
-        }
-    }
-
     async function addAdministrator(event: any) {
         event.preventDefault();
         await axios
@@ -81,7 +72,7 @@ const EditAdmins = () => {
         <menu id="edit-admins-menu" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Edit channel admins</p>
-                <button onClick={() => returnToChatMenu()}>return</button>
+                <button onClick={() => chat.setPage("ChatConv")}>return</button>
             </header>
             <section className="chat-section">
                 <form

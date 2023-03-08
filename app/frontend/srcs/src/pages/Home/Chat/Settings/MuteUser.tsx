@@ -20,17 +20,7 @@ const MuteUser = () => {
         event.preventDefault();
         const { id, value } = event.target;
         if (id === "mute-duration") {
-            console.log(value);
             setMuteDuration(value);
-        }
-    }
-
-    function returnToChatMenu() {
-        const current = document.getElementById("edit-mute");
-        const menu = document.getElementById("chat-conversation");
-        if (menu && current) {
-            current.style.display = "none";
-            menu.style.display = "flex";
         }
     }
 
@@ -89,7 +79,7 @@ const MuteUser = () => {
         <menu id="edit-mute" className="chat-menu">
             <header className="chat-header">
                 <p className="chat-header-tittle">Mute</p>
-                <button onClick={() => returnToChatMenu()}>return</button>
+                <button onClick={() => chat.setPage("ChatConv")}>return</button>
             </header>
             <section id="mute-menu-section" className="chat-section">
                 <form

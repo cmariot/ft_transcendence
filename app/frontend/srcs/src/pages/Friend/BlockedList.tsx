@@ -20,29 +20,25 @@ export default function BlockedList() {
     }
 
     return (
-        <section>
-            <ul id="friend-list">
-                <h2>blocked list</h2>
-                {user.blocked.map((blocked, index) => (
-                    <li className="friend blocked" key={index}>
-                        <img
-                            src={
-                                "/api/profile/" + blocked["username"] + "/image"
-                            }
-                            className="friend-profile-picture"
-                            alt="Friend's avatar"
-                        />
-                        <div className="friend-middle-div">
-                            <p className="friend-username">
-                                <b>{blocked["username"]}</b>
-                            </p>
-                        </div>
-                        <button onClick={() => unblock(blocked["username"])}>
-                            unblock
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </section>
+        <ul id="friend-list">
+            <h2>blocked list</h2>
+            {user.blocked.map((blocked, index) => (
+                <li className="friend blocked" key={index}>
+                    <img
+                        src={"/api/profile/" + blocked["username"] + "/image"}
+                        className="friend-profile-picture"
+                        alt="Friend's avatar"
+                    />
+                    <div className="friend-middle-div">
+                        <p className="friend-username">
+                            <b>{blocked["username"]}</b>
+                        </p>
+                    </div>
+                    <button onClick={() => unblock(blocked["username"])}>
+                        unblock
+                    </button>
+                </li>
+            ))}
+        </ul>
     );
 }

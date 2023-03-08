@@ -1,5 +1,6 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { UserContext } from "./UserProvider";
 
 export type ChatContextType = {
     channel: string;
@@ -70,6 +71,7 @@ export const ChatContext = createContext({
     showMenu: false,
     toogleMenu: () => {},
     closeMenu: () => {},
+    leaveChannel: (channel: string, channelType: string) => {},
 });
 
 type ChatProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -107,6 +109,41 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
         setShownMenu(false);
     }
 
+    function leaveChannel(channel: string, channelType: string) {
+        if (channelType === "private" || channelType === "privateChannel") {
+            let channels = new Map<string, { channelType: string }>(
+                userPrivateChannels
+            );
+            if (channels.delete(channel)) {
+                updateUserPrivateChannels(channels);
+            }
+        } else {
+            let channels = new Map<string, { channelType: string }>(
+                userChannels
+            );
+            if (channels.delete(channel)) {
+                updateUserChannels(channels);
+                let availables = new Map<string, { channelType: string }>(
+                    availableChannels
+                );
+                updateAvailableChannels(
+                    availables.set(channel, {
+                        channelType: channelType,
+                    })
+                );
+            }
+        }
+        setMessages([]);
+        setChannel("");
+        setChannelType("");
+        setmutedUsers([]);
+        setbannedUsers([]);
+        closeMenu();
+        setPage("YourChannels");
+    }
+
+    const user = useContext(UserContext);
+
     useEffect(() => {
         function arrayToMap(array: Array<any>) {
             let map = new Map<
@@ -120,26 +157,30 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
             }
             return map;
         }
-        (async () => {
-            try {
-                const [channelsResponse] = await Promise.all([
-                    axios.get("/api/chat/channels"),
-                ]);
+        if (user.isLogged) {
+            (async () => {
+                try {
+                    const [channelsResponse] = await Promise.all([
+                        axios.get("/api/chat/channels"),
+                    ]);
 
-                if (channelsResponse.status === 200) {
-                    updateUserChannels(
-                        arrayToMap(channelsResponse.data.userChannels)
-                    );
-                    updateUserPrivateChannels(
-                        arrayToMap(channelsResponse.data.userPrivateChannels)
-                    );
-                    updateAvailableChannels(
-                        arrayToMap(channelsResponse.data.availableChannels)
-                    );
-                }
-            } catch (error) {}
-        })();
-    }, []);
+                    if (channelsResponse.status === 200) {
+                        updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
+                    }
+                } catch (error) {}
+            })();
+        }
+    }, [user.isLogged]);
 
     const value = {
         channel,
@@ -179,6 +220,7 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
         closeMenu,
         page,
         setPage,
+        leaveChannel,
     };
 
     return (
