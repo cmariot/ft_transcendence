@@ -1,0 +1,392 @@
+#root {
+    background-color: #a3a3a3;
+    color: #a3a3a3;
+    font-family: menlo;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: menlo;
+    font-size: small;
+    background-color: #a3a3a3;
+    border: 1px solid #737373;
+    border-radius: 5px;
+}
+
+a {
+    color: #a3a3a3;
+}
+
+button,
+input {
+    text-align: start;
+}
+
+#app-nav-bar {
+    background-color: #1e1e1e;
+}
+
+#app-footer {
+    background-color: #1e1e1e;
+}
+
+#game {
+    background-color: #1e1e1e;
+}
+
+.chat-main {
+    background-color: #3a3a3a;
+}
+
+.chat-main-li,
+.chat-menu-li {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+}
+
+#chat-create-channel-form > label:nth-child(4),
+#chat-create-private-form > label:nth-child(4) {
+    margin-block: 10px;
+}
+
+#new-channel-name {
+    text-align: left;
+}
+
+.app-menu-button {
+    text-align: end;
+    padding: 10px;
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+.app-menu-button:hover {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+}
+
+button:hover {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+html {
+    background-color: #1e1e1e;
+}
+
+html {
+    background-color: #1e1e1e;
+}
+
+#profile {
+    width: fit-content;
+    border-radius: 15px;
+    padding: 30px;
+    margin: auto;
+    background-color: #1e1e1e;
+    border: 5px solid #737373;
+}
+
+#profile-user-picture {
+    border: 0 solid #1e1e1e;
+}
+
+#app-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-friend {
+    background-color: #1e1e1e;
+}
+
+#friend-list {
+    background-color: #1e1e1e;
+}
+
+.friend {
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+}
+
+#main-settings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #1e1e1e;
+    border-radius: 15px;
+    width: fit-content;
+    padding: 20px;
+    background-color: #1e1e1e;
+}
+
+#nav-user-picture {
+    border: 0 solid black;
+}
+
+#username-main {
+    display: flex;
+    flex-direction: column;
+}
+
+#username-form {
+    display: flex;
+}
+
+#main-settings {
+    background-color: #1e1e1e;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+#edit-picture > label:nth-child(2) {
+    background-color: #585858;
+}
+
+#edit-picture-img {
+    margin: 10px;
+}
+
+#edit-picture {
+    margin: 20px;
+}
+
+#submit {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+    border-color: #a3a3a3;
+}
+
+#username-form {
+    margin-block: 20px;
+}
+
+#username-form {
+    margin-block: 15px;
+}
+
+#friends {
+    width: -webkit-fill-available;
+    width: -moz-available;
+}
+
+#add-friend {
+    padding-block: 20px;
+    width: 100%;
+}
+
+#friend-list-main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#profile {
+    padding: 40px;
+}
+
+#profile-user-picture {
+    margin: 15px;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    border: 3px solid #737373;
+}
+
+#app-content {
+    display: flex;
+    justify-content: center;
+    align-items: initial;
+}
+
+#profile {
+    margin: auto;
+}
+
+#friends {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-friend {
+    width: auto;
+}
+
+#friend-list {
+    width: auto;
+}
+
+#new-channel-password {
+    text-align: left;
+}
+
+#root {
+    font-size: small;
+}
+*:focus {
+    outline: none;
+}
+
+.chatMessages {
+    text-align: justify;
+}
+
+#auth-nav-bar {
+    background-color: #1e1e1e;
+}
+
+#auth-footer {
+    background-color: #1e1e1e;
+}
+
+#login-pannel {
+    background-color: #1e1e1e;
+}
+
+#login-pannel div {
+    margin: 5px;
+    background-color: #2c2c2c;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    border-radius: 15px;
+}
+
+#auth-content > article:nth-child(1) {
+    color: #1e1e1e;
+}
+
+*:focus {
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+}
+
+#register-form {
+    border: 6px #1e1e1e solid;
+    background-color: #2c2c2c;
+}
+
+#register-aside {
+    color: #1e1e1e;
+}
+
+#register-form {
+    background-color: #2c2c2c;
+}
+
+#register-aside {
+    color: #1e1e1e;
+}
+
+#label-edit-picture {
+    border: 0;
+    padding: 0;
+}
+#label-edit-picture p {
+    margin: 0px;
+    border: 3px #a3a3a3 solid;
+    background-color: #1e1e1e;
+    color: #a3a3a3;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#label-edit-picture {
+    padding: 0;
+    border: 0;
+}
+
+#main-settings {
+    border: 3px solid #737373;
+}
+
+#chat-create-channel-form > label:nth-child(4),
+#chat-create-private-form > label:nth-child(4) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-double-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-double-auth > label:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-double-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-double-auth > label:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#username-form {
+    margin-block: 20px;
+}
+
+#edit-double-auth > label:nth-child(1) {
+    margin: 20px;
+}
+
+#chat-menu-channels.conversation-with-create {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#no-channels {
+    margin: 10px;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-menu {
+    border: 2px #737373 solid;
+    justify-content: center;
+    align-items: center;
+}
+
+#game {
+    border: 2px #737373 solid;
+}
+
+#chat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-section {
+    border-block: 0.5px #737373 solid;
+}
+
+#home-main {
+    margin: 10px;
+}

@@ -1,0 +1,40 @@
+#auth-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    height: -webkit-fill-available;
+    height: -moz-available;
+    grid-gap: 10px;
+    padding: 10px;
+}
+
+#auth-content * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#login-pannel {
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+#login-pannel div {
+    padding: 20px;
+}
+
+#login-local-form {
+    padding: 0;
+    margin: 0;
+    margin-inline: 10px;
+}
+
+#unavailable-username {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #1e1e1e;
+}

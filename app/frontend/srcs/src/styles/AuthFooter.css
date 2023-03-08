@@ -1,0 +1,9 @@
+#auth-footer {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px black solid;
+    text-align: center;
+    padding: 10px;
+}

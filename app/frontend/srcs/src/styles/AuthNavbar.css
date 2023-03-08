@@ -1,0 +1,10 @@
+#auth-nav-bar {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    border-bottom: 1px black solid;
+    height: 100px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+}

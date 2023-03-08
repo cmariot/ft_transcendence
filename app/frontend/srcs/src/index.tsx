@@ -1,105 +1,31 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-
+import UserProvider from "./Contexts/UserProvider";
 import "./index.css";
-import Auth from "./Auth/Auth";
-import ErrorPage from "./Utils/ErrorPage";
-import Login from "./Auth/Login/Login";
-import Register from "./Auth/Register/Register";
-import Validate from "./Auth/Register/Validate";
-import DoubleAuth from "./Auth/DoubleAuth/DoubleAuth";
-import Home from "./App/Home/Home";
-import Profile from "./App/Profile/Profile";
-import Friends from "./App/Friend/Friends";
-import Settings from "./App/Settings/Settings";
-import ProtectedPage from "./Utils/ProtectedPage";
-import ProtectedValidation from "./Utils/ProtectedValidation";
-import ProtectedDoubleAuth from "./Utils/ProtectedDoubleAuth";
-import { App } from "./App/App";
-import UserProfile, { loader } from "./App/Profile/UserProfile";
-import UnavailableUsername42 from "./Auth/Login/UnavailableUsername42";
-
-const router = createBrowserRouter([
-    {
-        path: "/",
-        errorElement: <ErrorPage />,
-        element: <ProtectedPage />,
-        children: [
-            {
-                element: <App />,
-                children: [
-                    {
-                        index: true,
-                        element: <Home />,
-                    },
-                    {
-                        path: "profile",
-                        element: <Profile />,
-                    },
-                    {
-                        path: "profile/:user",
-                        element: <UserProfile />,
-                        loader: loader,
-                    },
-                    {
-                        path: "friends",
-                        element: <Friends />,
-                    },
-                    {
-                        path: "settings",
-                        element: <Settings />,
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        path: "/",
-        errorElement: <ErrorPage />,
-        element: <Auth />,
-        children: [
-            {
-                path: "login",
-                element: <Login />,
-            },
-            {
-                path: "register",
-                element: <Register />,
-            },
-            {
-                path: "unavailable-username",
-                element: <UnavailableUsername42 />,
-            },
-            {
-                path: "validate",
-                element: <ProtectedValidation />,
-                children: [
-                    {
-                        path: "",
-                        element: <Validate />,
-                    },
-                ],
-            },
-            {
-                path: "double-authentification",
-                element: <ProtectedDoubleAuth />,
-                children: [
-                    {
-                        path: "",
-                        element: <DoubleAuth />,
-                    },
-                ],
-            },
-        ],
-    },
-]);
+import "./styles/Theme.css";
+import { router } from "./routers/router";
+import { RouterProvider } from "react-router-dom";
+import MenuProvider from "./Contexts/MenuProviders";
+import ChatProvider from "./Contexts/ChatProvider";
+import SocketProvider from "./Contexts/SocketProvider";
+import GameProvider from "./Contexts/GameProvider";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
+
 root.render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <UserProvider>
+            <ChatProvider>
+                <GameProvider>
+                    <MenuProvider>
+                        <SocketProvider>
+                            <RouterProvider router={router} />
+                        </SocketProvider>
+                    </MenuProvider>
+                </GameProvider>
+            </ChatProvider>
+        </UserProvider>
     </React.StrictMode>
 );
