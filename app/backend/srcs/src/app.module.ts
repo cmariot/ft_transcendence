@@ -14,9 +14,9 @@ import { GameModule } from "./game/game.module";
 @Module({
     imports: [
         AuthModule,
-        ChatModule,
-        GameModule,
         UsersModule,
+        GameModule,
+        ChatModule,
         ConfigModule,
         MailerModule.forRoot({
             transport: {

@@ -7,24 +7,20 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity";
 import { Repository } from "typeorm";
-import { ChatGateway } from "../gateways/ChatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
-import { channelDTO, updateChannelDTO } from "../dtos/channelId.dto";
+import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
-import {
-    AddOptionsDTO,
-    kickOptionsDTO,
-    muteOptionsDTO,
-} from "../dtos/admin.dto";
+import { AddOptionsDTO, muteOptionsDTO } from "../dtos/admin.dto";
+import { SocketService } from "src/sockets/socket.service";
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectRepository(ChatEntity)
         private chatRepository: Repository<ChatEntity>,
-        private chatGateway: ChatGateway,
-        private userService: UsersService
+        private userService: UsersService,
+        private socketService: SocketService
     ) {}
 
     async getByName(channelName: string) {
@@ -191,8 +187,8 @@ export class ChatService {
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                this.chatGateway.channelUpdate();
-                this.chatGateway.userJoinChannel(
+                this.socketService.channelUpdate();
+                this.socketService.userJoinChannel(
                     channel.channelName,
                     user.username
                 );
@@ -215,9 +211,9 @@ export class ChatService {
             }
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                this.chatGateway.channelUpdate();
+                this.socketService.channelUpdate();
             }
-            this.chatGateway.userJoinChannel(
+            this.socketService.userJoinChannel(
                 channel.channelName,
                 user.username
             );
@@ -238,9 +234,9 @@ export class ChatService {
             newChannel.allowed_users = uuid_array;
             const channel = await this.chatRepository.save(newChannel);
             if (channel) {
-                this.chatGateway.channelUpdate();
+                this.socketService.channelUpdate();
             }
-            this.chatGateway.userJoinChannel(
+            this.socketService.userJoinChannel(
                 channel.channelName,
                 user.username
             );
@@ -459,7 +455,7 @@ export class ChatService {
                 }
             }
         }
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
         return users_list;
     }
 
@@ -557,7 +553,7 @@ export class ChatService {
                     );
                 }
 
-                this.chatGateway.userJoinChannel(
+                this.socketService.userJoinChannel(
                     channel.channelName,
                     user.username
                 );
@@ -586,8 +582,8 @@ export class ChatService {
                 );
             }
 
-            this.chatGateway.channelUpdate();
-            await this.chatGateway.userJoinChannel(
+            this.socketService.channelUpdate();
+            await this.socketService.userJoinChannel(
                 channel.channelName,
                 user.username
             );
@@ -602,7 +598,7 @@ export class ChatService {
 
             while (i < allowed_users.length) {
                 if (allowed_users[i].uuid === user.uuid) {
-                    this.chatGateway.userJoinChannel(
+                    this.socketService.userJoinChannel(
                         channel.channelName,
                         user.username
                     );
@@ -650,7 +646,7 @@ export class ChatService {
                         { uuid: channel.uuid },
                         { mutted_users: muted }
                     );
-                    this.chatGateway.channelUpdate();
+                    this.socketService.channelUpdate();
                 }
                 break;
             }
@@ -665,7 +661,7 @@ export class ChatService {
                 { uuid: channel.uuid },
                 { messages: channelMessages }
             );
-            return this.chatGateway.send_message(
+            return this.socketService.send_message(
                 channel.channelName,
                 user.username,
                 message
@@ -684,7 +680,7 @@ export class ChatService {
                         { uuid: channel.uuid },
                         { messages: channelMessages }
                     );
-                    return this.chatGateway.send_message(
+                    return this.socketService.send_message(
                         channel.channelName,
                         user.username,
                         message
@@ -710,7 +706,7 @@ export class ChatService {
                         { uuid: channel.uuid },
                         { messages: channelMessages }
                     );
-                    return this.chatGateway.send_message(
+                    return this.socketService.send_message(
                         channel.channelName,
                         user.username,
                         message
@@ -783,7 +779,7 @@ export class ChatService {
             channel.channelType === ChannelType.PROTECTED
         ) {
             if (channel.channelOwner === uuid) {
-                this.chatGateway.deleted_channel(
+                this.socketService.deleted_channel(
                     channel.channelName,
                     user.username
                 );
@@ -815,16 +811,16 @@ export class ChatService {
                     throw new UnauthorizedException();
                 }
             }
-            this.chatGateway.channelUpdate();
+            this.socketService.channelUpdate();
         } else if (channel.channelType === ChannelType.PRIVATE) {
-            this.chatGateway.deleted_channel(
+            this.socketService.deleted_channel(
                 channel.channelName,
                 user.username
             );
             this.chatRepository.delete({ uuid: channel.uuid });
         } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
             if (channel.channelOwner === uuid) {
-                this.chatGateway.deleted_channel(
+                this.socketService.deleted_channel(
                     channel.channelName,
                     user.username
                 );
@@ -852,13 +848,16 @@ export class ChatService {
                             }
                         );
                     }
-                    this.chatGateway.leave_private(user.username, channelName);
+                    this.socketService.leave_private(
+                        user.username,
+                        channelName
+                    );
                 } else {
                     throw new UnauthorizedException();
                 }
             }
         }
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
     }
 
     async upodateChannelPassword(
@@ -924,7 +923,7 @@ export class ChatService {
         } else {
             throw new UnauthorizedException();
         }
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
         return "updated";
     }
 
@@ -995,7 +994,7 @@ export class ChatService {
         if (!newAdmin) {
             return;
         }
-        this.chatGateway.updateChannelAdmin(
+        this.socketService.updateChannelAdmin(
             newAdmin.username,
             channel.channelName,
             true
@@ -1029,7 +1028,7 @@ export class ChatService {
         if (!newAdmin) {
             return;
         }
-        this.chatGateway.updateChannelAdmin(
+        this.socketService.updateChannelAdmin(
             newAdmin.username,
             channel.channelName,
             false
@@ -1046,7 +1045,6 @@ export class ChatService {
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
     ) {
-        console.log(muteOptions);
         let currentBanned = targetChannel.banned_users;
         let i = 0;
         let found = false;
@@ -1073,7 +1071,7 @@ export class ChatService {
             );
             let admin_list = await this.get_Admin_list(updateChannel);
             let target_list = await this.get_Admin_Owner(updateChannel);
-            await this.chatGateway.set_admin(
+            await this.socketService.set_admin(
                 admin_list,
                 target_list,
                 targetChannel.channelName
@@ -1081,29 +1079,21 @@ export class ChatService {
         }
         if (muteOptions.duration > 0) {
             setTimeout(() => {
-                this.timeout(
-                    user,
-                    mutedUser,
-                    targetChannel,
-                    muteOptions,
-                    "ban"
-                );
+                this.timeout(mutedUser, targetChannel, "ban");
             }, muteOptions.duration * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
-        this.chatGateway.ban_user(
+        this.socketService.ban_user(
             targetChannel.channelName,
             muteOptions.username
         );
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
             let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
-            }
+            ban_usernames_list.push(user.username);
         }
         return ban_usernames_list;
     }
@@ -1111,8 +1101,7 @@ export class ChatService {
     async kick(
         user: UserEntity,
         kickedUser: UserEntity,
-        targetChannel: ChatEntity,
-        options: kickOptionsDTO
+        targetChannel: ChatEntity
     ) {
         if (
             targetChannel.channelType === "protected" ||
@@ -1132,12 +1121,12 @@ export class ChatService {
                     );
                     let admin_list = await this.get_Admin_list(updateChannel);
                     let target_list = await this.get_Admin_Owner(updateChannel);
-                    await this.chatGateway.set_admin(
+                    await this.socketService.set_admin(
                         admin_list,
                         target_list,
                         targetChannel.channelName
                     );
-                    return this.chatGateway.kick_user(
+                    return this.socketService.kick_user(
                         targetChannel.channelName,
                         kickedUser.username
                     );
@@ -1145,15 +1134,13 @@ export class ChatService {
             }
         } else if (targetChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
             let current_users = targetChannel.allowed_users;
-            let index = -1;
             for (let i = 0; i < current_users.length; i++) {
                 if (current_users[i].uuid === kickedUser.uuid) {
-                    index = i;
                     await this.leave_channel(
                         targetChannel.channelName,
                         current_users[i].uuid
                     );
-                    this.chatGateway.kick_user(
+                    this.socketService.kick_user(
                         targetChannel.channelName,
                         kickedUser.username
                     );
@@ -1182,12 +1169,7 @@ export class ChatService {
         throw new HttpException("User not found", HttpStatus.FOUND);
     }
 
-    async unban(
-        user: UserEntity,
-        mutedUser: UserEntity,
-        targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO
-    ) {
+    async unban(mutedUser: UserEntity, targetChannel: ChatEntity) {
         let channel = this.getByName(targetChannel.channelName);
         let currentBanned = (await channel).banned_users;
         let i = 0;
@@ -1207,13 +1189,11 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
             let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
-            }
+            ban_usernames_list.push(user.username);
         }
         return ban_usernames_list;
     }
@@ -1257,33 +1237,21 @@ export class ChatService {
     }
 
     async timeout(
-        user: UserEntity,
         mutedUser: UserEntity,
         targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO,
         event: string
     ) {
         let users_list;
         if (event === "mute") {
-            users_list = await this.unmute(
-                user,
-                mutedUser,
-                targetChannel,
-                muteOptions
-            );
+            users_list = await this.unmute(mutedUser, targetChannel);
         }
         if (event === "ban") {
-            users_list = await this.unban(
-                user,
-                mutedUser,
-                targetChannel,
-                muteOptions
-            );
+            users_list = await this.unban(mutedUser, targetChannel);
         }
         if (users_list !== null) {
             let target_list = await this.get_Admin_Owner(targetChannel);
             if (target_list) {
-                this.chatGateway.send_unmute_or_unban(
+                this.socketService.send_unmute_or_unban(
                     targetChannel.channelName,
                     users_list,
                     target_list,
@@ -1294,7 +1262,6 @@ export class ChatService {
     }
 
     async mute(
-        user: UserEntity,
         mutedUser: UserEntity,
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
@@ -1320,20 +1287,14 @@ export class ChatService {
         }
         if (muteOptions.duration > 0) {
             setTimeout(() => {
-                this.timeout(
-                    user,
-                    mutedUser,
-                    targetChannel,
-                    muteOptions,
-                    "mute"
-                );
+                this.timeout(mutedUser, targetChannel, "mute");
             }, muteOptions.duration * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
         let mute_usernames_list: string[] = [];
         for (let j = 0; j < currentMuted.length; j++) {
             let user = await this.userService.getByID(currentMuted[j].uuid);
@@ -1344,12 +1305,7 @@ export class ChatService {
         return mute_usernames_list;
     }
 
-    async unmute(
-        user: UserEntity,
-        mutedUser: UserEntity,
-        targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO
-    ) {
+    async unmute(mutedUser: UserEntity, targetChannel: ChatEntity) {
         let channel = this.getByName(targetChannel.channelName);
         let currentMuted = (await channel).mutted_users;
         let i = 0;
@@ -1380,7 +1336,7 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
-        this.chatGateway.channelUpdate();
+        this.socketService.channelUpdate();
         let mute_usernames_list: string[] = [];
         for (let j = 0; j < currentMuted.length; j++) {
             let user = await this.userService.getByID(currentMuted[j].uuid);

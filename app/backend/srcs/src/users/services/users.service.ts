@@ -15,42 +15,15 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-import { SocketService } from "src/chat/services/socket.service";
+import { SocketService } from "src/sockets/socket.service";
 @Injectable()
 export class UsersService {
     constructor(
+        private readonly mailerService: MailerService,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService,
         private socketService: SocketService
     ) {}
-
-    async sendVerificationMail(user) {
-        this.mailerService
-            .sendMail({
-                to: user.email, // list of receivers
-                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
-                subject: "Validate your email", // Subject line
-                text:
-                    "Welcome to ft_transcendence, validate your account with this code :" +
-                    user.emailValidationCode, // plaintext body
-                html:
-                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
-                        <h1>Welcome to ft_transcendence</h1>\
-                        <h3>Validate your email with this code :</h3>\
-                        <h2>" +
-                    user.emailValidationCode +
-                    "</h2>\
-                    </div>\
-                    ",
-            })
-            .then((success) => {
-                return "Email send.";
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
 
     // Add an UserEntity into the database
     async saveUser(user): Promise<UserEntity> {
@@ -66,25 +39,52 @@ export class UsersService {
     }
 
     // Get all the users in the database
-    getUsers(): Promise<UserEntity[]> {
-        return this.userRepository.find();
+    async getUsers(): Promise<UserEntity[]> {
+        return await this.userRepository.find();
     }
 
+    // Return the userEntity by uuid
     async getByID(id: string) {
-        return await this.userRepository.findOneBy({ uuid: id });
-    }
-    async getByUsername(username: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ username: username });
+        const user = await this.userRepository.findOneBy({ uuid: id });
+        if (user) {
+            return user;
+        }
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
 
+    // Return the userEntity by username
+    async getByUsername(username: string): Promise<UserEntity> {
+        const user = await this.userRepository.findOneBy({
+            username: username,
+        });
+        if (user) {
+            return user;
+        }
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+
+    // Return the userEntity by it's 42uuid
     async getById42(id42: number): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ id42: id42 });
+        const user = await this.userRepository.findOneBy({ id42: id42 });
+        if (user) {
+            return user;
+        }
+        return null;
+    }
+
+    async availableUsername(username: string): Promise<UserEntity> {
+        const user: UserEntity = await this.userRepository.findOneBy({
+            username: username,
+        });
+        return user ? user : null;
     }
 
     async getUsernameById(id: string): Promise<string> {
         const user = await this.getByID(id);
-        if (user) return user.username;
-        return null;
+        if (user) {
+            return user.username;
+        }
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
@@ -119,19 +119,10 @@ export class UsersService {
             { doubleAuthentificationCode: "" }
         );
     }
+
+    // Set firstLog on false
     async confirm_profile(uuid: string) {
         await this.userRepository.update({ uuid: uuid }, { firstLog: false });
-        return "OK";
-    }
-
-    async user_status(username: string, status: string) {
-        let user: UserEntity = await this.getByUsername(username);
-        if (status === "Online") {
-            return await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: "Online" }
-            );
-        }
     }
 
     async setStatus(socket: string, status: string) {
@@ -154,6 +145,15 @@ export class UsersService {
         return null;
     }
 
+    // Update status and emit
+    async setUserStatus(username: string, status: string) {
+        await this.userRepository.update(
+            { username: username },
+            { status: status }
+        );
+        await this.socketService.sendStatus(username, status);
+    }
+
     async setSocketID(
         username: string,
         socket: string,
@@ -161,9 +161,10 @@ export class UsersService {
     ): Promise<string> {
         let user: UserEntity = await this.getByUsername(username);
         if (user) {
-            await this.user_status(user.username, status);
-            if (!user.socketId) user.socketId = new Array();
-            if (!user.socketId.find((element) => element === socket))
+            if (status === "Online") {
+                await this.setUserStatus(user.username, status);
+            }
+            if (!user.socketId.find((userSocket) => userSocket === socket))
                 user.socketId.push(socket);
             await this.userRepository.update(
                 { uuid: user.uuid },
@@ -174,6 +175,7 @@ export class UsersService {
         throw new HttpException("Invalid user", HttpStatus.FOUND);
     }
 
+    // Remove the sockets in the database
     async clearSocket(userUuid: string) {
         this.userRepository.update({ uuid: userUuid }, { socketId: [] });
     }
@@ -195,12 +197,12 @@ export class UsersService {
         return null;
     }
 
+    // Set a 2fa code and send an email
     async generateDoubleAuthCode(uuid: string) {
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
         let user = await this.getByID(uuid);
-        if (!user) return;
         await this.userRepository.update(
             { uuid: uuid },
             {
@@ -239,7 +241,7 @@ export class UsersService {
     }
 
     async register(registerDto: RegisterDto): Promise<UserEntity> {
-        let db_user: UserEntity = await this.getByUsername(
+        let db_user: UserEntity = await this.availableUsername(
             registerDto.username
         );
         if (
@@ -252,7 +254,6 @@ export class UsersService {
                 HttpStatus.UNAUTHORIZED
             );
         }
-
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
@@ -294,37 +295,82 @@ export class UsersService {
         }
     }
 
+    // Send validation email
+    async sendVerificationMail(user) {
+        this.mailerService
+            .sendMail({
+                to: user.email, // list of receivers
+                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
+                subject: "Validate your email", // Subject line
+                text:
+                    "Welcome to ft_transcendence, validate your account with this code :" +
+                    user.emailValidationCode, // plaintext body
+                html:
+                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+                        <h1>Welcome to ft_transcendence</h1>\
+                        <h3>Validate your email with this code :</h3>\
+                        <h2>" +
+                    user.emailValidationCode +
+                    "</h2>\
+                    </div>\
+                    ",
+            })
+            .then(() => {
+                return "Email send.";
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        return "Email send";
+    }
+
+    // Resend the email-validation email
     async resendEmail(uuid: string) {
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
-        await this.userRepository.update(
-            { uuid: uuid },
-            { emailValidationCode: randomNumber.toString() }
-        );
-        await this.userRepository.update(
-            { uuid: uuid },
-            { emailValidationCodeCreation: new Date() }
-        );
         const user: UserEntity = await this.getByID(uuid);
-        this.sendVerificationMail(user);
-    }
 
-    async getProfile(id: string) {
-        let user = await this.getByID(id);
-        if (user === null) {
-            throw new HttpException("Invalid uuid.", HttpStatus.FORBIDDEN);
+        const now = new Date();
+        const diff = now.valueOf() - user.emailValidationCodeCreation.valueOf();
+        if (diff < 1000 * 60) {
+            // 60 seconds
+            return "Try again later";
         }
-        return user;
+        await this.userRepository.update(
+            { uuid: uuid },
+            {
+                emailValidationCode: randomNumber.toString(),
+                emailValidationCodeCreation: new Date(),
+            }
+        );
+        return await this.sendVerificationMail(user);
     }
 
+    /* 
+        Usernames can only have: 
+        - Lowercase Letters (a-z) 
+        - Numbers (0-9)
+        - Dots (.)
+        - Underscores (_)
+    */
+    isUserNameValid(username: string) {
+        const res = /^[a-z0-9_\.]+$/.exec(username);
+        const valid = !!res;
+        return valid;
+    }
+
+    // Update the username, must be unique
     async updateUsername(uuid: string, newUsername: string) {
-        let user: UserEntity = await this.getProfile(uuid);
-        if (!user) {
-            throw new UnauthorizedException();
+        if (!this.isUserNameValid(newUsername)) {
+            throw new HttpException(
+                "Usernames can only have: \n- Lowercase Letters (a-z)\n- Numbers (0-9)\n- Dots (.)\n- Underscores (_)",
+                HttpStatus.UNAUTHORIZED
+            );
         }
+        let user: UserEntity = await this.getByID(uuid);
         let previousUsername: string = user.username;
-        const alreadyTaken = await this.getByUsername(newUsername);
+        const alreadyTaken = await this.availableUsername(newUsername);
         if (alreadyTaken) {
             throw new HttpException(
                 "This username is already registered.",
@@ -339,29 +385,31 @@ export class UsersService {
         return "Username updated.";
     }
 
-    async updateEmail(uuid: string, newEmail: string) {
-        return await this.userRepository.update(
-            { uuid: uuid },
-            { email: newEmail }
-        );
-    }
-
+    // Set the mail as valide (after validation)
     async validateEmail(uuid: string) {
         await this.userRepository.update({ uuid: uuid }, { valideEmail: true });
     }
 
+    // Delete the previous avatar
     async deletePreviousProfileImage(uuid: string) {
-        const image = (await this.getProfile(uuid)).profileImage;
-        const path = join(process.cwd(), "./uploads/profile_pictures/" + image);
-        fs.unlink(path, (err) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-        });
+        const user = await this.getByID(uuid);
+        const image = user.profileImage;
+        if (image) {
+            const path = join(
+                process.cwd(),
+                "./uploads/profile_pictures/" + image
+            );
+            fs.unlink(path, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+        }
         return;
     }
 
+    // Set a new image as avatar, delete the previous if non-null
     async updateProfileImage(uuid: string, imageName: string) {
         let user = await this.getByID(uuid);
         if (user.profileImage !== null) {
@@ -371,14 +419,13 @@ export class UsersService {
             { uuid: uuid },
             { profileImage: imageName }
         );
-        this.socketService.userUpdate(user.username, "avatar");
+        //this.socketService.userUpdate(user.username, "avatar");
         return "Image updated.";
     }
 
+    // Toogle 2fa
     async updateDoubleAuth(uuid: string) {
         const user = await this.getByID(uuid);
-        if (!user)
-            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
         const newValue = !user.twoFactorsAuth;
         await this.userRepository.update(
             { uuid: uuid },
@@ -387,7 +434,7 @@ export class UsersService {
         return newValue ? "2fa activated" : "2fa disabled";
     }
 
-    async getProfileImage(imageName: string | null): Promise<StreamableFile> {
+    async getUserImage(imageName: string | null): Promise<StreamableFile> {
         let path: string;
         if (imageName === null) {
             path = join(process.cwd(), "./default/profile_image.png");
@@ -400,11 +447,10 @@ export class UsersService {
         return new StreamableFile(createReadStream(path));
     }
 
+    // Add an user to the friends list
     async addFriend(userId: string, friendUsername: string) {
         const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!friend || !user)
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
         const frienId = friend.uuid;
         if (userId === frienId)
             throw new HttpException(
@@ -422,6 +468,7 @@ export class UsersService {
         return this.friendslist(user.friend);
     }
 
+    // Get the friends list as an array of objects, with usernames and status
     async friendslist(friends: string[]) {
         let list: { username: string; status: string }[] = new Array();
         let i = 0;
@@ -435,12 +482,10 @@ export class UsersService {
         return list;
     }
 
+    // Remove a friend
     async DelFriend(userId: string, friendUsername: string) {
         const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!friend || !user) {
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
-        }
         const frienId = friend.uuid;
         if (userId === frienId)
             throw new HttpException(
@@ -458,12 +503,10 @@ export class UsersService {
         return this.friendslist(user.friend);
     }
 
+    // Add an user to the user's blocked list
     async blockUser(userId: string, blockedUsername: string) {
         let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!block || !user) {
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
-        }
         const blockedId = block.uuid;
         if (userId === blockedId) {
             throw new HttpException(
@@ -482,6 +525,7 @@ export class UsersService {
         return await this.blockedList(list);
     }
 
+    // Get the user's blocked users list
     async blockedList(list: string[]) {
         let blocked: { username: string }[] = [];
         let i = 0;
@@ -495,11 +539,10 @@ export class UsersService {
         return blocked;
     }
 
+    // Remove an user from the user's blocked list
     async unBlock(userId: string, blockedUsername: string) {
         let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!block || !user)
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
         const blockedId = block.uuid;
         if (userId === blockedId)
             throw new HttpException(
@@ -517,12 +560,10 @@ export class UsersService {
         return this.blockedList(user.blocked);
     }
 
+    // Update the status of an user and emit it's new status
     async updateStatus(uuid: string, status: string) {
-        let user: UserEntity = await this.getByID(uuid);
-        if (!user)
-            throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
+        const user: UserEntity = await this.getByID(uuid);
         await this.userRepository.update({ uuid: uuid }, { status: status });
         await this.socketService.sendStatus(user.username, status);
-        return;
     }
 }

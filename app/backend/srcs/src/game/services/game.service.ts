@@ -4,8 +4,8 @@ import { Repository } from "typeorm";
 import { UsersService } from "src/users/services/users.service";
 import { GameEntity } from "../entities/game.entity";
 import { InvitationDto, InvitationResponseDto } from "../dtos/GameUtility.dto";
-import { GameGateway } from "../gateways/GameGateways";
 import { UserEntity } from "src/users/entity/user.entity";
+import { SocketService } from "src/sockets/socket.service";
 
 @Injectable()
 export class GameService {
@@ -13,7 +13,7 @@ export class GameService {
         @InjectRepository(GameEntity)
         private gameRepository: Repository<GameEntity>,
         private userService: UsersService,
-        private GameGateway: GameGateway
+        private socketService: SocketService
     ) {}
 
     async joinQueue(username: string) {
@@ -62,7 +62,7 @@ export class GameService {
         if (game.HostID) {
             await this.updatePlayerStatus(game.HostID, "Online");
             player = await this.userService.getByID(game.HostID);
-            await this.GameGateway.sendCancel(
+            await this.socketService.sendCancel(
                 player.socketId[0],
                 "queueCancel"
             );
@@ -70,7 +70,7 @@ export class GameService {
         if (game.GuestID) {
             await this.updatePlayerStatus(game.GuestID, "Online");
             player = await this.userService.getByID(game.GuestID);
-            await this.GameGateway.sendCancel(
+            await this.socketService.sendCancel(
                 player.socketId[0],
                 "queueCancel"
             );
@@ -100,7 +100,7 @@ export class GameService {
         game.HostID = host.uuid;
         await this.gameRepository.save(game);
         await this.updatePlayerStatus(game.HostID, "MatchMaking");
-        await this.GameGateway.sendInvitation(guest.socketId[0], host.uuid);
+        await this.socketService.sendInvitation(guest.socketId[0], host.uuid);
         return "Invitation pending";
     }
 
@@ -137,13 +137,13 @@ export class GameService {
                 game.GuestID
             );
             if (guest.status === "In_Game") {
-                await this.GameGateway.sendEndGameStatus(
+                await this.socketService.sendEndGameStatus(
                     guest.socketId[0],
                     "Victory by Disconnection",
                     true
                 );
             } else if (guest.status === "MatchMaking") {
-                this.GameGateway.sendCancel(guest.socketId[0], "Cancel");
+                this.socketService.sendCancel(guest.socketId[0], "Cancel");
             }
             await this.updatePlayerStatus(guest.uuid, "Online");
             this.gameRepository.remove(game);
@@ -157,13 +157,13 @@ export class GameService {
                     game.HostID
                 );
                 if (host.status === "In_Game") {
-                    await this.GameGateway.sendEndGameStatus(
+                    await this.socketService.sendEndGameStatus(
                         host.socketId[0],
                         "Victory by Disconnection",
                         true
                     );
                 } else if (host.status === "MatchMaking") {
-                    this.GameGateway.sendCancel(host.socketId[0], "Cancel");
+                    this.socketService.sendCancel(host.socketId[0], "Cancel");
                 }
                 await this.updatePlayerStatus(host.uuid, "Online");
                 this.gameRepository.remove(game);

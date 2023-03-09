@@ -47,7 +47,7 @@ export class UsersController {
     @Get()
     @UseGuards(isLogged)
     async profile(@Request() req) {
-        const user = await this.userService.getProfile(req.user.uuid);
+        const user = await this.userService.getByID(req.user.uuid);
         if (!user) {
             throw new UnauthorizedException();
         }
@@ -104,21 +104,21 @@ export class UsersController {
     // Get a profile image
     @Get(":username/image")
     @UseGuards(isLogged)
-    async getUserImage(@Param() params): Promise<StreamableFile> {
+    async getImage(@Param() params): Promise<StreamableFile> {
         const user = await this.userService.getByUsername(params.username);
         if (!user)
             throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-        return await this.userService.getProfileImage(user.profileImage);
+        return await this.userService.getUserImage(user.profileImage);
     }
 
     // Get the user profile image
     @Get("image")
     @UseGuards(isLogged)
-    async getProfileImage(@Req() req): Promise<StreamableFile> {
+    async getUserImage(@Req() req): Promise<StreamableFile> {
         const user = await this.userService.getByID(req.user.uuid);
         if (!user)
             throw new HttpException("User not found", HttpStatus.NOT_FOUND);
-        return await this.userService.getProfileImage(user.profileImage);
+        return await this.userService.getUserImage(user.profileImage);
     }
 
     // Add an uuid to the friends list

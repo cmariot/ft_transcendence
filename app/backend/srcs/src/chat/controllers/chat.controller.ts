@@ -17,7 +17,7 @@ import {
     PublicChannelDTO,
 } from "../dtos/newChannel.dto";
 import { ChatService } from "../services/chat.service";
-import { ChannelType, ChatEntity } from "../entities/chat.entity";
+import { ChannelType } from "../entities/chat.entity";
 import {
     addAdminDTO,
     channelDTO,
@@ -32,7 +32,6 @@ import {
     kickOptionsDTO,
     muteOptionsDTO,
 } from "../dtos/admin.dto";
-import { AddUserOptions } from "typeorm";
 
 @Controller("chat")
 export class ChatController {
@@ -330,7 +329,7 @@ export class ChatController {
         if (kickedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot kick yourself.");
         }
-        return this.chatService.kick(user, kickedUser, targetChannel, options);
+        return this.chatService.kick(user, kickedUser, targetChannel);
     }
 
     // unban
@@ -368,12 +367,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unban yourself.");
         }
-        let list = await this.chatService.unban(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        let list = await this.chatService.unban(mutedUser, targetChannel);
         if (!list) {
             throw new HttpException(
                 "This user wasn't banned",
@@ -418,12 +412,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot mute yourself.");
         }
-        return this.chatService.mute(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        return this.chatService.mute(mutedUser, targetChannel, muteOptions);
     }
 
     // unmute
@@ -461,12 +450,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unmute yourself.");
         }
-        let list = await this.chatService.unmute(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        let list = await this.chatService.unmute(mutedUser, targetChannel);
         if (!list) {
             throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
         }

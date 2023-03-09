@@ -33,7 +33,7 @@ const Validate = () => {
     const resendCode = async (event: any) => {
         event.preventDefault();
         await axios.get("/api/register/resend").catch(function (error) {
-            console.log(error);
+            alert(error.response.data);
         });
     };
 

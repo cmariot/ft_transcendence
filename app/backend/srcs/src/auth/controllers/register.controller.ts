@@ -27,6 +27,12 @@ export class RegisterController {
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res, @Req() req) {
         res.clearCookie();
+        if (!this.userService.isUserNameValid(registerDto.username)) {
+            throw new HttpException(
+                "Usernames can only have: \n- Lowercase Letters (a-z)\n- Numbers (0-9)\n- Dots (.)\n- Underscores (_)",
+                HttpStatus.UNAUTHORIZED
+            );
+        }
         let user: UserEntity = await this.userService.register(registerDto);
         if (user) {
             return this.authService.create_cookie(
@@ -49,7 +55,7 @@ export class RegisterController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        let user = await this.userService.getProfile(req.user.uuid);
+        let user = await this.userService.getByID(req.user.uuid);
         if (codeDto.code === user.emailValidationCode) {
             const now = new Date();
             const diff =
@@ -80,7 +86,10 @@ export class RegisterController {
     @Get("resend")
     @UseGuards(EmailGuard)
     async resend(@Req() req) {
-        this.userService.resendEmail(req.user.uuid);
+        const message = await this.userService.resendEmail(req.user.uuid);
+        if (message === "Try again later") {
+            throw new HttpException("Try again later", HttpStatus.FORBIDDEN);
+        }
     }
 
     @Get("cancel")
