@@ -72,6 +72,7 @@ export class UsersService {
     async getByID(id: string) {
         return await this.userRepository.findOneBy({ uuid: id });
     }
+
     async getByUsername(username: string): Promise<UserEntity> {
         return this.userRepository.findOneBy({ username: username });
     }

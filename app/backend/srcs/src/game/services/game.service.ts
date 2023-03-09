@@ -147,7 +147,7 @@ export class GameService {
         let game: GameEntity = await this.gameRepository.findOneBy({
             HostID: DiscoUser.uuid,
         });
-        if (game) {
+        if (game && game.GuestID && game.GuestID !== "") {
             let guest: UserEntity = await this.userService.getByID(
                 game.GuestID
             );
