@@ -10,6 +10,7 @@ import { ChatEntity } from "./chat/entities/chat.entity";
 import { GameEntity } from "./game/entities/game.entity";
 import { GameModule } from "./game/game.module";
 import { SocketModule } from "./sockets/socket.module";
+import { AppController } from "./app.controller";
 
 @Module({
     imports: [
@@ -41,5 +42,6 @@ import { SocketModule } from "./sockets/socket.module";
         GameModule,
         ChatModule,
     ],
+    controllers: [AppController],
 })
 export class AppModule {}

@@ -20,53 +20,27 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     const user = useContext(UserContext);
     const chat = useContext(ChatContext);
 
-    const [status, setStatus] = useState("");
-
-    // Emit login / logout events
+    // Emit login events
     useEffect(() => {
         if (user.username.length && user.isLogged) {
-            console.log(user.username, "is online");
-            socket.emit("userStatusUpdate", {
-                status: "Online",
-                socket: socket.id,
-                username: user.username,
-            });
-            setStatus("Online");
-        } else if (user.username.length && !user.isLogged) {
-            console.log(user.username, "is offline");
-            socket.emit("userStatusUpdate", {
-                status: "Offline",
-                socket: socket.id,
-                username: user.username,
-            });
-            setStatus("Offline");
+            console.log("[FRONTEND]", user.username, "is online");
+            if (!socket.connected) {
+                socket.on("connect", () => {
+                    console.log("on connect");
+                    socket.emit("userConnexion", {
+                        socket: socket.id,
+                        username: user.username,
+                    });
+                });
+            } else {
+                console.log("on connect");
+                socket.emit("userConnexion", {
+                    socket: socket.id,
+                    username: user.username,
+                });
+            }
         }
     }, [user.isLogged, user.username]);
-
-    useEffect(() => {
-        user.setStatus(status);
-    }, [user, status]);
-
-    useEffect(() => {
-        socket.on("userUpdate", (socket) => {
-            console.log(socket);
-            axios
-                .get("/api/profile/friends")
-                .then((response) => user.setFriends(response.data))
-                .catch((error) => console.log(error.data));
-        });
-        socket.on("newChatMessage", (socket) => {
-            console.log(socket);
-            axios
-                .post("/api/chat/messages", { channelName: socket.channel })
-                .then((response) => chat.setMessages(response.data.messages))
-                .catch((error) => console.log(error.data));
-        });
-        return () => {
-            socket.off("userUpdate");
-            socket.off("newChatMessage");
-        };
-    });
 
     const value = {
         socket: socket,

@@ -158,28 +158,35 @@ export class UsersService {
             { username: username },
             { status: status }
         );
-        await this.socketService.sendStatus(username, status);
+        //await this.socketService.sendStatus(username, status);
     }
 
-    async setSocketID(
-        username: string,
-        socket: string,
-        status: string
-    ): Promise<string> {
+    // Set an user status as online
+    async online(username: string, socket: string) {
         let user: UserEntity = await this.getByUsername(username);
-        if (user) {
-            if (status === "Online") {
-                await this.setUserStatus(user.username, status);
-            }
-            if (!user.socketId.find((userSocket) => userSocket === socket))
-                user.socketId.push(socket);
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { socketId: user.socketId }
-            );
-            return user.username;
+        if (!user.socketId.find((userSockets) => userSockets === socket))
+            user.socketId.push(socket);
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { socketId: user.socketId, status: "Online" }
+        );
+        return await this.socketService.emit("isOnline", {
+            message: user.username + "is online.",
+            username: user.username,
+        });
+    }
+
+    async setSocketID(username: string, socket: string, status: string) {
+        let user: UserEntity = await this.getByUsername(username);
+        if (status === "Online") {
+            await this.setUserStatus(user.username, status);
         }
-        throw new HttpException("Invalid user", HttpStatus.FOUND);
+        if (!user.socketId.find((userSockets) => userSockets === socket))
+            user.socketId.push(socket);
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { socketId: user.socketId }
+        );
     }
 
     // Remove the sockets in the database
@@ -192,7 +199,7 @@ export class UsersService {
         if (user) {
             let i = 0;
             while (i < user.socketId.length) {
-                await this.socketService.disconnect_user(user.socketId[i]);
+                //await this.socketService.disconnect_user(user.socketId[i]);
                 i++;
             }
             await this.userRepository.update(
@@ -251,16 +258,6 @@ export class UsersService {
         let db_user: UserEntity = await this.availableUsername(
             registerDto.username
         );
-        if (
-            db_user &&
-            db_user.username === registerDto.username &&
-            db_user.valideEmail === true
-        ) {
-            throw new HttpException(
-                "This username is already registered.",
-                HttpStatus.UNAUTHORIZED
-            );
-        }
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
@@ -274,29 +271,28 @@ export class UsersService {
             emailValidationCode: randomNumber.toString(),
             emailValidationCodeCreation: new Date(),
         };
-        if (
-            db_user &&
-            db_user.username === registerDto.username &&
-            db_user.valideEmail === false
-        ) {
-            await this.userRepository.update(
-                { uuid: db_user.uuid },
-                {
-                    email: user.email,
-                    createdFrom: CreatedFrom.REGISTER,
-                    password: user.password,
-                    twoFactorsAuth: user.twoFactorsAuth,
-                    doubleAuthentificationCodeCreation: new Date(),
-                    emailValidationCode: user.emailValidationCode,
-                }
-            );
-            let newUser: UserEntity = await this.getByUsername(
-                registerDto.username
-            );
-            if (newUser.createdFrom === CreatedFrom.REGISTER) {
-                this.sendVerificationMail(user);
+
+        if (db_user && db_user.username === registerDto.username) {
+            if (db_user.valideEmail) {
+                throw new HttpException(
+                    "This username is already registered.",
+                    HttpStatus.UNAUTHORIZED
+                );
+            } else {
+                await this.userRepository.update(
+                    { uuid: db_user.uuid },
+                    {
+                        email: user.email,
+                        createdFrom: CreatedFrom.REGISTER,
+                        password: user.password,
+                        twoFactorsAuth: user.twoFactorsAuth,
+                        doubleAuthentificationCodeCreation: new Date(),
+                        emailValidationCode: user.emailValidationCode,
+                    }
+                );
+                await this.sendVerificationMail(user);
+                return db_user;
             }
-            return newUser;
         } else {
             return this.saveUser(user);
         }
@@ -388,7 +384,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
-        this.socketService.userUpdate(previousUsername, "username");
+        //this.socketService.userUpdate(previousUsername, "username");
         return "Username updated.";
     }
 
@@ -565,12 +561,5 @@ export class UsersService {
             );
         }
         return this.blockedList(user.blocked);
-    }
-
-    // Update the status of an user and emit it's new status
-    async updateStatus(uuid: string, status: string) {
-        const user: UserEntity = await this.getByID(uuid);
-        await this.userRepository.update({ uuid: uuid }, { status: status });
-        await this.socketService.sendStatus(user.username, status);
     }
 }

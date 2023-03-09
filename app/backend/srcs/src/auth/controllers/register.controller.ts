@@ -26,7 +26,6 @@ export class RegisterController {
 
     @Post()
     async register(@Body() registerDto: RegisterDto, @Res() res, @Req() req) {
-        res.clearCookie();
         if (!this.userService.isUserNameValid(registerDto.username)) {
             throw new HttpException(
                 "Usernames can only have: \n- Lowercase Letters (a-z)\n- Numbers (0-9)\n- Dots (.)\n- Underscores (_)",

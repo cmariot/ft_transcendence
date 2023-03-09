@@ -38,7 +38,7 @@ export class AuthService {
         if (req.cookies["authentification"]) {
             let i = 0;
             while (i < user.socketId.length) {
-                this.socketService.disconnect_user(user.socketId[i]);
+                //this.socketService.disconnect_user(user.socketId[i]);
                 i++;
             }
         }

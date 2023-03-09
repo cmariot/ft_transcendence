@@ -70,18 +70,18 @@ export class GameService {
         if (game.HostID) {
             await this.updatePlayerStatus(game.HostID, "Online");
             player = await this.userService.getByID(game.HostID);
-            await this.socketService.sendCancel(
-                player.socketId[0],
-                "queueCancel"
-            );
+            //await this.socketService.sendCancel(
+            //    player.socketId[0],
+            //    "queueCancel"
+            //);
         }
         if (game.GuestID) {
             await this.updatePlayerStatus(game.GuestID, "Online");
             player = await this.userService.getByID(game.GuestID);
-            await this.socketService.sendCancel(
-                player.socketId[0],
-                "queueCancel"
-            );
+            //await this.socketService.sendCancel(
+            //    player.socketId[0],
+            //    "queueCancel"
+            //);
         }
         await this.gameRepository.remove(game);
         return "CancelSuccess";
@@ -108,7 +108,7 @@ export class GameService {
         game.HostID = host.uuid;
         await this.gameRepository.save(game);
         await this.updatePlayerStatus(game.HostID, "MatchMaking");
-        await this.socketService.sendInvitation(guest.socketId[0], host.uuid);
+        //await this.socketService.sendInvitation(guest.socketId[0], host.uuid);
         return "Invitation pending";
     }
 
@@ -145,13 +145,13 @@ export class GameService {
                 game.GuestID
             );
             if (guest.status === "In_Game") {
-                await this.socketService.sendEndGameStatus(
-                    guest.socketId[0],
-                    "Victory by Disconnection",
-                    true
-                );
+                // await this.socketService.sendEndGameStatus(
+                //     guest.socketId[0],
+                //     "Victory by Disconnection",
+                //     true
+                // );
             } else if (guest.status === "MatchMaking") {
-                this.socketService.sendCancel(guest.socketId[0], "Cancel");
+                //this.socketService.sendCancel(guest.socketId[0], "Cancel");
             }
             await this.updatePlayerStatus(guest.uuid, "Online");
             this.gameRepository.remove(game);
@@ -165,13 +165,13 @@ export class GameService {
                     game.HostID
                 );
                 if (host.status === "In_Game") {
-                    await this.socketService.sendEndGameStatus(
-                        host.socketId[0],
-                        "Victory by Disconnection",
-                        true
-                    );
+                    // await this.socketService.sendEndGameStatus(
+                    //     host.socketId[0],
+                    //     "Victory by Disconnection",
+                    //     true
+                    // );
                 } else if (host.status === "MatchMaking") {
-                    this.socketService.sendCancel(host.socketId[0], "Cancel");
+                    //this.socketService.sendCancel(host.socketId[0], "Cancel");
                 }
                 await this.updatePlayerStatus(host.uuid, "Online");
                 this.gameRepository.remove(game);
@@ -183,6 +183,6 @@ export class GameService {
 
     async updatePlayerStatus(userID: string, status: string) {
         let player = await this.userService.getByID(userID);
-        return this.userService.updateStatus(player.uuid, status);
+        return this.userService.setUserStatus(player.username, status);
     }
 }
