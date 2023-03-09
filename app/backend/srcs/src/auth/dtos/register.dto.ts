@@ -13,7 +13,6 @@ export class RegisterDto {
 
     @IsEmail()
     @IsString()
-    @IsNotEmpty()
     email: string;
 
     @IsNotEmpty()
@@ -22,6 +21,5 @@ export class RegisterDto {
     password: string;
 
     @IsBoolean()
-    @IsNotEmpty()
     enable2fa: boolean;
 }

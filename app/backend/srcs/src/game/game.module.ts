@@ -1,16 +1,17 @@
 import { Module } from "@nestjs/common";
 import { UsersService } from "src/users/services/users.service";
+import { UsersModule } from "src/users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/users/entity/user.entity";
 import { GameService } from "./services/game.service";
 import { GameController } from "./controllers/game.controller";
 import { GameEntity } from "./entities/game.entity";
-import { ChatEntity } from "src/chat/entities/chat.entity";
-import { SocketService } from "src/sockets/socket.service";
+import { SocketService } from "src/chat/services/socket.service";
+import { GameGateway } from "./gateways/GameGateways";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([GameEntity, UserEntity, ChatEntity])],
-    providers: [UsersService, UsersService, SocketService, GameService],
+    imports: [TypeOrmModule.forFeature([GameEntity, UserEntity]), UsersModule],
+    providers: [GameService, UsersService, SocketService, GameGateway],
     controllers: [GameController],
 })
 export class GameModule {}

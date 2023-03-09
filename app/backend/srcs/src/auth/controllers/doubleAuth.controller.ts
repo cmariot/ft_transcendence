@@ -29,7 +29,7 @@ export class DoubleAuthController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        let user = await this.userService.getByID(req.user.uuid);
+        let user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.doubleAuthentificationCode) {
             const now = new Date();
             const diff =
@@ -51,16 +51,13 @@ export class DoubleAuthController {
 
     @Get("resend")
     @UseGuards(DoubleAuthGuard)
-    resend(@Req() req) {
+    async resend(@Req() req) {
         this.userService.generateDoubleAuthCode(req.user.uuid);
     }
 
     @Get("cancel")
     @UseGuards(DoubleAuthGuard)
-    cancel2fa(@Res() res) {
-        res.clearCookie("double_authentification", {
-            sameSite: "none",
-            secure: true,
-        }).send("Bye !");
+    async cancel2fa(@Res() res) {
+        res.clearCookie("double_authentification").send("Bye !");
     }
 }

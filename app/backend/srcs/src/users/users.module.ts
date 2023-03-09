@@ -3,15 +3,13 @@ import { UsersService } from "./services/users.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./entity/user.entity";
 import { UsersController } from "./controllers/users.controller";
-import { SocketService } from "src/sockets/socket.service";
-import { GameService } from "src/game/services/game.service";
-import { GameEntity } from "src/game/entities/game.entity";
-import { ChatService } from "src/chat/services/chat.service";
-import { ChatEntity } from "src/chat/entities/chat.entity";
+import { ChatModule } from "src/chat/chat.module";
+import { ChatGateway } from "src/chat/gateways/ChatGateway";
+import { SocketService } from "src/chat/services/socket.service";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserEntity, GameEntity, ChatEntity])],
-    providers: [UsersService, SocketService, GameService],
+    imports: [TypeOrmModule.forFeature([UserEntity])],
+    providers: [UsersService, SocketService],
     controllers: [UsersController],
     exports: [UsersService],
 })

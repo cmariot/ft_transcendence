@@ -10,15 +10,15 @@ import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { SocketService } from "src/chat/services/socket.service";
 import { LoginDto } from "../dtos/login.dto";
-import { SocketService } from "src/sockets/socket.service";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private socketService: SocketService,
         private usersService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private socketService: SocketService
     ) {}
 
     sign_cookie(user: UserEntity, type: string): string {
@@ -38,7 +38,7 @@ export class AuthService {
         if (req.cookies["authentification"]) {
             let i = 0;
             while (i < user.socketId.length) {
-                //this.socketService.disconnect_user(user.socketId[i]);
+                this.socketService.disconnect_user(user.socketId[i]);
                 i++;
             }
         }
@@ -121,7 +121,7 @@ export class AuthService {
         @Req() req,
         @Res() res
     ): Promise<UserEntity> {
-        let user = await this.usersService.availableUsername(user_42.username);
+        let user = await this.usersService.getByUsername(user_42.username);
         if (user && user.createdFrom !== CreatedFrom.OAUTH42) {
             return null;
         }

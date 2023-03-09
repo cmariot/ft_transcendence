@@ -1,27 +1,28 @@
 import {
     HttpException,
     HttpStatus,
-    Inject,
     Injectable,
-    forwardRef,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UsersService } from "src/users/services/users.service";
 import { GameEntity } from "../entities/game.entity";
-import { InvitationDto, InvitationResponseDto } from "../dtos/GameUtility.dto";
+import {
+    InvitationDto,
+    InvitationResponseDto,
+    UsernameDto,
+} from "../dtos/GameUtility.dto";
+import { GameGateway } from "../gateways/GameGateways";
 import { UserEntity } from "src/users/entity/user.entity";
-import { SocketService } from "src/sockets/socket.service";
 
 @Injectable()
 export class GameService {
     constructor(
         @InjectRepository(GameEntity)
         private gameRepository: Repository<GameEntity>,
-        @Inject(forwardRef(() => UsersService))
         private userService: UsersService,
-        @Inject(forwardRef(() => SocketService))
-        private socketService: SocketService
+        private GameGateway: GameGateway
     ) {}
 
     async joinQueue(username: string) {
@@ -42,13 +43,19 @@ export class GameService {
             game = new GameEntity();
             game.HostID = player.uuid;
             game.status = "waiting";
-            await this.updatePlayerStatus(game.HostID, "MatchMaking");
+            await this.userService.updatePlayerStatus(
+                game.HostID,
+                "MatchMaking"
+            );
             await this.gameRepository.save(game);
             return "In Queue";
         } else if (game) {
             game.GuestID = player.uuid;
             game.status = "playing";
-            await this.updatePlayerStatus(game.GuestID, "MatchMaking");
+            await this.userService.updatePlayerStatus(
+                game.GuestID,
+                "MatchMaking"
+            );
             this.gameRepository.save(game);
             //startGame() function qui va lancer la game en envoyant des sockets de confirmation aux 2 joueurs
             return "You found a match";
@@ -68,20 +75,20 @@ export class GameService {
             throw new HttpException("Not in Queue", HttpStatus.UNAUTHORIZED);
         }
         if (game.HostID) {
-            await this.updatePlayerStatus(game.HostID, "Online");
+            await this.userService.updatePlayerStatus(game.HostID, "Online");
             player = await this.userService.getByID(game.HostID);
-            //await this.socketService.sendCancel(
-            //    player.socketId[0],
-            //    "queueCancel"
-            //);
+            await this.GameGateway.sendCancel(
+                player.socketId[0],
+                "queueCancel"
+            );
         }
         if (game.GuestID) {
-            await this.updatePlayerStatus(game.GuestID, "Online");
+            await this.userService.updatePlayerStatus(game.GuestID, "Online");
             player = await this.userService.getByID(game.GuestID);
-            //await this.socketService.sendCancel(
-            //    player.socketId[0],
-            //    "queueCancel"
-            //);
+            await this.GameGateway.sendCancel(
+                player.socketId[0],
+                "queueCancel"
+            );
         }
         await this.gameRepository.remove(game);
         return "CancelSuccess";
@@ -107,8 +114,8 @@ export class GameService {
         let game: GameEntity;
         game.HostID = host.uuid;
         await this.gameRepository.save(game);
-        await this.updatePlayerStatus(game.HostID, "MatchMaking");
-        //await this.socketService.sendInvitation(guest.socketId[0], host.uuid);
+        await this.userService.updatePlayerStatus(game.HostID, "MatchMaking");
+        await this.GameGateway.sendInvitation(guest.socketId[0], host.uuid);
         return "Invitation pending";
     }
 
@@ -130,7 +137,7 @@ export class GameService {
             users.guest
         );
         game.GuestID = guest.uuid;
-        await this.updatePlayerStatus(game.HostID, "MatchMaking");
+        await this.userService.updatePlayerStatus(game.HostID, "MatchMaking");
         await this.gameRepository.save(game);
         //start game()
         return "Game accepted";
@@ -145,15 +152,15 @@ export class GameService {
                 game.GuestID
             );
             if (guest.status === "In_Game") {
-                // await this.socketService.sendEndGameStatus(
-                //     guest.socketId[0],
-                //     "Victory by Disconnection",
-                //     true
-                // );
+                await this.GameGateway.sendEndGameStatus(
+                    guest.socketId[0],
+                    "Victory by Disconnection",
+                    true
+                );
             } else if (guest.status === "MatchMaking") {
-                //this.socketService.sendCancel(guest.socketId[0], "Cancel");
+                this.GameGateway.sendCancel(guest.socketId[0], "Cancel");
             }
-            await this.updatePlayerStatus(guest.uuid, "Online");
+            await this.userService.updatePlayerStatus(guest.uuid, "Online");
             this.gameRepository.remove(game);
             return "OHOHOH";
         } else if (!game) {
@@ -165,24 +172,19 @@ export class GameService {
                     game.HostID
                 );
                 if (host.status === "In_Game") {
-                    // await this.socketService.sendEndGameStatus(
-                    //     host.socketId[0],
-                    //     "Victory by Disconnection",
-                    //     true
-                    // );
+                    await this.GameGateway.sendEndGameStatus(
+                        host.socketId[0],
+                        "Victory by Disconnection",
+                        true
+                    );
                 } else if (host.status === "MatchMaking") {
-                    //this.socketService.sendCancel(host.socketId[0], "Cancel");
+                    this.GameGateway.sendCancel(host.socketId[0], "Cancel");
                 }
-                await this.updatePlayerStatus(host.uuid, "Online");
+                await this.userService.updatePlayerStatus(host.uuid, "Online");
                 this.gameRepository.remove(game);
                 return "OHOHOH";
             }
         }
         return "Wtf";
-    }
-
-    async updatePlayerStatus(userID: string, status: string) {
-        let player = await this.userService.getByID(userID);
-        return this.userService.setUserStatus(player.username, status);
     }
 }
