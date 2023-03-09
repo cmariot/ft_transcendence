@@ -1,4 +1,4 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { UsersService } from "src/users/services/users.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/users/entity/user.entity";
@@ -10,7 +10,7 @@ import { SocketService } from "src/sockets/socket.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([GameEntity, UserEntity, ChatEntity])],
-    providers: [GameService, UsersService, SocketService],
+    providers: [UsersService, UsersService, SocketService, GameService],
     controllers: [GameController],
 })
 export class GameModule {}

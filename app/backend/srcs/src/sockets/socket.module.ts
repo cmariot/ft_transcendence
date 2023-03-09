@@ -10,7 +10,6 @@ import { SocketService } from "./socket.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([GameEntity, UserEntity, ChatEntity])],
-    providers: [GameService, UsersService, ChatService],
-    exports: [SocketService],
+    providers: [GameService, UsersService, ChatService, SocketService],
 })
 export class SocketModule {}

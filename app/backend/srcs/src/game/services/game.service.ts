@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    forwardRef,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UsersService } from "src/users/services/users.service";
@@ -12,7 +18,9 @@ export class GameService {
     constructor(
         @InjectRepository(GameEntity)
         private gameRepository: Repository<GameEntity>,
+        @Inject(forwardRef(() => UsersService))
         private userService: UsersService,
+        @Inject(forwardRef(() => SocketService))
         private socketService: SocketService
     ) {}
 

@@ -1,8 +1,10 @@
 import {
     HttpException,
     HttpStatus,
+    Inject,
     Injectable,
     UnauthorizedException,
+    forwardRef,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity";
@@ -19,6 +21,7 @@ export class ChatService {
     constructor(
         @InjectRepository(ChatEntity)
         private chatRepository: Repository<ChatEntity>,
+        @Inject(forwardRef(() => UsersService))
         private userService: UsersService,
         private socketService: SocketService
     ) {}
@@ -487,6 +490,7 @@ export class ChatService {
         return ban_usernames_list;
     }
     async join_channel(channelName: string, userID: string) {
+        console.log("join_channel");
         let channels = await this.chatRepository.find();
         if (channels.length === 0) {
             this.create_general_channel();
@@ -497,8 +501,8 @@ export class ChatService {
         if (!channel) throw new UnauthorizedException();
         let user = await this.userService.getByID(userID);
         if (!user) throw new UnauthorizedException();
-
         // Check if banned
+        console.log("Check if banned");
         if (channel.banned_users) {
             let i = 0;
             while (i < channel.banned_users.length) {
@@ -564,6 +568,7 @@ export class ChatService {
                 );
             }
         } else if (channel.channelType === ChannelType.PUBLIC) {
+            console.log("PUBLIC");
             let channel_users = channel.users;
             let i = 0;
             let found = false;
@@ -576,13 +581,14 @@ export class ChatService {
             }
             if (found === false) {
                 channel_users.push({ uuid: user.uuid });
-                this.chatRepository.update(
+                await this.chatRepository.update(
                     { channelName: channel.channelName },
                     { users: channel_users }
                 );
+                this.socketService.channelUpdate();
             }
+            console.log("userJoinChannel call");
 
-            this.socketService.channelUpdate();
             await this.socketService.userJoinChannel(
                 channel.channelName,
                 user.username

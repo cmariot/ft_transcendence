@@ -5,18 +5,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersModule } from "./users/users.module";
 import { UserEntity } from "./users/entity/user.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
-import { AppController } from "./app.controller";
 import { ChatModule } from "./chat/chat.module";
 import { ChatEntity } from "./chat/entities/chat.entity";
 import { GameEntity } from "./game/entities/game.entity";
 import { GameModule } from "./game/game.module";
+import { SocketModule } from "./sockets/socket.module";
 
 @Module({
     imports: [
-        AuthModule,
-        UsersModule,
-        GameModule,
-        ChatModule,
         ConfigModule,
         MailerModule.forRoot({
             transport: {
@@ -39,7 +35,11 @@ import { GameModule } from "./game/game.module";
             entities: [ChatEntity, UserEntity, GameEntity],
             synchronize: true,
         }),
+        AuthModule,
+        UsersModule,
+        SocketModule,
+        GameModule,
+        ChatModule,
     ],
-    controllers: [AppController],
 })
 export class AppModule {}

@@ -3,7 +3,6 @@ import {
     HttpStatus,
     Injectable,
     StreamableFile,
-    UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -16,13 +15,15 @@ import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
 import { SocketService } from "src/sockets/socket.service";
+import { GameService } from "src/game/services/game.service";
 @Injectable()
 export class UsersService {
     constructor(
         private readonly mailerService: MailerService,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private gameService: GameService
     ) {}
 
     // Add an UserEntity into the database
@@ -72,6 +73,7 @@ export class UsersService {
         return null;
     }
 
+    // Return null if the username is unavailable
     async availableUsername(username: string): Promise<UserEntity> {
         const user: UserEntity = await this.userRepository.findOneBy({
             username: username,
@@ -79,6 +81,7 @@ export class UsersService {
         return user ? user : null;
     }
 
+    // Return the username by ID, throw an exception if not found
     async getUsernameById(id: string): Promise<string> {
         const user = await this.getByID(id);
         if (user) {
@@ -100,19 +103,22 @@ export class UsersService {
         return null;
     }
 
+    // Encode a password before storing it in the db
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);
         return bcrypt.hashSync(rawPassword, salt);
     }
 
+    // Set the doubleAuthentificationCode on an empty string
     async deleteEmailValidationCode(uuid: string) {
         await this.userRepository.update(
             { uuid: uuid },
-            { doubleAuthentificationCode: "" }
+            { emailValidationCode: "" }
         );
     }
 
+    // Set the doubleAuthentificationCode on an empty string
     async delete2faCode(uuid: string) {
         await this.userRepository.update(
             { uuid: uuid },
@@ -125,6 +131,7 @@ export class UsersService {
         await this.userRepository.update({ uuid: uuid }, { firstLog: false });
     }
 
+    // Set status of an user with it's socket
     async setStatus(socket: string, status: string) {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
