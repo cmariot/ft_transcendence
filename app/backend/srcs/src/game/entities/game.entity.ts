@@ -11,8 +11,14 @@ export class GameEntity {
     @Column("json", { default: { x: 0, y: 0 } })
     paddleLeft: { x: number; y: number };
 
-    @Column("json", { default: { x: 0, y: 0 } })
+    @Column("json", { default: { x: 50, y: 50 } })
     ball: { x: number; y: number };
+
+    @Column({ default: 2 })
+    ballSpeed: Number;
+
+    @Column({ default: 0 })
+    ballAngle: Number;
 
     @Column({ default: "waiting" })
     status: string;
@@ -22,6 +28,9 @@ export class GameEntity {
 
     @Column({ default: "" })
     GuestID: string;
+
+    @Column("json", { default: { Host: 0, Guest: 0 } })
+    Score: { Host: number; Guest: number };
 
     @Column("text", { array: true, default: [] })
     watchers: string[];
