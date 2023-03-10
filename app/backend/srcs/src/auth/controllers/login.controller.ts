@@ -6,6 +6,7 @@ import { AuthService } from "../services/auth.service";
 export class LoginController {
     constructor(private authService: AuthService) {}
 
+    // login with username/password
     @Post()
     async login(@Body() loginDto: LoginDto, @Res() res, @Req() req) {
         return this.authService.signin_local_user(loginDto, req, res);

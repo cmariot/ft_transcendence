@@ -23,10 +23,8 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     // Emit login events
     useEffect(() => {
         if (user.username.length && user.isLogged) {
-            console.log("[FRONTEND]", user.username, "is online");
             if (!socket.connected) {
                 socket.on("connect", () => {
-                    console.log("on connect");
                     socket.emit("userStatus", {
                         status: "Online",
                         socket: socket.id,
