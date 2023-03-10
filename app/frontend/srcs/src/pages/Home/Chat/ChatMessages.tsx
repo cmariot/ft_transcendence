@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../../Contexts/UserProvider";
-import { ChatContext } from "../../../Contexts/ChatProvider";
+import { UserContext } from "../../../contexts/UserProvider";
+import { ChatContext } from "../../../contexts/ChatProvider";
 
 const ChatMessages = () => {
     const chat = useContext(ChatContext);

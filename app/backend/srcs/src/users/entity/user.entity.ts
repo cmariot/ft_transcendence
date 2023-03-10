@@ -48,13 +48,13 @@ export class UserEntity {
     emailValidationCode: string;
 
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
-    emailValidationCodeCreation: Date;
+    dateEmailCode: Date;
 
     @Column({ default: "" })
     doubleAuthentificationCode: string;
 
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
-    doubleAuthentificationCodeCreation: Date;
+    date2fa: Date;
 
     @Column({ nullable: true })
     password: string;

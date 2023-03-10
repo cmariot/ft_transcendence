@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import "../../styles/Friends.css";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 import AddFriend from "./AddFriend";
 import FriendsList from "./FriendsList";
 import BlockedList from "./BlockedList";

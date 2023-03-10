@@ -1,9 +1,9 @@
 import axios, { HttpStatusCode } from "axios";
 import "../../styles/Friends.css";
 import { useContext } from "react";
-import { ChatContext } from "../../Contexts/ChatProvider";
+import { ChatContext } from "../../contexts/ChatProvider";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 
 export default function FriendMenu(props: any) {
     let chat = useContext(ChatContext);

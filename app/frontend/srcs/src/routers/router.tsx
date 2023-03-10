@@ -11,9 +11,9 @@ import UserProfile, { loader } from "../pages/Profile/UserProfile";
 import Friends from "../pages/Friend/Friends";
 import Settings from "../pages/Settings/Settings";
 import ConfirmProfile from "../pages/Settings/ConfirmProfile";
-import ProtectedPage from "../Utils/ProtectedPage";
-import ProtectedValidation from "../Utils/ProtectedValidation";
-import ProtectedDoubleAuth from "../Utils/ProtectedDoubleAuth";
+import ProtectedPage from "../utils/ProtectedPage";
+import ProtectedValidation from "../utils/ProtectedValidation";
+import ProtectedDoubleAuth from "../utils/ProtectedDoubleAuth";
 
 export const router = createBrowserRouter([
     {

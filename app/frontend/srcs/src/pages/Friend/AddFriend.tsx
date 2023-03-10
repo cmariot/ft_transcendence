@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useContext } from "react";
 import "../../styles/Friends.css";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 
 export default function AddFriend() {
     let user = useContext(UserContext);

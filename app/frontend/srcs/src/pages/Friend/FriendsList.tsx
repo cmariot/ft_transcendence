@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import "../../styles/Friends.css";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 import FriendMenu from "./FriendMenu";
 
 export default function FriendsList() {

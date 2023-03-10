@@ -34,9 +34,7 @@ export class DoubleAuthController {
         if (codeDto.code === user.doubleAuthentificationCode) {
             const now: Date = new Date();
             const fifteenMinutes: number = 1000 * 60 * 15;
-            const diff: number =
-                now.valueOf() -
-                user.doubleAuthentificationCodeCreation.valueOf();
+            const diff: number = now.valueOf() - user.date2fa.valueOf();
             if (diff > fifteenMinutes) {
                 throw new UnauthorizedException(
                     "Your code is expired, try to relog."
@@ -56,6 +54,14 @@ export class DoubleAuthController {
     @Get("resend")
     @UseGuards(DoubleAuthGuard)
     async resend(@Req() req) {
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) throw new UnauthorizedException("User not found.");
+        const now: Date = new Date();
+        const oneMinute: number = 1000 * 60;
+        const diff: number = now.valueOf() - user.date2fa.valueOf();
+        if (diff < oneMinute) {
+            throw new UnauthorizedException("Don't spam.");
+        }
         return await this.userService.generateDoubleAuthCode(req.user.uuid);
     }
 

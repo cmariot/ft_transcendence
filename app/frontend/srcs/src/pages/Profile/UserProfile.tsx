@@ -2,7 +2,7 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import "../../styles/Profile.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 
 export function loader({ params }: any) {
     return params;

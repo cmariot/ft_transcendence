@@ -195,17 +195,18 @@ export class UsersService {
     }
 
     async generateDoubleAuthCode(uuid: string) {
-        const min = Math.ceil(100000);
-        const max = Math.floor(999999);
-        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+        let user = await this.getByID(uuid);
+        const randomNumber = this.getRandomCode();
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
         await this.userRepository.update(
             { uuid: uuid },
             {
-                doubleAuthentificationCode: randomNumber.toString(),
-                doubleAuthentificationCodeCreation: new Date(),
+                doubleAuthentificationCode: randomNumber,
+                date2fa: new Date(),
             }
         );
-        let user = await this.getByID(uuid);
         this.mailerService
             .sendMail({
                 to: user.email, // list of receivers
@@ -215,7 +216,7 @@ export class UsersService {
                     "Welcome back" +
                     user.username +
                     ", here is your double authentification code :" +
-                    user.doubleAuthentificationCode, // plaintext body
+                    randomNumber, // plaintext body
                 html:
                     "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
                         <h1>Welcome back " +
@@ -223,7 +224,7 @@ export class UsersService {
                     " !</h1>\
                         <h3>Here is your double authentification code :</h3>\
                         <h2>" +
-                    user.doubleAuthentificationCode +
+                    randomNumber +
                     "</h2>\
                     </div>\
                     ",
@@ -253,7 +254,7 @@ export class UsersService {
             password: hashed_password,
             twoFactorsAuth: registerDto.enable2fa,
             emailValidationCode: randomNumber,
-            emailValidationCodeCreation: new Date(),
+            dateEmailCode: new Date(),
         };
         let user: UserEntity = await this.getByUsername(registerDto.username);
         if (user) {
@@ -270,7 +271,7 @@ export class UsersService {
                         createdFrom: CreatedFrom.REGISTER,
                         password: partial_user.password,
                         twoFactorsAuth: partial_user.twoFactorsAuth,
-                        doubleAuthentificationCodeCreation: new Date(),
+                        date2fa: new Date(),
                         emailValidationCode: partial_user.emailValidationCode,
                     }
                 );
@@ -300,7 +301,7 @@ export class UsersService {
             throw new HttpException("Invalid code.", HttpStatus.NOT_ACCEPTABLE);
         }
         const now = new Date();
-        const diff = now.valueOf() - user.emailValidationCodeCreation.valueOf();
+        const diff = now.valueOf() - user.dateEmailCode.valueOf();
         const fifteenMinutes: number = 1000 * 60 * 15;
         if (diff > fifteenMinutes) {
             await this.resendEmail(uuid);
@@ -317,15 +318,22 @@ export class UsersService {
     }
 
     async resendEmail(uuid: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        const now: Date = new Date();
+        const oneMinute: number = 1000 * 60;
+        const diff: number = now.valueOf() - user.dateEmailCode.valueOf();
+        if (diff < oneMinute) {
+            throw new UnauthorizedException("Don't spam.");
+        }
         await this.userRepository.update(
             { uuid: uuid },
             {
                 emailValidationCode: this.getRandomCode(),
-                emailValidationCodeCreation: new Date(),
+                dateEmailCode: new Date(),
             }
         );
-        const user: UserEntity = await this.getByID(uuid);
-        this.sendVerificationMail(user);
+        user = await this.getByID(uuid);
+        return await this.sendVerificationMail(user);
     }
 
     async getProfile(id: string) {

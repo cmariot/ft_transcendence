@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import "../../styles/AppNavBar.css";
 import { useContext } from "react";
-import { UserContext } from "../../Contexts/UserProvider";
-import { MenuContext } from "../../Contexts/MenuProviders";
-import { ChatContext } from "../../Contexts/ChatProvider";
+import { UserContext } from "../../contexts/UserProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
+import { ChatContext } from "../../contexts/ChatProvider";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);

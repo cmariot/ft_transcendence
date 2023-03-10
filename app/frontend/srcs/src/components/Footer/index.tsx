@@ -2,7 +2,7 @@ import { useContext } from "react";
 
 import AuthFooter from "./AuthFooter";
 import AppFooter from "./AppFooter";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 
 import "../../styles/AppFooter.css";
 import "../../styles/AuthFooter.css";

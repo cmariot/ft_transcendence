@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ChatContext } from "../../../../Contexts/ChatProvider";
+import { ChatContext } from "../../../../contexts/ChatProvider";
 
 const AdminPannel = () => {
     const chat = useContext(ChatContext);

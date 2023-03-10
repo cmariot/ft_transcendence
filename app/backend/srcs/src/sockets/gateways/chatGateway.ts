@@ -20,25 +20,26 @@ export class ChatGateway implements OnModuleInit {
 
     onModuleInit() {
         // Ca leak ici
-        //this.server.on("connection", (socket) => {
-        //    socket.on("disconnect", async () => {
-        //        let user = await this.userService.getBySocket(socket.id);
-        //        if (user) {
-        //            if (
-        //                user.status === "MatchMaking" ||
-        //                user.status === "In_Game"
-        //            ) {
-        //                this.gameService.handleDisconnect(user);
-        //            }
-        //        }
-        //        let username = await this.userService.userDisconnection(
-        //            socket.id
-        //        );
-        //        if (username) {
-        //            this.sendStatus(username, "Offline");
-        //        }
-        //    });
-        //});
+        //this.server.setMaxListeners(100);
+        this.server.on("connection", (socket) => {
+            socket.on("disconnect", async () => {
+                let user = await this.userService.getBySocket(socket.id);
+                if (user) {
+                    if (
+                        user.status === "MatchMaking" ||
+                        user.status === "In_Game"
+                    ) {
+                        this.gameService.handleDisconnect(user);
+                    }
+                }
+                let username = await this.userService.userDisconnection(
+                    socket.id
+                );
+                if (username) {
+                    this.sendStatus(username, "Offline");
+                }
+            });
+        });
     }
 
     channelUpdate() {
