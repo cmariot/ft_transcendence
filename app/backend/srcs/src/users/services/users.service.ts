@@ -196,7 +196,7 @@ export class UsersService {
             );
             return user.username;
         }
-        return "good bye";
+        return null;
     }
 
     async generateDoubleAuthCode(uuid: string) {

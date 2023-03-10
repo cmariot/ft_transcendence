@@ -27,14 +27,16 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
             if (!socket.connected) {
                 socket.on("connect", () => {
                     console.log("on connect");
-                    socket.emit("userConnexion", {
+                    socket.emit("userStatus", {
+                        status: "Online",
                         socket: socket.id,
                         username: user.username,
                     });
                 });
             } else {
                 console.log("on connect");
-                socket.emit("userConnexion", {
+                socket.emit("userStatus", {
+                    status: "Online",
                     socket: socket.id,
                     username: user.username,
                 });
