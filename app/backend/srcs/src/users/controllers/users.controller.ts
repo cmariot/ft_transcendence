@@ -119,13 +119,6 @@ export class UsersController {
         return await this.userService.getProfileImage(req.user.uuid);
     }
 
-    @Get("2fa")
-    @UseGuards(isLogged)
-    async get2faenable(@Req() req) {
-        const user = await this.userService.getByID(req.uuid);
-        return user.twoFactorsAuth;
-    }
-
     @Post("friends/add")
     @UseGuards(isLogged)
     async addFriend(@Body() Username: UsernameDto, @Req() req) {

@@ -21,93 +21,6 @@ export class AuthService {
         private socketService: SocketService
     ) {}
 
-    sign_cookie(user: UserEntity, type: string): string {
-        const payload = {
-            uuid: user.uuid,
-            email: user.email,
-            type: type,
-        };
-        let token = this.jwtService.sign(payload);
-        return token;
-    }
-
-    // authentification : Acces a l'app
-    // email_validation : Doit valider son email
-    // double_authentification : Doit valider sa connexion
-    create_cookie(user: UserEntity, type: string, @Req() req, @Res() res) {
-        if (req.cookies["authentification"]) {
-            let i = 0;
-            while (i < user.socketId.length) {
-                this.socketService.disconnect_user(user.socketId[i]);
-                i++;
-            }
-        }
-        this.usersService.clearSocket(user.uuid);
-        const cookie_value: string = this.sign_cookie(user, type);
-        if (user.createdFrom === CreatedFrom.OAUTH42) {
-            if (type === "double_authentification") {
-                res.clearCookie("authentification", {
-                    sameSite: "none",
-                    secure: true,
-                })
-                    .clearCookie("email_validation", {
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .clearCookie("double_authentification", {
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .cookie(type, cookie_value, {
-                        maxAge: 1000 * 60 * 60 * 12, // 12 hours
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .redirect(process.env.HOST + "/double-authentification");
-            } else if (type === "authentification") {
-                res.clearCookie("authentification", {
-                    sameSite: "none",
-                    secure: true,
-                })
-                    .clearCookie("email_validation", {
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .clearCookie("double_authentification", {
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .cookie(type, cookie_value, {
-                        maxAge: 1000 * 60 * 60 * 12, // 12 hours
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .redirect(process.env.HOST);
-            } else {
-                throw new UnauthorizedException();
-            }
-        } else {
-            res.clearCookie("authentification", {
-                sameSite: "none",
-                secure: true,
-            })
-                .clearCookie("email_validation", {
-                    sameSite: "none",
-                    secure: true,
-                })
-                .clearCookie("double_authentification", {
-                    sameSite: "none",
-                    secure: true,
-                })
-                .cookie(type, cookie_value, {
-                    maxAge: 1000 * 60 * 60 * 12, // 12 hours
-                    sameSite: "none",
-                    secure: true,
-                })
-                .send(type);
-        }
-    }
-
     async signin_or_register_42_user(
         user_42: {
             id42: number;
@@ -120,31 +33,38 @@ export class AuthService {
         },
         @Req() req,
         @Res() res
-    ): Promise<UserEntity> {
-        let user = await this.usersService.getByUsername(user_42.username);
-        if (user && user.createdFrom !== CreatedFrom.OAUTH42) {
-            return null;
+    ) {
+        const registered = await this.usersService.getByUsername(
+            user_42.username
+        );
+        if (registered && registered.createdFrom !== CreatedFrom.OAUTH42) {
+            res.redirect(process.env.HOST + "/unavailable-username");
+            throw new HttpException(
+                "This username is already registered.",
+                226
+            );
         }
-        let bdd_user = await this.usersService.getById42(user_42.id42);
-        if (bdd_user && bdd_user.createdFrom === CreatedFrom.OAUTH42) {
-            if (bdd_user.twoFactorsAuth) {
-                this.create_cookie(
-                    bdd_user,
+        let user: UserEntity = await this.usersService.getById42(user_42.id42);
+        if (user && user.createdFrom === CreatedFrom.OAUTH42) {
+            if (user.twoFactorsAuth) {
+                await this.create_cookie(
+                    user,
                     "double_authentification",
                     req,
                     res
                 );
-                await this.usersService.generateDoubleAuthCode(bdd_user.uuid);
+                await this.usersService.generateDoubleAuthCode(user.uuid);
             } else {
-                this.create_cookie(bdd_user, "authentification", req, res);
+                return await this.create_cookie(
+                    user,
+                    "authentification",
+                    req,
+                    res
+                );
             }
-            return bdd_user;
         } else {
-            let new_user: UserEntity = await this.usersService.saveUser(
-                user_42
-            );
-            this.create_cookie(new_user, "authentification", req, res);
-            return new_user;
+            user = await this.usersService.saveUser(user_42);
+            return await this.create_cookie(user, "authentification", req, res);
         }
     }
 
@@ -159,22 +79,144 @@ export class AuthService {
         ) {
             if (user.valideEmail === false) {
                 await this.usersService.resendEmail(user.uuid);
-                this.create_cookie(user, "email_validation", req, res);
+                return await this.create_cookie(
+                    user,
+                    "email_validation",
+                    req,
+                    res
+                );
             } else if (user.twoFactorsAuth === true) {
-                this.create_cookie(user, "double_authentification", req, res);
-                await this.usersService.generateDoubleAuthCode(user.uuid);
+                await this.create_cookie(
+                    user,
+                    "double_authentification",
+                    req,
+                    res
+                );
+                return await this.usersService.generateDoubleAuthCode(
+                    user.uuid
+                );
             } else {
-                this.create_cookie(user, "authentification", req, res);
+                return await this.create_cookie(
+                    user,
+                    "authentification",
+                    req,
+                    res
+                );
             }
-            return;
         }
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);
     }
 
+    sign_cookie(user: UserEntity, type: string): string {
+        const payload = {
+            uuid: user.uuid,
+            email: user.email,
+            type: type,
+        };
+        let token = this.jwtService.sign(payload);
+        return token;
+    }
+
+    // authentification : Acces a l'app
+    // email_validation : Doit valider son email
+    // double_authentification : Doit valider sa connexion
+    async create_cookie(
+        user: UserEntity,
+        type: string,
+        @Req() req,
+        @Res() res
+    ) {
+        let i = 0;
+        while (i < user.socketId.length) {
+            await this.socketService.disconnect_user(user.socketId[i]);
+            i++;
+        }
+        await this.usersService.clearSocket(user.uuid);
+        const twelveHours = 1000 * 60 * 60 * 12;
+        const cookie_value: string = this.sign_cookie(user, type);
+        if (user.createdFrom === CreatedFrom.OAUTH42) {
+            if (type === "double_authentification") {
+                res.clearCookie("authentification", {
+                    maxAge: twelveHours,
+                    sameSite: "none",
+                    secure: true,
+                })
+                    .clearCookie("email_validation", {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .clearCookie("double_authentification", {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .cookie(type, cookie_value, {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect(process.env.HOST + "/double-authentification");
+            } else if (type === "authentification") {
+                res.clearCookie("authentification", {
+                    maxAge: twelveHours,
+                    sameSite: "none",
+                    secure: true,
+                })
+                    .clearCookie("email_validation", {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .clearCookie("double_authentification", {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .cookie(type, cookie_value, {
+                        maxAge: twelveHours,
+                        sameSite: "none",
+                        secure: true,
+                    })
+                    .redirect(process.env.HOST);
+            } else {
+                throw new UnauthorizedException(
+                    "42 users doesn't need to validate their email :)"
+                );
+            }
+        } else {
+            res.clearCookie("authentification", {
+                maxAge: twelveHours,
+                sameSite: "none",
+                secure: true,
+            })
+                .clearCookie("email_validation", {
+                    maxAge: twelveHours,
+                    sameSite: "none",
+                    secure: true,
+                })
+                .clearCookie("double_authentification", {
+                    maxAge: twelveHours,
+                    sameSite: "none",
+                    secure: true,
+                })
+                .cookie(type, cookie_value, {
+                    maxAge: twelveHours,
+                    sameSite: "none",
+                    secure: true,
+                })
+                .send(type);
+        }
+    }
+
     logout(@Res() res) {
-        res.clearCookie("authentification", {
-            sameSite: "none",
-            secure: true,
-        }).send("Bye !");
+        const twelveHours = 1000 * 60 * 60 * 12;
+        return res
+            .clearCookie("authentification", {
+                maxAge: twelveHours,
+                sameSite: "none",
+                secure: true,
+            })
+            .send("Bye !");
     }
 }

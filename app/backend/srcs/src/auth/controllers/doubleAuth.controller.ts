@@ -22,6 +22,7 @@ export class DoubleAuthController {
         private userService: UsersService
     ) {}
 
+    // 2fa code validation
     @Post()
     @UseGuards(DoubleAuthGuard)
     async verifyCode(
@@ -31,13 +32,15 @@ export class DoubleAuthController {
     ) {
         let user = await this.userService.getProfile(req.user.uuid);
         if (codeDto.code === user.doubleAuthentificationCode) {
-            const now = new Date();
-            const diff =
+            const now: Date = new Date();
+            const fifteenMinutes: number = 1000 * 60 * 15;
+            const diff: number =
                 now.valueOf() -
                 user.doubleAuthentificationCodeCreation.valueOf();
-            if (diff > 1000 * 60 * 15) {
-                // 15 minutes expiration date
-                throw new UnauthorizedException("Your code is expired.");
+            if (diff > fifteenMinutes) {
+                throw new UnauthorizedException(
+                    "Your code is expired, try to relog."
+                );
             }
             if (user.doubleAuthentificationCode.length != 6) {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
@@ -49,15 +52,22 @@ export class DoubleAuthController {
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
     }
 
+    // resend the 2fa code
     @Get("resend")
     @UseGuards(DoubleAuthGuard)
     async resend(@Req() req) {
-        this.userService.generateDoubleAuthCode(req.user.uuid);
+        return await this.userService.generateDoubleAuthCode(req.user.uuid);
     }
 
+    // cancel login
     @Get("cancel")
     @UseGuards(DoubleAuthGuard)
     async cancel2fa(@Res() res) {
-        res.clearCookie("double_authentification").send("Bye !");
+        const twelveHours = 1000 * 60 * 60 * 12;
+        res.clearCookie("double_authentification", {
+            maxAge: twelveHours,
+            sameSite: "none",
+            secure: true,
+        }).send("Bye !");
     }
 }

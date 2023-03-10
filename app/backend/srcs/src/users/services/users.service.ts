@@ -3,6 +3,7 @@ import {
     HttpStatus,
     Injectable,
     StreamableFile,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -15,48 +16,39 @@ import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
 import { SocketService } from "src/chat/services/socket.service";
+import { AuthService } from "src/auth/services/auth.service";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private readonly mailerService: MailerService,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private readonly mailerService: MailerService
     ) {}
 
-    async sendVerificationMail(user) {
-        this.mailerService
-            .sendMail({
-                to: user.email, // list of receivers
-                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
-                subject: "Validate your email", // Subject line
-                text:
-                    "Welcome to ft_transcendence, validate your account with this code :" +
-                    user.emailValidationCode, // plaintext body
-                html:
-                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+    // to: list of receivers
+    // from: sender address
+    // subject: object line
+    // text: plaintext body
+    // html: html body
+    async sendVerificationMail(user: UserEntity) {
+        await this.mailerService.sendMail({
+            to: user.email,
+            from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">",
+            subject: "Validate your email",
+            text:
+                "Welcome to ft_transcendence, validate your account with this code :" +
+                user.emailValidationCode,
+            html:
+                "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
                         <h1>Welcome to ft_transcendence</h1>\
                         <h3>Validate your email with this code :</h3>\
                         <h2>" +
-                    user.emailValidationCode +
-                    "</h2>\
+                user.emailValidationCode +
+                "</h2>\
                     </div>\
                     ",
-            })
-            .then((success) => {
-                return "Email send.";
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
-
-    // Add an UserEntity into the database
-    async saveUser(user): Promise<UserEntity> {
-        if (user.createdFrom === CreatedFrom.REGISTER) {
-            this.sendVerificationMail(user);
-        }
-        return await this.userRepository.save(user);
+        });
     }
 
     // Delete an UserEntity from the database
@@ -78,6 +70,14 @@ export class UsersService {
 
     async getById42(id42: number): Promise<UserEntity> {
         return this.userRepository.findOneBy({ id42: id42 });
+    }
+
+    // Add an UserEntity into the database
+    async saveUser(user: any): Promise<UserEntity> {
+        if (user.createdFrom === CreatedFrom.REGISTER) {
+            this.sendVerificationMail(user);
+        }
+        return await this.userRepository.save(user);
     }
 
     async getUsernameById(id: string): Promise<string> {
@@ -174,7 +174,7 @@ export class UsersService {
     }
 
     async clearSocket(userUuid: string) {
-        this.userRepository.update({ uuid: userUuid }, { socketId: [] });
+        await this.userRepository.update({ uuid: userUuid }, { socketId: [] });
     }
 
     async userDisconnection(socket: string): Promise<string> {
@@ -187,13 +187,9 @@ export class UsersService {
             }
             await this.userRepository.update(
                 { uuid: user.uuid },
-                { socketId: [] }
+                { socketId: [], status: "Offline" }
             );
             user.status = "Offline";
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: "Offline" }
-            );
             return user.username;
         }
         return "good bye";
@@ -205,11 +201,10 @@ export class UsersService {
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
         await this.userRepository.update(
             { uuid: uuid },
-            { doubleAuthentificationCode: randomNumber.toString() }
-        );
-        await this.userRepository.update(
-            { uuid: uuid },
-            { doubleAuthentificationCodeCreation: new Date() }
+            {
+                doubleAuthentificationCode: randomNumber.toString(),
+                doubleAuthentificationCodeCreation: new Date(),
+            }
         );
         let user = await this.getByID(uuid);
         this.mailerService
@@ -242,73 +237,93 @@ export class UsersService {
             });
     }
 
-    async register(registerDto: RegisterDto): Promise<UserEntity> {
-        let db_user: UserEntity = await this.getByUsername(
-            registerDto.username
-        );
-        if (
-            db_user &&
-            db_user.username === registerDto.username &&
-            db_user.valideEmail === true
-        ) {
-            throw new HttpException(
-                "This username is already registered.",
-                HttpStatus.UNAUTHORIZED
-            );
-        }
-
+    getRandomCode(): string {
         const min = Math.ceil(100000);
         const max = Math.floor(999999);
         const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+        return randomNumber.toString();
+    }
+
+    async register(registerDto: RegisterDto): Promise<UserEntity> {
         let hashed_password = await this.encode_password(registerDto.password);
-        let user = {
+        const randomNumber = this.getRandomCode();
+        let partial_user = {
             createdFrom: CreatedFrom.REGISTER,
             username: registerDto.username,
             email: registerDto.email,
             password: hashed_password,
             twoFactorsAuth: registerDto.enable2fa,
-            emailValidationCode: randomNumber.toString(),
+            emailValidationCode: randomNumber,
             emailValidationCodeCreation: new Date(),
         };
-        if (
-            db_user &&
-            db_user.username === registerDto.username &&
-            db_user.valideEmail === false
-        ) {
-            await this.userRepository.update(
-                { uuid: db_user.uuid },
-                {
-                    email: user.email,
-                    createdFrom: CreatedFrom.REGISTER,
-                    password: user.password,
-                    twoFactorsAuth: user.twoFactorsAuth,
-                    doubleAuthentificationCodeCreation: new Date(),
-                    emailValidationCode: user.emailValidationCode,
-                }
-            );
-            let newUser: UserEntity = await this.getByUsername(
-                registerDto.username
-            );
-            if (newUser.createdFrom === CreatedFrom.REGISTER) {
-                this.sendVerificationMail(user);
+        let user: UserEntity = await this.getByUsername(registerDto.username);
+        if (user) {
+            if (user.valideEmail) {
+                throw new HttpException(
+                    "This username is already registered.",
+                    HttpStatus.UNAUTHORIZED
+                );
+            } else {
+                await this.userRepository.update(
+                    { uuid: user.uuid },
+                    {
+                        email: partial_user.email,
+                        createdFrom: CreatedFrom.REGISTER,
+                        password: partial_user.password,
+                        twoFactorsAuth: partial_user.twoFactorsAuth,
+                        doubleAuthentificationCodeCreation: new Date(),
+                        emailValidationCode: partial_user.emailValidationCode,
+                    }
+                );
+                user = await this.getByUsername(registerDto.username);
             }
-            return newUser;
         } else {
-            return this.saveUser(user);
+            user = await this.userRepository.save(partial_user);
         }
+        if (!user) {
+            throw new HttpException(
+                "Cannot register, please try again later.",
+                HttpStatus.NO_CONTENT
+            );
+        }
+        if (user.createdFrom === CreatedFrom.REGISTER) {
+            this.sendVerificationMail(user);
+        }
+        return user;
+    }
+
+    async validate_email(uuid: string, code: string): Promise<UserEntity> {
+        const user = await this.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
+        if (code !== user.emailValidationCode) {
+            throw new HttpException("Invalid code.", HttpStatus.NOT_ACCEPTABLE);
+        }
+        const now = new Date();
+        const diff = now.valueOf() - user.emailValidationCodeCreation.valueOf();
+        const fifteenMinutes: number = 1000 * 60 * 15;
+        if (diff > fifteenMinutes) {
+            await this.resendEmail(uuid);
+            throw new HttpException(
+                "Your code is expired, we send you a new code.",
+                HttpStatus.NOT_ACCEPTABLE
+            );
+        }
+        await this.userRepository.update(
+            { uuid: uuid },
+            { valideEmail: true, emailValidationCode: "" }
+        );
+        return user;
     }
 
     async resendEmail(uuid: string) {
-        const min = Math.ceil(100000);
-        const max = Math.floor(999999);
-        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
         await this.userRepository.update(
             { uuid: uuid },
-            { emailValidationCode: randomNumber.toString() }
-        );
-        await this.userRepository.update(
-            { uuid: uuid },
-            { emailValidationCodeCreation: new Date() }
+            {
+                emailValidationCode: this.getRandomCode(),
+                emailValidationCodeCreation: new Date(),
+            }
         );
         const user: UserEntity = await this.getByID(uuid);
         this.sendVerificationMail(user);
@@ -343,10 +358,6 @@ export class UsersService {
             { uuid: uuid },
             { email: newEmail }
         );
-    }
-
-    async validateEmail(uuid: string) {
-        await this.userRepository.update({ uuid: uuid }, { valideEmail: true });
     }
 
     async deletePreviousProfileImage(uuid: string) {

@@ -2,18 +2,14 @@ import {
     Body,
     Controller,
     Get,
-    HttpException,
-    HttpStatus,
     Post,
     Req,
     Res,
-    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { RegisterDto } from "../dtos/register.dto";
 import { AuthService } from "../services/auth.service";
 import { UsersService } from "src/users/services/users.service";
-import { UserEntity } from "src/users/entity/user.entity";
 import { emailValidationCodeDto } from "../dtos/emailValidationCode.dto";
 import { EmailGuard } from "../guards/email.guards";
 
@@ -24,24 +20,19 @@ export class RegisterController {
         private authService: AuthService
     ) {}
 
+    // Use the form to register
     @Post()
-    async register(@Body() registerDto: RegisterDto, @Res() res, @Req() req) {
-        res.clearCookie();
-        let user: UserEntity = await this.userService.register(registerDto);
-        if (user) {
-            return this.authService.create_cookie(
-                user,
-                "email_validation",
-                req,
-                res
-            );
-        }
-        throw new HttpException(
-            "Cannot register, please try again.",
-            HttpStatus.NO_CONTENT
+    async register(@Body() register: RegisterDto, @Res() res, @Req() req) {
+        const user = await this.userService.register(register);
+        return this.authService.create_cookie(
+            user,
+            "email_validation",
+            req,
+            res
         );
     }
 
+    // Validate your email after register
     @Post("validate")
     @UseGuards(EmailGuard)
     async validateEmail(
@@ -49,44 +40,37 @@ export class RegisterController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        let user = await this.userService.getProfile(req.user.uuid);
-        if (codeDto.code === user.emailValidationCode) {
-            const now = new Date();
-            const diff =
-                now.valueOf() - user.emailValidationCodeCreation.valueOf();
-            if (diff > 1000 * 60 * 15) {
-                // 15 minutes expiration date
-                this.userService.resendEmail(req.user.uuid);
-                throw new UnauthorizedException(
-                    "Your code is expired, we send you a new code."
-                );
-            }
-            if (user.emailValidationCode.length != 6) {
-                throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
-            }
-            await this.userService.validateEmail(user.uuid);
-            this.userService.deleteEmailValidationCode(req.user.uuid);
-            res.clearCookie();
-            return this.authService.create_cookie(
-                user,
-                "authentification",
-                req,
-                res
-            );
-        }
-        throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
+        const user = await this.userService.validate_email(
+            req.user.uuid,
+            codeDto.code
+        );
+        return this.authService.create_cookie(
+            user,
+            "authentification",
+            req,
+            res
+        );
     }
 
+    // Resend the validation code (+ change it before)
     @Get("resend")
     @UseGuards(EmailGuard)
-    async resend(@Req() req) {
-        this.userService.resendEmail(req.user.uuid);
+    resend(@Req() req) {
+        return this.userService.resendEmail(req.user.uuid);
     }
 
+    // Cancel register
     @Get("cancel")
     @UseGuards(EmailGuard)
     async cancelRegister(@Req() req, @Res() res) {
         this.userService.deleteUser(req.user.uuid);
-        res.clearCookie("email_validation").send("Bye !");
+        const twelveHours = 1000 * 60 * 60 * 12;
+        return res
+            .clearCookie("email_validation", {
+                maxAge: twelveHours,
+                sameSite: "none",
+                secure: true,
+            })
+            .send("Bye !");
     }
 }

@@ -19,7 +19,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
         refreshToken: string,
         profile: Profile
     ) {
-        let user = {
+        return {
             id42: profile.id,
             username: profile.username,
             email: profile.emails[0].value,
@@ -28,6 +28,5 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
             twoFactorsAuth: true,
             valideEmail: true,
         };
-        return user;
     }
 }
