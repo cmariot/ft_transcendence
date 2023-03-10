@@ -19,26 +19,25 @@ export class ChatGateway implements OnModuleInit {
     server: Server;
 
     onModuleInit() {
-        // Ca leak ici
-        //this.server.on("connection", (socket) => {
-        //    socket.on("disconnect", async () => {
-        //        let user = await this.userService.getBySocket(socket.id);
-        //        if (user) {
-        //            if (
-        //                user.status === "MatchMaking" ||
-        //                user.status === "In_Game"
-        //            ) {
-        //                this.gameService.handleDisconnect(user);
-        //            }
-        //        }
-        //        let username = await this.userService.userDisconnection(
-        //            socket.id
-        //        );
-        //        if (username) {
-        //            this.sendStatus(username, "Offline");
-        //        }
-        //    });
-        //});
+        this.server.on("connection", (socket) => {
+            socket.on("disconnect", async () => {
+                let user = await this.userService.getBySocket(socket.id);
+                if (user) {
+                    if (
+                        user.status === "MatchMaking" ||
+                        user.status === "In_Game"
+                    ) {
+                        this.gameService.handleDisconnect(user);
+                    }
+                }
+                let username = await this.userService.userDisconnection(
+                    socket.id
+                );
+                if (username) {
+                    this.sendStatus(username, "Offline");
+                }
+            });
+        });
     }
 
     channelUpdate() {
@@ -117,7 +116,9 @@ export class ChatGateway implements OnModuleInit {
         let socketID: string = data.socket;
         let status: string = data.status;
         let user: string;
+        console.log("SOOOOOOOOOOOOOOOOOCKET", data);
         if (username && socketID && status === "Online") {
+            console.log("ENTER HERE");
             user = await this.userService.setSocketID(
                 username,
                 socketID,

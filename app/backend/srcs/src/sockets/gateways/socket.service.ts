@@ -20,13 +20,14 @@ export class SocketService {
 
     async disconnect_user(socketId: string) {
         let socket = this.server.sockets.sockets.get(socketId);
+        console.log("FORCE DISCO");
         if (socket) {
             socket.emit("userLogout");
         }
     }
 
     async sendStatus(username: string, status: string) {
-        this.server.emit("userStatus", {
+        this.server.emit("changeStatus", {
             username: username,
             status: status,
         });

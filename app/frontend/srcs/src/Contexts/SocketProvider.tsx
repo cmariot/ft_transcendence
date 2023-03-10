@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { UserContext } from "./UserProvider";
 import axios from "axios";
 import { ChatContext } from "./ChatProvider";
+import { useNavigate } from "react-router-dom";
 
 let host: string =
     process.env.SOCKETHOST !== undefined ? process.env.SOCKETHOST : "";
@@ -23,24 +24,60 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     // Emit login events
     useEffect(() => {
         if (user.username.length && user.isLogged) {
+            console.log("[FRONTEND]", user.username, "is online");
             if (!socket.connected) {
                 socket.on("connect", () => {
-                    socket.emit("userStatus", {
-                        status: "Online",
+                    console.log("userStatus");
+                    socket.emit("userConnexion", {
                         socket: socket.id,
+                        status: "Online",
                         username: user.username,
                     });
                 });
             } else {
                 console.log("on connect");
                 socket.emit("userStatus", {
-                    status: "Online",
                     socket: socket.id,
+                    status: "Online",
                     username: user.username,
                 });
             }
         }
+        return () => {
+            socket.off("connect");
+            socket.off("userStatus");
+        };
     }, [user.isLogged, user.username]);
+
+    useEffect(() => {
+        socket.on("userLogout", () => {
+            console.log("LOOOOOOGOUT");
+            //NAVIGATE TO LOGIN PAGE
+        });
+        socket.on("userStatus", () => {
+            console.log("USERSTATUS");
+            axios
+                .get("/api/profile/friends")
+                .then((response) => {
+                    user.setFriends(response.data);
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                });
+            axios
+                .get("/api/profile/blocked")
+                .then((response) => {
+                    user.setBlocked(response.data);
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                });
+        });
+        return () => {
+            socket.off("connect");
+            socket.off("userStatus");
+        };
+    }, []);
 
     const value = {
         socket: socket,
