@@ -30,7 +30,8 @@ export class DoubleAuthController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        let user = await this.userService.getProfile(req.user.uuid);
+        let user = await this.userService.getByID(req.user.uuid);
+        if (!user) throw new UnauthorizedException("User not found");
         if (codeDto.code === user.doubleAuthentificationCode) {
             const now: Date = new Date();
             const fifteenMinutes: number = 1000 * 60 * 15;
@@ -44,7 +45,6 @@ export class DoubleAuthController {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
             this.authService.create_cookie(user, "authentification", req, res);
-            this.userService.delete2faCode(req.user.uuid);
             return "OK";
         }
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
@@ -62,7 +62,7 @@ export class DoubleAuthController {
         if (diff < oneMinute) {
             throw new UnauthorizedException("Don't spam.");
         }
-        return await this.userService.generateDoubleAuthCode(req.user.uuid);
+        return await this.authService.generateDoubleAuthCode(req.user.uuid);
     }
 
     // cancel login

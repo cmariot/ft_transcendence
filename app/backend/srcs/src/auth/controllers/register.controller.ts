@@ -23,7 +23,7 @@ export class RegisterController {
     // Use the form to register
     @Post()
     async register(@Body() register: RegisterDto, @Res() res, @Req() req) {
-        const user = await this.userService.register(register);
+        const user = await this.authService.register(register);
         return this.authService.create_cookie(
             user,
             "email_validation",
@@ -40,7 +40,7 @@ export class RegisterController {
         @Body() codeDto: emailValidationCodeDto,
         @Res() res
     ) {
-        const user = await this.userService.validate_email(
+        const user = await this.authService.validate_email(
             req.user.uuid,
             codeDto.code
         );
@@ -56,7 +56,7 @@ export class RegisterController {
     @Get("resend")
     @UseGuards(EmailGuard)
     resend(@Req() req) {
-        return this.userService.resendEmail(req.user.uuid);
+        return this.authService.resendEmail(req.user.uuid);
     }
 
     // Cancel register

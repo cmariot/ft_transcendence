@@ -7,82 +7,50 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreatedFrom, UserEntity } from "../entity/user.entity";
+import { UserEntity } from "../entity/user.entity";
 import {} from "typeorm";
-import { RegisterDto } from "src/auth/dtos/register.dto";
-import * as bcrypt from "bcrypt";
 import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
-import { MailerService } from "@nestjs-modules/mailer";
 import { SocketService } from "src/sockets/gateways/socket.service";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private socketService: SocketService,
-        private readonly mailerService: MailerService
+        private socketService: SocketService
     ) {}
-
-    // to: list of receivers
-    // from: sender address
-    // subject: object line
-    // text: plaintext body
-    // html: html body
-    async sendVerificationMail(user: UserEntity) {
-        await this.mailerService.sendMail({
-            to: user.email,
-            from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">",
-            subject: "Validate your email",
-            text:
-                "Welcome to ft_transcendence, validate your account with this code :" +
-                user.emailValidationCode,
-            html:
-                "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
-                        <h1>Welcome to ft_transcendence</h1>\
-                        <h3>Validate your email with this code :</h3>\
-                        <h2>" +
-                user.emailValidationCode +
-                "</h2>\
-                    </div>\
-                    ",
-        });
-    }
-
-    // Delete an UserEntity from the database
-    async deleteUser(uuid: string) {
-        return this.userRepository.delete({ uuid: uuid });
-    }
 
     // Get all the users in the database
     getUsers(): Promise<UserEntity[]> {
         return this.userRepository.find();
     }
 
+    // uuid -> UserEntity || null
     async getByID(id: string) {
         return await this.userRepository.findOneBy({ uuid: id });
     }
+
+    // username -> UserEntity || null
     async getByUsername(username: string): Promise<UserEntity> {
         return this.userRepository.findOneBy({ username: username });
     }
 
+    // id42 -> UserEntity || null
     async getById42(id42: number): Promise<UserEntity> {
         return this.userRepository.findOneBy({ id42: id42 });
     }
 
-    // Add an UserEntity into the database
-    async saveUser(user: any): Promise<UserEntity> {
-        if (user.createdFrom === CreatedFrom.REGISTER) {
-            this.sendVerificationMail(user);
-        }
-        return await this.userRepository.save(user);
-    }
-
+    // uuid -> username
     async getUsernameById(id: string): Promise<string> {
         const user = await this.getByID(id);
         if (user) return user.username;
         return null;
+    }
+
+    // Delete an UserEntity from the database
+    async deleteUser(uuid: string) {
+        return this.userRepository.delete({ uuid: uuid });
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {
@@ -96,30 +64,6 @@ export class UsersService {
             i++;
         }
         return null;
-    }
-
-    async encode_password(rawPassword: string): Promise<string> {
-        const saltRounds: number = 11;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        return bcrypt.hashSync(rawPassword, salt);
-    }
-
-    async deleteEmailValidationCode(uuid: string) {
-        await this.userRepository.update(
-            { uuid: uuid },
-            { doubleAuthentificationCode: "" }
-        );
-    }
-
-    async delete2faCode(uuid: string) {
-        await this.userRepository.update(
-            { uuid: uuid },
-            { doubleAuthentificationCode: "" }
-        );
-    }
-    async confirm_profile(uuid: string) {
-        await this.userRepository.update({ uuid: uuid }, { firstLog: false });
-        return "OK";
     }
 
     async user_status(username: string, status: string) {
@@ -150,6 +94,15 @@ export class UsersService {
             return user.username;
         }
         return null;
+    }
+
+    async updatePlayerStatus(userID: string, status: string) {
+        let player = await this.getByID(userID);
+        await this.userRepository.update(
+            { uuid: player.uuid },
+            { status: status }
+        );
+        await this.socketService.sendStatus(player.username, status);
     }
 
     async setSocketID(
@@ -194,156 +147,7 @@ export class UsersService {
         return "good bye";
     }
 
-    async generateDoubleAuthCode(uuid: string) {
-        let user = await this.getByID(uuid);
-        const randomNumber = this.getRandomCode();
-        if (!user) {
-            throw new UnauthorizedException("User not found.");
-        }
-        await this.userRepository.update(
-            { uuid: uuid },
-            {
-                doubleAuthentificationCode: randomNumber,
-                date2fa: new Date(),
-            }
-        );
-        this.mailerService
-            .sendMail({
-                to: user.email, // list of receivers
-                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
-                subject: "Your double-authentification code", // Subject line
-                text:
-                    "Welcome back" +
-                    user.username +
-                    ", here is your double authentification code :" +
-                    randomNumber, // plaintext body
-                html:
-                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
-                        <h1>Welcome back " +
-                    user.username +
-                    " !</h1>\
-                        <h3>Here is your double authentification code :</h3>\
-                        <h2>" +
-                    randomNumber +
-                    "</h2>\
-                    </div>\
-                    ",
-            })
-            .then(() => {
-                return "Email send.";
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
-
-    getRandomCode(): string {
-        const min = Math.ceil(100000);
-        const max = Math.floor(999999);
-        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
-        return randomNumber.toString();
-    }
-
-    async register(registerDto: RegisterDto): Promise<UserEntity> {
-        let hashed_password = await this.encode_password(registerDto.password);
-        const randomNumber = this.getRandomCode();
-        let partial_user = {
-            createdFrom: CreatedFrom.REGISTER,
-            username: registerDto.username,
-            email: registerDto.email,
-            password: hashed_password,
-            twoFactorsAuth: registerDto.enable2fa,
-            emailValidationCode: randomNumber,
-            dateEmailCode: new Date(),
-        };
-        let user: UserEntity = await this.getByUsername(registerDto.username);
-        if (user) {
-            if (user.valideEmail) {
-                throw new HttpException(
-                    "This username is already registered.",
-                    HttpStatus.UNAUTHORIZED
-                );
-            } else {
-                await this.userRepository.update(
-                    { uuid: user.uuid },
-                    {
-                        email: partial_user.email,
-                        createdFrom: CreatedFrom.REGISTER,
-                        password: partial_user.password,
-                        twoFactorsAuth: partial_user.twoFactorsAuth,
-                        date2fa: new Date(),
-                        emailValidationCode: partial_user.emailValidationCode,
-                    }
-                );
-                user = await this.getByUsername(registerDto.username);
-            }
-        } else {
-            user = await this.userRepository.save(partial_user);
-        }
-        if (!user) {
-            throw new HttpException(
-                "Cannot register, please try again later.",
-                HttpStatus.NO_CONTENT
-            );
-        }
-        if (user.createdFrom === CreatedFrom.REGISTER) {
-            this.sendVerificationMail(user);
-        }
-        return user;
-    }
-
-    async validate_email(uuid: string, code: string): Promise<UserEntity> {
-        const user = await this.getByID(uuid);
-        if (!user) {
-            throw new UnauthorizedException("User not found.");
-        }
-        if (code !== user.emailValidationCode) {
-            throw new HttpException("Invalid code.", HttpStatus.NOT_ACCEPTABLE);
-        }
-        const now = new Date();
-        const diff = now.valueOf() - user.dateEmailCode.valueOf();
-        const fifteenMinutes: number = 1000 * 60 * 15;
-        if (diff > fifteenMinutes) {
-            await this.resendEmail(uuid);
-            throw new HttpException(
-                "Your code is expired, we send you a new code.",
-                HttpStatus.NOT_ACCEPTABLE
-            );
-        }
-        await this.userRepository.update(
-            { uuid: uuid },
-            { valideEmail: true, emailValidationCode: "" }
-        );
-        return user;
-    }
-
-    async resendEmail(uuid: string) {
-        let user: UserEntity = await this.getByID(uuid);
-        const now: Date = new Date();
-        const oneMinute: number = 1000 * 60;
-        const diff: number = now.valueOf() - user.dateEmailCode.valueOf();
-        if (diff < oneMinute) {
-            throw new UnauthorizedException("Don't spam.");
-        }
-        await this.userRepository.update(
-            { uuid: uuid },
-            {
-                emailValidationCode: this.getRandomCode(),
-                dateEmailCode: new Date(),
-            }
-        );
-        user = await this.getByID(uuid);
-        return await this.sendVerificationMail(user);
-    }
-
-    async getProfile(id: string) {
-        let user = await this.getByID(id);
-        if (user === null) {
-            throw new HttpException("Invalid uuid.", HttpStatus.FORBIDDEN);
-        }
-        return user;
-    }
-
+    // Set a new username
     async updateUsername(previousUsername: string, newUsername: string) {
         let alreadyTaken = await this.getByUsername(newUsername);
         if (alreadyTaken) {
@@ -356,168 +160,176 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
-        this.socketService.userUpdate(newUsername);
+        //this.socketService.userUpdate(newUsername);
         return "Username updated.";
     }
 
-    async updateEmail(uuid: string, newEmail: string) {
-        return await this.userRepository.update(
-            { uuid: uuid },
-            { email: newEmail }
-        );
-    }
-
-    async deletePreviousProfileImage(uuid: string) {
-        const image = (await this.getProfile(uuid)).profileImage;
-        const path = join(process.cwd(), "./uploads/profile_pictures/" + image);
-        fs.unlink(path, (err) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-        });
-        return;
-    }
-
-    async updateProfileImage(uuid: string, imageName: string) {
-        await this.userRepository.update(
-            { uuid: uuid },
-            { profileImage: imageName }
-        );
-        let user = await this.getByID(uuid);
-        this.socketService.userUpdate(user.username);
-        return "Image updated.";
-    }
-
-    async updateDoubleAuth(uuid: string, newValue: boolean) {
+    // Toogle 2fa
+    async updateDoubleAuth(uuid: string) {
+        const user = await this.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
+        const newValue = !user.twoFactorsAuth;
         await this.userRepository.update(
             { uuid: uuid },
             { twoFactorsAuth: newValue }
         );
-        return "Setting updated.";
+        return newValue;
     }
 
-    async getProfileImage(uuid: string): Promise<StreamableFile> {
+    // Return an image
+    async getUserImage(imageName: string | null): Promise<StreamableFile> {
+        let path: string;
+        if (imageName === null) {
+            path = join(process.cwd(), "./default/profile_image.png");
+        } else {
+            path = join(
+                process.cwd(),
+                "./uploads/profile_pictures/" + imageName
+            );
+        }
+        return new StreamableFile(createReadStream(path));
+    }
+
+    // Set a new image as avatar, delete the previous if non-null
+    async updateProfileImage(uuid: string, imageName: string) {
         let user = await this.getByID(uuid);
         if (!user) {
-            throw new HttpException("Invalid user.", HttpStatus.FOUND);
+            throw new UnauthorizedException("User not found");
         }
-        if (user.profileImage === null) {
-            let file = createReadStream(
-                join(process.cwd(), "./default/profile_image.png")
-            );
-            const stream = new StreamableFile(file);
-            return stream;
-        } else {
-            let file = createReadStream(
-                join(
-                    process.cwd(),
-                    "./uploads/profile_pictures/" + user.profileImage
-                )
-            );
-            const stream = new StreamableFile(file);
-            return stream;
+        if (user.profileImage !== null) {
+            await this.deletePreviousProfileImage(user.uuid);
         }
+        await this.userRepository.update(
+            { uuid: uuid },
+            { profileImage: imageName }
+        );
+        //this.socketService.userUpdate(user.username, "avatar");
+        return "Image updated.";
     }
 
-    async addFriend(userId: string, friend: string) {
+    // Delete the previous avatar
+    async deletePreviousProfileImage(uuid: string) {
+        const user = await this.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
+        const image = user.profileImage;
+        if (image) {
+            const path = join(
+                process.cwd(),
+                "./uploads/profile_pictures/" + image
+            );
+            fs.unlink(path, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+        }
+        return;
+    }
+
+    // Set firstlog as false in the database
+    async confirm_profile(uuid: string) {
+        await this.userRepository.update({ uuid: uuid }, { firstLog: false });
+    }
+
+    // Add an user to the friends list
+    async addFriend(userId: string, friendUsername: string) {
+        const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!user || !friend) {
+            throw new UnauthorizedException("User not found");
+        }
+        const frienId = friend.uuid;
+        if (userId === frienId)
             throw new HttpException(
                 "Can't be friend with yourself",
                 HttpStatus.BAD_REQUEST
             );
-        if (!user.friend) user.friend = new Array();
-        else {
-            if (user.friend.find((element) => element === friend)) {
-                throw new HttpException(
-                    "Already friend",
-                    HttpStatus.BAD_REQUEST
-                );
-            }
+        else if (user.friend.find((friends) => friends === frienId)) {
+            throw new HttpException("Already friend", HttpStatus.BAD_REQUEST);
         }
-        user.friend.push(friend);
+        user.friend.push(frienId);
         await this.userRepository.update(
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return this.friendslist(userId);
+        return this.friendslist(user.friend);
     }
 
-    async friendslist(userid: string) {
-        let user = await this.getByID(userid);
-        if (!user) return "no User";
+    // Get the friends list as an array of objects, with usernames and status
+    async friendslist(friends: string[]) {
         let list: { username: string; status: string }[] = new Array();
-        if (!user.friend) return list;
         let i = 0;
-        while (i < user.friend.length) {
-            let id = user.friend[i];
-            let friend = await this.getByID(id);
-            if (friend !== null)
+        while (i < friends.length) {
+            let friend = await this.getByID(friends[i]);
+            if (friend) {
                 list.push({ username: friend.username, status: friend.status });
+            }
             i++;
         }
         return list;
     }
 
-    async DelFriend(userId: string, friend: string) {
+    // Remove a friend
+    async DelFriend(userId: string, friendUsername: string) {
+        const friend: UserEntity = await this.getByUsername(friendUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!user || !friend) {
+            throw new UnauthorizedException("User not found");
+        }
+        const frienId = friend.uuid;
+        if (userId === frienId)
             throw new HttpException(
                 "Can't unfriend yourself",
                 HttpStatus.BAD_REQUEST
             );
-        let index = user.friend.findIndex((element) => element === friend);
-        if (index > -1) {
-            user.friend.splice(index, 1);
+        let index = user.friend.findIndex((friends) => friends === frienId);
+        if (index === -1) {
+            throw new UnauthorizedException("This user wasn't your friend.");
         }
+        user.friend.splice(index, 1);
         await this.userRepository.update(
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return this.friendslist(userId);
+        return this.friendslist(user.friend);
     }
 
-    async blockUser(userId: string, friend: string) {
+    // Add an user to the user's blocked list
+    async blockUser(userId: string, blockedUsername: string) {
+        let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (!user) {
-            return [];
+        if (!user || !block) {
+            throw new UnauthorizedException("User not found");
         }
-        if (userId === friend) {
+        const blockedId = block.uuid;
+        if (userId === blockedId) {
             throw new HttpException(
                 "You cannot block yourself",
                 HttpStatus.BAD_REQUEST
             );
+        } else if (user.blocked.find((blocked) => blocked === blockedId)) {
+            throw new HttpException("Already blocked", HttpStatus.BAD_REQUEST);
         }
         let list = user.blocked;
-        if (!list) {
-            list = [];
-        } else {
-            if (list.find((element) => element === friend)) {
-                throw new HttpException(
-                    "Already blocked",
-                    HttpStatus.BAD_REQUEST
-                );
-            }
-        }
-        list.push(friend);
+        list.push(blockedId);
         await this.userRepository.update(
             { uuid: user.uuid },
             { blocked: list }
         );
-        let blocked_list = await this.blockedList(user.uuid);
-        return blocked_list;
+        return await this.blockedList(list);
     }
 
-    async blockedList(uuid: string) {
-        let user: UserEntity = await this.getByID(uuid);
-        if (!user)
-            throw new HttpException("Invalid user", HttpStatus.BAD_REQUEST);
+    // Get the user's blocked users list
+    async blockedList(list: string[]) {
         let blocked: { username: string }[] = [];
         let i = 0;
-        if (user.blocked === null) return blocked;
-        while (i < user.blocked.length) {
-            let blocked_user = await this.getByID(user.blocked[i]);
+        while (i < list.length) {
+            let blocked_user = await this.getByID(list[i]);
             if (blocked_user) {
                 blocked.push({ username: blocked_user.username });
             }
@@ -526,30 +338,28 @@ export class UsersService {
         return blocked;
     }
 
-    async unBlock(userId: string, friend: string) {
+    // Remove an user from the user's blocked list
+    async unBlock(userId: string, blockedUsername: string) {
+        let block: UserEntity = await this.getByUsername(blockedUsername);
         let user: UserEntity = await this.getByID(userId);
-        if (userId === friend)
+        if (!user || !block) {
+            throw new UnauthorizedException("User not found");
+        }
+        const blockedId = block.uuid;
+        if (userId === blockedId)
             throw new HttpException(
                 "Can't unblock yourself",
                 HttpStatus.BAD_REQUEST
             );
-        let index = user.blocked.findIndex((element) => element === friend);
-        if (index > -1) {
-            user.blocked.splice(index, 1);
+        let index = user.blocked.findIndex((blocked) => blocked === blockedId);
+        if (index === -1) {
+            throw new UnauthorizedException("This user wasn't blocked.");
         }
+        user.blocked.splice(index, 1);
         await this.userRepository.update(
             { uuid: user.uuid },
             { blocked: user.blocked }
         );
-        return this.blockedList(user.uuid);
-    }
-
-    async updatePlayerStatus(userID: string, status: string) {
-        let player = await this.getByID(userID);
-        await this.userRepository.update(
-            { uuid: player.uuid },
-            { status: status }
-        );
-        await this.socketService.sendStatus(player.username, status);
+        return this.blockedList(user.blocked);
     }
 }

@@ -21,15 +21,17 @@ export default function ProtectedPage() {
         if (user.isLogged === false) {
             (async () => {
                 try {
-                    const [profileResponse, friendsResponse] =
+                    const [profileResponse, friendsResponse, blockedResponse] =
                         await Promise.all([
                             axios.get("/api/profile"),
                             axios.get("/api/profile/friends"),
+                            axios.get("/api/profile/blocked"),
                         ]);
 
                     if (
                         friendsResponse.status !== 200 ||
-                        profileResponse.status !== 200
+                        profileResponse.status !== 200 ||
+                        blockedResponse.status !== 200
                     ) {
                         console.log("Cannot fetch your profile.");
                         return navigate("/login");
@@ -43,11 +45,13 @@ export default function ProtectedPage() {
                     const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
                     const firstLog = profileResponse.data.firstLog;
                     const friends = friendsResponse.data;
+                    const blocked = blockedResponse.data;
 
                     user.editUsername(username);
                     user.editAvatar(avatar);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
+                    user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);
                     if (firstLog) {
