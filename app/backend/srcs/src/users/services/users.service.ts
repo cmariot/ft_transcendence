@@ -14,7 +14,7 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { MailerService } from "@nestjs-modules/mailer";
-import { SocketService } from "src/chat/services/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.service";
 @Injectable()
 export class UsersService {
     constructor(

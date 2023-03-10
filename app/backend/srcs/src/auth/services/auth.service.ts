@@ -10,7 +10,7 @@ import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { SocketService } from "src/chat/services/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.service";
 import { LoginDto } from "../dtos/login.dto";
 
 @Injectable()

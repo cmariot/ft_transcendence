@@ -7,7 +7,6 @@ import {
 } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { GameService } from "src/game/services/game.service";
-import { UserEntity } from "src/users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 @WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class ChatGateway implements OnModuleInit {

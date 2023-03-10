@@ -7,10 +7,10 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity";
 import { Repository } from "typeorm";
-import { ChatGateway } from "../gateways/ChatGateway";
+import { ChatGateway } from "../../sockets/gateways/chatGateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
-import { channelDTO, updateChannelDTO } from "../dtos/channelId.dto";
+import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
 import {
     AddOptionsDTO,

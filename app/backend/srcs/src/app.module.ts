@@ -10,12 +10,14 @@ import { ChatModule } from "./chat/chat.module";
 import { ChatEntity } from "./chat/entities/chat.entity";
 import { GameEntity } from "./game/entities/game.entity";
 import { GameModule } from "./game/game.module";
+import { SocketModule } from "./sockets/socket.module";
 
 @Module({
     imports: [
         AuthModule,
         ChatModule,
         GameModule,
+        SocketModule,
         ConfigModule,
         MailerModule.forRoot({
             transport: {
