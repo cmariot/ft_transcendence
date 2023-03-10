@@ -13,7 +13,8 @@ import { LogoutController } from "./controllers/logout.controller";
 import { LoginController } from "./controllers/login.controller";
 import { AuthentificationStrategy } from "./strategies/authentification.strategy";
 import { DoubleAuthController } from "./controllers/doubleAuth.controller";
-import { SocketService } from "src/chat/services/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.service";
+import { SocketModule } from "src/sockets/socket.module";
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { SocketService } from "src/chat/services/socket.service";
         }),
         TypeOrmModule.forFeature([UserEntity]),
         UsersModule,
+        SocketModule,
     ],
     providers: [
         AuthService,

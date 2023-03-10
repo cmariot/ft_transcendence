@@ -10,7 +10,7 @@ import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { SocketService } from "src/chat/services/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.service";
 import { LoginDto } from "../dtos/login.dto";
 
 @Injectable()
@@ -107,6 +107,7 @@ export class AuthService {
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);
     }
 
+    // use JWT to sign the cookie value
     sign_cookie(user: UserEntity, type: string): string {
         const payload = {
             uuid: user.uuid,
@@ -119,7 +120,7 @@ export class AuthService {
 
     // authentification : Acces a l'app
     // email_validation : Doit valider son email
-    // double_authentification : Doit valider sa connexion
+    // double_authentification : Doit valider sa double connexion
     async create_cookie(
         user: UserEntity,
         type: string,
@@ -209,6 +210,7 @@ export class AuthService {
         }
     }
 
+    // clear cookie on logout
     logout(@Res() res) {
         const twelveHours = 1000 * 60 * 60 * 12;
         return res

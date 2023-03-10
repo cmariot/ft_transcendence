@@ -13,7 +13,7 @@ import {
     InvitationResponseDto,
     UsernameDto,
 } from "../dtos/GameUtility.dto";
-import { GameGateway } from "../gateways/GameGateways";
+import { GameGateway } from "../../sockets/gateways/gameGateways";
 import { UserEntity } from "src/users/entity/user.entity";
 
 @Injectable()
