@@ -3,7 +3,7 @@ import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
 import { useContext } from "react";
 import { Menu } from "../Menu/menu";
-import { MenuContext } from "../../Contexts/MenuProviders";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export const Body = () => {
     const menu = useContext(MenuContext);

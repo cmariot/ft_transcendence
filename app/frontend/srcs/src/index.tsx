@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import UserProvider from "./Contexts/UserProvider";
-import "./index.css";
+import UserProvider from "./contexts/UserProvider";
+import "./styles/index.css";
 import "./styles/Theme.css";
 import { router } from "./routers/router";
 import { RouterProvider } from "react-router-dom";
-import MenuProvider from "./Contexts/MenuProviders";
-import ChatProvider from "./Contexts/ChatProvider";
-import SocketProvider from "./Contexts/SocketProvider";
-import GameProvider from "./Contexts/GameProvider";
+import MenuProvider from "./contexts/MenuProviders";
+import ChatProvider from "./contexts/ChatProvider";
+import SocketProvider from "./contexts/SocketProvider";
+import GameProvider from "./contexts/GameProvider";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement

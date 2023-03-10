@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import "../../styles/Settings.css";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 
 export default function EnableDoubleAuth() {
     const user = useContext(UserContext);

@@ -12,14 +12,29 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { SocketService } from "src/sockets/gateways/socket.service";
 import { LoginDto } from "../dtos/login.dto";
+import { RegisterDto } from "../dtos/register.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService {
     constructor(
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>,
         private usersService: UsersService,
         private jwtService: JwtService,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private readonly mailerService: MailerService
     ) {}
+
+    // Add an UserEntity into the database
+    async saveUser(user: any): Promise<UserEntity> {
+        if (user.createdFrom === CreatedFrom.REGISTER) {
+            this.sendVerificationMail(user);
+        }
+        return await this.userRepository.save(user);
+    }
 
     async signin_or_register_42_user(
         user_42: {
@@ -53,7 +68,7 @@ export class AuthService {
                     req,
                     res
                 );
-                await this.usersService.generateDoubleAuthCode(user.uuid);
+                await this.generateDoubleAuthCode(user.uuid);
             } else {
                 return await this.create_cookie(
                     user,
@@ -63,7 +78,7 @@ export class AuthService {
                 );
             }
         } else {
-            user = await this.usersService.saveUser(user_42);
+            user = await this.saveUser(user_42);
             return await this.create_cookie(user, "authentification", req, res);
         }
     }
@@ -78,7 +93,7 @@ export class AuthService {
             (await bcrypt.compare(loginDto.password, user.password)) === true
         ) {
             if (user.valideEmail === false) {
-                await this.usersService.resendEmail(user.uuid);
+                await this.resendEmail(user.uuid);
                 return await this.create_cookie(
                     user,
                     "email_validation",
@@ -92,9 +107,7 @@ export class AuthService {
                     req,
                     res
                 );
-                return await this.usersService.generateDoubleAuthCode(
-                    user.uuid
-                );
+                return await this.generateDoubleAuthCode(user.uuid);
             } else {
                 return await this.create_cookie(
                     user,
@@ -105,6 +118,183 @@ export class AuthService {
             }
         }
         throw new HttpException("Login failed.", HttpStatus.FORBIDDEN);
+    }
+
+    async generateDoubleAuthCode(uuid: string) {
+        let user = await this.usersService.getByID(uuid);
+        const randomNumber = this.getRandomCode();
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
+        await this.userRepository.update(
+            { uuid: uuid },
+            {
+                doubleAuthentificationCode: randomNumber,
+                date2fa: new Date(),
+            }
+        );
+        this.mailerService
+            .sendMail({
+                to: user.email, // list of receivers
+                from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">", // sender address
+                subject: "Your double-authentification code", // Subject line
+                text:
+                    "Welcome back" +
+                    user.username +
+                    ", here is your double authentification code :" +
+                    randomNumber, // plaintext body
+                html:
+                    "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+                        <h1>Welcome back " +
+                    user.username +
+                    " !</h1>\
+                        <h3>Here is your double authentification code :</h3>\
+                        <h2>" +
+                    randomNumber +
+                    "</h2>\
+                    </div>\
+                    ",
+            })
+            .then(() => {
+                return "Email send.";
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    getRandomCode(): string {
+        const min = Math.ceil(100000);
+        const max = Math.floor(999999);
+        const randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+        return randomNumber.toString();
+    }
+
+    // to: list of receivers
+    // from: sender address
+    // subject: object line
+    // text: plaintext body
+    // html: html body
+    async sendVerificationMail(user: UserEntity) {
+        await this.mailerService.sendMail({
+            to: user.email,
+            from: "ft_transcendence <" + process.env.EMAIL_ADDR + ">",
+            subject: "Validate your email",
+            text:
+                "Welcome to ft_transcendence, validate your account with this code :" +
+                user.emailValidationCode,
+            html:
+                "<div style='display:flex; flex-direction: column; justify-content:center; align-items: center;' >\
+                        <h1>Welcome to ft_transcendence</h1>\
+                        <h3>Validate your email with this code :</h3>\
+                        <h2>" +
+                user.emailValidationCode +
+                "</h2>\
+                    </div>\
+                    ",
+        });
+    }
+
+    async encode_password(rawPassword: string): Promise<string> {
+        const saltRounds: number = 11;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        return bcrypt.hashSync(rawPassword, salt);
+    }
+
+    async register(registerDto: RegisterDto): Promise<UserEntity> {
+        let hashed_password = await this.encode_password(registerDto.password);
+        const randomNumber = this.getRandomCode();
+        let partial_user = {
+            createdFrom: CreatedFrom.REGISTER,
+            username: registerDto.username,
+            email: registerDto.email,
+            password: hashed_password,
+            twoFactorsAuth: registerDto.enable2fa,
+            emailValidationCode: randomNumber,
+            dateEmailCode: new Date(),
+        };
+        let user: UserEntity = await this.usersService.getByUsername(
+            registerDto.username
+        );
+        if (user) {
+            if (user.valideEmail) {
+                throw new HttpException(
+                    "This username is already registered.",
+                    HttpStatus.UNAUTHORIZED
+                );
+            } else {
+                await this.userRepository.update(
+                    { uuid: user.uuid },
+                    {
+                        email: partial_user.email,
+                        createdFrom: CreatedFrom.REGISTER,
+                        password: partial_user.password,
+                        twoFactorsAuth: partial_user.twoFactorsAuth,
+                        date2fa: new Date(),
+                        emailValidationCode: partial_user.emailValidationCode,
+                    }
+                );
+                user = await this.usersService.getByUsername(
+                    registerDto.username
+                );
+            }
+        } else {
+            user = await this.userRepository.save(partial_user);
+        }
+        if (!user) {
+            throw new HttpException(
+                "Cannot register, please try again later.",
+                HttpStatus.NO_CONTENT
+            );
+        }
+        if (user.createdFrom === CreatedFrom.REGISTER) {
+            this.sendVerificationMail(user);
+        }
+        return user;
+    }
+
+    async validate_email(uuid: string, code: string): Promise<UserEntity> {
+        const user = await this.usersService.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
+        if (code !== user.emailValidationCode) {
+            throw new HttpException("Invalid code.", HttpStatus.NOT_ACCEPTABLE);
+        }
+        const now = new Date();
+        const diff = now.valueOf() - user.dateEmailCode.valueOf();
+        const fifteenMinutes: number = 1000 * 60 * 15;
+        if (diff > fifteenMinutes) {
+            await this.resendEmail(uuid);
+            throw new HttpException(
+                "Your code is expired, we send you a new code.",
+                HttpStatus.NOT_ACCEPTABLE
+            );
+        }
+        await this.userRepository.update(
+            { uuid: uuid },
+            { valideEmail: true, emailValidationCode: "" }
+        );
+        return user;
+    }
+
+    async resendEmail(uuid: string) {
+        let user: UserEntity = await this.usersService.getByID(uuid);
+        const now: Date = new Date();
+        const oneMinute: number = 1000 * 60;
+        const diff: number = now.valueOf() - user.dateEmailCode.valueOf();
+        if (diff < oneMinute) {
+            throw new UnauthorizedException("Don't spam.");
+        }
+        await this.userRepository.update(
+            { uuid: uuid },
+            {
+                emailValidationCode: this.getRandomCode(),
+                dateEmailCode: new Date(),
+            }
+        );
+        user = await this.usersService.getByID(uuid);
+        return await this.sendVerificationMail(user);
     }
 
     // use JWT to sign the cookie value

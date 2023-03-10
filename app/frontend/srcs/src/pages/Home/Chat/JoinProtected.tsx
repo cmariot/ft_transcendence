@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../Contexts/ChatProvider";
+import { ChatContext } from "../../../contexts/ChatProvider";
 
 const JoinProtected = () => {
     const chat = useContext(ChatContext);

@@ -12,7 +12,7 @@ import MuteUser from "./Settings/MuteUser";
 import KickUser from "./Settings/KickUser";
 import AddUser from "./Settings/AddUser";
 import "../../../styles/Chat.css";
-import { ChatContext } from "../../../Contexts/ChatProvider";
+import { ChatContext } from "../../../contexts/ChatProvider";
 
 const Chat = () => {
     const chat = useContext(ChatContext);

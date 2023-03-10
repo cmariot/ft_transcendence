@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { GameContext } from "../../../Contexts/GameProvider";
+import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
-import { UserContext } from "../../../Contexts/UserProvider";
+import { UserContext } from "../../../contexts/UserProvider";
 
 const JoinGame = () => {
     const game = useContext(GameContext);

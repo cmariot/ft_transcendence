@@ -1,6 +1,6 @@
 import "../../styles/Profile.css";
 import { useContext } from "react";
-import { UserContext } from "../../Contexts/UserProvider";
+import { UserContext } from "../../contexts/UserProvider";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {

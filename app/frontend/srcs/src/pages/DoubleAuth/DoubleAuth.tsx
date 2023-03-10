@@ -15,17 +15,16 @@ const DoubleAuth = () => {
         }
     };
 
-    const submitValidate2faForm = async (event: any) => {
+    const submitValidate2faForm = (event: any) => {
         event.preventDefault();
-        await axios
+        axios
             .post("/api/second_auth", {
                 code: code2fa,
             })
-            .then(function (response) {
+            .then(function () {
                 navigate("/");
             })
             .catch(function (error) {
-                console.log(error);
                 alert("Your code is not valide.");
                 setCode2fa("");
             });
@@ -33,7 +32,7 @@ const DoubleAuth = () => {
 
     const resend2faCode = () => {
         axios.get("/api/second_auth/resend").catch(function (error) {
-            console.log(error);
+            alert(error.response.data.message);
         });
     };
 
