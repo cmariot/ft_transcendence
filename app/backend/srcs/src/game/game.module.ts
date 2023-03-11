@@ -8,10 +8,17 @@ import { GameController } from "./controllers/game.controller";
 import { GameEntity } from "./entities/game.entity";
 import { SocketService } from "src/sockets/gateways/socket.gateway";
 import { GameGateway } from "../sockets/gateways/gameGateways";
+import { UserGateway } from "src/sockets/gateways/user.gateway";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([GameEntity, UserEntity]), UsersModule],
-    providers: [GameService, UsersService, SocketService, GameGateway],
+    imports: [TypeOrmModule.forFeature([GameEntity, UserEntity])],
+    providers: [
+        GameService,
+        UsersService,
+        SocketService,
+        GameGateway,
+        UserGateway,
+    ],
     controllers: [GameController],
 })
 export class GameModule {}

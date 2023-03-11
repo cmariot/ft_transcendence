@@ -13,12 +13,14 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { SocketService } from "src/sockets/gateways/socket.gateway";
+import { UserGateway } from "src/sockets/gateways/user.gateway";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private userGateway: UserGateway
     ) {}
 
     // Get all the users in the database
@@ -57,15 +59,14 @@ export class UsersService {
         let user: UserEntity[] = await this.userRepository.find();
         let i = 0;
         while (user[i]) {
-            if (user[i].socketId) {
-                if (user[i].socketId.find((element) => element === socket))
-                    return user[i];
-            }
+            if (user[i].socketId.find((element) => element === socket))
+                return user[i];
             i++;
         }
         return null;
     }
 
+    // When a client connexion is closed
     async close(socketID: string): Promise<string> {
         const user: UserEntity = await this.getBySocket(socketID);
         if (!user) {
@@ -76,13 +77,22 @@ export class UsersService {
         if (index !== -1) {
             sockets.slice(index, 1);
         }
-        await this.userRepository.update(
-            { uuid: user.uuid },
-            { status: "offline", socketId: sockets }
-        );
-        return user.username;
+        if (sockets.length > 0) {
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { socketId: sockets }
+            );
+            return null;
+        } else {
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { status: "offline", socketId: sockets }
+            );
+            return user.username;
+        }
     }
 
+    // Set the status on 'online' and save the socket id
     async login(username: string, socketID: string) {
         const user: UserEntity = await this.getByUsername(username);
         if (!user) {
@@ -96,6 +106,7 @@ export class UsersService {
         );
     }
 
+    // Set the status on 'offline' and delete the socket id
     async logout(username: string, socketID: string) {
         const user: UserEntity = await this.getByUsername(username);
         if (!user) {
@@ -206,8 +217,7 @@ export class UsersService {
             { username: previousUsername },
             { username: newUsername }
         );
-        //this.socketService.userUpdate(newUsername);
-        return "Username updated.";
+        return this.userGateway.updateUsername(previousUsername, newUsername);
     }
 
     // Toogle 2fa
@@ -251,8 +261,7 @@ export class UsersService {
             { uuid: uuid },
             { profileImage: imageName }
         );
-        //this.socketService.userUpdate(user.username, "avatar");
-        return "Image updated.";
+        return this.userGateway.updateAvatar(user.username);
     }
 
     // Delete the previous avatar

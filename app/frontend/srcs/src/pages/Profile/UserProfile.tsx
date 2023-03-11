@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../contexts/UserProvider";
 import { ChatContext } from "../../contexts/ChatProvider";
+import { SocketContext } from "../../contexts/SocketProvider";
 
 export function loader({ params }: any) {
     return params;
@@ -11,7 +12,10 @@ export function loader({ params }: any) {
 
 const UserProfile = () => {
     const params: any = useLoaderData();
+    const username = params.user;
+
     const navigate = useNavigate();
+
     const [found, setFound] = useState(true);
     const [image, setImage] = useState("");
     const [friend, setFriend] = useState(false);
@@ -20,7 +24,6 @@ const UserProfile = () => {
     let user = useContext(UserContext);
     let chat = useContext(ChatContext);
 
-    const username: string = params.user;
     const imageURL: string = "/api/profile/" + username + "/image";
 
     useEffect(() => {
@@ -88,6 +91,46 @@ const UserProfile = () => {
         }
         navigate(-1);
     }
+
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        async function updateUserAvatar(data: { username: string }) {
+            if (data.username === username) {
+                try {
+                    const url = "/api/profile/" + data.username + "/image";
+                    const avatarResponse = await axios.get(url, {
+                        responseType: "blob",
+                    });
+                    if (avatarResponse.status === 200) {
+                        let imageUrl = URL.createObjectURL(avatarResponse.data);
+                        setImage(imageUrl);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+        socket.on("user.update.avatar", updateUserAvatar);
+        return () => {
+            socket.off("user.update.avatar", updateUserAvatar);
+        };
+    }, [user, socket, username]);
+
+    useEffect(() => {
+        function updateUsername(data: {
+            previousUsername: string;
+            newUsername: string;
+        }) {
+            if (data.previousUsername === username) {
+                return navigate("/profile/" + data.newUsername);
+            }
+        }
+        socket.on("user.update.username", updateUsername);
+        return () => {
+            socket.off("user.update.username", updateUsername);
+        };
+    }, [user, socket, username, navigate]);
 
     function displayProfileOrError() {
         if (found) {

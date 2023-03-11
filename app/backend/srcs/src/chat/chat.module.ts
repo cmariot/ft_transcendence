@@ -12,6 +12,7 @@ import { GameEntity } from "src/game/entities/game.entity";
 import { GameService } from "src/game/services/game.service";
 import { SocketModule } from "src/sockets/socket.module";
 import { GameGateway } from "src/sockets/gateways/gameGateways";
+import { UserGateway } from "src/sockets/gateways/user.gateway";
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { GameGateway } from "src/sockets/gateways/gameGateways";
         GameService,
         SocketService,
         GameGateway,
+        UserGateway,
     ],
     controllers: [ChatController],
 })

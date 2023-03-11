@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Req, UseGuards } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
 import {
     ConnectedSocket,
@@ -8,10 +8,11 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 import { UsersService } from "src/users/services/users.service";
+import { isLogged } from "src/auth/guards/authentification.guards";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
-export class ConnectionService {
+export class ConnectionGateway {
     constructor(private userService: UsersService) {}
 
     @WebSocketServer()
@@ -38,7 +39,7 @@ export class ConnectionService {
     }
 
     // A la deconnexion d'un client
-    async handleDisconnect(client: Socket) {
+    async handleDisconnect(client: Socket, @Req() req) {
         const username = await this.userService.close(client.id);
         if (username) {
             this.sendStatus(username, "offline");
