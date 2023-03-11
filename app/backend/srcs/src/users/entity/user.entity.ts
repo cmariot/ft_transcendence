@@ -62,7 +62,7 @@ export class UserEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-    @Column({ default: "Offline" })
+    @Column({ default: "offline" })
     status: string;
 
     @Column("text", { array: true, default: [] })

@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { Footer } from "../Footer";
-import { NavBar } from "../NavBar";
+import { Footer } from "../footer";
+import { NavBar } from "../navbar";
 import { useContext } from "react";
-import { Menu } from "../Menu/menu";
+import { Menu } from "../menu/menu";
 import { MenuContext } from "../../contexts/MenuProviders";
 
 export const Body = () => {

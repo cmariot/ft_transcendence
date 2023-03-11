@@ -13,7 +13,6 @@ async function bootstrap() {
         origin: process.env.HOST,
         credentials: true,
     });
-    require("events").EventEmitter.prototype._maxListeners = 100;
     await app.listen(process.env.BACKEND_PORT);
 }
 bootstrap();

@@ -66,12 +66,58 @@ export class UsersService {
         return null;
     }
 
+    async close(socketID: string): Promise<string> {
+        const user: UserEntity = await this.getBySocket(socketID);
+        if (!user) {
+            return null;
+        }
+        let sockets = user.socketId;
+        let index = sockets.findIndex((socket) => socket === socketID);
+        if (index !== -1) {
+            sockets.slice(index, 1);
+        }
+        await this.userRepository.update(
+            { uuid: user.uuid },
+            { status: "offline", socketId: sockets }
+        );
+        return user.username;
+    }
+
+    async login(username: string, socketID: string) {
+        const user: UserEntity = await this.getByUsername(username);
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
+        let sockets = user.socketId;
+        sockets.push(socketID);
+        return await this.userRepository.update(
+            { uuid: user.uuid },
+            { status: "online", socketId: sockets }
+        );
+    }
+
+    async logout(username: string, socketID: string) {
+        const user: UserEntity = await this.getByUsername(username);
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
+        let sockets = user.socketId;
+        let index = sockets.findIndex((socket) => socket === socketID);
+        if (index !== -1) {
+            sockets.slice(index, 1);
+        }
+        return await this.userRepository.update(
+            { uuid: user.uuid },
+            { status: "offline", socketId: sockets }
+        );
+    }
+
     async user_status(username: string, status: string) {
         let user: UserEntity = await this.getByUsername(username);
-        if (status === "Online") {
+        if (status === "online") {
             return await this.userRepository.update(
                 { uuid: user.uuid },
-                { status: "Online" }
+                { status: "online" }
             );
         }
     }
@@ -82,13 +128,13 @@ export class UsersService {
             if (status === "In_Game") {
                 await this.userRepository.update(
                     { uuid: user.uuid },
-                    { status: "In_Game" }
+                    { status: "ingame" }
                 );
             }
             if (status === "MatchMaking") {
                 await this.userRepository.update(
                     { uuid: user.uuid },
-                    { status: "MatchMaking" }
+                    { status: "matchmaking" }
                 );
             }
             return user.username;
@@ -139,9 +185,9 @@ export class UsersService {
             }
             await this.userRepository.update(
                 { uuid: user.uuid },
-                { socketId: [], status: "Offline" }
+                { socketId: [], status: "offline" }
             );
-            user.status = "Offline";
+            user.status = "offline";
             return user.username;
         }
         return null;

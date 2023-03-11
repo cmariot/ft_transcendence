@@ -75,7 +75,7 @@ export class GameService {
             throw new HttpException("Not in Queue", HttpStatus.UNAUTHORIZED);
         }
         if (game.HostID) {
-            await this.userService.updatePlayerStatus(game.HostID, "Online");
+            //await this.userService.updatePlayerStatus(game.HostID, "Online");
             player = await this.userService.getByID(game.HostID);
             await this.GameGateway.sendCancel(
                 player.socketId[0],
@@ -83,7 +83,7 @@ export class GameService {
             );
         }
         if (game.GuestID) {
-            await this.userService.updatePlayerStatus(game.GuestID, "Online");
+            //await this.userService.updatePlayerStatus(game.GuestID, "Online");
             player = await this.userService.getByID(game.GuestID);
             await this.GameGateway.sendCancel(
                 player.socketId[0],
@@ -160,7 +160,7 @@ export class GameService {
             } else if (guest.status === "MatchMaking") {
                 this.GameGateway.sendCancel(guest.socketId[0], "Cancel");
             }
-            await this.userService.updatePlayerStatus(guest.uuid, "Online");
+            //await this.userService.updatePlayerStatus(guest.uuid, "Online");
             this.gameRepository.remove(game);
             return "OHOHOH";
         } else if (!game) {
@@ -180,7 +180,7 @@ export class GameService {
                 } else if (host.status === "MatchMaking") {
                     this.GameGateway.sendCancel(host.socketId[0], "Cancel");
                 }
-                await this.userService.updatePlayerStatus(host.uuid, "Online");
+                //    await this.userService.updatePlayerStatus(host.uuid, "Online");
                 this.gameRepository.remove(game);
                 return "OHOHOH";
             }

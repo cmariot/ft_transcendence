@@ -17,6 +17,10 @@ export default function ProtectedPage() {
 
     useEffect(() => {
         if (user.isLogged === false) {
+            const authCookie = getCookie("authentification");
+            if (!authCookie) {
+                return navigate("/login");
+            }
             (async () => {
                 try {
                     const [profileResponse, friendsResponse, blockedResponse] =

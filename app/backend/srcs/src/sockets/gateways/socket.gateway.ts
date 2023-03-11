@@ -6,42 +6,18 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsResponse,
 } from "@nestjs/websockets";
 
 @Injectable()
-@WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class SocketService {
     @WebSocketServer()
     server: Server;
 
-    // Connection client
-    handleConnection(client: Socket) {
-        console.log(`cient connected: ${client.id}`);
-    }
-
-    // Deconnection client
-    handleDisconnect(client: Socket) {
-        console.log(`cient disconnected: ${client.id}`);
-    }
-
-    // Recevoir un event
-    @SubscribeMessage("user.login")
-    handleEvent(
-        @MessageBody() data: { username: string },
-        @ConnectedSocket() client: Socket
-    ) {
-        console.log(data.username, "is logged in. His socket is :", client.id);
-        // + Envoi d'event
-        this.sendStatus(data.username, "online");
-    }
-
-    // Envoyer un event
     async sendStatus(username: string, status: string) {
-        this.server.emit("status.update", {
-            username: username,
-            status: status,
-        });
+        //this.server.emit("status.update", {
+        //    username: username,
+        //    status: status,
+        //});
     }
 
     userUpdate(@MessageBody() username: string) {

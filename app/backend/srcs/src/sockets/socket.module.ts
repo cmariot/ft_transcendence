@@ -11,6 +11,7 @@ import { UsersModule } from "src/users/users.module";
 import { GameModule } from "src/game/game.module";
 import { ChatGateway } from "./gateways/chatGateway";
 import { GameGateway } from "./gateways/gameGateways";
+import { ConnectionService } from "./gateways/connection.gateway";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { GameGateway } from "./gateways/gameGateways";
         GameModule,
     ],
     providers: [
+        ConnectionService,
         GameService,
         UsersService,
         ChatService,

@@ -4,18 +4,42 @@ import { UserContext } from "../../contexts/UserProvider";
 import { ChatContext } from "../../contexts/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import axios, { HttpStatusCode } from "axios";
+import { SocketContext } from "../../contexts/SocketProvider";
 
 export default function Friends() {
     let user = useContext(UserContext);
     const [username, setUsername] = useState("");
     let [showMenu, setShowMenu] = useState("");
     let [update, setUpdate] = useState(false);
+    let socket = useContext(SocketContext);
     let chat = useContext(ChatContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         setShowMenu("");
     }, [update]);
+
+    useEffect(() => {
+        function updateStatus(data: { username: string; status: string }) {
+            if (data.username === user.username) {
+                user.setStatus(data.status);
+            } else {
+                let friends = user.friends;
+                const index = friends.findIndex(
+                    (friend) => friend.username === data.username
+                );
+                if (index !== -1 && friends[index].status !== data.status) {
+                    friends[index].status = data.status;
+                    user.setFriends(friends);
+                }
+            }
+            setUpdate((prevState) => !prevState);
+        }
+        socket.on("status.update", updateStatus);
+        return () => {
+            socket.off("status.update", updateStatus);
+        };
+    }, [user, socket]);
 
     async function profile(username: string) {
         navigate("/profile/" + username);
@@ -59,19 +83,21 @@ export default function Friends() {
     }
 
     function displayStatus(status: string) {
-        if (status === "Online") {
+        if (status === "online") {
             return <div title="online" className="friend-status-online" />;
-        } else if (status === "Offline") {
+        } else if (status === "offline") {
             return <div title="offline" className="friend-status-offline" />;
-        } else if (status === "In_Game") {
+        } else if (status === "ingame") {
             return <div title="in a game" className="friend-status-in-game" />;
-        } else if (status === "MatchMaking") {
+        } else if (status === "matchmaking") {
             return (
                 <div
                     title="searching for a game"
                     className="friend-status-matchmaking"
                 />
             );
+        } else {
+            return <p>{status}</p>;
         }
     }
 

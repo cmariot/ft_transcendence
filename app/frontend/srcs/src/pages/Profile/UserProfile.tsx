@@ -3,6 +3,7 @@ import "../../styles/Profile.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../contexts/UserProvider";
+import { ChatContext } from "../../contexts/ChatProvider";
 
 export function loader({ params }: any) {
     return params;
@@ -17,6 +18,7 @@ const UserProfile = () => {
     const [blocked, setBlocked] = useState(false);
 
     let user = useContext(UserContext);
+    let chat = useContext(ChatContext);
 
     const username: string = params.user;
     const imageURL: string = "/api/profile/" + username + "/image";
@@ -71,7 +73,19 @@ const UserProfile = () => {
         username,
     ]);
 
-    function goToPrevious() {
+    async function goToPrevious() {
+        if (chat.channel.length) {
+            await axios
+                .post("/api/chat/connect", { channelName: chat.channel })
+                .then(function (response: any) {
+                    chat.setChannel(chat.channel);
+                    chat.setChannelType(chat.channelType);
+                    chat.setMessages(response.data.messages);
+                })
+                .catch(function (error) {
+                    alert(error.response.data.message);
+                });
+        }
         navigate(-1);
     }
 

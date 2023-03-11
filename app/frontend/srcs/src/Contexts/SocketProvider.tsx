@@ -4,7 +4,7 @@ import { UserContext } from "./UserProvider";
 
 export type SocketContextType = Socket;
 
-const socket: Socket = io("mbp.local:8443");
+const socket: Socket = io("localhost:8443");
 
 export const SocketContext = createContext(socket);
 
@@ -22,14 +22,35 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
     }, [user.isLogged, user.username]);
 
     useEffect(() => {
+        if (!user.isLogged && user.username.length) {
+            socket.emit("user.logout", { username: user.username });
+        }
+        return () => {
+            socket.off("user.logout");
+        };
+    }, [user.isLogged, user.username]);
+
+    useEffect(() => {
         function updateStatus(data: { username: string; status: string }) {
-            console.log("Event received :", data);
+            console.log("status.update :", data.username, "is", data.status);
+            if (data.username === user.username) {
+                user.setStatus(data.status);
+            } else {
+                let friends = user.friends;
+                const index = friends.findIndex(
+                    (friend) => friend.username === data.username
+                );
+                if (index !== -1 && friends[index].status !== data.status) {
+                    friends[index].status = data.status;
+                    user.setFriends(friends);
+                }
+            }
         }
         socket.on("status.update", updateStatus);
         return () => {
             socket.off("status.update", updateStatus);
         };
-    }, [user.username]);
+    }, [user]);
 
     return (
         <SocketContext.Provider value={socket}>
