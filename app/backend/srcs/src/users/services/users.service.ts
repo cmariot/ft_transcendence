@@ -257,7 +257,7 @@ export class UsersService {
             { uuid: user.uuid },
             { friend: user.friend }
         );
-        return this.friendslist(user.friend);
+        return { username: friend.username, status: friend.status };
     }
 
     // Get the friends list as an array of objects, with usernames and status

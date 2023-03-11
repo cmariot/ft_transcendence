@@ -13,6 +13,8 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const [found, setFound] = useState(true);
     const [image, setImage] = useState("");
+    const [friend, setFriend] = useState(false);
+    const [blocked, setBlocked] = useState(false);
 
     let user = useContext(UserContext);
 
@@ -32,105 +34,45 @@ const UserProfile = () => {
                     var imageUrl = URL.createObjectURL(avatarResponse.data);
                     setImage(imageUrl);
                     setFound(true);
+                    let i = 0;
+                    while (i < user.friends.length) {
+                        let friend: any = user.friends[i];
+                        let friend_username: string = friend.username;
+                        if (friend_username === username) {
+                            setFriend(true);
+                            break;
+                        }
+                        i++;
+                    }
+                    i = 0;
+                    while (i < user.blocked.length) {
+                        let blocked: any = user.blocked[i];
+                        let blocked_username: string = blocked.username;
+                        if (blocked_username === username) {
+                            setBlocked(true);
+                            break;
+                        }
+                        i++;
+                    }
                 } else {
                     setFound(false);
                 }
             } catch (error) {
                 console.log(error);
+                setFound(false);
             }
         })();
-    }, [imageURL, navigate, user.username, username]);
+    }, [
+        imageURL,
+        navigate,
+        user.blocked,
+        user.friends,
+        user.username,
+        username,
+    ]);
 
     function goToPrevious() {
         navigate(-1);
-    }
-
-    const addFriend = async (username: string) => {
-        await axios
-            .post("/api/profile/friends/add", {
-                username: username,
-            })
-            .then(function (response) {
-                user.setFriends(response.data);
-            })
-            .catch(function (error) {
-                alert(error.response.data.message);
-            });
-    };
-
-    async function removeFriend(friendUsername: string) {
-        await axios
-            .post("/api/profile/friends/remove", {
-                username: friendUsername,
-            })
-            .then(function (response) {
-                user.setFriends(response.data);
-            })
-            .catch(function (error) {
-                alert(error.response.data.message);
-            });
-    }
-
-    function friendOrUnfriend(username: string) {
-        let i = 0;
-        let already_friend = false;
-        while (i < user.friends.length) {
-            let friend: any = user.friends[i];
-            let friend_username: string = friend.username;
-            if (friend_username === username) {
-                already_friend = true;
-                break;
-            }
-            i++;
-        }
-        return already_friend ? (
-            <button onClick={() => removeFriend(username)}>
-                remove friend
-            </button>
-        ) : (
-            <button onClick={() => addFriend(username)}>add friend</button>
-        );
-    }
-
-    async function unblock(username: string) {
-        await axios
-            .post("/api/profile/unblock", { username: username })
-            .then((response) => {
-                user.setBlocked(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
-
-    async function blockUser(username: string) {
-        await axios
-            .post("/api/profile/block", { username: username })
-            .then(async (response) => {
-                user.setBlocked(response.data);
-            })
-            .catch((error) => {
-                console.log(error.data);
-            });
-    }
-
-    function blockOrUnblock() {
-        let i = 0;
-        let already_blocked = false;
-        while (i < user.blocked.length) {
-            let blocked: any = user.blocked[i];
-            let blocked_username: string = blocked.username;
-            if (blocked_username === username) {
-                already_blocked = true;
-                break;
-            }
-            i++;
-        }
-        if (already_blocked) {
-            return <button onClick={() => unblock(username)}>unblock</button>;
-        } else {
-            return <button onClick={() => blockUser(username)}>block</button>;
-        }
     }
 
     function displayProfileOrError() {
@@ -147,8 +89,44 @@ const UserProfile = () => {
                     )}
                     <h3>{username}</h3>
                     <div>
-                        {friendOrUnfriend(username)}
-                        {blockOrUnblock()}
+                        {friend ? (
+                            <button
+                                onClick={() => {
+                                    user.removeFriend(username);
+                                    setFriend(false);
+                                }}
+                            >
+                                remove friend
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    user.addFriend(username);
+                                    setFriend(true);
+                                }}
+                            >
+                                add friend
+                            </button>
+                        )}
+                        {blocked ? (
+                            <button
+                                onClick={() => {
+                                    user.unblock(username);
+                                    setBlocked(false);
+                                }}
+                            >
+                                unblock
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    user.block(username);
+                                    setBlocked(true);
+                                }}
+                            >
+                                block
+                            </button>
+                        )}
                         <button onClick={() => goToPrevious()}>return</button>
                     </div>
                 </>

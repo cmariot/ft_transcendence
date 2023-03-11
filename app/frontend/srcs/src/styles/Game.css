@@ -12,6 +12,7 @@
  * 6. ball movements  X
  ************************************************************************ */
 
+/*
 * {
     color: radial-gradient(
         circle at 50% 120%,
@@ -20,7 +21,7 @@
         #05610539 80%,
         #06274572 100%
     );
-}
+}*/
 
 /* FULLSCREEN This is the main rectangle
 Overflow is used to hide the scroll bar,
@@ -37,7 +38,7 @@ Display flex is used to display the board and social side by side
 .Board {
     width: 100%;
     height: 100%;
-    background: radial-gradient(
+    background-image: radial-gradient(
         circle at 50% 120%,
         #81e8f6,
         #76deef 10%,
@@ -57,7 +58,7 @@ visibility will be used when a point is scored
     height: 15px;
     width: 15px;
     border-radius: 50%;
-    background: radial-gradient(
+    background-image: radial-gradient(
         circle at 50% 120%,
         #81e8f6,
         #5ba7b3 10%,
@@ -85,7 +86,7 @@ position: absolute is used to position = relative to its parent element
     top: 50%;
     position: absolute;
 
-    background: radial-gradient(
+    background-image: radial-gradient(
         circle at 50% 120%,
         #81e8f6,
         #76deef 10%,
@@ -98,7 +99,7 @@ position: absolute is used to position = relative to its parent element
 /* transform is  */
 .Paddle1 {
     left: 5px;
-    background: radial-gradient(
+    background-image: radial-gradient(
         circle at 50% 120%,
         #81e8f6,
         #76deef 10%,
@@ -109,7 +110,7 @@ position: absolute is used to position = relative to its parent element
 
 .Paddle2 {
     right: 5px;
-    background: radial-gradient(
+    background-image: radial-gradient(
         circle at 50% 120%,
         #81e8f6,
         #76deef 10%,
@@ -128,11 +129,4 @@ position: absolute is used to position = relative to its parent element
     position: absolute;
     right: 50px;
     z-index: 2;
-}
-
-.center {
-    position: center;
-    z-index: 3;
-
-    /* visibility:hidden; */
 }

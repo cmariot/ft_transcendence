@@ -4,7 +4,7 @@ import { UserContext } from "./UserProvider";
 
 export type SocketContextType = Socket;
 
-export const socket = io("mbp.local:8443");
+const socket: Socket = io("mbp.local:8443");
 
 export const SocketContext = createContext(socket);
 

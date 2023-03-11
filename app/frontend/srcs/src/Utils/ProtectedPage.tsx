@@ -9,11 +9,9 @@ export default function ProtectedPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user.isLogged === false) {
-            const authCookie = getCookie("authentification");
-            if (!authCookie) {
-                return navigate("/login");
-            }
+        const authCookie = getCookie("authentification");
+        if (!authCookie) {
+            return navigate("/login");
         }
     }, [user.isLogged, navigate]);
 
@@ -38,10 +36,7 @@ export default function ProtectedPage() {
                     }
 
                     const username = profileResponse.data.username;
-                    const avatar =
-                        "/api/profile/" +
-                        profileResponse.data.username +
-                        "/image";
+                    const avatar = "/api/profile/" + username + "/image";
                     const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
                     const firstLog = profileResponse.data.firstLog;
                     const friends = friendsResponse.data;
@@ -64,12 +59,57 @@ export default function ProtectedPage() {
                         console.log(error);
                     }
 
+                    for (let i = 0; i < friends.length; i++) {
+                        try {
+                            const url =
+                                "/api/profile/" +
+                                friends[i].username +
+                                "/image";
+                            const avatarResponse = await axios.get(url, {
+                                responseType: "blob",
+                            });
+                            if (avatarResponse.status === 200) {
+                                imageUrl = URL.createObjectURL(
+                                    avatarResponse.data
+                                );
+                                friends[i].avatar = imageUrl;
+                            } else {
+                                friends[i].avatar = url;
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+
+                    for (let i = 0; i < blocked.length; i++) {
+                        try {
+                            const url =
+                                "/api/profile/" +
+                                blocked[i].username +
+                                "/image";
+                            const avatarResponse = await axios.get(url, {
+                                responseType: "blob",
+                            });
+                            if (avatarResponse.status === 200) {
+                                imageUrl = URL.createObjectURL(
+                                    avatarResponse.data
+                                );
+                                blocked[i].avatar = imageUrl;
+                            } else {
+                                blocked[i].avatar = url;
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+
                     user.editUsername(username);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);
+
                     if (firstLog) {
                         return navigate("/welcome");
                     }

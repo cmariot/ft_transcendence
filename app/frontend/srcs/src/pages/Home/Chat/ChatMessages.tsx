@@ -49,25 +49,18 @@ const ChatMessages = () => {
     }
 
     async function blockUser(username: string) {
+        user.block(username);
         await axios
-            .post("/api/profile/block", { username: username })
-            .then(async (response) => {
-                user.setBlocked(response.data);
-                await axios
-                    .post("/api/chat/connect", {
-                        channelName: chat.channel,
-                    })
-                    .then((response) => {
-                        chat.setMessages(response.data.messages);
-                        chat.setisChannelOwner(response.data.channel_owner);
-                        chat.setisChannelAdmin(response.data.channel_admin);
-                        chat.setAdmins(response.data.channel_admins);
-                        chat.setmutedUsers(response.data.muted_users);
-                        chat.setbannedUsers(response.data.banned_users);
-                    })
-                    .catch((error) => {
-                        console.log(error.data);
-                    });
+            .post("/api/chat/connect", {
+                channelName: chat.channel,
+            })
+            .then((response) => {
+                chat.setMessages(response.data.messages);
+                chat.setisChannelOwner(response.data.channel_owner);
+                chat.setisChannelAdmin(response.data.channel_admin);
+                chat.setAdmins(response.data.channel_admins);
+                chat.setmutedUsers(response.data.muted_users);
+                chat.setbannedUsers(response.data.banned_users);
             })
             .catch((error) => {
                 console.log(error.data);
