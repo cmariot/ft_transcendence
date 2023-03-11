@@ -29,7 +29,7 @@ const AppNavBar = () => {
                             </button>
                             <img
                                 id="nav-user-picture"
-                                src={user?.avatar}
+                                src={user.avatar}
                                 onClick={() => toogleMenu()}
                                 alt="Menu"
                             />

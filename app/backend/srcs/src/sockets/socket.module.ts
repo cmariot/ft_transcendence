@@ -6,7 +6,7 @@ import { GameEntity } from "src/game/entities/game.entity";
 import { UsersService } from "src/users/services/users.service";
 import { GameService } from "src/game/services/game.service";
 import { ChatService } from "src/chat/services/chat.service";
-import { SocketService } from "./gateways/socket.service";
+import { SocketService } from "./gateways/socket.gateway";
 import { UsersModule } from "src/users/users.module";
 import { GameModule } from "src/game/game.module";
 import { ChatGateway } from "./gateways/chatGateway";

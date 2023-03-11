@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../../styles/Friends.css";
 import { UserContext } from "../../contexts/UserProvider";
 import FriendMenu from "./FriendMenu";
+import axios from "axios";
 
 export default function FriendsList() {
     let user = useContext(UserContext);
@@ -36,6 +37,34 @@ export default function FriendsList() {
         }
     }
 
+    useEffect(() => {
+        (async () => {
+            for (let i = 0; i < user.friends.length; i++) {
+                if (!user.friends[i].avatar) {
+                    try {
+                        const url =
+                            "/api/profile/" +
+                            user.friends[i].username +
+                            "/image";
+                        const avatarResponse = await axios.get(url, {
+                            responseType: "blob",
+                        });
+                        if (avatarResponse.status === 200) {
+                            var imageUrl = URL.createObjectURL(
+                                avatarResponse.data
+                            );
+                            user.friends[i].avatar = imageUrl;
+                        } else {
+                            user.friends[i].avatar = url;
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            }
+        })();
+    }, [user.friends, user.isLogged]);
+
     return (
         <ul id="friend-list">
             <h2>Friends list</h2>
@@ -43,9 +72,7 @@ export default function FriendsList() {
                 <li className="friend" key={index}>
                     <div className="div-friend-list">
                         <img
-                            src={
-                                "/api/profile/" + friend["username"] + "/image"
-                            }
+                            src={friend.avatar}
                             className="friend-profile-picture"
                             alt="Friend's avatar"
                         />
@@ -58,12 +85,12 @@ export default function FriendsList() {
 
                         <button
                             className="friend-profile-button"
-                            onClick={() => toogleMenu(friend)}
+                            onClick={() => toogleMenu(friend.username)}
                         >
                             Menu
                         </button>
                     </div>
-                    {showMenu === friend && (
+                    {showMenu === friend.username && (
                         <FriendMenu friend={friend} closeMenu={closeMenu} />
                     )}
                 </li>

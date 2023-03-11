@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ChatController } from "./controllers/chat.controller";
 import { ChatService } from "./services/chat.service";
 import { ChatGateway } from "../sockets/gateways/chatGateway";
-import { SocketService } from "../sockets/gateways/socket.service";
+import { SocketService } from "../sockets/gateways/socket.gateway";
 import { UsersService } from "src/users/services/users.service";
 import { UsersModule } from "src/users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";

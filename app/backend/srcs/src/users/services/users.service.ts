@@ -12,7 +12,7 @@ import {} from "typeorm";
 import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
-import { SocketService } from "src/sockets/gateways/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.gateway";
 @Injectable()
 export class UsersService {
     constructor(
@@ -22,8 +22,8 @@ export class UsersService {
     ) {}
 
     // Get all the users in the database
-    getUsers(): Promise<UserEntity[]> {
-        return this.userRepository.find();
+    async getUsers(): Promise<UserEntity[]> {
+        return await this.userRepository.find();
     }
 
     // uuid -> UserEntity || null
@@ -33,12 +33,12 @@ export class UsersService {
 
     // username -> UserEntity || null
     async getByUsername(username: string): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ username: username });
+        return await this.userRepository.findOneBy({ username: username });
     }
 
     // id42 -> UserEntity || null
     async getById42(id42: number): Promise<UserEntity> {
-        return this.userRepository.findOneBy({ id42: id42 });
+        return await this.userRepository.findOneBy({ id42: id42 });
     }
 
     // uuid -> username
@@ -50,7 +50,7 @@ export class UsersService {
 
     // Delete an UserEntity from the database
     async deleteUser(uuid: string) {
-        return this.userRepository.delete({ uuid: uuid });
+        return await this.userRepository.delete({ uuid: uuid });
     }
 
     async getBySocket(socket: string): Promise<UserEntity> {

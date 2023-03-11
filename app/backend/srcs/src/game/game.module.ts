@@ -6,7 +6,7 @@ import { UserEntity } from "src/users/entity/user.entity";
 import { GameService } from "./services/game.service";
 import { GameController } from "./controllers/game.controller";
 import { GameEntity } from "./entities/game.entity";
-import { SocketService } from "src/sockets/gateways/socket.service";
+import { SocketService } from "src/sockets/gateways/socket.gateway";
 import { GameGateway } from "../sockets/gateways/gameGateways";
 
 @Module({

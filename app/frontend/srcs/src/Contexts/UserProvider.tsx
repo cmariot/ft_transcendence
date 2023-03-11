@@ -4,7 +4,7 @@ export type UserContextType = {
     username: string;
     avatar: string;
     doubleAuth: boolean;
-    friends: string[];
+    friends: { username: string; status: string; avatar: string }[];
     blocked: string[];
     isLogged: boolean;
     isFirstLog: boolean;
@@ -17,7 +17,7 @@ export const UserContext = createContext({
     editAvatar: (newAvatar: string) => {},
     doubleAuth: true,
     editDoubleAuth: (newValue: boolean) => {},
-    friends: [],
+    friends: new Array<{ username: string; status: string; avatar: string }>(),
     setFriends: (friends: []) => {},
     blocked: [],
     setBlocked: (blocked: []) => {},
@@ -34,7 +34,9 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [username, editUsername] = useState("");
     const [avatar, editAvatar] = useState("");
     const [doubleAuth, editDoubleAuth] = useState(true);
-    const [friends, setFriends] = useState([]);
+    const [friends, setFriends] = useState<
+        { username: string; status: string; avatar: string }[]
+    >(new Array<{ username: string; status: string; avatar: string }>());
     const [blocked, setBlocked] = useState([]);
     const [isLogged, setIsLogged] = useState(false);
     const [isFirstLog, setIsFirstLog] = useState(false);

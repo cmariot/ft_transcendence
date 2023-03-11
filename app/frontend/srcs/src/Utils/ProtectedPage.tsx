@@ -47,8 +47,24 @@ export default function ProtectedPage() {
                     const friends = friendsResponse.data;
                     const blocked = blockedResponse.data;
 
+                    try {
+                        const avatarResponse = await axios.get(avatar, {
+                            responseType: "blob",
+                        });
+                        if (avatarResponse.status === 200) {
+                            var imageUrl = URL.createObjectURL(
+                                avatarResponse.data
+                            );
+                            user.editAvatar(imageUrl);
+                        } else {
+                            user.editAvatar(avatar);
+                        }
+                    } catch (error) {
+                        user.editAvatar(avatar);
+                        console.log(error);
+                    }
+
                     user.editUsername(username);
-                    user.editAvatar(avatar);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
                     user.setBlocked(blocked);

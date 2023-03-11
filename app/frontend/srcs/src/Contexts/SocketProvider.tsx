@@ -1,53 +1,38 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { createContext, useContext, useEffect } from "react";
+import { Socket, io } from "socket.io-client";
 import { UserContext } from "./UserProvider";
-import axios from "axios";
-import { ChatContext } from "./ChatProvider";
 
-let host: string =
-    process.env.SOCKETHOST !== undefined ? process.env.SOCKETHOST : "";
+export type SocketContextType = Socket;
 
-export type SocketContextType = {};
+export const socket = io("mbp.local:8443");
 
-export const socket = io(host);
-
-export const SocketContext = createContext({
-    socket: socket,
-});
+export const SocketContext = createContext(socket);
 
 type SocketProviderProps = { children: JSX.Element | JSX.Element[] };
 const SocketProvider = ({ children }: SocketProviderProps) => {
     const user = useContext(UserContext);
-    const chat = useContext(ChatContext);
 
-    // Emit login events
     useEffect(() => {
-        if (user.username.length && user.isLogged) {
-            if (!socket.connected) {
-                socket.on("connect", () => {
-                    socket.emit("userStatus", {
-                        status: "Online",
-                        socket: socket.id,
-                        username: user.username,
-                    });
-                });
-            } else {
-                console.log("on connect");
-                socket.emit("userStatus", {
-                    status: "Online",
-                    socket: socket.id,
-                    username: user.username,
-                });
-            }
+        if (user.isLogged && user.username.length) {
+            socket.emit("user.login", { username: user.username });
         }
     }, [user.isLogged, user.username]);
 
-    const value = {
-        socket: socket,
-    };
+    useEffect(() => {
+        function updateStatus(data: { username: string; status: string }) {
+            console.log("Event received :", data);
+            if (data.username === user.username) {
+                user.setStatus(data.status);
+            }
+        }
+        socket.on("status.update", updateStatus);
+        return () => {
+            socket.off("status.update", updateStatus);
+        };
+    }, []);
 
     return (
-        <SocketContext.Provider value={value}>
+        <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
     );

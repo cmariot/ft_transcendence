@@ -12,30 +12,34 @@ const UserProfile = () => {
     const params: any = useLoaderData();
     const navigate = useNavigate();
     const [found, setFound] = useState(true);
+    const [image, setImage] = useState("");
 
     let user = useContext(UserContext);
 
-    let username: string = params.user;
-    let userImage: string = "/api/profile/" + username + "/image";
+    const username: string = params.user;
+    const imageURL: string = "/api/profile/" + username + "/image";
 
     useEffect(() => {
         if (user.username === username) {
             return navigate("/profile");
         }
-
-        axios
-            .get("/api/profile/" + username + "/image")
-            .then((response) => {
-                if (found === false) {
+        (async () => {
+            try {
+                const avatarResponse = await axios.get(imageURL, {
+                    responseType: "blob",
+                });
+                if (avatarResponse.status === 200) {
+                    var imageUrl = URL.createObjectURL(avatarResponse.data);
+                    setImage(imageUrl);
                     setFound(true);
-                }
-            })
-            .catch((error) => {
-                if (found === true) {
+                } else {
                     setFound(false);
                 }
-            });
-    });
+            } catch (error) {
+                console.log(error);
+            }
+        })();
+    }, [imageURL, navigate, user.username, username]);
 
     function goToPrevious() {
         navigate(-1);
@@ -134,10 +138,10 @@ const UserProfile = () => {
             return (
                 <>
                     <h2>{username}'s profile</h2>
-                    {userImage && (
+                    {image && (
                         <img
                             id="profile-user-picture"
-                            src={userImage}
+                            src={image}
                             alt="user-imag"
                         />
                     )}

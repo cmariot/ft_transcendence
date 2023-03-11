@@ -6,20 +6,20 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 
-@Injectable()
-@WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
+//@Injectable()
+//@WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
 export class GameGateway {
-    @WebSocketServer()
-    server: Server;
+    //    @WebSocketServer()
+    //   server: Server;
 
     async sendCancel(socketId: string, status: string) {
-        this.server.to(socketId).emit("gameStatus", {
-            status: "Cancel",
-        });
+        //this.server.to(socketId).emit("gameStatus", {
+        //    status: "Cancel",
+        //});
     }
 
     async sendInvitation(socketId: string, hostID: string) {
-        this.server.to(socketId).emit("gameInvitation", { host: hostID });
+        //this.server.to(socketId).emit("gameInvitation", { host: hostID });
     }
 
     async sendEndGameStatus(
@@ -27,9 +27,9 @@ export class GameGateway {
         status: string,
         victory: boolean
     ) {
-        this.server.to(socketId).emit("EndGameStatus", {
-            status: status,
-            victory: victory,
-        });
+        //this.server.to(socketId).emit("EndGameStatus", {
+        //    status: status,
+        //    victory: victory,
+        //});
     }
 }
