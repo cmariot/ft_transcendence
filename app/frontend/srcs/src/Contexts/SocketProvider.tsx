@@ -16,20 +16,20 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         if (user.isLogged && user.username.length) {
             socket.emit("user.login", { username: user.username });
         }
+        return () => {
+            socket.off("user.login");
+        };
     }, [user.isLogged, user.username]);
 
     useEffect(() => {
         function updateStatus(data: { username: string; status: string }) {
             console.log("Event received :", data);
-            if (data.username === user.username) {
-                user.setStatus(data.status);
-            }
         }
         socket.on("status.update", updateStatus);
         return () => {
             socket.off("status.update", updateStatus);
         };
-    }, []);
+    }, [user.username]);
 
     return (
         <SocketContext.Provider value={socket}>

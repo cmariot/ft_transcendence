@@ -20,7 +20,7 @@ export class SocketService {
         console.log(`cient connected: ${client.id}`);
     }
 
-    // Disconnection client
+    // Deconnection client
     handleDisconnect(client: Socket) {
         console.log(`cient disconnected: ${client.id}`);
     }
@@ -32,9 +32,11 @@ export class SocketService {
         @ConnectedSocket() client: Socket
     ) {
         console.log(data.username, "is logged in. His socket is :", client.id);
+        // + Envoi d'event
         this.sendStatus(data.username, "online");
     }
 
+    // Envoyer un event
     async sendStatus(username: string, status: string) {
         this.server.emit("status.update", {
             username: username,

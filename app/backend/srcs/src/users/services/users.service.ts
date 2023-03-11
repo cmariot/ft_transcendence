@@ -144,7 +144,7 @@ export class UsersService {
             user.status = "Offline";
             return user.username;
         }
-        return "good bye";
+        return null;
     }
 
     // Set a new username
