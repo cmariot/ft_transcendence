@@ -2,8 +2,18 @@ import LoginLocal from "./LoginLocal";
 import Login42 from "./Login42";
 import NoAccount from "./NoAccount";
 import "../../styles/Login.css";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../../contexts/UserProvider";
 
 const Login = () => {
+    const user = useContext(UserContext);
+
+    useEffect(() => {
+        if (user.isForcedLogout) {
+            user.setIsForcedLogout(false);
+        }
+    }, [user]);
+
     return (
         <section id="auth-content">
             <article>

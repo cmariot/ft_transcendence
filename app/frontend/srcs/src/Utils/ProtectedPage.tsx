@@ -10,23 +10,16 @@ export default function ProtectedPage() {
 
     useEffect(() => {
         if (user.isForcedLogout) {
-            console.log("USER =", user);
             user.setIsForcedLogout(false);
             user.editUsername("");
             user.setIsLogged(false);
-            return navigate("/login");
-        }
-    }, [user, navigate]);
-
-    useEffect(() => {
-        const authCookie = getCookie("authentification");
-        if (!authCookie) {
-            return navigate("/login");
-        }
-    }, [user.isLogged, navigate]);
-
-    useEffect(() => {
-        if (user.isLogged === false) {
+            navigate("/login");
+        } else if (user.isLogged) {
+            const authCookie = getCookie("authentification");
+            if (!authCookie) {
+                return navigate("/login");
+            }
+        } else if (user.isLogged === false) {
             const authCookie = getCookie("authentification");
             if (!authCookie) {
                 return navigate("/login");
@@ -135,7 +128,7 @@ export default function ProtectedPage() {
                 }
             })();
         }
-    });
+    }, [navigate, user]);
 
     return user.isLogged ? <Outlet /> : null;
 }
