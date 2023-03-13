@@ -8,79 +8,59 @@ import {
 import { Server } from "socket.io";
 import { GameService } from "src/game/services/game.service";
 import { UsersService } from "src/users/services/users.service";
-//@WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
+
+@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
 export class ChatGateway {
-    //    @WebSocketServer()
-    //  server: Server;
+    constructor(private userService: UsersService) {}
 
-    //    onModuleInit() {
-    //        //    // Ca leak ici
-    //        //    //this.server.setMaxListeners(100);
-    //        this.server.on("connection", (socket) => {
-    //            socket.on("disconnect", async () => {
-    //                //            //let user = await this.userService.getBySocket(socket.id);
-    //                //            //if (user) {
-    //                //            //    if (
-    //                //            //        user.status === "MatchMaking" ||
-    //                //            //        user.status === "In_Game"
-    //                //            //    ) {
-    //                //            //        //this.gameService.handleDisconnect(user);
-    //                //            //    }
-    //                //            //}
-    //                //            //let username = await this.userService.userDisconnection(
-    //                //            //    socket.id
-    //                //            //);
-    //                //            //if (username) {
-    //                //            //    this.sendStatus(username, "Offline");
-    //                //            //}
-    //            });
-    //        });
-    //    }
+    @WebSocketServer()
+    server: Server;
 
+    // Emit an event when a new channel is available
     channelUpdate() {
-        //this.server.emit("newChannelAvailable");
+        this.server.emit("chat.channels.update");
     }
 
+    // Join the chat channel room and leave the previous joined rooms
     async userJoinChannel(channel: string, username: string) {
-        // let user = await this.userService.getByUsername(username);
-        // if (!user) {
-        //     return;
-        // }
-        // let i = 0;
-        // while (i < user.socketId.length) {
-        //     let socket_key = user.socketId[i];
-        //     let socket = this.server.sockets.sockets.get(socket_key);
-        //     if (socket) {
-        //         for (let room of socket.rooms) {
-        //             let valid = true;
-        //             for (
-        //                 let k = 0;
-        //                 k < "chatroom_".length && k < room[k].length;
-        //                 k++
-        //             ) {
-        //                 if (room[k] !== "chatroom_"[k]) {
-        //                     valid = false;
-        //                     break;
-        //                 }
-        //             }
-        //             if (valid === true && room.length > "chatroom_".length) {
-        //                 socket.leave(room);
-        //             }
-        //         }
-        //         let room_name: string = "chatroom_" + channel;
-        //         socket.join(room_name);
-        //     }
-        //     i++;
-        // }
+        let user = await this.userService.getByUsername(username);
+        if (!user) {
+            return;
+        }
+        let i = 0;
+        while (i < user.socketId.length) {
+            let socket = this.server.sockets.sockets.get(user.socketId[i]);
+            if (socket) {
+                for (let room of socket.rooms) {
+                    let valid = true;
+                    for (
+                        let k = 0;
+                        k < "chatroom_".length && k < room[k].length;
+                        k++
+                    ) {
+                        if (room[k] !== "chatroom_"[k]) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (valid === true && room.length > "chatroom_".length) {
+                        socket.leave(room);
+                    }
+                }
+                let room_name: string = "chatroom_" + channel;
+                socket.join(room_name);
+            }
+            i++;
+        }
     }
 
+    // Emit a 'chat.message' event
     send_message(channel: string, username: string, message: string) {
-        //this.server.to("chatroom_" + channel).emit("newChatMessage", {
-        //    channel: channel,
-        //    username: username,
-        //    message: message,
-        //});
-        //return message;
+        this.server.to("chatroom_" + channel).emit("chat.message", {
+            channel: channel,
+            username: username,
+            message: message,
+        });
     }
 
     ban_user(channel: string, username: string) {
@@ -105,31 +85,6 @@ export class ChatGateway {
         //});
         //return username;
     }
-
-    //@SubscribeMessage("userStatus")
-    //async userStatus(@MessageBody() data: any) {
-    //    let username: string = data.username;
-    //    let socketID: string = data.socket;
-    //    let status: string = data.status;
-    //    let user: string;
-    //    if (username && socketID && status === "Online") {
-    //        user = await this.userService.setSocketID(
-    //            username,
-    //            socketID,
-    //            status
-    //        );
-    //    }
-    //    if (socketID && status === "Offline") {
-    //        user = await this.userService.userDisconnection(socketID);
-    //    }
-    //    if (socketID && status === "In_Game") {
-    //        user = await this.userService.setStatus(socketID, status);
-    //    }
-    //    if (socketID && status === "MatchMaking") {
-    //        user = await this.userService.setStatus(socketID, status);
-    //    }
-    //    //this.sendStatus(user, data.status);
-    //}
 
     async sendStatus(username: string, status: string) {
         //this.server.emit("userStatus", {

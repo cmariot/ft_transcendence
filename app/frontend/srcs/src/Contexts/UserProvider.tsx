@@ -9,6 +9,7 @@ export type UserContextType = {
     blocked: { username: string; avatar: string }[];
     isLogged: boolean;
     isFirstLog: boolean;
+    isForcedLogout: boolean;
 };
 
 export const UserContext = createContext({
@@ -40,6 +41,8 @@ export const UserContext = createContext({
     removeFriend: async (username: string) => {},
     block: async (username: string) => {},
     unblock: async (username: string) => {},
+    isForcedLogout: false,
+    setIsForcedLogout: (newValue: boolean) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -56,6 +59,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [isLogged, setIsLogged] = useState(false);
     const [isFirstLog, setIsFirstLog] = useState(false);
     const [status, setStatus] = useState("");
+    const [isForcedLogout, setIsForcedLogout] = useState(false);
 
     async function addFriend(friendUsername: string) {
         let friendList = friends;
@@ -187,6 +191,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
         removeFriend,
         block,
         unblock,
+        isForcedLogout,
+        setIsForcedLogout,
     };
 
     return (

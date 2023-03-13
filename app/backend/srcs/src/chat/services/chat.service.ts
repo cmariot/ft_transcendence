@@ -543,20 +543,17 @@ export class ChatService {
             });
             if (index_in_authorized_channels !== -1) {
                 channel = channels[index_in_authorized_channels];
-
                 let allowed_user = channel.allowed_users.findIndex(
                     (element) => {
                         if (element.uuid === user.uuid) return 1;
                     }
                 );
-
                 if (allowed_user === -1) {
                     throw new HttpException(
                         "Unauthorized.",
                         HttpStatus.UNAUTHORIZED
                     );
                 }
-
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -585,8 +582,6 @@ export class ChatService {
                     { users: channel_users }
                 );
             }
-
-            this.chatGateway.channelUpdate();
             await this.chatGateway.userJoinChannel(
                 channel.channelName,
                 user.username
@@ -650,7 +645,6 @@ export class ChatService {
                         { uuid: channel.uuid },
                         { mutted_users: muted }
                     );
-                    this.chatGateway.channelUpdate();
                 }
                 break;
             }
@@ -815,7 +809,6 @@ export class ChatService {
                     throw new UnauthorizedException();
                 }
             }
-            this.chatGateway.channelUpdate();
         } else if (channel.channelType === ChannelType.PRIVATE) {
             this.chatGateway.deleted_channel(
                 channel.channelName,
@@ -858,7 +851,6 @@ export class ChatService {
                 }
             }
         }
-        this.chatGateway.channelUpdate();
     }
 
     async upodateChannelPassword(
@@ -924,7 +916,6 @@ export class ChatService {
         } else {
             throw new UnauthorizedException();
         }
-        this.chatGateway.channelUpdate();
         return "updated";
     }
 
@@ -1207,7 +1198,6 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
-        this.chatGateway.channelUpdate();
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
             let user = await this.userService.getByID(currentBanned[j].uuid);
@@ -1333,7 +1323,6 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
-        this.chatGateway.channelUpdate();
         let mute_usernames_list: string[] = [];
         for (let j = 0; j < currentMuted.length; j++) {
             let user = await this.userService.getByID(currentMuted[j].uuid);
@@ -1380,7 +1369,6 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { mutted_users: currentMuted }
         );
-        this.chatGateway.channelUpdate();
         let mute_usernames_list: string[] = [];
         for (let j = 0; j < currentMuted.length; j++) {
             let user = await this.userService.getByID(currentMuted[j].uuid);

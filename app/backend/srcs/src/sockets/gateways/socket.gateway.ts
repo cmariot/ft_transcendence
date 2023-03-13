@@ -10,8 +10,8 @@ import {
 
 @Injectable()
 export class SocketService {
-    @WebSocketServer()
-    server: Server;
+    //@WebSocketServer()
+    //server: Server;
 
     async sendStatus(username: string, status: string) {
         //this.server.emit("status.update", {

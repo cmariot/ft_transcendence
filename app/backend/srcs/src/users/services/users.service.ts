@@ -14,6 +14,7 @@ import * as fs from "fs";
 import { join } from "path";
 import { SocketService } from "src/sockets/gateways/socket.gateway";
 import { UserGateway } from "src/sockets/gateways/user.gateway";
+import { ConnectionGateway } from "src/sockets/gateways/connection.gateway";
 @Injectable()
 export class UsersService {
     constructor(
@@ -93,16 +94,10 @@ export class UsersService {
     }
 
     // Set the status on 'online' and save the socket id
-    async login(username: string, socketID: string) {
-        const user: UserEntity = await this.getByUsername(username);
-        if (!user) {
-            throw new UnauthorizedException("User not found.");
-        }
-        let sockets = user.socketId;
-        sockets.push(socketID);
+    async login(uuid: string, socketID: string[]) {
         return await this.userRepository.update(
-            { uuid: user.uuid },
-            { status: "online", socketId: sockets }
+            { uuid: uuid },
+            { status: "online", socketId: socketID }
         );
     }
 
@@ -117,10 +112,19 @@ export class UsersService {
         if (index !== -1) {
             sockets.slice(index, 1);
         }
-        return await this.userRepository.update(
-            { uuid: user.uuid },
-            { status: "offline", socketId: sockets }
-        );
+        if (sockets.length > 0) {
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { socketId: sockets }
+            );
+            return null;
+        } else {
+            await this.userRepository.update(
+                { uuid: user.uuid },
+                { status: "offline", socketId: sockets }
+            );
+            return user.username;
+        }
     }
 
     async user_status(username: string, status: string) {

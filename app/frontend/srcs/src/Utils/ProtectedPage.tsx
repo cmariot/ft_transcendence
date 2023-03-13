@@ -9,6 +9,15 @@ export default function ProtectedPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (user.isForcedLogout) {
+            user.setIsLogged(false);
+            user.editUsername("");
+            user.setIsForcedLogout(false);
+            return navigate("/login");
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
         const authCookie = getCookie("authentification");
         if (!authCookie) {
             return navigate("/login");
@@ -113,7 +122,6 @@ export default function ProtectedPage() {
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);
-
                     if (firstLog) {
                         return navigate("/welcome");
                     }

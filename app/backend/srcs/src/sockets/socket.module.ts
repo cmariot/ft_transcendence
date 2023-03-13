@@ -21,10 +21,10 @@ import { UserGateway } from "./gateways/user.gateway";
         GameModule,
     ],
     providers: [
+        UsersService,
         ConnectionGateway,
         UserGateway,
         GameService,
-        UsersService,
         ChatService,
         SocketService,
         ChatGateway,

@@ -317,12 +317,6 @@ export class AuthService {
         @Req() req,
         @Res() res
     ) {
-        let i = 0;
-        while (i < user.socketId.length) {
-            await this.socketService.disconnect_user(user.socketId[i]);
-            i++;
-        }
-        await this.usersService.clearSocket(user.uuid);
         const twelveHours = 1000 * 60 * 60 * 12;
         const cookie_value: string = this.sign_cookie(user, type);
         if (user.createdFrom === CreatedFrom.OAUTH42) {

@@ -182,7 +182,9 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
                             arrayToMap(channelsResponse.data.availableChannels)
                         );
                     }
-                } catch (error) {}
+                } catch (error) {
+                    console.log(error);
+                }
             })();
         }
     }, [user.isLogged]);

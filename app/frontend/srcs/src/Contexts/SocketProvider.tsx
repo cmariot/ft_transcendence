@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useCallback, useContext, useEffect } from "react";
 import { Socket, io } from "socket.io-client";
 import { UserContext } from "./UserProvider";
 import axios from "axios";
+import { ChatContext } from "./ChatProvider";
 
 export type SocketContextType = Socket;
 
@@ -12,7 +13,22 @@ export const SocketContext = createContext(socket);
 type SocketProviderProps = { children: JSX.Element | JSX.Element[] };
 const SocketProvider = ({ children }: SocketProviderProps) => {
     const user = useContext(UserContext);
+    const chat = useContext(ChatContext);
 
+    useEffect(() => {
+        function logout() {
+            console.log(
+                "user.disconnect: disconnect this client (another connexion started)"
+            );
+            user.setIsForcedLogout(true);
+        }
+        socket.on("user.disconnect", logout);
+        return () => {
+            socket.off("user.disconnect", logout);
+        };
+    }, [user]);
+
+    // Emit an event at login
     useEffect(() => {
         if (user.isLogged && user.username.length) {
             socket.emit("user.login", { username: user.username });
@@ -22,6 +38,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         };
     }, [user.isLogged, user.username]);
 
+    // Emit an event at logout
     useEffect(() => {
         if (!user.isLogged && user.username.length) {
             socket.emit("user.logout", { username: user.username });
@@ -31,9 +48,8 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         };
     }, [user.isLogged, user.username]);
 
-    useEffect(() => {
-        function updateStatus(data: { username: string; status: string }) {
-            console.log("status.update :", data.username, "is", data.status);
+    const updateStatus = useCallback(
+        (data: { username: string; status: string }) => {
             if (data.username === user.username) {
                 user.setStatus(data.status);
             } else {
@@ -46,13 +62,19 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
                     user.setFriends(friends);
                 }
             }
-        }
+        },
+        [user]
+    );
+
+    // Subscribe to status.update : update the user status or friends status
+    useEffect(() => {
         socket.on("status.update", updateStatus);
         return () => {
             socket.off("status.update", updateStatus);
         };
-    }, [user]);
+    }, [user, updateStatus]);
 
+    // Subscribe to user.update.username : update username of othe users when changed
     useEffect(() => {
         function updateFriendUsername(data: {
             previousUsername: string;
@@ -149,6 +171,55 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
             socket.off("user.update.avatar", updateFriendAvatar);
         };
     }, [user]);
+
+    useEffect(() => {
+        function updateChannels() {
+            console.log("chat.channels.update :");
+            function arrayToMap(array: Array<any>) {
+                let map = new Map<
+                    string,
+                    { channelName: string; channelType: string }
+                >();
+                for (let i = 0; i < array.length; i++) {
+                    if (array[i].channelName) {
+                        map.set(array[i].channelName, array[i]);
+                    }
+                }
+                return map;
+            }
+            if (user.isLogged) {
+                (async () => {
+                    try {
+                        const [channelsResponse] = await Promise.all([
+                            axios.get("/api/chat/channels"),
+                        ]);
+
+                        if (channelsResponse.status === 200) {
+                            chat.updateUserChannels(
+                                arrayToMap(channelsResponse.data.userChannels)
+                            );
+                            chat.updateUserPrivateChannels(
+                                arrayToMap(
+                                    channelsResponse.data.userPrivateChannels
+                                )
+                            );
+                            chat.updateAvailableChannels(
+                                arrayToMap(
+                                    channelsResponse.data.availableChannels
+                                )
+                            );
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                })();
+            }
+        }
+        socket.on("chat.channels.update", updateChannels);
+        return () => {
+            socket.off("chat.channels.update", updateChannels);
+        };
+    }, [chat, user.isLogged]);
 
     return (
         <SocketContext.Provider value={socket}>
