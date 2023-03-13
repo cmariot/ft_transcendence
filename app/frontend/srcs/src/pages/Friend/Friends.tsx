@@ -36,6 +36,14 @@ export default function Friends() {
             setUpdate((prevState) => !prevState);
         }
 
+        socket.on("status.update", updateStatus);
+
+        return () => {
+            socket.off("status.update", updateStatus);
+        };
+    }, [user, socket]);
+
+    useEffect(() => {
         async function updateFriendAvatar(data: { username: string }) {
             if (data.username !== user.username) {
                 let friends = user.friends;
@@ -85,12 +93,50 @@ export default function Friends() {
             }
         }
 
-        socket.on("status.update", updateStatus);
         socket.on("user.update.avatar", updateFriendAvatar);
 
         return () => {
-            socket.off("status.update", updateStatus);
             socket.off("user.update.avatar", updateFriendAvatar);
+        };
+    }, [user, socket]);
+
+    useEffect(() => {
+        function updateFriendUsername(data: {
+            previousUsername: string;
+            newUsername: string;
+        }) {
+            console.log(
+                "user.update.username :",
+                data.previousUsername,
+                "changed his username to",
+                data.newUsername
+            );
+            // reconnexion au chat pour mettre a jour les messages
+            if (data.newUsername !== user.username) {
+                let friends = user.friends;
+                let index = friends.findIndex(
+                    (friend) => friend.username === data.previousUsername
+                );
+                if (index !== -1) {
+                    friends[index].username = data.newUsername;
+                    user.setFriends(friends);
+                }
+                let blocked = user.blocked;
+                index = blocked.findIndex(
+                    (blocked) => blocked.username === data.previousUsername
+                );
+                if (index !== -1) {
+                    blocked[index].username = data.newUsername;
+                    user.setBlocked(friends);
+                }
+            }
+            setUpdate((prevState) => !prevState);
+        }
+
+        socket.on("user.update.username", updateFriendUsername);
+
+        return () => {
+            socket.off("user.update.username", updateFriendUsername);
         };
     }, [user, socket]);
 
