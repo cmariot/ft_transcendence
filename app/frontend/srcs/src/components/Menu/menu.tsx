@@ -19,6 +19,7 @@ export const Menu = () => {
             await axios.get("/api/logout");
             menu.close();
             user.setIsLogged(false);
+            user.setHasSatusUpdate(true);
             return navigate("/login");
         } catch (error) {
             console.log(error);

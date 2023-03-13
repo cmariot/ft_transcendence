@@ -43,6 +43,8 @@ export const UserContext = createContext({
     unblock: async (username: string) => {},
     isForcedLogout: false,
     setIsForcedLogout: (newValue: boolean) => {},
+    hasSatusUpdate: false,
+    setHasSatusUpdate: (newValue: boolean) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -60,6 +62,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [isFirstLog, setIsFirstLog] = useState(false);
     const [status, setStatus] = useState("");
     const [isForcedLogout, setIsForcedLogout] = useState(false);
+    const [hasSatusUpdate, setHasSatusUpdate] = useState(false);
 
     async function addFriend(friendUsername: string) {
         let friendList = friends;
@@ -193,6 +196,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
         unblock,
         isForcedLogout,
         setIsForcedLogout,
+        hasSatusUpdate,
+        setHasSatusUpdate,
     };
 
     return (

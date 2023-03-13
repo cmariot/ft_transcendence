@@ -17,9 +17,6 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
     useEffect(() => {
         function logout() {
-            console.log(
-                "user.disconnect: disconnect this client (another connexion started)"
-            );
             user.setIsForcedLogout(true);
         }
         socket.on("user.disconnect", logout);
@@ -30,23 +27,26 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
     // Emit an event at login
     useEffect(() => {
-        if (user.isLogged && user.username.length) {
+        if (user.isLogged && user.username.length && user.hasSatusUpdate) {
+            console.log("Emit event user.login");
             socket.emit("user.login", { username: user.username });
+            user.setHasSatusUpdate(false);
         }
         return () => {
             socket.off("user.login");
         };
-    }, [user.isLogged, user.username]);
+    }, [user]);
 
     // Emit an event at logout
     useEffect(() => {
-        if (!user.isLogged && user.username.length) {
+        if (!user.isLogged && user.username.length && user.hasSatusUpdate) {
             socket.emit("user.logout", { username: user.username });
+            user.setHasSatusUpdate(false);
         }
         return () => {
             socket.off("user.logout");
         };
-    }, [user.isLogged, user.username]);
+    }, [user]);
 
     const updateStatus = useCallback(
         (data: { username: string; status: string }) => {
@@ -164,9 +164,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
                 }
             }
         }
-
         socket.on("user.update.avatar", updateFriendAvatar);
-
         return () => {
             socket.off("user.update.avatar", updateFriendAvatar);
         };
