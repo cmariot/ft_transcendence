@@ -29,37 +29,26 @@ export class ConnectionGateway {
         @MessageBody() data: { username: string },
         @ConnectedSocket() client: Socket
     ) {
-        console.log(
-            "[backend] receive user.login :",
-            data.username,
-            `(${client.id})`,
-            "is online."
-        );
-        // Get the user
+        console.log(data.username, `(${client.id})`, "is online.");
         let user: UserEntity = await this.userService.getByUsername(
             data.username
         );
         if (!user) {
             throw new UnauthorizedException("User not found.");
         }
-        // Disconnect other user clients
         for (let i = 0; i < user.socketId.length; i++) {
-            this.disconnect(user.socketId[i]);
-            user.socketId.slice(i, 1);
+            await this.disconnect(user.socketId[i]);
         }
-        // Save the user socket id
-        user.socketId.push(client.id);
-        await this.userService.login(user.uuid, user.socketId);
-        // Update status
+        await this.userService.login(user.uuid, new Array<string>(client.id));
         await this.sendStatus(data.username, "online");
         return;
     }
 
     // Disconnect an user in the frontend
     async disconnect(socketID: string) {
-        console.log("disconnect", socketID, "in the frontend");
         // Emit an event to the frontend : navigate to /login and disconnect user
         this.server.to(socketID).emit("user.disconnect", { socket: socketID });
+        console.log("disconnect", socketID, "in the frontend");
         return;
     }
 
@@ -69,33 +58,32 @@ export class ConnectionGateway {
         @MessageBody() data: { username: string },
         @ConnectedSocket() client: Socket
     ) {
-        console.log(
-            "[backend] receive user.logout :",
-            data.username,
-            `(${client.id})`,
-            "is logged out."
+        console.log(data.username, `(${client.id})`, "is offline.");
+        const user: UserEntity = await this.userService.getByUsername(
+            data.username
         );
-        const username = await this.userService.logout(
-            data.username,
-            client.id
-        );
-        if (username) {
-            this.sendStatus(username, "offline");
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
         }
+        for (let i = 0; i < user.socketId.length; i++) {
+            await this.disconnect(user.socketId[i]);
+        }
+        await this.userService.logout(user.uuid);
+        this.sendStatus(user.username, "offline");
         return;
     }
 
     // A la deconnexion d'un client
     async handleDisconnect(client: Socket) {
-        console.log(
-            "[backend] receive close connection event :",
-            `(${client.id})`
-        );
-        const username = await this.userService.close(client.id);
-        if (username) {
-            this.sendStatus(username, "offline");
+        const user = await this.userService.getBySocket(client.id);
+        if (user) {
+            for (let i = 0; i < user.socketId.length; i++) {
+                await this.disconnect(user.socketId[i]);
+            }
+            await this.userService.logout(user.uuid);
+            this.sendStatus(user.username, "offline");
+            return;
         }
-        return;
     }
 
     // Envoyer un event de changement de status

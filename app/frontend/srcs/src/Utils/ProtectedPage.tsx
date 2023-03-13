@@ -10,9 +10,9 @@ export default function ProtectedPage() {
 
     useEffect(() => {
         if (user.isForcedLogout) {
-            user.setIsLogged(false);
-            user.editUsername("");
             user.setIsForcedLogout(false);
+            user.editUsername("");
+            user.setIsLogged(false);
             return navigate("/login");
         }
     }, [user, navigate]);

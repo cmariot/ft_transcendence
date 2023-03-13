@@ -102,29 +102,11 @@ export class UsersService {
     }
 
     // Set the status on 'offline' and delete the socket id
-    async logout(username: string, socketID: string) {
-        const user: UserEntity = await this.getByUsername(username);
-        if (!user) {
-            throw new UnauthorizedException("User not found.");
-        }
-        let sockets = user.socketId;
-        let index = sockets.findIndex((socket) => socket === socketID);
-        if (index !== -1) {
-            sockets.slice(index, 1);
-        }
-        if (sockets.length > 0) {
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { socketId: sockets }
-            );
-            return null;
-        } else {
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { status: "offline", socketId: sockets }
-            );
-            return user.username;
-        }
+    async logout(uuid: string) {
+        await this.userRepository.update(
+            { uuid: uuid },
+            { status: "offline", socketId: [] }
+        );
     }
 
     async user_status(username: string, status: string) {
