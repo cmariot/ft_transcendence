@@ -17,7 +17,9 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
     useEffect(() => {
         function logout() {
+            console.log("Force logout this client");
             user.setIsForcedLogout(true);
+            user.setStatus("");
         }
         socket.on("user.disconnect", logout);
         return () => {
@@ -27,25 +29,28 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
     // Emit an event at login
     useEffect(() => {
-        if (user.isLogged && user.username.length && user.hasSatusUpdate) {
+        if (user.isLogged && user.clickOnLogin) {
+            user.setClickOnLogin(false);
             console.log("Emit event user.login");
             socket.emit("user.login", { username: user.username });
-            user.setHasSatusUpdate(false);
+            user.setStatus("online");
+            return () => {
+                socket.off("user.login");
+            };
         }
-        return () => {
-            socket.off("user.login");
-        };
     }, [user]);
 
     // Emit an event at logout
     useEffect(() => {
-        if (!user.isLogged && user.username.length && user.hasSatusUpdate) {
+        if (user.isLogged && user.clickOnLogout) {
+            user.setClickOnLogout(false);
+            user.setIsLogged(false);
+            user.setStatus("");
             socket.emit("user.logout", { username: user.username });
-            user.setHasSatusUpdate(false);
+            return () => {
+                socket.off("user.logout");
+            };
         }
-        return () => {
-            socket.off("user.logout");
-        };
     }, [user]);
 
     const updateStatus = useCallback(

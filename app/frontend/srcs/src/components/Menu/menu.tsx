@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { MenuContext } from "../../contexts/MenuProviders";
 
 export const Menu = () => {
@@ -18,13 +18,18 @@ export const Menu = () => {
         try {
             await axios.get("/api/logout");
             menu.close();
-            user.setIsLogged(false);
-            user.setHasSatusUpdate(true);
+            user.setClickOnLogout(true);
             return navigate("/login");
         } catch (error) {
             console.log(error);
         }
     }
+
+    useEffect(() => {
+        if (user.isForcedLogout) {
+            menu.close();
+        }
+    }, [user.isForcedLogout, menu]);
 
     return (
         <menu id="app-menu">

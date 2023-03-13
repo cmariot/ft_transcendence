@@ -3,22 +3,20 @@ import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
-import { MenuContext } from "../contexts/MenuProviders";
 
 export default function ProtectedPage() {
     const user = useContext(UserContext);
     const navigate = useNavigate();
-    const menu = useContext(MenuContext);
 
     useEffect(() => {
         if (user.isForcedLogout) {
-            menu.close();
+            console.log("USER =", user);
             user.setIsForcedLogout(false);
             user.editUsername("");
             user.setIsLogged(false);
             return navigate("/login");
         }
-    }, [user, navigate, menu]);
+    }, [user, navigate]);
 
     useEffect(() => {
         const authCookie = getCookie("authentification");
@@ -125,7 +123,8 @@ export default function ProtectedPage() {
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);
-                    user.setHasSatusUpdate(true);
+                    user.setClickOnLogin(true);
+                    user.setClickOnLogout(false);
                     if (firstLog) {
                         return navigate("/welcome");
                     }

@@ -33,11 +33,14 @@ export class ConnectionGateway {
         let user: UserEntity = await this.userService.getByUsername(
             data.username
         );
+        console.log;
         if (!user) {
             throw new UnauthorizedException("User not found.");
         }
         for (let i = 0; i < user.socketId.length; i++) {
-            await this.disconnect(user.socketId[i]);
+            if (user.socketId[i] !== client.id) {
+                await this.disconnect(user.socketId[i]);
+            }
         }
         await this.userService.login(user.uuid, new Array<string>(client.id));
         await this.sendStatus(data.username, "online");
@@ -66,7 +69,9 @@ export class ConnectionGateway {
             throw new UnauthorizedException("User not found.");
         }
         for (let i = 0; i < user.socketId.length; i++) {
-            await this.disconnect(user.socketId[i]);
+            if (user.socketId[i] !== client.id) {
+                await this.disconnect(user.socketId[i]);
+            }
         }
         await this.userService.logout(user.uuid);
         this.sendStatus(user.username, "offline");
