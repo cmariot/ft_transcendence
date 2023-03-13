@@ -64,5 +64,5 @@ export const StatusEvents = ({ children }: StatusEventsProps) => {
         };
     }, [user, socket]);
 
-    return <>{children};</>;
+    return <>{children}</>;
 };
