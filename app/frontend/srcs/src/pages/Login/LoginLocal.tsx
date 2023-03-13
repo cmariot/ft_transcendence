@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCookie } from "../../utils/GetCookie";
+import { getCookie } from "../../Utils/GetCookie";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");
