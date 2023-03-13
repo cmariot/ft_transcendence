@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import { UserContext } from "../contexts/UserProvider";
 import { SocketContext } from "../contexts/SocketProvider";
 
-export const StatusEvents = () => {
+type StatusEventsProps = { children: JSX.Element | JSX.Element[] };
+export const StatusEvents = ({ children }: StatusEventsProps) => {
     const user = useContext(UserContext);
     const socket = useContext(SocketContext);
 
@@ -64,5 +64,5 @@ export const StatusEvents = () => {
         };
     }, [user, socket]);
 
-    return <Outlet />;
+    return <>{children};</>;
 };

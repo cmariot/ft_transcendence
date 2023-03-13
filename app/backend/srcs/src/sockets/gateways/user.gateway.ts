@@ -10,7 +10,6 @@ export class UserGateway {
 
     // Emit an event when an user change his username
     async updateUsername(previousUsername: string, newUsername: string) {
-        console.log("Emit : user.update.username");
         this.server.emit("user.update.username", {
             previousUsername: previousUsername,
             newUsername: newUsername,
@@ -19,7 +18,6 @@ export class UserGateway {
 
     // Emit an event when an user change his username
     async updateAvatar(username: string) {
-        console.log("Emit : user.update.avatar");
         this.server.emit("user.update.avatar", {
             username: username,
         });
