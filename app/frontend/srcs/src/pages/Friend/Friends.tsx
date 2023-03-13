@@ -111,7 +111,6 @@ export default function Friends() {
                 "changed his username to",
                 data.newUsername
             );
-            // reconnexion au chat pour mettre a jour les messages
             if (data.newUsername !== user.username) {
                 let friends = user.friends;
                 let index = friends.findIndex(

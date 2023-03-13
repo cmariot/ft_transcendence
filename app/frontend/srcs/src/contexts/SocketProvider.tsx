@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { Socket, io } from "socket.io-client";
 import { UserContext } from "./UserProvider";
 import axios from "axios";
@@ -14,108 +14,6 @@ type SocketProviderProps = { children: JSX.Element | JSX.Element[] };
 const SocketProvider = ({ children }: SocketProviderProps) => {
     const user = useContext(UserContext);
     const chat = useContext(ChatContext);
-
-    useEffect(() => {
-        function logout() {
-            console.log("Force logout this client");
-            user.setIsForcedLogout(true);
-            user.setStatus("");
-        }
-        socket.on("user.disconnect", logout);
-        return () => {
-            socket.off("user.disconnect", logout);
-        };
-    }, [user]);
-
-    // Emit an event at login
-    useEffect(() => {
-        if (user.isLogged && user.clickOnLogin) {
-            user.setClickOnLogin(false);
-            console.log("Emit event user.login");
-            socket.emit("user.login", { username: user.username });
-            user.setStatus("online");
-            return () => {
-                socket.off("user.login");
-            };
-        }
-    }, [user]);
-
-    // Emit an event at logout
-    useEffect(() => {
-        if (user.isLogged && user.clickOnLogout) {
-            user.setClickOnLogout(false);
-            user.setIsLogged(false);
-            user.setStatus("");
-            socket.emit("user.logout", { username: user.username });
-            return () => {
-                socket.off("user.logout");
-            };
-        }
-    }, [user]);
-
-    const updateStatus = useCallback(
-        (data: { username: string; status: string }) => {
-            if (data.username === user.username) {
-                user.setStatus(data.status);
-            } else {
-                let friends = user.friends;
-                const index = friends.findIndex(
-                    (friend) => friend.username === data.username
-                );
-                if (index !== -1 && friends[index].status !== data.status) {
-                    friends[index].status = data.status;
-                    user.setFriends(friends);
-                }
-            }
-        },
-        [user]
-    );
-
-    // Subscribe to status.update : update the user status or friends status
-    useEffect(() => {
-        socket.on("status.update", updateStatus);
-        return () => {
-            socket.off("status.update", updateStatus);
-        };
-    }, [user, updateStatus]);
-
-    // Subscribe to user.update.username : update username of othe users when changed
-    useEffect(() => {
-        function updateFriendUsername(data: {
-            previousUsername: string;
-            newUsername: string;
-        }) {
-            console.log(
-                "user.update.username :",
-                data.previousUsername,
-                "changed his username to",
-                data.newUsername
-            );
-            // reconnexion au chat pour mettre a jour les messages
-            if (data.newUsername !== user.username) {
-                let friends = user.friends;
-                let index = friends.findIndex(
-                    (friend) => friend.username === data.previousUsername
-                );
-                if (index !== -1) {
-                    friends[index].username = data.newUsername;
-                    user.setFriends(friends);
-                }
-                let blocked = user.blocked;
-                index = blocked.findIndex(
-                    (blocked) => blocked.username === data.previousUsername
-                );
-                if (index !== -1) {
-                    blocked[index].username = data.newUsername;
-                    user.setBlocked(friends);
-                }
-            }
-        }
-        socket.on("user.update.username", updateFriendUsername);
-        return () => {
-            socket.off("user.update.username", updateFriendUsername);
-        };
-    }, [user]);
 
     useEffect(() => {
         async function updateFriendAvatar(data: { username: string }) {

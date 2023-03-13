@@ -14,46 +14,52 @@ import ConfirmProfile from "../pages/Settings/ConfirmProfile";
 import ProtectedPage from "../utils/ProtectedPage";
 import ProtectedValidation from "../utils/ProtectedValidation";
 import ProtectedDoubleAuth from "../utils/ProtectedDoubleAuth";
+import { StatusEvents } from "../components/StatusEvents";
 
 export const router = createBrowserRouter([
     {
-        element: <Body />,
+        element: <StatusEvents />,
         children: [
             {
-                path: "login",
-                element: <Login />,
-            },
-            {
-                path: "register",
-                element: <Register />,
-            },
-            {
-                element: <ProtectedPage />,
+                element: <Body />,
                 children: [
                     {
-                        path: "/",
-                        element: <Home />,
+                        path: "login",
+                        element: <Login />,
                     },
                     {
-                        path: "profile",
-                        element: <Profile />,
+                        path: "register",
+                        element: <Register />,
                     },
                     {
-                        path: "profile/:user",
-                        element: <UserProfile />,
-                        loader: loader,
-                    },
-                    {
-                        path: "friends",
-                        element: <Friends />,
-                    },
-                    {
-                        path: "settings",
-                        element: <Settings />,
-                    },
-                    {
-                        path: "welcome",
-                        element: <ConfirmProfile />,
+                        element: <ProtectedPage />,
+                        children: [
+                            {
+                                path: "/",
+                                element: <Home />,
+                            },
+                            {
+                                path: "profile",
+                                element: <Profile />,
+                            },
+                            {
+                                path: "profile/:user",
+                                element: <UserProfile />,
+                                loader: loader,
+                            },
+                            {
+                                path: "friends",
+                                element: <Friends />,
+                            },
+                            {
+                                path: "settings",
+                                element: <Settings />,
+                            },
+                            {
+                                path: "welcome",
+                                element: <ConfirmProfile />,
+                            },
+                        ],
                     },
                 ],
             },
