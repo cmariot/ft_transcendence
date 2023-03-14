@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
-import { UserContext } from "../contexts/UserProvider";
-import { SocketContext } from "../contexts/SocketProvider";
+import { UserContext } from "../../contexts/UserProvider";
+import { SocketContext } from "../../contexts/SocketProvider";
 
 type StatusEventsProps = { children: JSX.Element | JSX.Element[] };
 export const StatusEvents = ({ children }: StatusEventsProps) => {

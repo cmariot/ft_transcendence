@@ -4,7 +4,7 @@ import Register from "../pages/Register/Register";
 import UnavailableUsername42 from "../pages/Login/UnavailableUsername42";
 import Validate from "../pages/Register/Validate";
 import DoubleAuth from "../pages/DoubleAuth/DoubleAuth";
-import { Body } from "../components/body";
+import { Body } from "../components/body/index";
 import Home from "../pages/Home/Home";
 import Profile from "../pages/Profile/Profile";
 import UserProfile, { loader } from "../pages/Profile/UserProfile";
