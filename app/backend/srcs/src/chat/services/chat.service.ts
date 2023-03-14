@@ -170,28 +170,51 @@ export class ChatService {
         return await this.chatRepository.save(generalChannel);
     }
 
-    async create_channel(newChannel: any, uuid: string) {
-        let channel = await this.chatRepository.findOneBy({
-            channelName: newChannel.channelName,
-        });
-        if (channel) {
+    async create_channel(channel: any, uuid: string) {
+        let user = await this.userService.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("Invalid user");
+        }
+        if (
+            await this.chatRepository.findOneBy({
+                channelName: channel.channelName,
+            })
+        ) {
             throw new HttpException(
                 "Unavailable channel name",
                 HttpStatus.FOUND
             );
         }
-        newChannel.channelOwner = uuid;
-        let user = await this.userService.getByID(uuid);
-        if (!user) {
-            throw new HttpException("Invalid user", HttpStatus.FOUND);
-        }
-        if (newChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
-            let uuid_array: { uuid: string }[] = [];
-            uuid_array.push({ uuid: newChannel.channelOwner });
-            newChannel.allowed_users = uuid_array;
-            const channel = await this.chatRepository.save(newChannel);
+        channel.channelOwner = uuid;
+
+        if (
+            channel.channelType === ChannelType.PUBLIC ||
+            channel.channelType === ChannelType.PROTECTED
+        ) {
+            if (channel.channelType === ChannelType.PROTECTED) {
+                channel.channelPassword = await this.encode_password(
+                    channel.channelPassword
+                );
+            }
+            channel.users = [{ uuid: uuid }];
+            channel = await this.chatRepository.save(channel);
             if (channel) {
-                this.chatGateway.channelUpdate();
+                this.chatGateway.newChannelAvailable();
+                this.chatGateway.userJoinChannel(
+                    channel.channelName,
+                    user.username
+                );
+                return this.convertChannelMessages(
+                    uuid,
+                    channel.messages,
+                    channel
+                );
+            }
+        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
+            channel.allowed_users = [{ uuid: channel.channelOwner }];
+            channel = await this.chatRepository.save(channel);
+            if (channel) {
+                this.chatGateway.newChannelAvailable();
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -202,55 +225,33 @@ export class ChatService {
                     channel
                 );
             }
-        } else if (
-            newChannel.channelType === ChannelType.PROTECTED ||
-            newChannel.channelType === ChannelType.PUBLIC
-        ) {
-            newChannel.users = [{ uuid: uuid }];
-            if (newChannel.channelType === ChannelType.PROTECTED) {
-                let hashed_password = await this.encode_password(
-                    newChannel.channelPassword
-                );
-                newChannel.channelPassword = hashed_password;
+        } else if (channel.channelType === ChannelType.PRIVATE) {
+            let allowed_user: { uuid: string }[] = [channel.channelOwner];
+            if (channel.allowed_user.length !== 1) {
+                throw new UnauthorizedException("DM must be with one person.");
             }
-            const channel = await this.chatRepository.save(newChannel);
+            let friend = await this.userService.getByUsername(
+                channel.allowed_users[0]
+            );
+            if (friend) {
+                allowed_user.push({ uuid: friend.uuid });
+            }
+            channel.allowed_users = allowed_user;
+            channel = await this.chatRepository.save(channel);
             if (channel) {
-                this.chatGateway.channelUpdate();
-            }
-            this.chatGateway.userJoinChannel(
-                channel.channelName,
-                user.username
-            );
-            return this.convertChannelMessages(uuid, channel.messages, channel);
-        } else if (newChannel.channelType === ChannelType.PRIVATE) {
-            let uuid_array: { uuid: string }[] = [];
-            uuid_array.push({ uuid: newChannel.channelOwner });
-            let i = 0;
-            while (i < newChannel.allowed_users.length) {
-                let allowed_user = await this.userService.getByUsername(
-                    newChannel.allowed_users[i]
+                this.chatGateway.newChannelAvailable();
+                this.chatGateway.userJoinChannel(
+                    channel.channelName,
+                    user.username
                 );
-                if (allowed_user) {
-                    uuid_array.push({ uuid: allowed_user.uuid });
-                }
-                i++;
+                return await this.convertChannelMessages(
+                    uuid,
+                    channel.messages,
+                    channel
+                );
             }
-            newChannel.allowed_users = uuid_array;
-            const channel = await this.chatRepository.save(newChannel);
-            if (channel) {
-                this.chatGateway.channelUpdate();
-            }
-            this.chatGateway.userJoinChannel(
-                channel.channelName,
-                user.username
-            );
-            return await this.convertChannelMessages(
-                uuid,
-                channel.messages,
-                channel
-            );
         }
-        throw new HttpException("Invalid channel type.", HttpStatus.FOUND);
+        throw new UnauthorizedException("Invalid channel.");
     }
 
     async convertChannelMessages(
@@ -459,7 +460,7 @@ export class ChatService {
                 }
             }
         }
-        this.chatGateway.channelUpdate();
+        this.chatGateway.newChannelAvailable();
         return users_list;
     }
 

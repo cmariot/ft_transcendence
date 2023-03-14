@@ -64,10 +64,8 @@ export const ChatContext = createContext({
     setIsBan: (newValue: boolean) => {},
     isChannelDeleted: false,
     setisChannelDeleted: (newValue: boolean) => {},
-
     page: "",
     setPage: (newValue: string) => {},
-
     showMenu: false,
     toogleMenu: () => {},
     closeMenu: () => {},

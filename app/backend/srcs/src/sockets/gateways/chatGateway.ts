@@ -17,8 +17,8 @@ export class ChatGateway {
     server: Server;
 
     // Emit an event when a new channel is available
-    channelUpdate() {
-        this.server.emit("chat.channels.update");
+    newChannelAvailable() {
+        this.server.emit("chat.new.channel");
     }
 
     // Join the chat channel room and leave the previous joined rooms

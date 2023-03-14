@@ -17,7 +17,7 @@ import {
     PublicChannelDTO,
 } from "../dtos/newChannel.dto";
 import { ChatService } from "../services/chat.service";
-import { ChannelType, ChatEntity } from "../entities/chat.entity";
+import { ChannelType } from "../entities/chat.entity";
 import {
     addAdminDTO,
     channelDTO,
@@ -32,7 +32,6 @@ import {
     kickOptionsDTO,
     muteOptionsDTO,
 } from "../dtos/admin.dto";
-import { AddUserOptions } from "typeorm";
 
 @Controller("chat")
 export class ChatController {
