@@ -97,12 +97,13 @@ export class ChatController {
         @Req() req,
         @Body() newChannel: PrivateMessageDTO
     ) {
-        if (newChannel.channelType !== ChannelType.PRIVATE) {
+        if (newChannel.channelType !== ChannelType.DIRECT_MESSAGE) {
             throw new UnauthorizedException();
         }
         return this.chatService.create_channel(newChannel, req.user.uuid);
     }
 
+    // Join a channel
     @Post("connect")
     @UseGuards(isLogged)
     channel_connection(@Req() req, @Body() channel: channelDTO) {
@@ -112,6 +113,7 @@ export class ChatController {
         );
     }
 
+    // Leave a channel
     @Post("leave")
     @UseGuards(isLogged)
     leave_channel(@Req() req, @Body() channel: channelDTO) {
@@ -121,6 +123,7 @@ export class ChatController {
         );
     }
 
+    // Send a message in the channel
     @Post()
     @UseGuards(isLogged)
     async send_message(@Req() req, @Body() message: messageDTO) {
@@ -134,7 +137,7 @@ export class ChatController {
     @Post("private/add-user")
     @UseGuards(isLogged)
     async add_private_channel(@Req() req, @Body() user: AddOptionsDTO) {
-        return await this.chatService.addPrivateChannel(user, req.user.uuid);
+        return await this.chatService.addUserInPrivate(user, req.user.uuid);
     }
 
     @Post("join/protected")

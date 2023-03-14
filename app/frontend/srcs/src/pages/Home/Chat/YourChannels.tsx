@@ -48,24 +48,23 @@ const YourChannels = () => {
     }
 
     function displayPrivateChannels() {
-        if (chat.userPrivateChannels.size)
-            return (
-                <>
-                    {Array.from(chat.userPrivateChannels).map((item, index) => (
-                        <button
-                            className="channel-selection-button"
-                            key={index}
-                            onClick={() =>
-                                connectChannel(item[0], item[1].channelType)
-                            }
-                        >
-                            <p className="channel-selection-button-channel-name">
-                                {item[0]}
-                            </p>
-                        </button>
-                    ))}
-                </>
-            );
+        return (
+            <>
+                {Array.from(chat.userPrivateChannels).map((item, index) => (
+                    <button
+                        className="channel-selection-button"
+                        key={index}
+                        onClick={() =>
+                            connectChannel(item[0], item[1].channelType)
+                        }
+                    >
+                        <p className="channel-selection-button-channel-name">
+                            {item[0]}
+                        </p>
+                    </button>
+                ))}
+            </>
+        );
     }
 
     function nothinToDisplay() {

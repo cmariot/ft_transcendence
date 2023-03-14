@@ -27,121 +27,83 @@ export class ChatService {
         private userService: UsersService
     ) {}
 
+    // Get a channel by it's channelName
     async getByName(channelName: string) {
         return await this.chatRepository.findOneBy({
             channelName: channelName,
         });
     }
 
+    // Get all the accessibles channels for an user
     async get_channels(uuid: string) {
         let user = await this.userService.getByID(uuid);
         if (!user) {
-            throw new HttpException(
-                "Error, invalid user",
-                HttpStatus.BAD_REQUEST
-            );
+            throw new UnauthorizedException("Invalid user");
         }
         let channels = await this.chatRepository.find();
         if (!channels || channels.length === 0) {
-            let general = await this.create_general_channel();
-            if (!general) {
-                throw new HttpException(
-                    "Error, impossible to create the general channel",
-                    HttpStatus.FAILED_DEPENDENCY
-                );
-            }
+            const general = await this.create_general_channel();
             channels.push(general);
         }
         let userChannels: ChatEntity[] = [];
         let userPrivateChannels: ChatEntity[] = [];
         let availableChannels: ChatEntity[] = [];
         let i = 0;
-        let found = false;
         while (i < channels.length) {
-            // user is the channel owner
             if (
-                channels[i].channelOwner === user.uuid &&
-                channels[i].channelType !== ChannelType.DIRECT_MESSAGE &&
-                channels[i].channelType !== ChannelType.PRIVATE
+                channels[i].channelType === ChannelType.PUBLIC ||
+                channels[i].channelType === ChannelType.PROTECTED
             ) {
-                userChannels.push(channels[i]);
-            } else if (
-                channels[i].channelType === "public" ||
-                channels[i].channelType === "protected"
-            ) {
-                let j = 0;
-                while (j < channels[i].users.length) {
-                    if (channels[i].users[j].uuid === user.uuid) {
-                        // user has joined this channel
-                        let k = 0;
-                        let banned = false;
-                        while (k < channels[i].banned_users.length) {
-                            if (
-                                channels[i].banned_users[k].uuid === user.uuid
-                            ) {
-                                banned = true;
-                                break;
-                            }
-                            k++;
-                        }
-                        if (banned === false) {
-                            userChannels.push(channels[i]);
-                            found = true;
-                        }
-                    }
-                    j++;
-                }
-                if (found === false) {
-                    // it's an available channel
-                    availableChannels.push(channels[i]);
+                if (channels[i].channelOwner === user.uuid) {
+                    userChannels.push(channels[i]);
                 } else {
-                    found = false;
+                    let has_joined = false;
+                    let is_ban = false;
+                    let j = 0;
+                    while (j < channels[i].users.length) {
+                        if (channels[i].users[j].uuid === user.uuid) {
+                            if (
+                                channels[i].banned_users.findIndex((user) => {
+                                    user.uuid === user.uuid;
+                                }) === -1
+                            ) {
+                                has_joined = true;
+                                userChannels.push(channels[i]);
+                            } else {
+                                is_ban = true;
+                            }
+                            break;
+                        }
+                        j++;
+                    }
+                    if (!has_joined && !is_ban) {
+                        availableChannels.push(channels[i]);
+                    } else {
+                        has_joined = false;
+                        is_ban = false;
+                    }
                 }
-            } else {
+            } else if (
+                channels[i].channelType === ChannelType.PRIVATE ||
+                channels[i].channelType === ChannelType.DIRECT_MESSAGE
+            ) {
                 let j = 0;
                 while (j < channels[i].allowed_users.length) {
                     if (channels[i].allowed_users[j].uuid === user.uuid) {
-                        // a private conversation
-                        let blocked_users = user.blocked;
-                        if (!blocked_users) {
-                            userPrivateChannels.push(channels[i]);
-                            break;
-                        } else {
-                            let k = 0;
-                            while (k < channels[i].allowed_users.length) {
-                                let l = 0;
-                                while (l < blocked_users.length) {
-                                    if (
-                                        channels[i].allowed_users[k].uuid ===
-                                            blocked_users[l] &&
-                                        channels[i].channelType ===
-                                            ChannelType.DIRECT_MESSAGE
-                                    ) {
-                                        found = true;
-                                        break;
-                                    } else if (
-                                        channels[i].channelType ===
-                                            ChannelType.PRIVATE &&
-                                        blocked_users[l] ===
-                                            channels[i].channelOwner
-                                    ) {
-                                        found = true;
-                                        break;
-                                    }
-                                    l++;
-                                }
-                                if (found === true) {
-                                    break;
-                                }
-                                k++;
-                            }
-                            if (found === false) {
+                        if (
+                            channels[i].banned_users.findIndex((user) => {
+                                user.uuid === user.uuid;
+                            }) === -1
+                        ) {
+                            if (
+                                user.blocked.findIndex((blocked) => {
+                                    blocked === channels[i].channelOwner;
+                                }) === -1
+                            ) {
                                 userPrivateChannels.push(channels[i]);
-                            } else {
-                                found = true;
                             }
-                            break;
                         }
+                        break;
                     }
                     j++;
                 }
@@ -155,21 +117,22 @@ export class ChatService {
         };
     }
 
-    async encode_password(rawPassword: string): Promise<string> {
-        const saltRounds: number = 11;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        return bcrypt.hashSync(rawPassword, salt);
-    }
-
+    // Create a default channel
     async create_general_channel(): Promise<ChatEntity> {
         const generalChannel: any = {
             channelName: "General",
             channelType: "public",
             channelOwner: "0",
         };
-        return await this.chatRepository.save(generalChannel);
+        const general = await this.chatRepository.save(generalChannel);
+        if (general) return general;
+        throw new HttpException(
+            "Error, impossible to create the general channel",
+            HttpStatus.FAILED_DEPENDENCY
+        );
     }
 
+    // Create a channel
     async create_channel(channel: any, uuid: string) {
         let user = await this.userService.getByID(uuid);
         if (!user) {
@@ -253,6 +216,12 @@ export class ChatService {
             }
         }
         throw new UnauthorizedException("Invalid channel.");
+    }
+
+    async encode_password(rawPassword: string): Promise<string> {
+        const saltRounds: number = 11;
+        const salt = bcrypt.genSaltSync(saltRounds);
+        return bcrypt.hashSync(rawPassword, salt);
     }
 
     async convertChannelMessages(
@@ -427,7 +396,7 @@ export class ChatService {
         return this.join_channel(channelName, uuid);
     }
 
-    async addPrivateChannel(addUser: AddOptionsDTO, uuid: string) {
+    async addUserInPrivate(addUser: AddOptionsDTO, uuid: string) {
         let user = await this.userService.getByUsername(addUser.username);
         if (!user) {
             throw new UnauthorizedException("Invalid user");
@@ -436,33 +405,37 @@ export class ChatService {
         if (!channel) {
             throw new UnauthorizedException("Invalid channel");
         }
-        for (let i = 0; i < channel.banned_users.length; i++) {
-            if (channel.banned_users[i].uuid === user.uuid) {
-                throw new UnauthorizedException("Banned user");
-            }
-        }
-        for (let i = 0; i < channel.allowed_users.length; i++) {
-            if (channel.allowed_users[i].uuid === user.uuid) {
-                throw new UnauthorizedException("Already allowed");
-            }
-        }
-        let users = channel.allowed_users;
-        users.push({ uuid: user.uuid });
-        await this.chatRepository.update(
-            { uuid: channel.uuid },
-            { allowed_users: users }
-        );
-        let users_list: string[] = [];
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].uuid !== channel.channelOwner) {
-                let user = await this.userService.getByID(users[i].uuid);
-                if (user && user.username) {
-                    users_list.push(user.username);
+        if (
+            channel.banned_users.findIndex((banned) => {
+                banned.uuid === user.uuid;
+            }) !== -1
+        ) {
+            throw new UnauthorizedException("Banned user");
+        } else if (
+            channel.allowed_users.findIndex((allowed) => {
+                allowed.uuid === user.uuid;
+            }) !== -1
+        ) {
+            throw new UnauthorizedException("Already allowed");
+        } else {
+            let allowed = channel.allowed_users;
+            allowed.push({ uuid: user.uuid });
+            await this.chatRepository.update(
+                { uuid: channel.uuid },
+                { allowed_users: allowed }
+            );
+            let users_list: string[] = [];
+            for (let i = 0; i < allowed.length; i++) {
+                if (allowed[i].uuid !== channel.channelOwner) {
+                    let user = await this.userService.getByID(allowed[i].uuid);
+                    if (user && user.username) {
+                        users_list.push(user.username);
+                    }
                 }
             }
+            this.chatGateway.newChannelAvailable(channel.channelName);
+            return users_list;
         }
-        this.chatGateway.newChannelAvailable(channel.channelName);
-        return users_list;
     }
 
     async banList(channelName: string, uuid: string) {

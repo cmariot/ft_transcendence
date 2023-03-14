@@ -4,7 +4,7 @@ import { ChatContext } from "../../../../contexts/ChatProvider";
 const AdminPannel = () => {
     const chat = useContext(ChatContext);
 
-    if (chat.channelType === "privateChannel") {
+    if (chat.channelType === "private") {
         return (
             <>
                 <button onClick={() => chat.setPage("MuteUser")}>

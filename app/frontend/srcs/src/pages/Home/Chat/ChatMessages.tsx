@@ -56,11 +56,6 @@ const ChatMessages = () => {
             })
             .then((response) => {
                 chat.setMessages(response.data.messages);
-                chat.setisChannelOwner(response.data.channel_owner);
-                chat.setisChannelAdmin(response.data.channel_admin);
-                chat.setAdmins(response.data.channel_admins);
-                chat.setmutedUsers(response.data.muted_users);
-                chat.setbannedUsers(response.data.banned_users);
             })
             .catch((error) => {
                 console.log(error.data);
@@ -73,7 +68,7 @@ const ChatMessages = () => {
 
     function messageMenu(username: string) {
         if (username !== user.username) {
-            if (chat.channelType === "private") {
+            if (chat.channelType === "direct_message") {
                 return (
                     <div className="chat-user-message-options">
                         <button>play</button>

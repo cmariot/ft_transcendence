@@ -4,7 +4,7 @@ import { ChatContext } from "../../../../contexts/ChatProvider";
 const OwnerPannel = () => {
     const chat = useContext(ChatContext);
 
-    if (chat.channelType === "privateChannel") {
+    if (chat.channelType === "private") {
         return (
             <button onClick={() => chat.setPage("EditAdmins")}>
                 edit channel's administrators

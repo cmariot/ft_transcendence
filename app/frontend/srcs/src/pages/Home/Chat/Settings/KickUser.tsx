@@ -22,7 +22,7 @@ const KickUser = () => {
                 username: newKickName,
             })
             .then((response) => {
-                if (chat.channelType === "privateChannel") {
+                if (chat.channelType === "private") {
                     chat.setUsers(response.data);
                 }
                 setNewKickName("");

@@ -26,9 +26,9 @@ const CreatePrivate = () => {
             return;
         }
         await axios
-            .post("/api/chat/create/private", {
+            .post("/api/chat/create/direct_message", {
                 channelName: newChannelName,
-                channelType: "private",
+                channelType: "direct_message",
                 allowed_users: [chat.directMessageUser],
             })
             .then(function () {

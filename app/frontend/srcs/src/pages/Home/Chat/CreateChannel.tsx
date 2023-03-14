@@ -59,8 +59,8 @@ const CreateChannel = () => {
             url = "/api/chat/create/public";
         } else if (channelType === "protected") {
             url = "/api/chat/create/protected";
-        } else if (channelType === "privateChannel") {
-            url = "/api/chat/create/privatechannel";
+        } else if (channelType === "private") {
+            url = "/api/chat/create/private";
         } else {
             return;
         }
@@ -128,7 +128,7 @@ const CreateChannel = () => {
                     >
                         <option value="public">public</option>
                         <option value="protected">protected</option>
-                        <option value="privateChannel">private</option>
+                        <option value="private">private</option>
                     </select>
                     <input
                         id="new-channel-name"
