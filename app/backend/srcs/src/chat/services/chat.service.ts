@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChannelType, ChatEntity } from "../entities/chat.entity";
 import { Repository } from "typeorm";
-import { ChatGateway } from "../../sockets/gateways/chatGateway";
+import { ChatGateway } from "../../sockets/gateways/chat.gateway";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { updateChannelDTO } from "../dtos/channelId.dto";
@@ -61,8 +61,8 @@ export class ChatService {
             // user is the channel owner
             if (
                 channels[i].channelOwner === user.uuid &&
-                channels[i].channelType !== ChannelType.PRIVATE &&
-                channels[i].channelType !== ChannelType.PRIVATE_CHANNEL
+                channels[i].channelType !== ChannelType.DIRECT_MESSAGE &&
+                channels[i].channelType !== ChannelType.PRIVATE
             ) {
                 userChannels.push(channels[i]);
             } else if (
@@ -115,13 +115,13 @@ export class ChatService {
                                         channels[i].allowed_users[k].uuid ===
                                             blocked_users[l] &&
                                         channels[i].channelType ===
-                                            ChannelType.PRIVATE
+                                            ChannelType.DIRECT_MESSAGE
                                     ) {
                                         found = true;
                                         break;
                                     } else if (
                                         channels[i].channelType ===
-                                            ChannelType.PRIVATE_CHANNEL &&
+                                            ChannelType.PRIVATE &&
                                         blocked_users[l] ===
                                             channels[i].channelOwner
                                     ) {
@@ -186,7 +186,6 @@ export class ChatService {
             );
         }
         channel.channelOwner = uuid;
-
         if (
             channel.channelType === ChannelType.PUBLIC ||
             channel.channelType === ChannelType.PROTECTED
@@ -199,7 +198,7 @@ export class ChatService {
             channel.users = [{ uuid: uuid }];
             channel = await this.chatRepository.save(channel);
             if (channel) {
-                this.chatGateway.newChannelAvailable();
+                this.chatGateway.newChannelAvailable(channel.channel);
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -210,11 +209,11 @@ export class ChatService {
                     channel
                 );
             }
-        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
+        } else if (channel.channelType === ChannelType.PRIVATE) {
             channel.allowed_users = [{ uuid: channel.channelOwner }];
             channel = await this.chatRepository.save(channel);
             if (channel) {
-                this.chatGateway.newChannelAvailable();
+                this.chatGateway.newChannelAvailable(channel.channelName);
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -225,9 +224,11 @@ export class ChatService {
                     channel
                 );
             }
-        } else if (channel.channelType === ChannelType.PRIVATE) {
-            let allowed_user: { uuid: string }[] = [channel.channelOwner];
-            if (channel.allowed_user.length !== 1) {
+        } else if (channel.channelType === ChannelType.DIRECT_MESSAGE) {
+            let allowed_user: { uuid: string }[] = [
+                { uuid: channel.channelOwner },
+            ];
+            if (channel.allowed_users.length !== 1) {
                 throw new UnauthorizedException("DM must be with one person.");
             }
             let friend = await this.userService.getByUsername(
@@ -239,7 +240,7 @@ export class ChatService {
             channel.allowed_users = allowed_user;
             channel = await this.chatRepository.save(channel);
             if (channel) {
-                this.chatGateway.newChannelAvailable();
+                this.chatGateway.newChannelAvailable(channel.channelName);
                 this.chatGateway.userJoinChannel(
                     channel.channelName,
                     user.username
@@ -357,7 +358,7 @@ export class ChatService {
             }
 
             if (
-                channel.channelType === ChannelType.PRIVATE_CHANNEL &&
+                channel.channelType === ChannelType.PRIVATE &&
                 channel.allowed_users
             ) {
                 let i = 0;
@@ -460,7 +461,7 @@ export class ChatService {
                 }
             }
         }
-        this.chatGateway.newChannelAvailable();
+        this.chatGateway.newChannelAvailable(channel.channelName);
         return users_list;
     }
 
@@ -536,8 +537,8 @@ export class ChatService {
         }
 
         if (
-            channel.channelType === ChannelType.PRIVATE ||
-            channel.channelType === ChannelType.PRIVATE_CHANNEL
+            channel.channelType === ChannelType.DIRECT_MESSAGE ||
+            channel.channelType === ChannelType.PRIVATE
         ) {
             let index_in_authorized_channels = channels.findIndex((element) => {
                 if (element.channelName === channelName) return 1;
@@ -689,8 +690,8 @@ export class ChatService {
             }
             throw new HttpException("Unauthorized.", HttpStatus.UNAUTHORIZED);
         } else if (
-            channel.channelType === ChannelType.PRIVATE ||
-            channel.channelType === ChannelType.PRIVATE_CHANNEL
+            channel.channelType === ChannelType.DIRECT_MESSAGE ||
+            channel.channelType === ChannelType.PRIVATE
         ) {
             let allowed_users = channel.allowed_users;
             let i = 0;
@@ -730,7 +731,7 @@ export class ChatService {
         }
         let i = 0;
         while (i < channels.length) {
-            if (channels[i].channelType === ChannelType.PRIVATE) {
+            if (channels[i].channelType === ChannelType.DIRECT_MESSAGE) {
                 let j = 0;
                 while (j < channels[i].allowed_users.length) {
                     if (channels[i].allowed_users[j].uuid === uuid) {
@@ -810,13 +811,13 @@ export class ChatService {
                     throw new UnauthorizedException();
                 }
             }
-        } else if (channel.channelType === ChannelType.PRIVATE) {
+        } else if (channel.channelType === ChannelType.DIRECT_MESSAGE) {
             this.chatGateway.deleted_channel(
                 channel.channelName,
                 user.username
             );
             this.chatRepository.delete({ uuid: channel.uuid });
-        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
+        } else if (channel.channelType === ChannelType.PRIVATE) {
             if (channel.channelOwner === uuid) {
                 this.chatGateway.deleted_channel(
                     channel.channelName,
@@ -846,7 +847,10 @@ export class ChatService {
                             }
                         );
                     }
-                    this.chatGateway.leave_private(user.username, channelName);
+                    this.chatGateway.leave_privateChannel(
+                        user.username,
+                        channelName
+                    );
                 } else {
                     throw new UnauthorizedException();
                 }
@@ -961,7 +965,7 @@ export class ChatService {
             ) {
                 found = true;
             }
-        } else if (channel.channelType === ChannelType.PRIVATE_CHANNEL) {
+        } else if (channel.channelType === ChannelType.PRIVATE) {
             if (
                 channel.allowed_users.find(
                     (element) => element.uuid === newAdminUUID
@@ -1107,14 +1111,12 @@ export class ChatService {
         options: kickOptionsDTO
     ) {
         if (
-            targetChannel.channelType === "protected" ||
-            targetChannel.channelType === "public"
+            targetChannel.channelType === ChannelType.PROTECTED ||
+            targetChannel.channelType === ChannelType.PUBLIC
         ) {
             let current_users = targetChannel.users;
-            let index = -1;
             for (let i = 0; i < current_users.length; i++) {
                 if (current_users[i].uuid === kickedUser.uuid) {
-                    index = i;
                     await this.leave_channel(
                         targetChannel.channelName,
                         current_users[i].uuid
@@ -1135,7 +1137,7 @@ export class ChatService {
                     );
                 }
             }
-        } else if (targetChannel.channelType === ChannelType.PRIVATE_CHANNEL) {
+        } else if (targetChannel.channelType === ChannelType.PRIVATE) {
             let current_users = targetChannel.allowed_users;
             let index = -1;
             for (let i = 0; i < current_users.length; i++) {

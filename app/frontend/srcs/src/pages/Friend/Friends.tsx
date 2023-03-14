@@ -156,7 +156,7 @@ export default function Friends() {
                     chat.setChannel(response.data.channelName);
                     chat.setMessages(response.data.data.messages);
                     chat.setisChannelOwner(response.data.data.channel_owner);
-                    chat.setChannelType("private");
+                    chat.setChannelType("direct_message");
                     chat.setAdmins(response.data.data.channel_admins);
                     chat.setmutedUsers(response.data.data.muted_users);
                     chat.setbannedUsers(response.data.data.banned_users);

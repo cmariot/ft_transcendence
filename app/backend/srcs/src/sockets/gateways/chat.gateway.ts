@@ -17,8 +17,10 @@ export class ChatGateway {
     server: Server;
 
     // Emit an event when a new channel is available
-    newChannelAvailable() {
-        this.server.emit("chat.new.channel");
+    newChannelAvailable(channel: string) {
+        this.server.emit("chat.new.channel", {
+            channel: channel,
+        });
     }
 
     // Join the chat channel room and leave the previous joined rooms
@@ -54,12 +56,19 @@ export class ChatGateway {
         }
     }
 
-    // Emit a 'chat.message' event
+    // When a message is post
     send_message(channel: string, username: string, message: string) {
         this.server.to("chatroom_" + channel).emit("chat.message", {
             channel: channel,
             username: username,
             message: message,
+        });
+    }
+
+    // When a channel is deleted
+    deleted_channel(channel: string, username: string) {
+        this.server.emit("chat.deleted.channel", {
+            channel: channel,
         });
     }
 
@@ -75,21 +84,6 @@ export class ChatGateway {
         //this.server.emit("kickUser", {
         //    channel: channelName,
         //    username: username,
-        //});
-    }
-
-    deleted_channel(channel: string, username: string) {
-        //this.server.emit("channelDeleted", {
-        //    channel: channel,
-        //    username: username,
-        //});
-        //return username;
-    }
-
-    async sendStatus(username: string, status: string) {
-        //this.server.emit("userStatus", {
-        //    username: username,
-        //    status: status,
         //});
     }
 
@@ -135,10 +129,10 @@ export class ChatGateway {
         //});
     }
 
-    leave_private(username: string, channelName: string) {
-        //this.server.emit("userLeaveChannel", {
-        //    username: username,
-        //    channel: channelName,
-        //});
+    leave_privateChannel(username: string, channelName: string) {
+        this.server.emit("userLeaveChannel", {
+            username: username,
+            channel: channelName,
+        });
     }
 }

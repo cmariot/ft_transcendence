@@ -40,12 +40,14 @@ export class ChatController {
         private userService: UsersService
     ) {}
 
+    // Get the user's channels
     @Get("channels")
     @UseGuards(isLogged)
     async get_channels(@Req() req) {
         return await this.chatService.get_channels(req.user.uuid);
     }
 
+    // Create a public channel
     @Post("create/public")
     @UseGuards(isLogged)
     async create_public_channel(
@@ -58,13 +60,27 @@ export class ChatController {
         return this.chatService.create_channel(newChannel, req.user.uuid);
     }
 
-    @Post("create/privatechannel")
+    // Create a protected channel
+    @Post("create/protected")
+    @UseGuards(isLogged)
+    create_protected_channel(
+        @Req() req,
+        @Body() newChannel: ProtectedChannelDTO
+    ) {
+        if (newChannel.channelType !== ChannelType.PROTECTED) {
+            throw new UnauthorizedException();
+        }
+        return this.chatService.create_channel(newChannel, req.user.uuid);
+    }
+
+    // Create a private channel
+    @Post("create/private")
     @UseGuards(isLogged)
     async create_private_channel(
         @Req() req,
         @Body() newChannel: PrivateChannelDTO
     ) {
-        if (newChannel.channelType !== ChannelType.PRIVATE_CHANNEL) {
+        if (newChannel.channelType !== ChannelType.PRIVATE) {
             throw new UnauthorizedException();
         }
         let result = await this.chatService.create_channel(
@@ -74,25 +90,14 @@ export class ChatController {
         return result;
     }
 
-    @Post("create/private")
+    // Create a direct-message channel
+    @Post("create/direct_message")
     @UseGuards(isLogged)
     async create_private_conv(
         @Req() req,
         @Body() newChannel: PrivateMessageDTO
     ) {
         if (newChannel.channelType !== ChannelType.PRIVATE) {
-            throw new UnauthorizedException();
-        }
-        return this.chatService.create_channel(newChannel, req.user.uuid);
-    }
-
-    @Post("create/protected")
-    @UseGuards(isLogged)
-    create_protected_channel(
-        @Req() req,
-        @Body() newChannel: ProtectedChannelDTO
-    ) {
-        if (newChannel.channelType !== ChannelType.PROTECTED) {
             throw new UnauthorizedException();
         }
         return this.chatService.create_channel(newChannel, req.user.uuid);

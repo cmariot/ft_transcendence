@@ -9,7 +9,7 @@ import { ChatService } from "src/chat/services/chat.service";
 import { SocketService } from "./gateways/socket.gateway";
 import { UsersModule } from "src/users/users.module";
 import { GameModule } from "src/game/game.module";
-import { ChatGateway } from "./gateways/chatGateway";
+import { ChatGateway } from "./gateways/chat.gateway";
 import { GameGateway } from "./gateways/gameGateways";
 import { ConnectionGateway } from "./gateways/connection.gateway";
 import { UserGateway } from "./gateways/user.gateway";

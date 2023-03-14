@@ -74,6 +74,8 @@ export const ChatContext = createContext({
 
 type ChatProviderProps = { children: JSX.Element | JSX.Element[] };
 const ChatProvider = ({ children }: ChatProviderProps) => {
+    const user = useContext(UserContext);
+
     const [channel, setChannel] = useState("");
     const [channelType, setChannelType] = useState("");
     const [messages, setMessages] = useState(
@@ -108,7 +110,7 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
     }
 
     function leaveChannel(channel: string, channelType: string) {
-        if (channelType === "private" || channelType === "privateChannel") {
+        if (channelType === "private" || channelType === "direct_message") {
             let channels = new Map<string, { channelType: string }>(
                 userPrivateChannels
             );
@@ -144,8 +146,6 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
         closeMenu();
         setPage("YourChannels");
     }
-
-    const user = useContext(UserContext);
 
     useEffect(() => {
         function arrayToMap(array: Array<any>) {
