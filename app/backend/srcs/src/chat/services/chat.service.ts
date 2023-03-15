@@ -800,21 +800,19 @@ export class ChatService {
                 ban_duration: banOptions.duration.toString(),
             });
         }
-        if (banOptions.duration == 0) {
-            this.removeAdmin(targetChannel, bannedUser.uuid, user.uuid);
-            let updateChannel: ChatEntity = await this.getByName(
-                targetChannel.channelName
-            );
-            if (!updateChannel) {
-                throw new UnauthorizedException("Invalid channel");
-            }
-            let target_list = await this.get_Admin_Owner(updateChannel);
-            await this.chatGateway.remove_admin(
-                bannedUser.username,
-                target_list,
-                targetChannel.channelName
-            );
+        this.removeAdmin(targetChannel, bannedUser.uuid, user.uuid);
+        let updateChannel: ChatEntity = await this.getByName(
+            targetChannel.channelName
+        );
+        if (!updateChannel) {
+            throw new UnauthorizedException("Invalid channel");
         }
+        let target_list = await this.get_Admin_Owner(updateChannel);
+        await this.chatGateway.remove_admin(
+            bannedUser.username,
+            target_list,
+            targetChannel.channelName
+        );
         if (banOptions.duration > 0) {
             setTimeout(async () => {
                 let banUser = await this.userService.getByID(bannedUser.uuid);
@@ -833,7 +831,7 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
-        let target_list = await this.get_Admin_Owner(targetChannel);
+        target_list = await this.get_Admin_Owner(targetChannel);
         this.chatGateway.ban_user(
             targetChannel.channelName,
             banOptions.username,
