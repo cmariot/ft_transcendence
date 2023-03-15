@@ -808,10 +808,9 @@ export class ChatService {
             if (!updateChannel) {
                 throw new UnauthorizedException("Invalid channel");
             }
-            let admin_list = await this.get_Admin_list(updateChannel);
             let target_list = await this.get_Admin_Owner(updateChannel);
-            await this.chatGateway.set_admin(
-                admin_list,
+            await this.chatGateway.remove_admin(
+                bannedUser.username,
                 target_list,
                 targetChannel.channelName
             );
@@ -1120,10 +1119,9 @@ export class ChatService {
                     let updateChannel: ChatEntity = await this.getByName(
                         targetChannel.channelName
                     );
-                    let admin_list = await this.get_Admin_list(updateChannel);
                     let target_list = await this.get_Admin_Owner(updateChannel);
-                    await this.chatGateway.set_admin(
-                        admin_list,
+                    await this.chatGateway.remove_admin(
+                        kickedUser.username,
                         target_list,
                         targetChannel.channelName
                     );
