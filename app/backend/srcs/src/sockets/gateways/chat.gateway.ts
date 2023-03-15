@@ -88,19 +88,49 @@ export class ChatGateway {
     }
 
     // When an user is banned
-    ban_user(channel: string, username: string) {
-        this.server.emit("chat.user.ban", {
+    ban_user(
+        channel: string,
+        username: string,
+        target_list: string[],
+        userSocket: string
+    ) {
+        let socket = this.server.sockets.sockets.get(userSocket);
+        socket.emit("chat.user.ban", {
             channel: channel,
             username: username,
         });
+        for (let i = 0; i < target_list.length; i++) {
+            socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("chat.user.ban", {
+                    channel: channel,
+                    username: username,
+                });
+            }
+        }
     }
 
     // When an user is unbanned
-    unban_user(channel: string, username: string) {
-        this.server.emit("chat.user.unban", {
+    unban_user(
+        channel: string,
+        username: string,
+        target_list: string[],
+        userSocket: string
+    ) {
+        let socket = this.server.sockets.sockets.get(userSocket);
+        socket.emit("chat.user.unban", {
             channel: channel,
             username: username,
         });
+        for (let i = 0; i < target_list.length; i++) {
+            socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("chat.user.unban", {
+                    channel: channel,
+                    username: username,
+                });
+            }
+        }
     }
 
     kick_user(channelName: string, username: string) {
@@ -116,16 +146,28 @@ export class ChatGateway {
         target_list: string[],
         status: string
     ) {
-        //for (let i = 0; i < target_list.length; i++) {
-        //    let socket = this.server.sockets.sockets.get(target_list[i]);
-        //    if (socket) {
-        //        socket.emit("unban/unmute", {
-        //            status: status,
-        //            channel: channel,
-        //            users_list: users_list,
-        //        });
-        //    }
-        //}
+        for (let i = 0; i < target_list.length; i++) {
+            let socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("unban/unmute", {
+                    status: status,
+                    channel: channel,
+                    users_list: users_list,
+                });
+            }
+        }
+    }
+
+    async sendMuteUser(channel: string, user: string, target_list: string[]) {
+        for (let i = 0; i < target_list.length; i++) {
+            let socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("char.user.mute", {
+                    channel: channel,
+                    user: user,
+                });
+            }
+        }
     }
 
     async set_admin(

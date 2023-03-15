@@ -820,9 +820,12 @@ export class ChatService {
             setTimeout(async () => {
                 let banUser = await this.userService.getByID(bannedUser.uuid);
                 if (banUser) {
+                    let target_list = await this.get_Admin_Owner(targetChannel);
                     this.chatGateway.unban_user(
                         banOptions.channelName,
-                        banUser.username
+                        banUser.username,
+                        target_list,
+                        bannedUser.socketId[0]
                     );
                 }
             }, banOptions.duration * 1000);
@@ -831,9 +834,12 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
+        let target_list = await this.get_Admin_Owner(targetChannel);
         this.chatGateway.ban_user(
             targetChannel.channelName,
-            banOptions.username
+            banOptions.username,
+            target_list,
+            bannedUser.socketId[0]
         );
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
@@ -869,9 +875,12 @@ export class ChatService {
             { uuid: targetChannel.uuid },
             { banned_users: currentBanned }
         );
+        let target_list = await this.get_Admin_Owner(targetChannel);
         this.chatGateway.unban_user(
             targetChannel.channelName,
-            unbannedUser.username
+            unbannedUser.username,
+            target_list,
+            unbannedUser.socketId[0]
         );
         let ban_usernames_list: string[] = [];
         for (let j = 0; j < currentBanned.length; j++) {
@@ -1095,7 +1104,7 @@ export class ChatService {
     async kick(
         user: UserEntity,
         kickedUser: UserEntity,
-        targetChannel: ChatEntity,
+        targetChannel: ChatEntity
     ) {
         if (
             targetChannel.channelType === ChannelType.PROTECTED ||
@@ -1280,6 +1289,12 @@ export class ChatService {
                 mute_usernames_list.push(user.username);
             }
         }
+        let target_list = await this.get_Admin_Owner(targetChannel);
+        await this.chatGateway.sendMuteUser(
+            targetChannel.channelName,
+            mutedUser.username,
+            target_list
+        );
         return mute_usernames_list;
     }
 
