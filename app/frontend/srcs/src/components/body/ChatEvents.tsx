@@ -142,7 +142,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         };
     }, [chat, socket, user]);
 
-    // When a new admin is removed
+    // When a admin is removed
     useEffect(() => {
         async function updateAdmins(data: {
             username: string;
@@ -158,23 +158,31 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                         (admins) => admins === data.username
                     );
                     if (index !== -1) {
-                        admins.slice(index, 1);
+                        admins.splice(index, 1);
                         chat.setAdmins(admins);
                     }
-                } else if (data.username === user.username) {
-                    await axios
-                        .post("/api/chat/connect", {
-                            channelName: data.channel,
-                        })
-                        .then(function (response: any) {
-                            chat.setisChannelAdmin(response.data.channel_admin);
-                            chat.setAdmins(response.data.channel_admins);
-                            chat.setmutedUsers(response.data.muted_users);
-                            chat.setbannedUsers(response.data.banned_users);
-                        })
-                        .catch(function (error) {
-                            alert(error.response.data.message);
-                        });
+                }
+                if (data.username === user.username) {
+                    try {
+                        const connectResponse = await axios.post(
+                            "/api/chat/connect",
+                            { channelName: data.channel }
+                        );
+                        if (connectResponse.status === 201) {
+                            chat.setisChannelAdmin(
+                                connectResponse.data.channel_admin
+                            );
+                            chat.setAdmins(connectResponse.data.channel_admins);
+                            chat.setmutedUsers(
+                                connectResponse.data.muted_users
+                            );
+                            chat.setbannedUsers(
+                                connectResponse.data.banned_users
+                            );
+                        }
+                    } catch (connectResponse: any) {
+                        console.log(connectResponse.response.data.message);
+                    }
                 }
             }
         }
@@ -268,7 +276,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                         (banned) => banned === data.username
                     );
                     if (index !== -1) {
-                        banned.slice(index, 1);
+                        banned.splice(index, 1);
                         chat.setbannedUsers(banned);
                     }
                 }
@@ -376,7 +384,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                         (muted) => muted === data.username
                     );
                     if (index !== -1) {
-                        muted.slice(index, 1);
+                        muted.splice(index, 1);
                         chat.setmutedUsers(muted);
                     }
                 }

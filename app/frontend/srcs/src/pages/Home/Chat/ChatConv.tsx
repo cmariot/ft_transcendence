@@ -10,18 +10,6 @@ const ChatConv = () => {
     const chat = useContext(ChatContext);
 
     useEffect(() => {
-        if (chat.isBan === true || chat.isChannelDeleted === true) {
-            chat.setChannel("");
-            chat.setPage("YourChannels");
-            if (chat.isBan === true) {
-                chat.setIsBan(false);
-            } else if (chat.isChannelDeleted === true) {
-                chat.setisChannelDeleted(false);
-            }
-        }
-    }, [chat]);
-
-    useEffect(() => {
         const chatMessages = document.getElementById("chat-messages-list");
         if (chatMessages) {
             chatMessages.scrollTo(0, chatMessages.scrollHeight);
