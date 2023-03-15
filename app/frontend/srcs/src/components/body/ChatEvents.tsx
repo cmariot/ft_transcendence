@@ -343,5 +343,50 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         };
     }, [chat, socket, user]);
 
+    // When an user is mute
+    useEffect(() => {
+        async function updateMute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    muted.push(data.username);
+                    chat.setmutedUsers(muted);
+                }
+            }
+        }
+        socket.on("chat.user.mute", updateMute);
+        return () => {
+            socket.off("chat.user.mute", updateMute);
+        };
+    }, [chat, socket, user]);
+
+    // When an user is unmute
+    useEffect(() => {
+        async function updateMute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    let index = muted.findIndex(
+                        (muted) => muted === data.username
+                    );
+                    if (index !== -1) {
+                        muted.slice(index, 1);
+                        chat.setmutedUsers(muted);
+                    }
+                }
+            }
+        }
+        socket.on("chat.user.unmute", updateMute);
+        return () => {
+            socket.off("chat.user.unmute", updateMute);
+        };
+    }, [chat, socket, user]);
+
     return <>{children}</>;
 };
