@@ -95,10 +95,12 @@ export class ChatGateway {
         userSocket: string
     ) {
         let socket = this.server.sockets.sockets.get(userSocket);
-        socket.emit("chat.user.ban", {
-            channel: channel,
-            username: username,
-        });
+        if (socket) {
+            socket.emit("chat.user.ban", {
+                channel: channel,
+                username: username,
+            });
+        }
         for (let i = 0; i < target_list.length; i++) {
             socket = this.server.sockets.sockets.get(target_list[i]);
             if (socket) {
@@ -118,10 +120,12 @@ export class ChatGateway {
         userSocket: string
     ) {
         let socket = this.server.sockets.sockets.get(userSocket);
-        socket.emit("chat.user.unban", {
-            channel: channel,
-            username: username,
-        });
+        if (socket) {
+            socket.emit("chat.user.unban", {
+                channel: channel,
+                username: username,
+            });
+        }
         for (let i = 0; i < target_list.length; i++) {
             socket = this.server.sockets.sockets.get(target_list[i]);
             if (socket) {
