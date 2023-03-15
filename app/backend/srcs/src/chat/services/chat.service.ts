@@ -12,11 +12,7 @@ import * as bcrypt from "bcrypt";
 import { UsersService } from "src/users/services/users.service";
 import { updateChannelDTO } from "../dtos/channelId.dto";
 import { UserEntity } from "src/users/entity/user.entity";
-import {
-    AddOptionsDTO,
-    kickOptionsDTO,
-    muteOptionsDTO,
-} from "../dtos/admin.dto";
+import { AddOptionsDTO, muteOptionsDTO } from "../dtos/admin.dto";
 
 @Injectable()
 export class ChatService {

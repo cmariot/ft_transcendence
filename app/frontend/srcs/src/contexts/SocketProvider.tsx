@@ -17,11 +17,6 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
     useEffect(() => {
         async function updateFriendAvatar(data: { username: string }) {
-            console.log(
-                "user.update.avatar :",
-                data.username,
-                "changed his avatar"
-            );
             if (data.username !== user.username) {
                 let friends = user.friends;
                 let index = friends.findIndex(
@@ -72,55 +67,6 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
             socket.off("user.update.avatar", updateFriendAvatar);
         };
     }, [user]);
-
-    useEffect(() => {
-        function updateChannels() {
-            console.log("chat.channels.update :");
-            function arrayToMap(array: Array<any>) {
-                let map = new Map<
-                    string,
-                    { channelName: string; channelType: string }
-                >();
-                for (let i = 0; i < array.length; i++) {
-                    if (array[i].channelName) {
-                        map.set(array[i].channelName, array[i]);
-                    }
-                }
-                return map;
-            }
-            if (user.isLogged) {
-                (async () => {
-                    try {
-                        const [channelsResponse] = await Promise.all([
-                            axios.get("/api/chat/channels"),
-                        ]);
-
-                        if (channelsResponse.status === 200) {
-                            chat.updateUserChannels(
-                                arrayToMap(channelsResponse.data.userChannels)
-                            );
-                            chat.updateUserPrivateChannels(
-                                arrayToMap(
-                                    channelsResponse.data.userPrivateChannels
-                                )
-                            );
-                            chat.updateAvailableChannels(
-                                arrayToMap(
-                                    channelsResponse.data.availableChannels
-                                )
-                            );
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                })();
-            }
-        }
-        socket.on("chat.channels.update", updateChannels);
-        return () => {
-            socket.off("chat.channels.update", updateChannels);
-        };
-    }, [chat, user.isLogged]);
 
     return (
         <SocketContext.Provider value={socket}>
