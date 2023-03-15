@@ -184,17 +184,18 @@ export class ChatGateway {
         }
     }
 
-    async set_admin(
-        admin_list: string[],
+    async remove_admin(
+        user: string,
         target_list: string[],
         channel_name: string
     ) {
         for (let i = 0; i < target_list.length; i++) {
             let socket = this.server.sockets.sockets.get(target_list[i]);
             if (socket) {
-                socket.emit("chat.admin.update", {
+                socket.emit("update.channel.admin", {
+                    user: user,
                     channel_name: channel_name,
-                    admin_list: admin_list,
+                    false: false,
                 });
             }
         }
