@@ -1341,6 +1341,13 @@ export class ChatService {
                 mute_usernames_list.push(user.username);
             }
         }
+        let target_list = await this.get_Admin_Owner(targetChannel);
+        this.chatGateway.unmute_user(
+            targetChannel.channelName,
+            mutedUser.username,
+            target_list,
+            mutedUser.socketId[0]
+        );
         return mute_usernames_list;
     }
 

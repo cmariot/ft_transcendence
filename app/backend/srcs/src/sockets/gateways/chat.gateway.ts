@@ -137,6 +137,30 @@ export class ChatGateway {
         }
     }
 
+    unmute_user(
+        channel: string,
+        username: string,
+        target_list: string[],
+        userSocket: string
+    ) {
+        let socket = this.server.sockets.sockets.get(userSocket);
+        if (socket) {
+            socket.emit("chat.user.unmute", {
+                channel: channel,
+                username: username,
+            });
+        }
+        for (let i = 0; i < target_list.length; i++) {
+            socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("chat.user.unmute", {
+                    channel: channel,
+                    username: username,
+                });
+            }
+        }
+    }
+
     kick_user(channelName: string, username: string) {
         this.server.emit("chat.user.kicked", {
             channel: channelName,
@@ -144,29 +168,11 @@ export class ChatGateway {
         });
     }
 
-    async send_unmute_or_unban(
-        channel: string,
-        users_list: string[],
-        target_list: string[],
-        status: string
-    ) {
-        for (let i = 0; i < target_list.length; i++) {
-            let socket = this.server.sockets.sockets.get(target_list[i]);
-            if (socket) {
-                socket.emit("unban/unmute", {
-                    status: status,
-                    channel: channel,
-                    users_list: users_list,
-                });
-            }
-        }
-    }
-
     async sendMuteUser(channel: string, user: string, target_list: string[]) {
         for (let i = 0; i < target_list.length; i++) {
             let socket = this.server.sockets.sockets.get(target_list[i]);
             if (socket) {
-                socket.emit("char.user.mute", {
+                socket.emit("chat.user.mute", {
                     channel: channel,
                     user: user,
                 });
@@ -179,15 +185,15 @@ export class ChatGateway {
         target_list: string[],
         channel_name: string
     ) {
-        //for (let i = 0; i < target_list.length; i++) {
-        //    let socket = this.server.sockets.sockets.get(target_list[i]);
-        //    if (socket) {
-        //        socket.emit("UpdateAdmin", {
-        //            channel_name: channel_name,
-        //            admin_list: admin_list,
-        //        });
-        //    }
-        //}
+        for (let i = 0; i < target_list.length; i++) {
+            let socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("chat.admin.update", {
+                    channel_name: channel_name,
+                    admin_list: admin_list,
+                });
+            }
+        }
     }
 
     leave_privateChannel(username: string, channelName: string) {
