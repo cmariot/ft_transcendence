@@ -420,12 +420,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot mute yourself.");
         }
-        return this.chatService.mute(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        return this.chatService.mute(mutedUser, targetChannel, muteOptions);
     }
 
     // unmute
@@ -463,12 +458,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unmute yourself.");
         }
-        let list = await this.chatService.unmute(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        let list = await this.chatService.unmute(mutedUser, targetChannel);
         if (!list) {
             throw new HttpException("This user wasn't muted", HttpStatus.FOUND);
         }

@@ -1,12 +1,20 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
+import { UserContext } from "../../../../contexts/UserProvider";
+import { SocketContext } from "../../../../contexts/SocketProvider";
 
 const MuteUser = () => {
     const chat = useContext(ChatContext);
+    const user = useContext(UserContext);
+    const socket = useContext(SocketContext);
     const [newMute, setNewMute] = useState("");
     const [muteDuration, setMuteDuration] = useState("600"); // default 10 minutes
     const [update, setUpdate] = useState(false);
+
+    useEffect(() => {
+        setUpdate((prevState) => !prevState);
+    }, [chat.mutedUsers]);
 
     function handleNewMuteChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
@@ -56,6 +64,56 @@ const MuteUser = () => {
                 alert(error.response.data.message);
             });
     }
+
+    // When an user is mute
+    useEffect(() => {
+        async function updateMute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    if (
+                        muted.findIndex((mute) => mute === data.username) === -1
+                    ) {
+                        muted.push(data.username);
+                    }
+                    chat.setmutedUsers(muted);
+                }
+                setUpdate((prevState) => !prevState);
+            }
+        }
+        socket.on("chat.user.mute", updateMute);
+        return () => {
+            socket.off("chat.user.mute", updateMute);
+        };
+    }, [chat, socket, user]);
+
+    useEffect(() => {
+        async function updateMute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    let index = muted.findIndex(
+                        (muted) => muted === data.username
+                    );
+                    if (index !== -1) {
+                        muted.splice(index, 1);
+                        chat.setmutedUsers(muted);
+                    }
+                }
+                setUpdate((prevState) => !prevState);
+            }
+        }
+        socket.on("chat.user.unmute", updateMute);
+        return () => {
+            socket.off("chat.user.unmute", updateMute);
+        };
+    }, [chat, socket, user]);
 
     function currentMutedUsers() {
         if (chat.mutedUsers.length) {

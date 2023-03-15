@@ -1211,20 +1211,13 @@ export class ChatService {
     }
 
     async timeout(
-        user: UserEntity,
         mutedUser: UserEntity,
         targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO,
         event: string
     ) {
         let users_list;
         if (event === "mute") {
-            users_list = await this.unmute(
-                user,
-                mutedUser,
-                targetChannel,
-                muteOptions
-            );
+            users_list = await this.unmute(mutedUser, targetChannel);
         }
         if (event === "unban") {
             users_list = await this.unban(mutedUser, targetChannel);
@@ -1243,7 +1236,6 @@ export class ChatService {
     }
 
     async mute(
-        user: UserEntity,
         mutedUser: UserEntity,
         targetChannel: ChatEntity,
         muteOptions: muteOptionsDTO
@@ -1269,13 +1261,7 @@ export class ChatService {
         }
         if (muteOptions.duration > 0) {
             setTimeout(() => {
-                this.timeout(
-                    user,
-                    mutedUser,
-                    targetChannel,
-                    muteOptions,
-                    "mute"
-                );
+                this.timeout(mutedUser, targetChannel, "mute");
             }, muteOptions.duration * 1000);
         }
         await this.chatRepository.update(
@@ -1298,29 +1284,16 @@ export class ChatService {
         return mute_usernames_list;
     }
 
-    async unmute(
-        user: UserEntity,
-        mutedUser: UserEntity,
-        targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO
-    ) {
-        let channel = this.getByName(targetChannel.channelName);
-        let currentMuted = (await channel).mutted_users;
+    async unmute(mutedUser: UserEntity, targetChannel: ChatEntity) {
+        let channel = await this.getByName(targetChannel.channelName);
+        if (!channel) {
+            throw new UnauthorizedException("Invalid channel");
+        }
+        let currentMuted = channel.mutted_users;
         let i = 0;
         let found = false;
-
         while (i < currentMuted.length) {
             if (mutedUser.uuid === currentMuted[i].uuid) {
-                if (parseInt(currentMuted[i].mute_duration) === 0) {
-                    return null;
-                }
-                let now = Date.now();
-                if (
-                    now - parseInt(currentMuted[i].mute_date) <
-                    parseInt(currentMuted[i].mute_duration) * 1000
-                ) {
-                    return null;
-                }
                 currentMuted.splice(i, 1);
                 found = true;
                 break;

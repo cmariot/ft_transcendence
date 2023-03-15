@@ -1,12 +1,78 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
+import { UserContext } from "../../../../contexts/UserProvider";
+import { SocketContext } from "../../../../contexts/SocketProvider";
 
 const BanUser = () => {
     const chat = useContext(ChatContext);
+    const user = useContext(UserContext);
+    const socket = useContext(SocketContext);
     const [newBanName, setNewBan] = useState("");
     const [banDuration, setBanDuration] = useState("600"); // default 10 minutes
     const [update, setUpdate] = useState(false);
+
+    // When an user is banned
+    useEffect(() => {
+        async function updateBan(data: { channel: string; username: string }) {
+            if (data.username === user.username) {
+                if (chat.channel === data.channel) {
+                    chat.setMessages([]);
+                    chat.setChannel("");
+                    chat.setChannelType("");
+                    chat.setmutedUsers([]);
+                    chat.setbannedUsers([]);
+                    chat.closeMenu();
+                    chat.setPage("YourChannels");
+                }
+            } else if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let banned = chat.bannedUsers;
+                    if (
+                        banned.findIndex((ban) => ban === data.username) === -1
+                    ) {
+                        banned.push(data.username);
+                        chat.setmutedUsers(banned);
+                    }
+                }
+                setUpdate((prevState) => !prevState);
+            }
+        }
+        socket.on("chat.user.ban", updateBan);
+
+        return () => {
+            socket.off("chat.user.ban", updateBan);
+        };
+    }, [chat, socket, user]);
+
+    // When an user is unban
+    useEffect(() => {
+        async function updateBan(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let banned = chat.bannedUsers;
+                    let index = banned.findIndex(
+                        (banned) => banned === data.username
+                    );
+                    if (index !== -1) {
+                        banned.splice(index, 1);
+                        chat.setbannedUsers(banned);
+                        setUpdate((prevState) => !prevState);
+                    }
+                }
+            }
+        }
+        socket.on("chat.user.unban", updateBan);
+        return () => {
+            socket.off("chat.user.unban", updateBan);
+        };
+    }, [chat, socket, user]);
 
     function handleNewsBanChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();

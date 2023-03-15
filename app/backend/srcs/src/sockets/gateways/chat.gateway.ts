@@ -168,13 +168,17 @@ export class ChatGateway {
         });
     }
 
-    async sendMuteUser(channel: string, user: string, target_list: string[]) {
+    async sendMuteUser(
+        channel: string,
+        username: string,
+        target_list: string[]
+    ) {
         for (let i = 0; i < target_list.length; i++) {
             let socket = this.server.sockets.sockets.get(target_list[i]);
             if (socket) {
                 socket.emit("chat.user.mute", {
                     channel: channel,
-                    user: user,
+                    username: username,
                 });
             }
         }
