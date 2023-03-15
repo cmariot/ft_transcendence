@@ -5,7 +5,6 @@ import { ChatContext } from "../../../../contexts/ChatProvider";
 const EditAdmins = () => {
     const chat = useContext(ChatContext);
     const [newAdminName, setNewAdmin] = useState("");
-    const [update, setUpdate] = useState(false);
 
     function handleNewsAdminChange(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
@@ -22,12 +21,6 @@ const EditAdmins = () => {
                 channelName: chat.channel,
                 newAdminUsername: newAdminName,
             })
-            .then(() => {
-                let previousAdmins: string[] = chat.admins;
-                previousAdmins.push(newAdminName);
-                chat.setAdmins(previousAdmins);
-                setNewAdmin("");
-            })
             .catch((error) => {
                 alert(error.response.data.message);
             });
@@ -38,12 +31,6 @@ const EditAdmins = () => {
             .post("/api/chat/admin/remove", {
                 channelName: chat.channel,
                 newAdminUsername: username,
-            })
-            .then(() => {
-                let previousAdmins: string[] = chat.admins;
-                previousAdmins.splice(index, 1);
-                chat.setAdmins(previousAdmins);
-                setUpdate(!update);
             })
             .catch((error) => {
                 alert(error.response.data.message);
