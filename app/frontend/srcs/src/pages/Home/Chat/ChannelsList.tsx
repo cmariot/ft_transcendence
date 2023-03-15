@@ -24,6 +24,9 @@ const ChannelsList = () => {
                     let userchannels = chat.userChannels;
                     userchannels.set(channel, { channelType: channelType });
                     chat.updateUserChannels(userchannels);
+                    let availableChannels = chat.availableChannels;
+                    availableChannels.delete(channel);
+                    chat.updateAvailableChannels(availableChannels);
                     chat.closeMenu();
                     chat.setPage("ChatConv");
                 })
