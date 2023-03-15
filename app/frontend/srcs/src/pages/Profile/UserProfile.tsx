@@ -77,18 +77,6 @@ const UserProfile = () => {
     ]);
 
     async function goToPrevious() {
-        if (chat.channel.length) {
-            await axios
-                .post("/api/chat/connect", { channelName: chat.channel })
-                .then(function (response: any) {
-                    chat.setChannel(chat.channel);
-                    chat.setChannelType(chat.channelType);
-                    chat.setMessages(response.data.messages);
-                })
-                .catch(function (error) {
-                    alert(error.response.data.message);
-                });
-        }
         navigate(-1);
     }
 
@@ -167,8 +155,24 @@ const UserProfile = () => {
                         )}
                         {blocked ? (
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     user.unblock(username);
+                                    if (chat.channel.length) {
+                                        await axios
+                                            .post("/api/chat/connect", {
+                                                channelName: chat.channel,
+                                            })
+                                            .then(function (response: any) {
+                                                chat.setMessages(
+                                                    response.data.messages
+                                                );
+                                            })
+                                            .catch(function (error) {
+                                                alert(
+                                                    error.response.data.message
+                                                );
+                                            });
+                                    }
                                     setBlocked(false);
                                 }}
                             >
@@ -176,8 +180,24 @@ const UserProfile = () => {
                             </button>
                         ) : (
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     user.block(username);
+                                    if (chat.channel.length) {
+                                        await axios
+                                            .post("/api/chat/connect", {
+                                                channelName: chat.channel,
+                                            })
+                                            .then(function (response: any) {
+                                                chat.setMessages(
+                                                    response.data.messages
+                                                );
+                                            })
+                                            .catch(function (error) {
+                                                alert(
+                                                    error.response.data.message
+                                                );
+                                            });
+                                    }
                                     setBlocked(true);
                                 }}
                             >

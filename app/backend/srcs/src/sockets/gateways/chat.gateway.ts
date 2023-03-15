@@ -72,19 +72,42 @@ export class ChatGateway {
         });
     }
 
+    // When an admin is added / deleted
+    updateChannelAdmin(username: string, channel: string, value: boolean) {
+        if (value === true) {
+            this.server.emit("chat.new.admin", {
+                username: username,
+                channel: channel,
+            });
+        } else {
+            this.server.emit("chat.remove.admin", {
+                username: username,
+                channel: channel,
+            });
+        }
+    }
+
+    // When an user is banned
     ban_user(channel: string, username: string) {
-        //this.server.emit("banUser", {
-        //    channel: channel,
-        //    username: username,
-        //});
-        //return username;
+        this.server.emit("chat.user.ban", {
+            channel: channel,
+            username: username,
+        });
+    }
+
+    // When an user is unbanned
+    unban_user(channel: string, username: string) {
+        this.server.emit("chat.user.unban", {
+            channel: channel,
+            username: username,
+        });
     }
 
     kick_user(channelName: string, username: string) {
-        //this.server.emit("kickUser", {
-        //    channel: channelName,
-        //    username: username,
-        //});
+        this.server.emit("chat.user.kicked", {
+            channel: channelName,
+            username: username,
+        });
     }
 
     async send_unmute_or_unban(
@@ -121,18 +144,10 @@ export class ChatGateway {
         //}
     }
 
-    updateChannelAdmin(username: string, channel: string, value: boolean) {
-        //this.server.emit("channelAdminUpdate", {
-        //    username: username,
-        //    channel: channel,
-        //    value: value,
-        //});
-    }
-
     leave_privateChannel(username: string, channelName: string) {
-        this.server.emit("userLeaveChannel", {
-            username: username,
-            channel: channelName,
-        });
+        //this.server.emit("userLeaveChannel", {
+        //    username: username,
+        //    channel: channelName,
+        //});
     }
 }

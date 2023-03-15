@@ -189,7 +189,7 @@ export class ChatController {
         ) {
             throw new UnauthorizedException();
         }
-        return this.chatService.upodateChannelPassword(targetChannel, channel);
+        return this.chatService.updateChannelPassword(targetChannel, channel);
     }
 
     @Post("admin/add")
@@ -337,7 +337,7 @@ export class ChatController {
         if (kickedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot kick yourself.");
         }
-        return this.chatService.kick(user, kickedUser, targetChannel, options);
+        return this.chatService.kick(user, kickedUser, targetChannel);
     }
 
     // unban
@@ -375,12 +375,7 @@ export class ChatController {
         if (mutedUser.uuid === req.user.uuid) {
             throw new UnauthorizedException("You cannot unban yourself.");
         }
-        let list = await this.chatService.unban(
-            user,
-            mutedUser,
-            targetChannel,
-            muteOptions
-        );
+        let list = await this.chatService.unban(mutedUser, targetChannel);
         if (!list) {
             throw new HttpException(
                 "This user wasn't banned",
@@ -495,15 +490,6 @@ export class ChatController {
         return await this.chatService.private_channel_users(
             req.user.uuid,
             channel.channelName
-        );
-    }
-
-    @Post("/channel/banned")
-    @UseGuards(isLogged)
-    async get_banned_channel_users(@Req() req, @Body() channel: channelDTO) {
-        return await this.chatService.banList(
-            channel.channelName,
-            req.user.uuid
         );
     }
 }

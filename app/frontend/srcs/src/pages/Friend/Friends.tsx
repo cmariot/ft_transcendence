@@ -291,6 +291,33 @@ export default function Friends() {
                                                 await user.block(
                                                     friend["username"]
                                                 );
+                                                if (chat.channel.length) {
+                                                    await axios
+                                                        .post(
+                                                            "/api/chat/connect",
+                                                            {
+                                                                channelName:
+                                                                    chat.channel,
+                                                            }
+                                                        )
+                                                        .then(function (
+                                                            response: any
+                                                        ) {
+                                                            chat.setMessages(
+                                                                response.data
+                                                                    .messages
+                                                            );
+                                                        })
+                                                        .catch(function (
+                                                            error
+                                                        ) {
+                                                            alert(
+                                                                error.response
+                                                                    .data
+                                                                    .message
+                                                            );
+                                                        });
+                                                }
                                                 setUpdate(
                                                     (prevState) => !prevState
                                                 );
@@ -322,6 +349,23 @@ export default function Friends() {
                                 <button
                                     onClick={async () => {
                                         await user.unblock(blocked["username"]);
+                                        if (chat.channel.length) {
+                                            await axios
+                                                .post("/api/chat/connect", {
+                                                    channelName: chat.channel,
+                                                })
+                                                .then(function (response: any) {
+                                                    chat.setMessages(
+                                                        response.data.messages
+                                                    );
+                                                })
+                                                .catch(function (error) {
+                                                    alert(
+                                                        error.response.data
+                                                            .message
+                                                    );
+                                                });
+                                        }
                                         setUpdate((prevState) => !prevState);
                                     }}
                                 >

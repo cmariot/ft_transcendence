@@ -63,9 +63,9 @@ export class ChatService {
                     while (j < channels[i].users.length) {
                         if (channels[i].users[j].uuid === user.uuid) {
                             if (
-                                channels[i].banned_users.findIndex((user) => {
-                                    user.uuid === user.uuid;
-                                }) === -1
+                                channels[i].banned_users.findIndex(
+                                    (user) => user.uuid === user.uuid
+                                ) === -1
                             ) {
                                 has_joined = true;
                                 userChannels.push(channels[i]);
@@ -91,14 +91,15 @@ export class ChatService {
                 while (j < channels[i].allowed_users.length) {
                     if (channels[i].allowed_users[j].uuid === user.uuid) {
                         if (
-                            channels[i].banned_users.findIndex((user) => {
-                                user.uuid === user.uuid;
-                            }) === -1
+                            channels[i].banned_users.findIndex(
+                                (user) => user.uuid === user.uuid
+                            ) === -1
                         ) {
                             if (
-                                user.blocked.findIndex((blocked) => {
-                                    blocked === channels[i].channelOwner;
-                                }) === -1
+                                user.blocked.findIndex(
+                                    (blocked) =>
+                                        blocked === channels[i].channelOwner
+                                ) === -1
                             ) {
                                 userPrivateChannels.push(channels[i]);
                             }
@@ -153,12 +154,12 @@ export class ChatService {
             channel.channelType === ChannelType.PUBLIC ||
             channel.channelType === ChannelType.PROTECTED
         ) {
+            channel.users = [{ uuid: uuid }];
             if (channel.channelType === ChannelType.PROTECTED) {
                 channel.channelPassword = await this.encode_password(
                     channel.channelPassword
                 );
             }
-            channel.users = [{ uuid: uuid }];
             channel = await this.chatRepository.save(channel);
             if (channel) {
                 this.chatGateway.newChannelAvailable(channel.channel);
@@ -218,12 +219,182 @@ export class ChatService {
         throw new UnauthorizedException("Invalid channel.");
     }
 
+    // Encode the password for the protected channels
     async encode_password(rawPassword: string): Promise<string> {
         const saltRounds: number = 11;
         const salt = bcrypt.genSaltSync(saltRounds);
         return bcrypt.hashSync(rawPassword, salt);
     }
 
+    // Join a channel
+    async join_channel(channelName: string, userID: string) {
+        let channels = await this.chatRepository.find();
+        if (channels.length === 0) {
+            this.create_general_channel();
+        }
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (!channel) throw new UnauthorizedException();
+        let user = await this.userService.getByID(userID);
+        if (!user) throw new UnauthorizedException();
+
+        // Check if banned
+        if (channel.banned_users) {
+            let i = 0;
+            while (i < channel.banned_users.length) {
+                if (channel.banned_users[i].uuid === user.uuid) {
+                    let now = Date.now();
+                    if (parseInt(channel.banned_users[i].ban_duration) === 0) {
+                        // perm ban
+                        throw new UnauthorizedException(
+                            "You are not allowed to join this channel."
+                        );
+                    } else if (
+                        now - parseInt(channel.banned_users[i].ban_date) <
+                        parseInt(channel.banned_users[i].ban_duration) * 1000
+                    ) {
+                        throw new UnauthorizedException(
+                            "You are not allowed to join this channel."
+                        );
+                    } else {
+                        let banned = channel.banned_users;
+                        banned.splice(i, 1);
+                        await this.chatRepository.update(
+                            { uuid: channel.uuid },
+                            { banned_users: banned }
+                        );
+                    }
+                    break;
+                }
+                i++;
+            }
+        }
+
+        if (
+            channel.channelType === ChannelType.DIRECT_MESSAGE ||
+            channel.channelType === ChannelType.PRIVATE
+        ) {
+            let index_in_authorized_channels = channels.findIndex(
+                (element) => element.channelName === channelName
+            );
+            if (index_in_authorized_channels !== -1) {
+                channel = channels[index_in_authorized_channels];
+                let allowed_user = channel.allowed_users.findIndex(
+                    (element) => element.uuid === user.uuid
+                );
+                if (allowed_user === -1) {
+                    throw new HttpException(
+                        "Unauthorized.",
+                        HttpStatus.UNAUTHORIZED
+                    );
+                }
+                this.chatGateway.userJoinChannel(
+                    channel.channelName,
+                    user.username
+                );
+                return this.convertChannelMessages(
+                    userID,
+                    channels[index_in_authorized_channels].messages,
+                    channels[index_in_authorized_channels]
+                );
+            }
+        } else if (channel.channelType === ChannelType.PUBLIC) {
+            let channel_users = channel.users;
+            let i = 0;
+            let found = false;
+            while (i < channel_users.length) {
+                if (channel_users[i].uuid === user.uuid) {
+                    found = true;
+                    break;
+                }
+                i++;
+            }
+            if (found === false) {
+                channel_users.push({ uuid: user.uuid });
+                this.chatRepository.update(
+                    { channelName: channel.channelName },
+                    { users: channel_users }
+                );
+            }
+            await this.chatGateway.userJoinChannel(
+                channel.channelName,
+                user.username
+            );
+            return this.convertChannelMessages(
+                user.uuid,
+                channel.messages,
+                channel
+            );
+        } else if (channel.channelType === ChannelType.PROTECTED) {
+            let allowed_users = channel.users;
+            let i = 0;
+
+            while (i < allowed_users.length) {
+                if (allowed_users[i].uuid === user.uuid) {
+                    this.chatGateway.userJoinChannel(
+                        channel.channelName,
+                        user.username
+                    );
+                    return this.convertChannelMessages(
+                        user.uuid,
+                        channel.messages,
+                        channel
+                    );
+                }
+                i++;
+            }
+            throw new HttpException(
+                "Enter the channel's password",
+                HttpStatus.FOUND
+            );
+        }
+        throw new UnauthorizedException();
+    }
+
+    // Check if password match for a protected channel
+    async join_protected_channel(
+        channelName: string,
+        channelPassword: string,
+        uuid: string
+    ) {
+        let channel = await this.chatRepository.findOneBy({
+            channelName: channelName,
+        });
+        if (!channel) throw new UnauthorizedException("Invalid channel");
+        if (channel.channelType === ChannelType.PUBLIC) {
+            return this.join_channel(channelName, uuid);
+        } else if (channel.channelType !== ChannelType.PROTECTED) {
+            throw new UnauthorizedException("Invalid channel");
+        }
+        let user = await this.userService.getByID(uuid);
+        if (!user) throw new UnauthorizedException("Invalid user");
+        const isMatch = await bcrypt.compare(
+            channelPassword,
+            channel.channelPassword
+        );
+        if (!isMatch) throw new UnauthorizedException("Invalid password");
+        let channel_users = channel.users;
+        let i = 0;
+        let found = false;
+        while (i < channel_users.length) {
+            if (channel_users[i].uuid === user.uuid) {
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            channel_users.push({ uuid: user.uuid });
+            await this.chatRepository.update(
+                { channelName: channel.channelName },
+                { users: channel_users }
+            );
+        }
+        return this.join_channel(channelName, uuid);
+    }
+
+    // Get messages, and other channel informations when join it
     async convertChannelMessages(
         uuid: string,
         initial_messages: { uuid: string; message: string }[],
@@ -238,10 +409,7 @@ export class ChatService {
         let returned_messages: { username: string; message: string }[] = [];
         let i = 0;
         while (i < initial_messages.length) {
-            if (
-                !blocked_users ||
-                blocked_users.indexOf(initial_messages[i].uuid) === -1
-            ) {
+            if (blocked_users.indexOf(initial_messages[i].uuid) === -1) {
                 let chat_user = await this.userService.getByID(
                     initial_messages[i].uuid
                 );
@@ -355,45 +523,364 @@ export class ChatService {
         };
     }
 
-    async join_protected_channel(
-        channelName: string,
-        channelPassword: string,
-        uuid: string
+    // Set a channel password / change it or remove it
+    async updateChannelPassword(
+        targetChannel: ChatEntity,
+        channel: updateChannelDTO
     ) {
+        if (
+            targetChannel.channelType === "public" &&
+            channel.newChannelType === true
+        ) {
+            // Change to protected and add password
+            if (channel.newChannelPassword.length < 10) {
+                throw new UnauthorizedException(
+                    "Password must be 10 length min characters"
+                );
+            }
+            let hashed_password = await this.encode_password(
+                channel.newChannelPassword
+            );
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                {
+                    channelType: ChannelType.PROTECTED,
+                    channelPassword: hashed_password,
+                }
+            );
+        } else if (
+            targetChannel.channelType === "protected" &&
+            channel.newChannelType === false
+        ) {
+            // Change to public and remove password
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelPassword: "", channelType: ChannelType.PUBLIC }
+            );
+        } else if (
+            targetChannel.channelType === "protected" &&
+            channel.newChannelType === true
+        ) {
+            // Update the channel password"
+            if (channel.newChannelPassword.length < 10) {
+                throw new UnauthorizedException(
+                    "Password must be 10 length min characters"
+                );
+            }
+            let hashed_password = await this.encode_password(
+                channel.newChannelPassword
+            );
+            await this.chatRepository.update(
+                { uuid: targetChannel.uuid },
+                { channelPassword: hashed_password }
+            );
+        } else return;
+        this.chatGateway.newChannelAvailable(channel.channelName);
+        return "updated";
+    }
+
+    // Leave a channel
+    async leave_channel(channelName: string, uuid: string) {
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
-        if (channel.channelType === ChannelType.PUBLIC) {
-            this.join_channel(channelName, uuid);
-        }
-        if (!channel || channel.channelType !== ChannelType.PROTECTED)
-            throw new UnauthorizedException("Invalid channel");
+        if (!channel) throw new UnauthorizedException("Invalid channel");
         let user = await this.userService.getByID(uuid);
         if (!user) throw new UnauthorizedException("Invalid user");
-        const isMatch = await bcrypt.compare(
-            channelPassword,
-            channel.channelPassword
-        );
-        if (!isMatch) throw new UnauthorizedException("Invalid password");
+        if (
+            channel.channelType === ChannelType.PUBLIC ||
+            channel.channelType === ChannelType.PROTECTED
+        ) {
+            if (channel.channelOwner === uuid) {
+                await this.chatRepository.delete({ uuid: channel.uuid });
+                this.chatGateway.deleted_channel(
+                    channel.channelName,
+                    user.username
+                );
+            } else {
+                let index = channel.users.findIndex(
+                    (element) => element.uuid === user.uuid
+                );
+                if (index !== -1) {
+                    channel.users.splice(index, 1);
+                    await this.chatRepository.update(
+                        { channelName: channelName },
+                        { users: channel.users }
+                    );
+                    index = channel.channelAdministrators.findIndex(
+                        (element) => element.uuid === user.uuid
+                    );
+                    if (index !== -1) {
+                        channel.channelAdministrators.splice(index, 1);
+                        await this.chatRepository.update(
+                            { channelName: channelName },
+                            {
+                                channelAdministrators:
+                                    channel.channelAdministrators,
+                            }
+                        );
+                        this.chatGateway.updateChannelAdmin(
+                            user.username,
+                            channel.channelName,
+                            false
+                        );
+                    }
+                } else {
+                    throw new UnauthorizedException();
+                }
+            }
+        } else if (channel.channelType === ChannelType.DIRECT_MESSAGE) {
+            await this.chatRepository.delete({ uuid: channel.uuid });
+            this.chatGateway.deleted_channel(
+                channel.channelName,
+                user.username
+            );
+        } else if (channel.channelType === ChannelType.PRIVATE) {
+            if (channel.channelOwner === uuid) {
+                await this.chatRepository.delete({ uuid: channel.uuid });
+                this.chatGateway.deleted_channel(
+                    channel.channelName,
+                    user.username
+                );
+            } else {
+                let index = channel.allowed_users.findIndex(
+                    (element) => element.uuid === user.uuid
+                );
+                if (index !== -1) {
+                    channel.allowed_users.splice(index, 1);
+                    await this.chatRepository.update(
+                        { channelName: channelName },
+                        { allowed_users: channel.allowed_users }
+                    );
+                    index = channel.channelAdministrators.findIndex(
+                        (element) => element.uuid === user.uuid
+                    );
+                    if (index !== -1) {
+                        channel.channelAdministrators.splice(index, 1);
+                        await this.chatRepository.update(
+                            { channelName: channelName },
+                            {
+                                channelAdministrators:
+                                    channel.channelAdministrators,
+                            }
+                        );
+                    }
+                    this.chatGateway.updateChannelAdmin(
+                        user.username,
+                        channel.channelName,
+                        false
+                    );
+                    this.chatGateway.leave_privateChannel(
+                        user.username,
+                        channelName
+                    );
+                } else {
+                    throw new UnauthorizedException();
+                }
+            }
+        }
+    }
 
-        let channel_users = channel.users;
+    // Add a channel admin
+    async addAdmin(
+        channel: ChatEntity,
+        newAdminUUID: string,
+        ownerUUID: string
+    ) {
+        if (newAdminUUID === ownerUUID) {
+            throw new HttpException(
+                "The owner cannot be an administrator",
+                HttpStatus.FOUND
+            );
+        }
+        let found = false;
+        if (
+            channel.channelType === ChannelType.PUBLIC ||
+            channel.channelType === ChannelType.PROTECTED
+        ) {
+            if (
+                channel.users.find((element) => element.uuid === newAdminUUID)
+            ) {
+                found = true;
+            }
+        } else if (channel.channelType === ChannelType.PRIVATE) {
+            if (
+                channel.allowed_users.find(
+                    (element) => element.uuid === newAdminUUID
+                )
+            ) {
+                found = true;
+            }
+        }
+        if (found === false) {
+            throw new HttpException("Not in the Channel", HttpStatus.FOUND);
+        }
+        let currentAdmin = channel.channelAdministrators;
+        let i = 0;
+        while (i < currentAdmin.length) {
+            if (newAdminUUID === currentAdmin[i].uuid) {
+                throw new HttpException("Already admin", HttpStatus.FOUND);
+            }
+            i++;
+        }
+        currentAdmin.push({ uuid: newAdminUUID });
+        let newAdmin = await this.userService.getByID(newAdminUUID);
+        if (!newAdmin) {
+            return;
+        }
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { channelAdministrators: currentAdmin }
+        );
+        this.chatGateway.updateChannelAdmin(
+            newAdmin.username,
+            channel.channelName,
+            true
+        );
+    }
+
+    // Remove a channel admin
+    async removeAdmin(
+        channel: ChatEntity,
+        newAdminUUID: string,
+        ownerUUID: string
+    ) {
+        if (newAdminUUID === ownerUUID) {
+            throw new HttpException(
+                "The owner cannot be removed from the admins",
+                HttpStatus.FOUND
+            );
+        }
+        let currentAdmin = channel.channelAdministrators;
+        let i = 0;
+        while (i < currentAdmin.length) {
+            if (newAdminUUID === currentAdmin[i].uuid) {
+                currentAdmin.splice(i, 1);
+            }
+            i++;
+        }
+        let newAdmin = await this.userService.getByID(newAdminUUID);
+        if (!newAdmin) {
+            return;
+        }
+        await this.chatRepository.update(
+            { uuid: channel.uuid },
+            { channelAdministrators: currentAdmin }
+        );
+        this.chatGateway.updateChannelAdmin(
+            newAdmin.username,
+            channel.channelName,
+            false
+        );
+    }
+
+    // Ban an user in the chat
+    async ban(
+        user: UserEntity,
+        bannedUser: UserEntity,
+        targetChannel: ChatEntity,
+        banOptions: muteOptionsDTO
+    ) {
+        let currentBanned = targetChannel.banned_users;
         let i = 0;
         let found = false;
-        while (i < channel_users.length) {
-            if (channel_users[i].uuid === user.uuid) {
+        while (i < currentBanned.length) {
+            if (bannedUser.uuid === currentBanned[i].uuid) {
+                currentBanned[i].ban_date = Date.now().toString();
+                currentBanned[i].ban_duration = banOptions.duration.toString();
                 found = true;
                 break;
             }
             i++;
         }
         if (found === false) {
-            channel_users.push({ uuid: user.uuid });
-            await this.chatRepository.update(
-                { channelName: channel.channelName },
-                { users: channel_users }
+            currentBanned.push({
+                uuid: bannedUser.uuid,
+                ban_date: Date.now().toString(),
+                ban_duration: banOptions.duration.toString(),
+            });
+        }
+        if (banOptions.duration == 0) {
+            this.removeAdmin(targetChannel, bannedUser.uuid, user.uuid);
+            let updateChannel: ChatEntity = await this.getByName(
+                targetChannel.channelName
+            );
+            if (!updateChannel) {
+                throw new UnauthorizedException("Invalid channel");
+            }
+            let admin_list = await this.get_Admin_list(updateChannel);
+            let target_list = await this.get_Admin_Owner(updateChannel);
+            await this.chatGateway.set_admin(
+                admin_list,
+                target_list,
+                targetChannel.channelName
             );
         }
-        return this.join_channel(channelName, uuid);
+        if (banOptions.duration > 0) {
+            setTimeout(async () => {
+                let banUser = await this.userService.getByID(bannedUser.uuid);
+                if (banUser) {
+                    this.chatGateway.unban_user(
+                        banOptions.channelName,
+                        banUser.username
+                    );
+                }
+            }, banOptions.duration * 1000);
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { banned_users: currentBanned }
+        );
+        this.chatGateway.ban_user(
+            targetChannel.channelName,
+            banOptions.username
+        );
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
+    }
+
+    // Unban an user in a channel
+    async unban(unbannedUser: UserEntity, targetChannel: ChatEntity) {
+        let channel = await this.getByName(targetChannel.channelName);
+        if (!channel) {
+            throw new UnauthorizedException("Invalid channel");
+        }
+        let currentBanned = channel.banned_users;
+        let i = 0;
+        let found = false;
+        while (i < currentBanned.length) {
+            if (unbannedUser.uuid === currentBanned[i].uuid) {
+                currentBanned.splice(i, 1);
+                found = true;
+                break;
+            }
+            i++;
+        }
+        if (found === false) {
+            return null;
+        }
+        await this.chatRepository.update(
+            { uuid: targetChannel.uuid },
+            { banned_users: currentBanned }
+        );
+        this.chatGateway.unban_user(
+            targetChannel.channelName,
+            unbannedUser.username
+        );
+        let ban_usernames_list: string[] = [];
+        for (let j = 0; j < currentBanned.length; j++) {
+            let user = await this.userService.getByID(currentBanned[j].uuid);
+            if (user && user.username) {
+                ban_usernames_list.push(user.username);
+            }
+        }
+        return ban_usernames_list;
     }
 
     async addUserInPrivate(addUser: AddOptionsDTO, uuid: string) {
@@ -406,15 +893,15 @@ export class ChatService {
             throw new UnauthorizedException("Invalid channel");
         }
         if (
-            channel.banned_users.findIndex((banned) => {
-                banned.uuid === user.uuid;
-            }) !== -1
+            channel.banned_users.findIndex(
+                (banned) => banned.uuid === user.uuid
+            ) !== -1
         ) {
             throw new UnauthorizedException("Banned user");
         } else if (
-            channel.allowed_users.findIndex((allowed) => {
-                allowed.uuid === user.uuid;
-            }) !== -1
+            channel.allowed_users.findIndex(
+                (allowed) => allowed.uuid === user.uuid
+            ) !== -1
         ) {
             throw new UnauthorizedException("Already allowed");
         } else {
@@ -436,160 +923,6 @@ export class ChatService {
             this.chatGateway.newChannelAvailable(channel.channelName);
             return users_list;
         }
-    }
-
-    async banList(channelName: string, uuid: string) {
-        let channel = await this.getByName(channelName);
-        if (!channel) throw new UnauthorizedException("Invalid channel");
-        let currentBanned = channel.banned_users;
-        let ban_usernames_list: string[] = [];
-        let is_authorized = false;
-        if (channel.channelOwner === uuid) {
-            is_authorized = true;
-        } else if (
-            channel.channelAdministrators.find(
-                (element) => element.uuid === uuid
-            ) !== undefined
-        ) {
-            is_authorized = true;
-        }
-        if (is_authorized === true) {
-            for (let j = 0; j < currentBanned.length; j++) {
-                let user = await this.userService.getByID(
-                    currentBanned[j].uuid
-                );
-                if (user && user.username) {
-                    ban_usernames_list.push(user.username);
-                }
-            }
-        }
-        return ban_usernames_list;
-    }
-    async join_channel(channelName: string, userID: string) {
-        let channels = await this.chatRepository.find();
-        if (channels.length === 0) {
-            this.create_general_channel();
-        }
-        let channel = await this.chatRepository.findOneBy({
-            channelName: channelName,
-        });
-        if (!channel) throw new UnauthorizedException();
-        let user = await this.userService.getByID(userID);
-        if (!user) throw new UnauthorizedException();
-
-        // Check if banned
-        if (channel.banned_users) {
-            let i = 0;
-            while (i < channel.banned_users.length) {
-                if (channel.banned_users[i].uuid === user.uuid) {
-                    let now = Date.now();
-                    if (parseInt(channel.banned_users[i].ban_duration) === 0) {
-                        // perm ban
-                        throw new UnauthorizedException(
-                            "You are not allowed to join this channel."
-                        );
-                    } else if (
-                        now - parseInt(channel.banned_users[i].ban_date) <
-                        parseInt(channel.banned_users[i].ban_duration) * 1000
-                    ) {
-                        throw new UnauthorizedException(
-                            "You are not allowed to join this channel."
-                        );
-                    } else {
-                        let banned = channel.banned_users;
-                        banned.splice(i, 1);
-                        await this.chatRepository.update(
-                            { uuid: channel.uuid },
-                            { banned_users: banned }
-                        );
-                    }
-                    break;
-                }
-                i++;
-            }
-        }
-
-        if (
-            channel.channelType === ChannelType.DIRECT_MESSAGE ||
-            channel.channelType === ChannelType.PRIVATE
-        ) {
-            let index_in_authorized_channels = channels.findIndex((element) => {
-                if (element.channelName === channelName) return 1;
-            });
-            if (index_in_authorized_channels !== -1) {
-                channel = channels[index_in_authorized_channels];
-                let allowed_user = channel.allowed_users.findIndex(
-                    (element) => {
-                        if (element.uuid === user.uuid) return 1;
-                    }
-                );
-                if (allowed_user === -1) {
-                    throw new HttpException(
-                        "Unauthorized.",
-                        HttpStatus.UNAUTHORIZED
-                    );
-                }
-                this.chatGateway.userJoinChannel(
-                    channel.channelName,
-                    user.username
-                );
-                return this.convertChannelMessages(
-                    userID,
-                    channels[index_in_authorized_channels].messages,
-                    channels[index_in_authorized_channels]
-                );
-            }
-        } else if (channel.channelType === ChannelType.PUBLIC) {
-            let channel_users = channel.users;
-            let i = 0;
-            let found = false;
-            while (i < channel_users.length) {
-                if (channel_users[i].uuid === user.uuid) {
-                    found = true;
-                    break;
-                }
-                i++;
-            }
-            if (found === false) {
-                channel_users.push({ uuid: user.uuid });
-                this.chatRepository.update(
-                    { channelName: channel.channelName },
-                    { users: channel_users }
-                );
-            }
-            await this.chatGateway.userJoinChannel(
-                channel.channelName,
-                user.username
-            );
-            return this.convertChannelMessages(
-                user.uuid,
-                channel.messages,
-                channel
-            );
-        } else if (channel.channelType === ChannelType.PROTECTED) {
-            let allowed_users = channel.users;
-            let i = 0;
-
-            while (i < allowed_users.length) {
-                if (allowed_users[i].uuid === user.uuid) {
-                    this.chatGateway.userJoinChannel(
-                        channel.channelName,
-                        user.username
-                    );
-                    return this.convertChannelMessages(
-                        user.uuid,
-                        channel.messages,
-                        channel
-                    );
-                }
-                i++;
-            }
-            throw new HttpException(
-                "Enter the channel's password",
-                HttpStatus.FOUND
-            );
-        }
-        throw new UnauthorizedException();
     }
 
     async send_message(channelName: string, userID: string, message: string) {
@@ -739,164 +1072,6 @@ export class ChatService {
         return null;
     }
 
-    async leave_channel(channelName: string, uuid: string) {
-        let channel = await this.chatRepository.findOneBy({
-            channelName: channelName,
-        });
-        if (!channel) throw new UnauthorizedException("Invalid channel");
-        let user = await this.userService.getByID(uuid);
-        if (!user) throw new UnauthorizedException("Invalid user");
-
-        if (
-            channel.channelType === ChannelType.PUBLIC ||
-            channel.channelType === ChannelType.PROTECTED
-        ) {
-            if (channel.channelOwner === uuid) {
-                this.chatGateway.deleted_channel(
-                    channel.channelName,
-                    user.username
-                );
-                this.chatRepository.delete({ uuid: channel.uuid });
-            } else {
-                let index = channel.users.findIndex(
-                    (element) => element.uuid === user.uuid
-                );
-                if (index !== -1) {
-                    channel.users.splice(index, 1);
-                    await this.chatRepository.update(
-                        { channelName: channelName },
-                        { users: channel.users }
-                    );
-                    index = channel.channelAdministrators.findIndex(
-                        (element) => element.uuid === user.uuid
-                    );
-                    if (index !== -1) {
-                        channel.channelAdministrators.splice(index, 1);
-                        await this.chatRepository.update(
-                            { channelName: channelName },
-                            {
-                                channelAdministrators:
-                                    channel.channelAdministrators,
-                            }
-                        );
-                    }
-                } else {
-                    throw new UnauthorizedException();
-                }
-            }
-        } else if (channel.channelType === ChannelType.DIRECT_MESSAGE) {
-            this.chatGateway.deleted_channel(
-                channel.channelName,
-                user.username
-            );
-            this.chatRepository.delete({ uuid: channel.uuid });
-        } else if (channel.channelType === ChannelType.PRIVATE) {
-            if (channel.channelOwner === uuid) {
-                this.chatGateway.deleted_channel(
-                    channel.channelName,
-                    user.username
-                );
-                this.chatRepository.delete({ uuid: channel.uuid });
-            } else {
-                let index = channel.allowed_users.findIndex(
-                    (element) => element.uuid === user.uuid
-                );
-                if (index !== -1) {
-                    channel.allowed_users.splice(index, 1);
-                    await this.chatRepository.update(
-                        { channelName: channelName },
-                        { allowed_users: channel.allowed_users }
-                    );
-                    index = channel.channelAdministrators.findIndex(
-                        (element) => element.uuid === user.uuid
-                    );
-                    if (index !== -1) {
-                        channel.channelAdministrators.splice(index, 1);
-                        await this.chatRepository.update(
-                            { channelName: channelName },
-                            {
-                                channelAdministrators:
-                                    channel.channelAdministrators,
-                            }
-                        );
-                    }
-                    this.chatGateway.leave_privateChannel(
-                        user.username,
-                        channelName
-                    );
-                } else {
-                    throw new UnauthorizedException();
-                }
-            }
-        }
-    }
-
-    async upodateChannelPassword(
-        targetChannel: ChatEntity,
-        channel: updateChannelDTO
-    ) {
-        if (
-            targetChannel.channelType === "public" &&
-            channel.newChannelType === false
-        ) {
-            // do nothing
-        } else if (
-            targetChannel.channelType === "public" &&
-            channel.newChannelType === true
-        ) {
-            // Change to protected and add password
-            if (channel.newChannelPassword.length < 10) {
-                throw new UnauthorizedException(
-                    "Password must be 10 length min characters"
-                );
-            }
-            await this.chatRepository.update(
-                { uuid: targetChannel.uuid },
-                { channelType: ChannelType.PROTECTED }
-            );
-            let hashed_password = await this.encode_password(
-                channel.newChannelPassword
-            );
-            await this.chatRepository.update(
-                { uuid: targetChannel.uuid },
-                { channelPassword: hashed_password }
-            );
-        } else if (
-            targetChannel.channelType === "protected" &&
-            channel.newChannelType === false
-        ) {
-            // Change to public and remove password
-            await this.chatRepository.update(
-                { uuid: targetChannel.uuid },
-                { channelType: ChannelType.PUBLIC }
-            );
-            await this.chatRepository.update(
-                { uuid: targetChannel.uuid },
-                { channelPassword: "" }
-            );
-        } else if (
-            targetChannel.channelType === "protected" &&
-            channel.newChannelType === true
-        ) {
-            // Update the channel password"
-            if (channel.newChannelPassword.length < 10) {
-                throw new UnauthorizedException(
-                    "Password must be 10 length min characters"
-                );
-            }
-            let hashed_password = await this.encode_password(
-                channel.newChannelPassword
-            );
-            await this.chatRepository.update(
-                { uuid: targetChannel.uuid },
-                { channelPassword: hashed_password }
-            );
-        } else {
-            throw new UnauthorizedException();
-        }
-        return "updated";
-    }
-
     checkPermission(
         uuid: string,
         authorizationType: string,
@@ -917,171 +1092,10 @@ export class ChatService {
         return "Unauthorized";
     }
 
-    async addAdmin(
-        channel: ChatEntity,
-        newAdminUUID: string,
-        ownerUUID: string
-    ) {
-        if (newAdminUUID === ownerUUID) {
-            throw new HttpException(
-                "The owner cannot be an administrator",
-                HttpStatus.FOUND
-            );
-        }
-        let found = false;
-        if (
-            channel.channelType === ChannelType.PUBLIC ||
-            channel.channelType === ChannelType.PROTECTED
-        ) {
-            if (
-                channel.users.find((element) => element.uuid === newAdminUUID)
-            ) {
-                found = true;
-            }
-        } else if (channel.channelType === ChannelType.PRIVATE) {
-            if (
-                channel.allowed_users.find(
-                    (element) => element.uuid === newAdminUUID
-                )
-            ) {
-                found = true;
-            }
-        }
-        if (found === false) {
-            throw new HttpException("Not in the Channel", HttpStatus.FOUND);
-        }
-        let currentAdmin = channel.channelAdministrators;
-        let i = 0;
-        while (i < currentAdmin.length) {
-            if (newAdminUUID === currentAdmin[i].uuid) {
-                throw new HttpException("Already admin", HttpStatus.FOUND);
-            }
-            i++;
-        }
-        currentAdmin.push({ uuid: newAdminUUID });
-
-        let newAdmin = await this.userService.getByID(newAdminUUID);
-        if (!newAdmin) {
-            return;
-        }
-        this.chatGateway.updateChannelAdmin(
-            newAdmin.username,
-            channel.channelName,
-            true
-        );
-        await this.chatRepository.update(
-            { uuid: channel.uuid },
-            { channelAdministrators: currentAdmin }
-        );
-    }
-
-    async removeAdmin(
-        channel: ChatEntity,
-        newAdminUUID: string,
-        ownerUUID: string
-    ) {
-        if (newAdminUUID === ownerUUID) {
-            throw new HttpException(
-                "The owner cannot be removed from the admins",
-                HttpStatus.FOUND
-            );
-        }
-        let currentAdmin = channel.channelAdministrators;
-        let i = 0;
-        while (i < currentAdmin.length) {
-            if (newAdminUUID === currentAdmin[i].uuid) {
-                currentAdmin.splice(i, 1);
-            }
-            i++;
-        }
-        let newAdmin = await this.userService.getByID(newAdminUUID);
-        if (!newAdmin) {
-            return;
-        }
-        this.chatGateway.updateChannelAdmin(
-            newAdmin.username,
-            channel.channelName,
-            false
-        );
-        await this.chatRepository.update(
-            { uuid: channel.uuid },
-            { channelAdministrators: currentAdmin }
-        );
-    }
-
-    async ban(
-        user: UserEntity,
-        mutedUser: UserEntity,
-        targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO
-    ) {
-        console.log(muteOptions);
-        let currentBanned = targetChannel.banned_users;
-        let i = 0;
-        let found = false;
-        while (i < currentBanned.length) {
-            if (mutedUser.uuid === currentBanned[i].uuid) {
-                currentBanned[i].ban_date = Date.now().toString();
-                currentBanned[i].ban_duration = muteOptions.duration.toString();
-                found = true;
-                break;
-            }
-            i++;
-        }
-        if (found === false) {
-            currentBanned.push({
-                uuid: mutedUser.uuid,
-                ban_date: Date.now().toString(),
-                ban_duration: muteOptions.duration.toString(),
-            });
-        }
-        if (muteOptions.duration == 0) {
-            this.removeAdmin(targetChannel, mutedUser.uuid, user.uuid);
-            let updateChannel: ChatEntity = await this.getByName(
-                targetChannel.channelName
-            );
-            let admin_list = await this.get_Admin_list(updateChannel);
-            let target_list = await this.get_Admin_Owner(updateChannel);
-            await this.chatGateway.set_admin(
-                admin_list,
-                target_list,
-                targetChannel.channelName
-            );
-        }
-        if (muteOptions.duration > 0) {
-            setTimeout(() => {
-                this.timeout(
-                    user,
-                    mutedUser,
-                    targetChannel,
-                    muteOptions,
-                    "ban"
-                );
-            }, muteOptions.duration * 1000);
-        }
-        await this.chatRepository.update(
-            { uuid: targetChannel.uuid },
-            { banned_users: currentBanned }
-        );
-        this.chatGateway.ban_user(
-            targetChannel.channelName,
-            muteOptions.username
-        );
-        let ban_usernames_list: string[] = [];
-        for (let j = 0; j < currentBanned.length; j++) {
-            let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
-            }
-        }
-        return ban_usernames_list;
-    }
-
     async kick(
         user: UserEntity,
         kickedUser: UserEntity,
         targetChannel: ChatEntity,
-        options: kickOptionsDTO
     ) {
         if (
             targetChannel.channelType === ChannelType.PROTECTED ||
@@ -1149,41 +1163,6 @@ export class ChatService {
         throw new HttpException("User not found", HttpStatus.FOUND);
     }
 
-    async unban(
-        user: UserEntity,
-        mutedUser: UserEntity,
-        targetChannel: ChatEntity,
-        muteOptions: muteOptionsDTO
-    ) {
-        let channel = this.getByName(targetChannel.channelName);
-        let currentBanned = (await channel).banned_users;
-        let i = 0;
-        let found = false;
-        while (i < currentBanned.length) {
-            if (mutedUser.uuid === currentBanned[i].uuid) {
-                currentBanned.splice(i, 1);
-                found = true;
-                break;
-            }
-            i++;
-        }
-        if (found === false) {
-            return null;
-        }
-        await this.chatRepository.update(
-            { uuid: targetChannel.uuid },
-            { banned_users: currentBanned }
-        );
-        let ban_usernames_list: string[] = [];
-        for (let j = 0; j < currentBanned.length; j++) {
-            let user = await this.userService.getByID(currentBanned[j].uuid);
-            if (user && user.username) {
-                ban_usernames_list.push(user.username);
-            }
-        }
-        return ban_usernames_list;
-    }
-
     async get_Admin_list(channel: ChatEntity) {
         let uuidlist: string[] = [];
         let username_list: string[] = [];
@@ -1238,25 +1217,20 @@ export class ChatService {
                 muteOptions
             );
         }
-        if (event === "ban") {
-            users_list = await this.unban(
-                user,
-                mutedUser,
-                targetChannel,
-                muteOptions
-            );
+        if (event === "unban") {
+            users_list = await this.unban(mutedUser, targetChannel);
         }
-        if (users_list !== null) {
-            let target_list = await this.get_Admin_Owner(targetChannel);
-            if (target_list) {
-                this.chatGateway.send_unmute_or_unban(
-                    targetChannel.channelName,
-                    users_list,
-                    target_list,
-                    event
-                );
-            }
-        }
+        //if (users_list !== null) {
+        //    let target_list = await this.get_Admin_Owner(targetChannel);
+        //    if (target_list) {
+        //        this.chatGateway.send_unmute_or_unban(
+        //            targetChannel.channelName,
+        //            users_list,
+        //            target_list,
+        //            event
+        //        );
+        //    }
+        //}
     }
 
     async mute(
