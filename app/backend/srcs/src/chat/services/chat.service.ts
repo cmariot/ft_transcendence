@@ -664,12 +664,12 @@ export class ChatService {
                                     channel.channelAdministrators,
                             }
                         );
+                        this.chatGateway.updateChannelAdmin(
+                            user.username,
+                            channel.channelName,
+                            false
+                        );
                     }
-                    this.chatGateway.updateChannelAdmin(
-                        user.username,
-                        channel.channelName,
-                        false
-                    );
                     this.chatGateway.leave_privateChannel(
                         user.username,
                         channelName
