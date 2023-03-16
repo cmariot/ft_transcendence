@@ -24,7 +24,6 @@ const WaitingScreen = () => {
     return (
         <div id="waiting-screen">
             <button onClick={() => cancelGame()}>cancel</button>
-            <button onClick={() => game.setMenu("Game")}>view pong</button>
         </div>
     );
 };

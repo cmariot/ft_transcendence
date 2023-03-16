@@ -24,13 +24,13 @@ export class GameEntity {
     status: string;
 
     @Column({ default: "" })
-    HostID: string;
+    hostID: string;
 
     @Column({ default: "" })
-    GuestID: string;
+    guestID: string;
 
     @Column("json", { default: { Host: 0, Guest: 0 } })
-    Score: { Host: number; Guest: number };
+    score: { Host: number; Guest: number };
 
     @Column("text", { array: true, default: [] })
     watchers: string[];

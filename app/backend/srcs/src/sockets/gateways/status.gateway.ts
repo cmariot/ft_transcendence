@@ -9,11 +9,15 @@ import {
 } from "@nestjs/websockets";
 import { UsersService } from "src/users/services/users.service";
 import { UserEntity } from "src/users/entity/user.entity";
+import { GameService } from "src/game/services/game.service";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
 export class StatusGateway {
-    constructor(private userService: UsersService) {}
+    constructor(
+        private userService: UsersService,
+        private gameService: GameService
+    ) {}
 
     @WebSocketServer()
     server: Server;
@@ -62,14 +66,16 @@ export class StatusGateway {
             data.username
         );
         if (user) {
+            await this.gameService.handleDisconnect(user);
             await this.disconnect(user, client.id);
         }
     }
 
     // A la deconnexion d'un client
     async handleDisconnect(client: Socket) {
-        const user = await this.userService.getBySocket(client.id);
+        let user: UserEntity = await this.userService.getBySocket(client.id);
         if (user) {
+            await this.gameService.handleDisconnect(user);
             await this.disconnect(user, client.id);
         }
     }

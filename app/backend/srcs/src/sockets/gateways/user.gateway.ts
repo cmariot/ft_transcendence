@@ -22,4 +22,12 @@ export class UserGateway {
             username: username,
         });
     }
+
+    // Envoyer un event de changement de status
+    sendStatus(username: string, status: string) {
+        this.server.emit("status.update", {
+            username: username,
+            status: status,
+        });
+    }
 }

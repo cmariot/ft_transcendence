@@ -13,12 +13,40 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     const game = useContext(GameContext);
 
     useEffect(() => {
-        async function updateGameMenu(data: { menu: string }) {
+        async function updateGameMenu(data: {
+            menu: string;
+            countDown: number;
+        }) {
             game.setMenu(data.menu);
+            if (data.countDown) {
+                game.setCountDown(data.countDown);
+            }
         }
         socket.on("game.menu.change", updateGameMenu);
         return () => {
             socket.off("game.menu.change", updateGameMenu);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
+        async function setGameID(id: string) {
+            game.setGameID(id);
+        }
+        socket.on("game.name", setGameID);
+        return () => {
+            socket.off("game.name", setGameID);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
+        async function updateGame(data: any) {
+            game.setPaddle1(data.player1);
+            game.setPaddle2(data.player2);
+            game.setBall(data.ball);
+        }
+        socket.on("game.pos.update", updateGame);
+        return () => {
+            socket.off("game.pos.update", updateGame);
         };
     }, [game, socket]);
 

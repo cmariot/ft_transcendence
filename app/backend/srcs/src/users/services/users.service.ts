@@ -124,7 +124,7 @@ export class UsersService {
                 { uuid: uuid },
                 { status: status }
             );
-            //        this.statusGateway.sendStatus(user.username, status);
+            this.userGateway.sendStatus(user.username, status);
             return status;
         }
         return null;
@@ -133,13 +133,13 @@ export class UsersService {
     async setStatus(socket: string, status: string) {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
-            if (status === "In_Game") {
+            if (status === "ingame") {
                 await this.userRepository.update(
                     { uuid: user.uuid },
                     { status: "ingame" }
                 );
             }
-            if (status === "MatchMaking") {
+            if (status === "matchmaking") {
                 await this.userRepository.update(
                     { uuid: user.uuid },
                     { status: "matchmaking" }
