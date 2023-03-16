@@ -6,6 +6,7 @@ import { ChatEvents } from "./ChatEvents";
 import { NavBar } from "../navbar/index";
 import { Menu } from "../menu/menu";
 import { Footer } from "../footer/index";
+import { GameEvents } from "./GameEvents";
 
 export const Body = () => {
     const menu = useContext(MenuContext);
@@ -13,9 +14,11 @@ export const Body = () => {
     return (
         <StatusEvents>
             <ChatEvents>
-                <NavBar />
-                {menu.display ? <Menu /> : <Outlet />}
-                <Footer />
+                <GameEvents>
+                    <NavBar />
+                    {menu.display ? <Menu /> : <Outlet />}
+                    <Footer />
+                </GameEvents>
             </ChatEvents>
         </StatusEvents>
     );

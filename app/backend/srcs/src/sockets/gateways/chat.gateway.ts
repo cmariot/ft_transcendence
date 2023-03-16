@@ -1,12 +1,5 @@
-import { OnModuleInit } from "@nestjs/common";
-import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-} from "@nestjs/websockets";
+import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
-import { GameService } from "src/game/services/game.service";
 import { UsersService } from "src/users/services/users.service";
 
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })

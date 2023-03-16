@@ -10,7 +10,6 @@ import { CreatedFrom, UserEntity } from "../../users/entity/user.entity";
 import { UsersService } from "src/users/services/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { SocketService } from "src/sockets/gateways/socket.gateway";
 import { LoginDto } from "../dtos/login.dto";
 import { RegisterDto } from "../dtos/register.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -24,7 +23,6 @@ export class AuthService {
         private userRepository: Repository<UserEntity>,
         private usersService: UsersService,
         private jwtService: JwtService,
-        private socketService: SocketService,
         private readonly mailerService: MailerService
     ) {}
 

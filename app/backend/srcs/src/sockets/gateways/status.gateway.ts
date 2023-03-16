@@ -1,9 +1,4 @@
-import {
-    Injectable,
-    Req,
-    UnauthorizedException,
-    UseGuards,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
 import {
     ConnectedSocket,
@@ -17,7 +12,7 @@ import { UserEntity } from "src/users/entity/user.entity";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
-export class ConnectionGateway {
+export class StatusGateway {
     constructor(private userService: UsersService) {}
 
     @WebSocketServer()

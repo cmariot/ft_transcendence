@@ -6,11 +6,11 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 
-//@Injectable()
-//@WebSocketGateway(3001, { cors: { origin: "http://frontend" } })
+@Injectable()
+@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
 export class GameGateway {
-    //    @WebSocketServer()
-    //   server: Server;
+    @WebSocketServer()
+    server: Server;
 
     async sendCancel(socketId: string, status: string) {
         //this.server.to(socketId).emit("gameStatus", {

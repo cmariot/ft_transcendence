@@ -12,15 +12,13 @@ import {} from "typeorm";
 import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
-import { SocketService } from "src/sockets/gateways/socket.gateway";
 import { UserGateway } from "src/sockets/gateways/user.gateway";
-import { ConnectionGateway } from "src/sockets/gateways/connection.gateway";
+import { StatusGateway } from "src/sockets/gateways/status.gateway";
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
-        private socketService: SocketService,
         private userGateway: UserGateway
     ) {}
 
@@ -119,6 +117,19 @@ export class UsersService {
         }
     }
 
+    async setStatusByID(uuid: string, status: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        if (user) {
+            await this.userRepository.update(
+                { uuid: uuid },
+                { status: status }
+            );
+            //        this.statusGateway.sendStatus(user.username, status);
+            return status;
+        }
+        return null;
+    }
+
     async setStatus(socket: string, status: string) {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
@@ -137,15 +148,6 @@ export class UsersService {
             return user.username;
         }
         return null;
-    }
-
-    async updatePlayerStatus(userID: string, status: string) {
-        let player = await this.getByID(userID);
-        await this.userRepository.update(
-            { uuid: player.uuid },
-            { status: status }
-        );
-        await this.socketService.sendStatus(player.username, status);
     }
 
     async setSocketID(
@@ -170,24 +172,6 @@ export class UsersService {
 
     async clearSocket(userUuid: string) {
         await this.userRepository.update({ uuid: userUuid }, { socketId: [] });
-    }
-
-    async userDisconnection(socket: string): Promise<string> {
-        let user: UserEntity = await this.getBySocket(socket);
-        if (user) {
-            let i = 0;
-            while (i < user.socketId.length) {
-                await this.socketService.disconnect_user(user.socketId[i]);
-                i++;
-            }
-            await this.userRepository.update(
-                { uuid: user.uuid },
-                { socketId: [], status: "offline" }
-            );
-            user.status = "offline";
-            return user.username;
-        }
-        return null;
     }
 
     // Set a new username
