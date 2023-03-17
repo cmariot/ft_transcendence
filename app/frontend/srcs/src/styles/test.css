@@ -16,8 +16,6 @@
 
 #ball {
     position: absolute;
-    transition: bottom 0.1s linear;
-    transition: left 0.1s linear;
     background: #a3a3a3;
     border: none;
     border-radius: 50%;

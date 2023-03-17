@@ -1,10 +1,5 @@
 import { useContext, useEffect } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
-import JoinGame from "./JoinGame";
-import WaitingScreen from "./WaitingScreen";
-import { Board } from "./Board";
-import CountDown from "./CountDown";
-import { SocketAddress } from "net";
 import { SocketContext } from "../../../contexts/SocketProvider";
 import "../../../styles/test.css";
 
@@ -28,7 +23,7 @@ const TestMouvements = () => {
     });
 
     function heightPaddle(initial: number): number {
-        return initial - (initial / 100) * 10;
+        return (initial / 100) * 95;
     }
 
     function heightBall(initial: number): number {
@@ -55,8 +50,10 @@ const TestMouvements = () => {
                 className="paddle"
                 style={{
                     bottom: `${heightPaddle(game.paddle1)}%`,
-                    height: "10%",
-                    width: "2.5%",
+                    height: "0px",
+                    width: "0px",
+                    paddingInline: "1%",
+                    paddingBlock: "5%",
                 }}
             />
             <div
@@ -73,8 +70,10 @@ const TestMouvements = () => {
                 className="paddle"
                 style={{
                     bottom: `${heightPaddle(game.paddle2)}%`,
-                    height: "10%",
-                    width: "2.5%",
+                    height: "0px",
+                    width: "0px",
+                    paddingInline: "1%",
+                    paddingBlock: "5%",
                 }}
             />
         </div>

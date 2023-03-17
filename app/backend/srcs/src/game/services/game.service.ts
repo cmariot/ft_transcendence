@@ -19,6 +19,19 @@ import {
     WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { Vector } from "vecti";
+
+export interface PositionInterface {
+    player1: number;
+    player2: number;
+    ball: Vector;
+    direction: Vector;
+    speed: number;
+    player1ID: string;
+    player1Score: number;
+    player2ID: string;
+    player2Score: number;
+}
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
@@ -29,6 +42,8 @@ export class GameService {
         private userService: UsersService,
         private gameGateway: GameGateway
     ) {}
+
+    private pos = new Map<string, PositionInterface>();
 
     @WebSocketServer()
     server: Server;
@@ -200,19 +215,6 @@ export class GameService {
         return "Wtf";
     }
 
-    private pos = new Map<
-        string,
-        {
-            player1: number;
-            player2: number;
-            ball: { x: number; y: number };
-            direction: { dx: number; dy: number }; // motion vector
-            speed: {};
-            player1ID: string;
-            player2ID: string;
-        }
-    >();
-
     @SubscribeMessage("down")
     async moveDown(
         @ConnectedSocket() client: Socket,
@@ -222,11 +224,11 @@ export class GameService {
         if (gamePos) {
             if (client.id === gamePos.player1ID) {
                 if (gamePos.player1 > 0) {
-                    gamePos.player1 = gamePos.player1 - 5;
+                    gamePos.player1 = gamePos.player1 - 45;
                 }
             } else if (client.id === gamePos.player2ID) {
                 if (gamePos.player2 > 0) {
-                    gamePos.player2 = gamePos.player2 - 5;
+                    gamePos.player2 = gamePos.player2 - 45;
                 }
             }
             this.pos.set(data.gameID, gamePos);
@@ -241,12 +243,12 @@ export class GameService {
         let gamePos = this.pos.get(data.gameID);
         if (gamePos) {
             if (client.id === gamePos.player1ID) {
-                if (gamePos.player1 < 100) {
-                    gamePos.player1 = gamePos.player1 + 5;
+                if (gamePos.player1 < 900) {
+                    gamePos.player1 = gamePos.player1 + 45;
                 }
             } else if (client.id === gamePos.player2ID) {
-                if (gamePos.player2 < 100) {
-                    gamePos.player2 = gamePos.player2 + 5;
+                if (gamePos.player2 < 900) {
+                    gamePos.player2 = gamePos.player2 + 45;
                 }
             }
             this.pos.set(data.gameID, gamePos);
@@ -269,20 +271,101 @@ export class GameService {
         }
     }
 
-    async game(player1Socket: string, player2Socket: string, gameID: string) {
+    // Screen dimension : 1600 * 900
+    // 90 * 32 Paddle
+    //
+
+    async collision(pos: PositionInterface) {
+        //colision paddle left
+        if (pos.ball.x >= 1600) {
+            pos.direction = new Vector(-pos.direction.x, pos.direction.y);
+        }
+        //collision paddle right
+        if (pos.ball.x <= 0) {
+            pos.direction = new Vector(-pos.direction.x, pos.direction.y);
+        }
+        //collision top
+        if (pos.ball.y >= 900) {
+            pos.direction = new Vector(pos.direction.x, -pos.direction.y);
+        }
+        //collision bottom
+        if (pos.ball.y <= 0) {
+            pos.direction = new Vector(pos.direction.x, -pos.direction.y);
+        }
+        return pos;
+    }
+
+    async ballmvt(pos: PositionInterface): Promise<PositionInterface> {
+        pos = await this.collision(pos);
+        let newVector = pos.direction.multiply(10);
+        pos.ball = pos.ball.add(newVector);
+        return pos;
+    }
+
+    async startBallDir(pos: PositionInterface): Promise<PositionInterface> {
+        let random = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+        pos.direction = pos.direction.rotateByDegrees(random);
+        return pos;
+    }
+
+    someoneGoal(
+        pos: PositionInterface,
+        previousScorePlayer1: number,
+        previousScorePlayer2: number
+    ): boolean {
+        return (
+            pos.player1Score !== previousScorePlayer1 ||
+            pos.player2Score !== previousScorePlayer2
+        );
+    }
+
+    convert(pos: PositionInterface): PositionInterface {
+        return {
+            player1: pos.player1 / 9,
+            player2: pos.player2 / 9,
+            ball: new Vector(pos.ball.x / 16, pos.ball.y / 9),
+            direction: pos.direction,
+            speed: pos.speed,
+            player1ID: pos.player1ID,
+            player2ID: pos.player2ID,
+            player1Score: pos.player1Score,
+            player2Score: pos.player2Score,
+        };
+    }
+
+    async match(
+        player1Socket: string,
+        player2Socket: string,
+        pos: PositionInterface
+    ) {
+        pos = await this.startBallDir(pos);
+        const scorePlayer1 = pos.player1Score;
+        const scorePlayer2 = pos.player1Score;
         while (true) {
-            let pos = this.pos.get(gameID);
-            if (pos) {
-                this.gameGateway.sendPos(player1Socket, player2Socket, pos);
+            pos = await this.ballmvt(pos);
+            const converted = this.convert(pos);
+            await this.gameGateway.sendPos(
+                player1Socket,
+                player2Socket,
+                converted
+            );
+            if (this.someoneGoal(pos, scorePlayer1, scorePlayer2)) {
+                break;
             }
             await this.timeout(16);
         }
+        return pos;
     }
 
-    async play(player1Socket: string, player2Socket: string, gameID: string) {
-        while (1) {
-            this.game(player1Socket, player2Socket, gameID);
+    async game(player1Socket: string, player2Socket: string, gameID: string) {
+        let pos = this.pos.get(gameID);
+        if (!pos) {
+            return;
         }
+        //while (pos.player1Score < 15 && pos.player2Score < 15) {
+        await this.match(player1Socket, player2Socket, pos);
+        //    this.timeout(1000);
+        //}
     }
 
     async startGame(game: GameEntity) {
@@ -293,11 +376,15 @@ export class GameService {
         }
         await this.userService.setStatusByID(game.hostID, "ingame");
         this.pos.set(game.uuid, {
-            player1: 50,
-            player2: 50,
-            ball: { x: 50, y: 50 },
+            player1: 450,
+            player2: 450,
+            ball: new Vector(800, 450),
+            direction: new Vector(1, 0),
+            speed: 10,
             player1ID: player1.socketId[0],
+            player1Score: 0,
             player2ID: player2.socketId[0],
+            player2Score: 0,
         });
         await this.gameGateway.sendGameID(
             player1.socketId[0],
@@ -310,6 +397,6 @@ export class GameService {
             player2.socketId[0],
             "Game"
         );
-        await this.play(player1.socketId[0], player2.socketId[0], game.uuid);
+        await this.game(player1.socketId[0], player2.socketId[0], game.uuid);
     }
 }
