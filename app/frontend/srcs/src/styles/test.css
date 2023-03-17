@@ -20,11 +20,3 @@
     border: none;
     border-radius: 50%;
 }
-
-#paddle1 {
-    left: 5px;
-}
-
-#paddle2 {
-    right: 5px;
-}

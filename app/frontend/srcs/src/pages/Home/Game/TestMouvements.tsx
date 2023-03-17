@@ -22,58 +22,51 @@ const TestMouvements = () => {
         };
     });
 
-    function heightPaddle(initial: number): number {
-        return (initial / 100) * 95;
-    }
-
-    function heightBall(initial: number): number {
-        return initial;
-    }
-
-    function leftBall(initial: number): number {
-        return initial;
+    function getBottom(paddlePos: number): number {
+        let initial = (paddlePos / game.screenHeigth) * 100;
+        let paddle = (game.paddleHeigth / game.screenHeigth) * 100;
+        return (initial / 100) * (initial - paddle);
     }
 
     return (
         <div id="board">
             <div>
                 <p>gameID: {game.gameID}</p>
-                <p>paddle1: {game.paddle1}</p>
-                <p>paddle2: {game.paddle2}</p>
+                <p>
+                    paddle2: {game.paddle1} / {getBottom(game.paddle1)}
+                </p>
+                <p>
+                    paddle2: {game.paddle2} / {getBottom(game.paddle2)}
+                </p>
                 <p>
                     ball: x = {game.ball.x}, y = {game.ball.y}
                 </p>
             </div>
-
             <div
                 id="paddle1"
                 className="paddle"
                 style={{
-                    bottom: `${heightPaddle(game.paddle1)}%`,
-                    height: "0px",
-                    width: "0px",
-                    paddingInline: "1%",
-                    paddingBlock: "5%",
+                    height: `${(game.paddleHeigth / game.screenHeigth) * 100}%`,
+                    width: `${(game.paddleWidth / game.screenWidth) * 100}%`,
+                    left: `${(game.paddleOffset / game.screenWidth) * 100}%`,
+                    bottom: `${getBottom(game.paddle1)}%`,
                 }}
             />
             <div
                 id="ball"
                 style={{
-                    left: `${leftBall(game.ball.x)}%`,
-                    bottom: `${heightBall(game.ball.y)}%`,
-                    height: "1.5vh",
-                    width: "1.5vh",
+                    height: "0px",
+                    width: "0px",
                 }}
             />
             <div
                 id="paddle2"
                 className="paddle"
                 style={{
-                    bottom: `${heightPaddle(game.paddle2)}%`,
-                    height: "0px",
-                    width: "0px",
-                    paddingInline: "1%",
-                    paddingBlock: "5%",
+                    height: `${(game.paddleHeigth / game.screenHeigth) * 100}%`,
+                    width: `${(game.paddleWidth / game.screenWidth) * 100}%`,
+                    right: `${(game.paddleOffset / game.screenWidth) * 100}%`,
+                    bottom: `${getBottom(game.paddle2)}%`,
                 }}
             />
         </div>

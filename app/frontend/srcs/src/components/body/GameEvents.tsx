@@ -38,6 +38,12 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             game.setPaddle1(data.player1);
             game.setPaddle2(data.player2);
             game.setBall(data.ball);
+            game.setScreenHeigth(data.screenHeigth);
+            game.setScreenWidth(data.screenWidth);
+            game.setPaddleHeigth(data.paddleHeigth);
+            game.setPaddleWidth(data.paddleWidth);
+            game.setPaddleOffset(data.paddleOffset);
+            game.setBallRadius(data.ballRadius);
         }
         socket.on("game.pos.update", updateGame);
         return () => {
