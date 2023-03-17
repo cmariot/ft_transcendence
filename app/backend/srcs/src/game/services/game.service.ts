@@ -230,11 +230,11 @@ export class GameService {
         if (gamePos) {
             if (client.id === gamePos.player1ID) {
                 if (gamePos.player1 > 0) {
-                    gamePos.player1 = gamePos.player1 - 45;
+                    gamePos.player1 -= gamePos.screenHeigth / 10;
                 }
             } else if (client.id === gamePos.player2ID) {
                 if (gamePos.player2 > 0) {
-                    gamePos.player2 = gamePos.player2 - 45;
+                    gamePos.player2 -= gamePos.screenHeigth / 10;
                 }
             }
             this.pos.set(data.gameID, gamePos);
@@ -249,12 +249,12 @@ export class GameService {
         let gamePos = this.pos.get(data.gameID);
         if (gamePos) {
             if (client.id === gamePos.player1ID) {
-                if (gamePos.player1 < 900) {
-                    gamePos.player1 = gamePos.player1 + 45;
+                if (gamePos.player1 < gamePos.screenHeigth) {
+                    gamePos.player1 += gamePos.screenHeigth / 10;
                 }
             } else if (client.id === gamePos.player2ID) {
-                if (gamePos.player2 < 900) {
-                    gamePos.player2 = gamePos.player2 + 45;
+                if (gamePos.player2 < gamePos.screenHeigth) {
+                    gamePos.player2 += gamePos.screenHeigth / 10;
                 }
             }
             this.pos.set(data.gameID, gamePos);
@@ -280,7 +280,6 @@ export class GameService {
     // Screen dimension : 1600 * 900
     // 18 * 90 Paddle
     // 32
-    //
     async hitPaddleRight(pos: PositionInterface): Promise<PositionInterface> {
         if (
             pos.ball.x + pos.ballRadius ===
@@ -324,11 +323,11 @@ export class GameService {
         if (pos.ball.x >= 1600 || pos.ball.x <= 0) {
             pos.direction = new Vector(-pos.direction.x, pos.direction.y);
         }
-        if (pos.ball.y >= pos.screenHeigth - pos.ballRadius) {
+        if (pos.ball.y >= pos.screenHeigth) {
             pos.direction = new Vector(pos.direction.x, -pos.direction.y);
         }
         //collision bottom
-        if (pos.ball.y <= 0 + pos.ballRadius) {
+        if (pos.ball.y <= 0) {
             pos.direction = new Vector(pos.direction.x, -pos.direction.y);
         }
         return pos;
@@ -336,13 +335,13 @@ export class GameService {
 
     async ballmvt(pos: PositionInterface): Promise<PositionInterface> {
         pos = await this.collision(pos);
-        let newVector = pos.direction.multiply(10);
-        pos.ball = pos.ball.add(newVector);
+        const speed = pos.direction.multiply(pos.speed);
+        pos.ball = pos.ball.add(speed);
         return pos;
     }
 
     async startBallDir(pos: PositionInterface): Promise<PositionInterface> {
-        let random = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+        let random = (Math.floor(Math.random() * (360 - 0 + 1)) + 0) % 45;
         pos.direction = pos.direction.rotateByDegrees(random);
         return pos;
     }
@@ -358,26 +357,6 @@ export class GameService {
         );
     }
 
-    convert(pos: PositionInterface): PositionInterface {
-        return {
-            player1: pos.player1,
-            player2: pos.player2,
-            ball: new Vector(pos.ball.x / 16, pos.ball.y / 9),
-            direction: pos.direction,
-            speed: pos.speed,
-            player1ID: pos.player1ID,
-            player1Score: pos.player1Score,
-            player2ID: pos.player2ID,
-            player2Score: pos.player1Score,
-            screenHeigth: pos.screenHeigth,
-            screenWidth: pos.screenWidth,
-            paddleHeigth: pos.paddleHeigth,
-            paddleWidth: pos.paddleWidth,
-            paddleOffset: pos.paddleOffset,
-            ballRadius: pos.ballRadius,
-        };
-    }
-
     async game(player1Socket: string, player2Socket: string, gameID: string) {
         let pos = this.pos.get(gameID);
         if (!pos) {
@@ -388,24 +367,17 @@ export class GameService {
         const scorePlayer2 = pos.player1Score;
         while (true) {
             pos = await this.ballmvt(pos);
-            const converted = await this.convert(pos);
-            await this.gameGateway.sendPos(
-                player1Socket,
-                player2Socket,
-                converted
-            );
+            await this.gameGateway.sendPos(player1Socket, player2Socket, pos);
             if (this.someoneGoal(pos, scorePlayer1, scorePlayer2)) {
                 pos = await this.startBallDir(pos);
                 if (pos.player1Score >= 15 && pos.player2Score >= 15) {
-                    this.timeout(1000);
                     break;
                 } else {
-                    this.timeout(2000);
+                    this.timeout(3000);
                 }
             }
             await this.timeout(16);
         }
-        return pos;
     }
 
     async startGame(game: GameEntity) {
@@ -421,7 +393,7 @@ export class GameService {
             player2: 450,
             ball: new Vector(800, 450),
             direction: new Vector(1, 0),
-            speed: 4,
+            speed: 2,
             player1ID: player1.socketId[0],
             player1Score: 0,
             player2ID: player2.socketId[0],

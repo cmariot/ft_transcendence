@@ -23,9 +23,33 @@ const TestMouvements = () => {
     });
 
     function getBottom(paddlePos: number): number {
-        let initial = (paddlePos / game.screenHeigth) * 100;
-        let paddle = (game.paddleHeigth / game.screenHeigth) * 100;
-        return (initial / 100) * (initial - paddle);
+        const initial = (paddlePos / game.screenHeigth) * 100;
+        return (
+            initial *
+            ((game.screenHeigth - game.paddleHeigth) / game.screenHeigth)
+        );
+    }
+
+    function getBallLeft(): number {
+        const initial = (game.ball.x / game.screenWidth) * 100;
+        const ballRadius = getBallRadius();
+        return (
+            initial * ((game.screenWidth - ballRadius * 2) / game.screenWidth)
+        );
+    }
+
+    function getBallRadius() {
+        const board = document.getElementById("board");
+        if (board) {
+            return (board.offsetWidth / game.screenWidth) * game.ballRadius;
+        }
+        return (game.screenWidth / game.screenWidth) * game.ballRadius;
+    }
+
+    function getBallBottom(): number {
+        const ballRadius = getBallRadius();
+        const initial = (game.ball.y / game.screenHeigth) * 100;
+        return initial * ((game.screenHeigth - ballRadius) / game.screenHeigth);
     }
 
     return (
@@ -39,7 +63,8 @@ const TestMouvements = () => {
                     paddle2: {game.paddle2} / {getBottom(game.paddle2)}
                 </p>
                 <p>
-                    ball: x = {game.ball.x}, y = {game.ball.y}
+                    ball: x = {Math.round(game.ball.x)}, y ={" "}
+                    {Math.round(game.ball.y)}
                 </p>
             </div>
             <div
@@ -55,8 +80,10 @@ const TestMouvements = () => {
             <div
                 id="ball"
                 style={{
-                    height: "0px",
-                    width: "0px",
+                    height: `${getBallRadius()}px`,
+                    width: `${getBallRadius()}px`,
+                    left: `${getBallLeft()}%`,
+                    bottom: `${getBallBottom()}%`,
                 }}
             />
             <div
