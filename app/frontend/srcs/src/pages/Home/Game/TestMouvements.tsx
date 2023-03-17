@@ -27,6 +27,18 @@ const TestMouvements = () => {
         };
     });
 
+    function heightPaddle(initial: number): number {
+        return initial - (initial / 100) * 10;
+    }
+
+    function heightBall(initial: number): number {
+        return initial;
+    }
+
+    function leftBall(initial: number): number {
+        return initial;
+    }
+
     return (
         <div id="board">
             <div>
@@ -37,18 +49,32 @@ const TestMouvements = () => {
                     ball: x = {game.ball.x}, y = {game.ball.y}
                 </p>
             </div>
+
             <div
                 id="paddle1"
                 className="paddle"
                 style={{
-                    bottom: `${game.paddle1}%`,
+                    bottom: `${heightPaddle(game.paddle1)}%`,
+                    height: "10%",
+                    width: "2.5%",
+                }}
+            />
+            <div
+                id="ball"
+                style={{
+                    left: `${leftBall(game.ball.x)}%`,
+                    bottom: `${heightBall(game.ball.y)}%`,
+                    height: "1.5vh",
+                    width: "1.5vh",
                 }}
             />
             <div
                 id="paddle2"
                 className="paddle"
                 style={{
-                    bottom: `${game.paddle2}%`,
+                    bottom: `${heightPaddle(game.paddle2)}%`,
+                    height: "10%",
+                    width: "2.5%",
                 }}
             />
         </div>
