@@ -206,6 +206,8 @@ export class GameService {
             player1: number;
             player2: number;
             ball: { x: number; y: number };
+            direction: { dx: number; dy: number }; // motion vector
+            speed: {};
             player1ID: string;
             player2ID: string;
         }
@@ -267,13 +269,19 @@ export class GameService {
         }
     }
 
-    async play(player1Socket: string, player2Socket: string, gameID: string) {
+    async game(player1Socket: string, player2Socket: string, gameID: string) {
         while (true) {
             let pos = this.pos.get(gameID);
             if (pos) {
                 this.gameGateway.sendPos(player1Socket, player2Socket, pos);
             }
             await this.timeout(16);
+        }
+    }
+
+    async play(player1Socket: string, player2Socket: string, gameID: string) {
+        while (1) {
+            this.game(player1Socket, player2Socket, gameID);
         }
     }
 
