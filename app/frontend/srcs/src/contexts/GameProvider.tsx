@@ -13,6 +13,10 @@ export type GameContextType = {
     paddleWidth: 18;
     paddleOffset: 9;
     ballRadius: 32;
+    p1Name: "";
+    p1Score: 0;
+    p2Name: "";
+    p2Score: 0;
 };
 
 export const GameContext = createContext({
@@ -40,13 +44,21 @@ export const GameContext = createContext({
     setPaddleOffset: (newValue: number) => {},
     ballRadius: 32,
     setBallRadius: (newValue: number) => {},
+    p1Name: "",
+    setP1Name: (newValue: string) => {},
+    p1Score: 0,
+    setP1Score: (newValue: number) => {},
+    p2Name: "",
+    setP2Name: (newValue: string) => {},
+    p2Score: 0,
+    setP2Score: (newValue: number) => {},
 });
 
 type GameProviderProps = { children: JSX.Element | JSX.Element[] };
 const GameProvider = ({ children }: GameProviderProps) => {
     const [menu, setMenu] = useState<string>("JoinGame");
     const [countDown, setCountDown] = useState<number>(5);
-    const [gameID, setGameID] = useState<string>("JoinGame");
+    const [gameID, setGameID] = useState<string>("");
     const [paddle1, setPaddle1] = useState<number>(50);
     const [paddle2, setPaddle2] = useState<number>(50);
     const [ball, setBall] = useState({ x: 50, y: 50 });
@@ -56,6 +68,10 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [paddleWidth, setPaddleWidth] = useState<number>(50);
     const [paddleOffset, setPaddleOffset] = useState<number>(50);
     const [ballRadius, setBallRadius] = useState<number>(50);
+    const [p1Name, setP1Name] = useState<string>("");
+    const [p1Score, setP1Score] = useState<number>(50);
+    const [p2Name, setP2Name] = useState<string>("");
+    const [p2Score, setP2Score] = useState<number>(50);
 
     const value = {
         menu,
@@ -82,6 +98,14 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setPaddleOffset,
         ballRadius,
         setBallRadius,
+        p1Name,
+        setP1Name,
+        p1Score,
+        setP1Score,
+        p2Name,
+        setP2Name,
+        p2Score,
+        setP2Score,
     };
 
     return (

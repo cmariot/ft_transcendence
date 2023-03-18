@@ -44,6 +44,10 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             game.setPaddleWidth(data.paddleWidth);
             game.setPaddleOffset(data.paddleOffset);
             game.setBallRadius(data.ballRadius);
+            game.setP1Name(data.player1Username);
+            game.setP2Name(data.player2Username);
+            game.setP1Score(data.player1Score);
+            game.setP2Score(data.player2Score);
         }
         socket.on("game.pos.update", updateGame);
         return () => {

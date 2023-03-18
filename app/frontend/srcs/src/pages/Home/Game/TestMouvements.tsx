@@ -61,12 +61,12 @@ const TestMouvements = () => {
             <div>
                 <div id="player-names">
                     <div className="score">
-                        <h2>Player 1</h2>
-                        <h3>0</h3>
+                        <h2>{game.p1Name}</h2>
+                        <h3>{game.p1Score}</h3>
                     </div>
                     <div className="score">
-                        <h2>Player 2</h2>
-                        <h3>0</h3>
+                        <h2>{game.p2Name}</h2>
+                        <h3>{game.p2Score}</h3>
                     </div>
                 </div>
                 <p>gameID: {game.gameID}</p>

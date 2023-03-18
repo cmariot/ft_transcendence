@@ -27,8 +27,10 @@ export interface PositionInterface {
     ball: Vector;
     direction: Vector;
     speed: number;
+    player1Username: string;
     player1ID: string;
     player1Score: number;
+    player2Username: string;
     player2ID: string;
     player2Score: number;
     screenHeigth: number;
@@ -282,7 +284,7 @@ export class GameService {
     // Screen dimension : 1600 * 900
     // 18 * 90 Paddle
     // 32
-    async hitPaddleRight(pos: PositionInterface): Promise<PositionInterface> {
+    async hitPaddleRight(pos: PositionInterface): Promise<boolean> {
         if (
             pos.ball.y >= pos.player2 - pos.paddleHeigth / 2 &&
             pos.ball.y <= pos.player2 + pos.paddleHeigth / 2
@@ -292,26 +294,14 @@ export class GameService {
                 pos.screenWidth -
                     (pos.paddleOffset + pos.paddleWidth * 0.5 + pos.ballRadius)
             ) {
-                pos.direction = new Vector(0, 0); //arreter la balle quand ca touche
+                return true;
             }
         }
-        //if (
-        //    pos.ball.x + pos.ballRadius ===
-        //    pos.screenWidth - pos.paddleOffset - pos.paddleWidth
-        //) {
-        //    let hit = Math.abs(pos.ball.y - pos.player2);
-        //    if (hit <= pos.paddleHeigth / 2) {
-        //        let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
-        //        pos.direction = new Vector(
-        //            -pos.direction.x,
-        //            -pos.direction.y * percent
-        //        );
-        //    }
-        //}
-        return pos;
+
+        return false;
     }
 
-    async hitPaddleLeft(pos: PositionInterface): Promise<PositionInterface> {
+    async hitPaddleLeft(pos: PositionInterface): Promise<boolean> {
         if (
             pos.ball.y >= pos.player1 - pos.paddleHeigth / 2 &&
             pos.ball.y <= pos.player1 + pos.paddleHeigth / 2
@@ -320,53 +310,53 @@ export class GameService {
                 pos.ball.x <=
                 0 + pos.paddleOffset + pos.paddleWidth * 0.5 + pos.ballRadius
             ) {
-                pos.direction = new Vector(0, 0); //arreter la balle quand ca touche
+                return true;
             }
         }
-        //if (
-        //    pos.ball.x - pos.ballRadius ===
-        //    0 + pos.paddleOffset + pos.paddleWidth
-        //) {
-        //    let hit = Math.abs(pos.ball.y - pos.player1);
-        //    if (hit <= pos.paddleHeigth / 2) {
-        //        //let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
-        //        pos.direction = new Vector(-pos.direction.x, pos.direction.y);
-        //    }
-        //}
-        return pos;
+        return false;
     }
 
-    async collision(pos: PositionInterface) {
-        //colision paddle right
-        pos = await this.hitPaddleRight(pos);
-        //collision paddle left
-        pos = await this.hitPaddleLeft(pos);
-        if (pos.ball.x >= 1600 || pos.ball.x <= 0) {
+    async computeBallDirection(pos: PositionInterface) {
+        if (
+            (await this.hitPaddleRight(pos)) ||
+            (await this.hitPaddleLeft(pos))
+        ) {
             pos.direction = new Vector(-pos.direction.x, pos.direction.y);
-        }
-        //collision top
-        if (pos.ball.y >= pos.screenHeigth) {
+            // pos.direction = new Vector(0, 0); //arreter la balle quand ca touche
+        } else if (pos.ball.y >= pos.screenHeigth) {
             pos.direction = new Vector(pos.direction.x, -pos.direction.y);
-        }
-        //collision bottom
-        if (pos.ball.y <= 0) {
+        } else if (pos.ball.y <= 0) {
             pos.direction = new Vector(pos.direction.x, -pos.direction.y);
         }
         return pos;
     }
 
-    async ballmvt(pos: PositionInterface): Promise<PositionInterface> {
+    async moveBall(pos: PositionInterface): Promise<PositionInterface> {
         for (let i = 0; i < pos.speed; i++) {
-            // ca bug d'ajouter 10 d'un coup ici dans le calcul collision ?
             pos.ball = pos.ball.add(pos.direction);
-            pos = await this.collision(pos);
+            if (
+                (await this.hitPaddleRight(pos)) ||
+                (await this.hitPaddleLeft(pos)) ||
+                pos.ball.x >= pos.screenWidth ||
+                pos.ball.x <= 0 ||
+                pos.ball.y >= pos.screenHeigth ||
+                pos.ball.y <= 0
+            ) {
+                if (pos.ball.x <= 0) {
+                    pos.player1Score++;
+                } else if (pos.ball.x >= pos.screenWidth) {
+                    pos.player2Score++;
+                }
+                break;
+            }
         }
         return pos;
     }
 
     async startBallDir(pos: PositionInterface): Promise<PositionInterface> {
-        let random = (Math.floor(Math.random() * (360 - 0 + 1)) + 0) % 45;
+        const random = Math.floor(Math.random() * (45 - 20 + 1)) + 20;
         pos.direction = pos.direction.rotateByDegrees(random);
+        pos.ball = new Vector(pos.screenWidth / 2, pos.screenHeigth / 2);
         return pos;
     }
 
@@ -387,17 +377,20 @@ export class GameService {
             return;
         }
         pos = await this.startBallDir(pos);
-        const scorePlayer1 = pos.player1Score;
-        const scorePlayer2 = pos.player1Score;
+        let scorePlayer1 = pos.player1Score;
+        let scorePlayer2 = pos.player1Score;
         while (true) {
-            pos = await this.ballmvt(pos);
+            pos = await this.computeBallDirection(pos);
+            pos = await this.moveBall(pos);
             await this.gameGateway.sendPos(player1Socket, player2Socket, pos);
             if (this.someoneGoal(pos, scorePlayer1, scorePlayer2)) {
-                pos = await this.startBallDir(pos);
                 if (pos.player1Score >= 15 && pos.player2Score >= 15) {
                     break;
                 } else {
-                    this.timeout(3000);
+                    scorePlayer1 = pos.player1Score;
+                    scorePlayer2 = pos.player2Score;
+                    pos = await this.startBallDir(pos);
+                    await this.timeout(1000);
                 }
             }
             await this.timeout(16);
@@ -418,8 +411,10 @@ export class GameService {
             ball: new Vector(800, 450),
             direction: new Vector(1, 0),
             speed: 10,
+            player1Username: player1.username,
             player1ID: player1.socketId[0],
             player1Score: 0,
+            player2Username: player2.username,
             player2ID: player2.socketId[0],
             player2Score: 0,
             screenHeigth: 900,
@@ -447,6 +442,4 @@ export class GameService {
 
 // - [ ] Matchmaking a regler
 // - [ ] Gestion collision paddle
-// - [ ] Scores
-// - [ ] Affichage des scores et noms des joueurs dans le front
 // - [ ] Affichage de la balle en %age dans le front avec ballHeigth / ballWidth ?
