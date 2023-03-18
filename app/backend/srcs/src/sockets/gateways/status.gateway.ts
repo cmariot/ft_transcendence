@@ -9,7 +9,7 @@ import {
 } from "@nestjs/websockets";
 import { UsersService } from "src/users/services/users.service";
 import { UserEntity } from "src/users/entity/user.entity";
-import { GameService } from "src/game/services/game.service";
+import { GameService, games } from "src/game/services/game.service";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
@@ -66,7 +66,7 @@ export class StatusGateway {
             data.username
         );
         if (user) {
-            await this.gameService.handleDisconnect(user);
+            await this.gameService.userDisconnection(user, true);
             await this.disconnect(user, client.id);
         }
     }
@@ -75,7 +75,7 @@ export class StatusGateway {
     async handleDisconnect(client: Socket) {
         let user: UserEntity = await this.userService.getBySocket(client.id);
         if (user) {
-            await this.gameService.handleDisconnect(user);
+            await this.gameService.userDisconnection(user, true);
             await this.disconnect(user, client.id);
         }
     }
@@ -86,5 +86,47 @@ export class StatusGateway {
             username: username,
             status: status,
         });
+    }
+
+    // When an user press KeyUp
+    @SubscribeMessage("down")
+    async moveDown(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: { gameID: string }
+    ) {
+        let match = games.get(data.gameID);
+        if (match) {
+            if (client.id === match.player1ID) {
+                if (match.player1 > 0) {
+                    match.player1 -= match.screenHeigth / 10;
+                }
+            } else if (client.id === match.player2ID) {
+                if (match.player2 > 0) {
+                    match.player2 -= match.screenHeigth / 10;
+                }
+            }
+            games.set(data.gameID, match);
+        }
+    }
+
+    // When an user press KeyUp
+    @SubscribeMessage("up")
+    async moveUp(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: { gameID: string }
+    ) {
+        let match = games.get(data.gameID);
+        if (match) {
+            if (client.id === match.player1ID) {
+                if (match.player1 < match.screenHeigth) {
+                    match.player1 += match.screenHeigth / 10;
+                }
+            } else if (client.id === match.player2ID) {
+                if (match.player2 < match.screenHeigth) {
+                    match.player2 += match.screenHeigth / 10;
+                }
+            }
+            games.set(data.gameID, match);
+        }
     }
 }

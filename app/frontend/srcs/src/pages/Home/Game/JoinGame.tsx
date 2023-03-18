@@ -2,19 +2,14 @@ import { useContext } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
-import { UserContext } from "../../../contexts/UserProvider";
 
 const JoinGame = () => {
     const game = useContext(GameContext);
-    const user = useContext(UserContext);
 
     async function joinGame() {
         try {
-            const joinResponse = await axios.post("/api/game/queue", {
-                username: user.username,
-            });
+            const joinResponse = await axios.post("/api/game/queue");
             if (joinResponse.status === 201) {
-                console.log(game);
                 game.setMenu("WaitingScreen");
             }
         } catch (error: any) {
@@ -24,9 +19,7 @@ const JoinGame = () => {
 
     async function cancelGame() {
         try {
-            const cancelResponse = await axios.post("/api/game/queue/cancel", {
-                username: user.username,
-            });
+            const cancelResponse = await axios.post("/api/game/queue/cancel");
             if (cancelResponse.status === 201) {
                 game.setMenu("JoinGame");
             }

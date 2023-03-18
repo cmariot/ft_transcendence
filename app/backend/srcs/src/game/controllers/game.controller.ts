@@ -14,15 +14,15 @@ export class GameController {
     // Rejoint la queue
     @Post("queue")
     @UseGuards(isLogged)
-    async join_queue(@Req() req, @Body() user: UsernameDto) {
-        return await this.gameService.joinQueue(user.username);
+    async join_queue(@Req() req) {
+        return await this.gameService.joinQueue(req.user.uuid);
     }
 
     // pour cancel quand il est dans la queue
     @Post("queue/cancel")
     @UseGuards(isLogged)
-    async cancel_queue(@Req() req, @Body() user: UsernameDto) {
-        return await this.gameService.cancelQueue(user.username);
+    async cancel_queue(@Req() req) {
+        return await this.gameService.cancelQueue(req.user.uuid);
     }
 
     @Post("invitation/send")
