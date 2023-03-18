@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { UserContext } from "../../../contexts/UserProvider";
 const WaitingScreen = () => {
     const game = useContext(GameContext);
     const user = useContext(UserContext);
+    const [text, setText] = useState("...");
 
     async function cancelGame() {
         try {
@@ -23,6 +24,7 @@ const WaitingScreen = () => {
 
     return (
         <div id="waiting-screen">
+            <p>Searching for a player ...</p>
             <button onClick={() => cancelGame()}>cancel</button>
         </div>
     );

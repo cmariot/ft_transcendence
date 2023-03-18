@@ -1,6 +1,5 @@
 #home-main {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+    display: flex;
     height: -webkit-fill-available;
     height: -moz-available;
     grid-gap: 10px;
@@ -12,5 +11,8 @@
     align-items: center;
     height: 500px;
     border: 1px black solid;
-    padding: 0;
+    width: 500px;
+    min-width: 500px;
+    border-radius: 15px;
+    border: 2px #737373 solid;
 }

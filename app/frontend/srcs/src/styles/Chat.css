@@ -226,7 +226,7 @@
 }
 
 #chat {
-    min-width: 300px;
+    width: -moz-available;
 }
 
 .chat-user-message-options {

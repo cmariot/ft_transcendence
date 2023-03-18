@@ -23,19 +23,29 @@ const TestMouvements = () => {
     });
 
     function getBottom(paddlePos: number): number {
-        const initial = (paddlePos / game.screenHeigth) * 100;
+        const percentage = (paddlePos / game.screenHeigth) * 100;
         return (
-            initial *
+            percentage *
             ((game.screenHeigth - game.paddleHeigth) / game.screenHeigth)
         );
     }
 
     function getBallLeft(): number {
-        const initial = (game.ball.x / game.screenWidth) * 100;
+        const percentage = (game.ball.x / game.screenWidth) * 100;
         const ballRadius = getBallRadius();
-        return (
-            initial * ((game.screenWidth - ballRadius * 2) / game.screenWidth)
-        );
+        const correction =
+            (game.screenWidth - (game.screenWidth / 100) * ballRadius) /
+            game.screenWidth;
+        return percentage * correction;
+    }
+
+    function getBallBottom(): number {
+        const percentage = (game.ball.y / game.screenHeigth) * 100;
+        const ballRadius = getBallRadius();
+        const correction =
+            (game.screenHeigth - (game.screenHeigth / 100) * ballRadius) /
+            game.screenHeigth;
+        return percentage * correction;
     }
 
     function getBallRadius() {
@@ -43,18 +53,22 @@ const TestMouvements = () => {
         if (board) {
             return (board.offsetWidth / game.screenWidth) * game.ballRadius;
         }
-        return (game.screenWidth / game.screenWidth) * game.ballRadius;
-    }
-
-    function getBallBottom(): number {
-        const ballRadius = getBallRadius();
-        const initial = (game.ball.y / game.screenHeigth) * 100;
-        return initial * ((game.screenHeigth - ballRadius) / game.screenHeigth);
+        return 0;
     }
 
     return (
         <div id="board">
             <div>
+                <div id="player-names">
+                    <div className="score">
+                        <h2>Player 1</h2>
+                        <h3>0</h3>
+                    </div>
+                    <div className="score">
+                        <h2>Player 2</h2>
+                        <h3>0</h3>
+                    </div>
+                </div>
                 <p>gameID: {game.gameID}</p>
                 <p>
                     paddle2: {game.paddle1} / {getBottom(game.paddle1)}
@@ -80,8 +94,8 @@ const TestMouvements = () => {
             <div
                 id="ball"
                 style={{
-                    height: `${getBallRadius()}px`,
-                    width: `${getBallRadius()}px`,
+                    height: `${getBallRadius()}%`,
+                    width: `${getBallRadius()}%`,
                     left: `${getBallLeft()}%`,
                     bottom: `${getBallBottom()}%`,
                 }}

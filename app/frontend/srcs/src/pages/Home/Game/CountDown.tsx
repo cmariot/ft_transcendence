@@ -1,7 +1,7 @@
 const CountDown = (props: { time: number }) => {
     return (
         <div id="countdown">
-            <p>{props.time}</p>
+            <h2>{props.time}</h2>
         </div>
     );
 };

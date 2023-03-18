@@ -57,7 +57,7 @@ export class GameService {
     async joinQueue(username: string) {
         let player: UserEntity = await this.userService.getByUsername(username);
         if (!player) {
-            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+            throw new UnauthorizedException("User not found");
         }
         if (
             (await this.gameRepository.findOneBy({ hostID: player.uuid })) ||
@@ -72,7 +72,6 @@ export class GameService {
             game = new GameEntity();
             game.hostID = player.uuid;
             game.status = "waiting";
-
             await this.userService.setStatusByID(game.hostID, "matchmaking");
             await this.gameRepository.save(game);
             return "In Queue";
@@ -98,11 +97,13 @@ export class GameService {
             game = await this.gameRepository.findOneBy({
                 guestID: player.uuid,
             });
+            if (!game) {
+                throw new HttpException(
+                    "Not in Queue",
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
         }
-        if (!game) {
-            throw new HttpException("Not in Queue", HttpStatus.UNAUTHORIZED);
-        }
-
         if (game.hostID) {
             player = await this.userService.getByID(game.hostID);
             await this.userService.setStatusByID(game.hostID, "online");
@@ -111,6 +112,7 @@ export class GameService {
                 "queueCancel"
             );
         }
+        //else if ?
         if (game.guestID) {
             await this.userService.setStatusByID(game.guestID, "online");
             player = await this.userService.getByID(game.guestID);
@@ -282,47 +284,67 @@ export class GameService {
     // 32
     async hitPaddleRight(pos: PositionInterface): Promise<PositionInterface> {
         if (
-            pos.ball.x + pos.ballRadius ===
-            pos.screenWidth - pos.paddleOffset - pos.paddleWidth
+            pos.ball.y >= pos.player2 - pos.paddleHeigth / 2 &&
+            pos.ball.y <= pos.player2 + pos.paddleHeigth / 2
         ) {
-            let hit = Math.abs(pos.ball.y - pos.player2);
-            if (hit <= pos.paddleHeigth / 2) {
-                let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
-                pos.direction = new Vector(
-                    -pos.direction.x,
-                    -pos.direction.y * percent
-                );
+            if (
+                pos.ball.x >=
+                pos.screenWidth -
+                    (pos.paddleOffset + pos.paddleWidth * 0.5 + pos.ballRadius)
+            ) {
+                pos.direction = new Vector(0, 0); //arreter la balle quand ca touche
             }
         }
+        //if (
+        //    pos.ball.x + pos.ballRadius ===
+        //    pos.screenWidth - pos.paddleOffset - pos.paddleWidth
+        //) {
+        //    let hit = Math.abs(pos.ball.y - pos.player2);
+        //    if (hit <= pos.paddleHeigth / 2) {
+        //        let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
+        //        pos.direction = new Vector(
+        //            -pos.direction.x,
+        //            -pos.direction.y * percent
+        //        );
+        //    }
+        //}
         return pos;
     }
 
     async hitPaddleLeft(pos: PositionInterface): Promise<PositionInterface> {
         if (
-            pos.ball.x - pos.ballRadius ===
-            0 + pos.paddleOffset + pos.paddleWidth
+            pos.ball.y >= pos.player1 - pos.paddleHeigth / 2 &&
+            pos.ball.y <= pos.player1 + pos.paddleHeigth / 2
         ) {
-            let hit = Math.abs(pos.ball.y - pos.player1);
-            if (hit <= pos.paddleHeigth / 2) {
-                let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
-                pos.direction = new Vector(
-                    -pos.direction.x,
-                    -pos.direction.y * percent
-                );
+            if (
+                pos.ball.x <=
+                0 + pos.paddleOffset + pos.paddleWidth * 0.5 + pos.ballRadius
+            ) {
+                pos.direction = new Vector(0, 0); //arreter la balle quand ca touche
             }
         }
+        //if (
+        //    pos.ball.x - pos.ballRadius ===
+        //    0 + pos.paddleOffset + pos.paddleWidth
+        //) {
+        //    let hit = Math.abs(pos.ball.y - pos.player1);
+        //    if (hit <= pos.paddleHeigth / 2) {
+        //        //let percent = pos.paddleHeigth - hit / (pos.paddleHeigth * 100);
+        //        pos.direction = new Vector(-pos.direction.x, pos.direction.y);
+        //    }
+        //}
         return pos;
     }
 
     async collision(pos: PositionInterface) {
-        //colision paddle left
+        //colision paddle right
         pos = await this.hitPaddleRight(pos);
-        //collision paddle right
+        //collision paddle left
         pos = await this.hitPaddleLeft(pos);
-        //collision top
         if (pos.ball.x >= 1600 || pos.ball.x <= 0) {
             pos.direction = new Vector(-pos.direction.x, pos.direction.y);
         }
+        //collision top
         if (pos.ball.y >= pos.screenHeigth) {
             pos.direction = new Vector(pos.direction.x, -pos.direction.y);
         }
@@ -334,9 +356,11 @@ export class GameService {
     }
 
     async ballmvt(pos: PositionInterface): Promise<PositionInterface> {
-        pos = await this.collision(pos);
-        const speed = pos.direction.multiply(pos.speed);
-        pos.ball = pos.ball.add(speed);
+        for (let i = 0; i < pos.speed; i++) {
+            // ca bug d'ajouter 10 d'un coup ici dans le calcul collision ?
+            pos.ball = pos.ball.add(pos.direction);
+            pos = await this.collision(pos);
+        }
         return pos;
     }
 
@@ -393,7 +417,7 @@ export class GameService {
             player2: 450,
             ball: new Vector(800, 450),
             direction: new Vector(1, 0),
-            speed: 2,
+            speed: 10,
             player1ID: player1.socketId[0],
             player1Score: 0,
             player2ID: player2.socketId[0],
@@ -402,8 +426,8 @@ export class GameService {
             screenWidth: 1600,
             paddleHeigth: 90,
             paddleWidth: 18,
-            paddleOffset: 9,
-            ballRadius: 32,
+            paddleOffset: 8,
+            ballRadius: 9,
         });
         await this.gameGateway.sendGameID(
             player1.socketId[0],
@@ -420,3 +444,9 @@ export class GameService {
         this.pos.delete(game.uuid);
     }
 }
+
+// - [ ] Matchmaking a regler
+// - [ ] Gestion collision paddle
+// - [ ] Scores
+// - [ ] Affichage des scores et noms des joueurs dans le front
+// - [ ] Affichage de la balle en %age dans le front avec ballHeigth / ballWidth ?

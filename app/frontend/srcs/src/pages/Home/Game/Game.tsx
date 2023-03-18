@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import JoinGame from "./JoinGame";
 import WaitingScreen from "./WaitingScreen";
-import { Board } from "./Board";
 import CountDown from "./CountDown";
 import TestMouvements from "./TestMouvements";
 

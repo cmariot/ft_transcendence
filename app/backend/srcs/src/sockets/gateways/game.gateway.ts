@@ -15,6 +15,11 @@ export class GameGateway {
     server: Server;
 
     // Change the app menu in the frontend
+    async changeFrontMenu(socketID: string, menu: string) {
+        this.server.to(socketID).emit("game.menu.change", { menu: menu });
+    }
+
+    // Change the app menu in the frontend
     async updateFrontMenu(player1: string, player2: string, menu: string) {
         let room = [player1, player2];
         this.server.to(room).emit("game.menu.change", { menu: menu });
