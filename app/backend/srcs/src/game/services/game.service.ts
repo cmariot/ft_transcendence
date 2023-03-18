@@ -343,9 +343,9 @@ export class GameService {
                 pos.ball.y <= 0
             ) {
                 if (pos.ball.x <= 0) {
-                    pos.player1Score++;
-                } else if (pos.ball.x >= pos.screenWidth) {
                     pos.player2Score++;
+                } else if (pos.ball.x >= pos.screenWidth) {
+                    pos.player1Score++;
                 }
                 break;
             }
@@ -354,7 +354,7 @@ export class GameService {
     }
 
     async startBallDir(pos: PositionInterface): Promise<PositionInterface> {
-        const random = Math.floor(Math.random() * (45 - 20 + 1)) + 20;
+        const random = Math.floor(Math.random() * (0 - 360 + 1)) + 0;
         pos.direction = pos.direction.rotateByDegrees(random);
         pos.ball = new Vector(pos.screenWidth / 2, pos.screenHeigth / 2);
         return pos;
@@ -384,7 +384,7 @@ export class GameService {
             pos = await this.moveBall(pos);
             await this.gameGateway.sendPos(player1Socket, player2Socket, pos);
             if (this.someoneGoal(pos, scorePlayer1, scorePlayer2)) {
-                if (pos.player1Score >= 15 && pos.player2Score >= 15) {
+                if (pos.player1Score >= 15 || pos.player2Score >= 15) {
                     break;
                 } else {
                     scorePlayer1 = pos.player1Score;
