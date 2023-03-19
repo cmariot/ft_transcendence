@@ -35,15 +35,16 @@ export const GameEvents = ({ children }: GameEventsProps) => {
 
     useEffect(() => {
         async function updateGame(data: any) {
-            game.setPaddle1(data.player1);
-            game.setPaddle2(data.player2);
-            game.setBall(data.ball);
+            game.setPaddle1(data.player1Position);
+            game.setPaddle2(data.player2Position);
+            game.setBall(data.ballPosition);
             game.setScreenHeigth(data.screenHeigth);
             game.setScreenWidth(data.screenWidth);
             game.setPaddleHeigth(data.paddleHeigth);
             game.setPaddleWidth(data.paddleWidth);
             game.setPaddleOffset(data.paddleOffset);
-            game.setBallRadius(data.ballRadius);
+            game.setBallHeigth(data.ballHeigth);
+            game.setBallWidth(data.ballWidth);
             game.setP1Name(data.player1Username);
             game.setP2Name(data.player2Username);
             game.setP1Score(data.player1Score);

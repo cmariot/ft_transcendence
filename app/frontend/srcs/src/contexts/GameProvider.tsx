@@ -12,7 +12,8 @@ export type GameContextType = {
     paddleHeigth: 90;
     paddleWidth: 18;
     paddleOffset: 9;
-    ballRadius: 32;
+    ballHeigth: 22.5;
+    ballWidth: 40;
     p1Name: "";
     p1Score: 0;
     p2Name: "";
@@ -42,8 +43,10 @@ export const GameContext = createContext({
     setPaddleWidth: (newValue: number) => {},
     paddleOffset: 9,
     setPaddleOffset: (newValue: number) => {},
-    ballRadius: 32,
-    setBallRadius: (newValue: number) => {},
+    ballHeigth: 9,
+    setBallHeigth: (newValue: number) => {},
+    ballWidth: 16,
+    setBallWidth: (newValue: number) => {},
     p1Name: "",
     setP1Name: (newValue: string) => {},
     p1Score: 0,
@@ -67,7 +70,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [paddleHeigth, setPaddleHeigth] = useState<number>(50);
     const [paddleWidth, setPaddleWidth] = useState<number>(50);
     const [paddleOffset, setPaddleOffset] = useState<number>(50);
-    const [ballRadius, setBallRadius] = useState<number>(50);
+    const [ballWidth, setBallWidth] = useState<number>(16);
+    const [ballHeigth, setBallHeigth] = useState<number>(9);
     const [p1Name, setP1Name] = useState<string>("");
     const [p1Score, setP1Score] = useState<number>(50);
     const [p2Name, setP2Name] = useState<string>("");
@@ -96,8 +100,10 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setPaddleWidth,
         paddleOffset,
         setPaddleOffset,
-        ballRadius,
-        setBallRadius,
+        ballHeigth,
+        setBallHeigth,
+        ballWidth,
+        setBallWidth,
         p1Name,
         setP1Name,
         p1Score,

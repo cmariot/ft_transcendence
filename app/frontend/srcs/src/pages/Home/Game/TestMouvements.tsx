@@ -8,6 +8,7 @@ const TestMouvements = () => {
     const game = useContext(GameContext);
 
     function handleKeyPress(event: any) {
+        console.log(game);
         if (event.key === "ArrowUp") {
             socket.emit("up", { gameID: game.gameID });
         } else if (event.key === "ArrowDown") {
@@ -30,30 +31,20 @@ const TestMouvements = () => {
         );
     }
 
-    function getBallLeft(): number {
-        const percentage = (game.ball.x / game.screenWidth) * 100;
-        const ballRadius = getBallRadius();
-        const correction =
-            (game.screenWidth - (game.screenWidth / 100) * ballRadius) /
-            game.screenWidth;
-        return percentage * correction;
-    }
-
     function getBallBottom(): number {
         const percentage = (game.ball.y / game.screenHeigth) * 100;
-        const ballRadius = getBallRadius();
-        const correction =
-            (game.screenHeigth - (game.screenHeigth / 100) * ballRadius) /
-            game.screenHeigth;
-        return percentage * correction;
+        return (
+            percentage *
+            ((game.screenHeigth - game.ballHeigth) / game.screenHeigth)
+        );
     }
 
-    function getBallRadius() {
-        const board = document.getElementById("board");
-        if (board) {
-            return (board.offsetWidth / game.screenWidth) * game.ballRadius;
-        }
-        return 0;
+    function getBallLeft(): number {
+        const percentage = (game.ball.x / game.screenWidth) * 100;
+        return (
+            percentage *
+            ((game.screenWidth - game.ballWidth) / game.screenWidth)
+        );
     }
 
     return (
@@ -81,6 +72,43 @@ const TestMouvements = () => {
                     {Math.round(game.ball.y)}
                 </p>
             </div>
+
+            <div id="board-decoration">
+                <div id="middle" />
+                <div
+                    className="edges"
+                    style={{
+                        top: `50%`,
+                        border: "0.5px solid #737373",
+                        width: "100%",
+                    }}
+                />
+                <div
+                    className="edges"
+                    style={{
+                        left: `${(game.ballWidth / game.screenWidth) * 100}%`,
+                        border: "0.5px solid #737373",
+                        height: "100%",
+                    }}
+                />
+                <div
+                    className="edges"
+                    style={{
+                        right: `${(game.ballWidth / game.screenWidth) * 100}%`,
+                        border: "0.5px solid #737373",
+                        height: "100%",
+                    }}
+                />
+                <div
+                    className="edges"
+                    style={{
+                        bottom: `0%`,
+                        border: "0.5px solid #737373",
+                        height: "100%",
+                    }}
+                />
+            </div>
+
             <div
                 id="paddle1"
                 className="paddle"
@@ -94,8 +122,8 @@ const TestMouvements = () => {
             <div
                 id="ball"
                 style={{
-                    height: `${getBallRadius()}%`,
-                    width: `${getBallRadius()}%`,
+                    height: `${(game.ballHeigth / game.screenHeigth) * 100}%`,
+                    width: `${(game.ballWidth / game.screenWidth) * 100}%`,
                     left: `${getBallLeft()}%`,
                     bottom: `${getBallBottom()}%`,
                 }}

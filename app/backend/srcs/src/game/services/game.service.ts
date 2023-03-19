@@ -1,9 +1,4 @@
-import {
-    HttpException,
-    HttpStatus,
-    Injectable,
-    UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UsersService } from "src/users/services/users.service";
@@ -11,41 +6,33 @@ import { GameEntity } from "../entities/game.entity";
 import { InvitationDto, InvitationResponseDto } from "../dtos/GameUtility.dto";
 import { GameGateway } from "../../sockets/gateways/game.gateway";
 import { UserEntity } from "src/users/entity/user.entity";
-import {
-    ConnectedSocket,
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-} from "@nestjs/websockets";
-import { Server, Socket } from "socket.io";
 import { Vector } from "vecti";
 
 export interface GameInterface {
-    player1: number;
-    player2: number;
-    ball: Vector;
-    direction: Vector;
-    speed: number;
     player1Username: string;
-    player1ID: string;
-    player1Score: number;
     player2Username: string;
-    player2ID: string;
+    player1Socket: string;
+    player2Socket: string;
+    player1Position: number;
+    player2Position: number;
+    ballPosition: Vector;
+    ballDirection: Vector;
+    ballSpeed: number;
+    player1Score: number;
     player2Score: number;
     screenHeigth: number;
     screenWidth: number;
     paddleHeigth: number;
     paddleWidth: number;
     paddleOffset: number;
-    ballRadius: number;
+    ballWidth: number;
+    ballHeigth: number;
     disconnection: boolean;
 }
 
 export let games = new Map<string, GameInterface>();
 
 @Injectable()
-@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
 export class GameService {
     constructor(
         @InjectRepository(GameEntity)
@@ -53,9 +40,6 @@ export class GameService {
         private userService: UsersService,
         private gameGateway: GameGateway
     ) {}
-
-    @WebSocketServer()
-    server: Server;
 
     async joinQueue(uuid: string) {
         let user: UserEntity = await this.userService.getByID(uuid);
@@ -73,22 +57,28 @@ export class GameService {
                 if (game.status === "waiting") {
                     throw new UnauthorizedException("Already in queue.");
                 } else if (game.status === "playing") {
+                    let foundGame: GameInterface = games.get(game.uuid);
+                    if (foundGame) {
+                        foundGame.disconnection = true;
+                        games.set(game.uuid, foundGame);
+                        return;
+                    }
+                    await this.gameRepository.remove(game);
                     throw new UnauthorizedException(
-                        "You cannot start two games at the same time."
+                        "You cannot start two games at the same time, your previous game has been cancelled."
                     );
                 }
             }
         }
-        await this.userService.setStatusByID(uuid, "matchmaking");
         game = await this.gameRepository.findOneBy({
             status: "waiting",
         });
         if (!game) {
             game = new GameEntity();
             game.hostID = uuid;
-            game.guestID = "";
             game.status = "waiting";
             await this.gameRepository.save(game);
+            await this.userService.setStatusByID(uuid, "matchmaking");
         } else {
             game.guestID = uuid;
             game.status = "playing";
@@ -206,7 +196,7 @@ export class GameService {
 
     async countDown(player1Socket: string, player2Socket: string) {
         for (let i = 5; i >= 0; i--) {
-            this.gameGateway.updateCountDown(
+            await this.gameGateway.updateCountDown(
                 player1Socket,
                 player2Socket,
                 "countDown",
@@ -219,72 +209,148 @@ export class GameService {
     // Screen dimension : 1600 * 900
     // 18 * 90 Paddle
     // 32
-    async hitPaddleRight(match: GameInterface): Promise<boolean> {
+
+    /*
+
+    y
+    ________________________
+    |                       |
+    |                       |
+    | |                     |
+    | |       o           | |
+    |                     | |
+    |                       |
+    |_______________________|  x
+
+    x >= 1600 - (offset - paddlewidth - 1/2ballwidth) 
+    */
+
+    // y >= paddlepos -
+    // offset + paddleWidth + 1/2 ballWidth = 68
+    // x >= 1600 - offset - paddlewidth - 1/2 ballwidth
+    async hitPaddle(
+        paddle: number,
+        match: GameInterface,
+        paddlePosition: number
+    ): Promise<boolean> {
+        // [x] face avant paddles
         if (
-            match.ball.y >= match.player2 - match.paddleHeigth / 2 &&
-            match.ball.y <= match.player2 + match.paddleHeigth / 2
+            match.ballPosition.y >= paddlePosition - match.paddleHeigth / 2 &&
+            match.ballPosition.y <= paddlePosition + match.paddleHeigth / 2
         ) {
             if (
-                match.ball.x >=
-                match.screenWidth -
-                    (match.paddleOffset +
-                        match.paddleWidth * 0.5 +
-                        match.ballRadius)
+                paddle === 1 &&
+                match.ballPosition.x <= match.paddleOffset + match.paddleWidth
+            ) {
+                return true;
+            } else if (
+                paddle === 2 &&
+                match.ballPosition.x >=
+                    match.screenWidth - match.paddleOffset - match.paddleWidth
             ) {
                 return true;
             }
         }
-
-        return false;
-    }
-
-    async hitPaddleLeft(match: GameInterface): Promise<boolean> {
-        if (
-            match.ball.y >= match.player1 - match.paddleHeigth / 2 &&
-            match.ball.y <= match.player1 + match.paddleHeigth / 2
-        ) {
-            if (
-                match.ball.x <=
-                0 +
-                    match.paddleOffset +
-                    match.paddleWidth * 0.5 +
-                    match.ballRadius
-            ) {
-                return true;
+        // [ ] coins paddles
+        else {
+            // distance coin / centre balle <= rayon balle
+            if (paddle === 1) {
+                let left_bottom_corner = new Vector(
+                    0 + match.paddleOffset + match.paddleWidth,
+                    0 + match.player1Position - match.paddleHeigth / 2
+                );
+                let distance = left_bottom_corner
+                    .subtract(match.ballPosition)
+                    .length();
+                if (distance <= match.ballHeigth / 2) {
+                    return true;
+                }
+                let left_top_corner = new Vector(
+                    0 + match.paddleOffset + match.paddleWidth,
+                    0 + match.player1Position - match.paddleHeigth / 2
+                );
+                distance = left_top_corner
+                    .subtract(match.ballPosition)
+                    .length();
+                if (distance <= match.ballHeigth / 2) {
+                    return true;
+                }
+            } else if (paddle === 2) {
+                let right_bottom_corner = new Vector(
+                    match.screenWidth -
+                        (match.paddleOffset + match.paddleWidth),
+                    0 + match.player2Position - match.paddleHeigth / 2
+                );
+                let distance = right_bottom_corner
+                    .subtract(match.ballPosition)
+                    .length();
+                if (distance <= match.ballHeigth / 2) {
+                    return true;
+                }
+                let right_top_corner = new Vector(
+                    match.screenWidth -
+                        (match.paddleOffset + match.paddleWidth),
+                    0 + match.player2Position - match.paddleHeigth / 2
+                );
+                distance = right_top_corner
+                    .subtract(match.ballPosition)
+                    .length();
+                if (distance <= match.ballHeigth / 2) {
+                    return true;
+                }
             }
         }
+        // [ ] faces inferieures / superieures
         return false;
     }
 
     async computeBallDirection(match: GameInterface) {
         if (
-            (await this.hitPaddleRight(match)) ||
-            (await this.hitPaddleLeft(match))
+            (await this.hitPaddle(1, match, match.player1Position)) ||
+            (await this.hitPaddle(2, match, match.player2Position))
         ) {
-            match.direction = new Vector(-match.direction.x, match.direction.y);
-        } else if (match.ball.y >= match.screenHeigth) {
-            match.direction = new Vector(match.direction.x, -match.direction.y);
-        } else if (match.ball.y <= 0) {
-            match.direction = new Vector(match.direction.x, -match.direction.y);
+            //match.ballDirection = new Vector(0, 0);
+            match.ballDirection = new Vector(
+                -match.ballDirection.x,
+                match.ballDirection.y
+            );
+        } else if (match.ballPosition.y >= match.screenHeigth) {
+            match.ballDirection = new Vector(
+                match.ballDirection.x,
+                -match.ballDirection.y
+            );
+        } else if (match.ballPosition.y <= 0) {
+            match.ballDirection = new Vector(
+                match.ballDirection.x,
+                -match.ballDirection.y
+            );
         }
         return match;
     }
 
     async moveBall(match: GameInterface): Promise<GameInterface> {
-        for (let i = 0; i < match.speed; i++) {
-            match.ball = match.ball.add(match.direction);
+        for (let i = 0; i < match.ballSpeed; i++) {
+            match.ballPosition = match.ballPosition.add(match.ballDirection);
             if (
-                (await this.hitPaddleRight(match)) ||
-                (await this.hitPaddleLeft(match)) ||
-                match.ball.x >= match.screenWidth ||
-                match.ball.x <= 0 ||
-                match.ball.y >= match.screenHeigth ||
-                match.ball.y <= 0
+                (await this.hitPaddle(1, match, match.player1Position)) ||
+                (await this.hitPaddle(2, match, match.player2Position)) ||
+                match.ballPosition.x >= match.screenWidth ||
+                match.ballPosition.x <= 0 ||
+                match.ballPosition.y >= match.screenHeigth ||
+                match.ballPosition.y <= 0
             ) {
-                if (match.ball.x <= 0) {
+                if (match.ballPosition.x <= 0) {
                     match.player2Score++;
-                } else if (match.ball.x >= match.screenWidth) {
+                } else if (match.ballPosition.x >= match.screenWidth) {
                     match.player1Score++;
+                } else {
+                    match.ballDirection = new Vector(
+                        -match.ballDirection.x,
+                        match.ballDirection.y
+                    );
+                    match.ballPosition = match.ballPosition.add(
+                        match.ballDirection
+                    );
                 }
                 break;
             }
@@ -293,9 +359,20 @@ export class GameService {
     }
 
     async startBallDir(match: GameInterface): Promise<GameInterface> {
-        const random = Math.floor(Math.random() * (0 - 360 + 1)) + 0;
-        match.direction = match.direction.rotateByDegrees(random);
-        match.ball = new Vector(match.screenWidth / 2, match.screenHeigth / 2);
+        // engagement position
+        match.ballPosition = new Vector(
+            match.screenWidth / 2,
+            match.screenHeigth / 2
+        );
+        // engagement direction
+        if (Math.round(Math.random()) % 2 === 1) {
+            match.ballDirection = new Vector(1, 0);
+        } else {
+            match.ballDirection = new Vector(-1, 0);
+        }
+        // engagement angle
+        const random = Math.floor(Math.random() * 91 - 45);
+        match.ballDirection = match.ballDirection.rotateByDegrees(random);
         return match;
     }
 
@@ -317,8 +394,8 @@ export class GameService {
         }
         if (match.disconnection) {
             this.gameGateway.updateFrontMenu(
-                match.player1ID,
-                match.player2ID,
+                match.player1Socket,
+                match.player2Socket,
                 "Disconnection"
             );
         }
@@ -330,9 +407,9 @@ export class GameService {
         if (!match) {
             return;
         }
-        match = await this.startBallDir(match);
         let scorePlayer1 = match.player1Score;
         let scorePlayer2 = match.player1Score;
+        match = await this.startBallDir(match);
         while (true) {
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
@@ -363,30 +440,37 @@ export class GameService {
         }
         await this.userService.setStatusByID(player1.uuid, "ingame");
         await this.userService.setStatusByID(player2.uuid, "ingame");
-        games.set(game.uuid, {
-            player1: 450,
-            player2: 450,
-            ball: new Vector(800, 450),
-            direction: new Vector(1, 0),
-            speed: 10,
+        let match = {
             player1Username: player1.username,
-            player1ID: player1.socketId[0],
-            player1Score: 0,
             player2Username: player2.username,
-            player2ID: player2.socketId[0],
+            player1Socket: player1.socketId[0],
+            player2Socket: player2.socketId[0],
+            player1Score: 0,
             player2Score: 0,
+            player1Position: 450,
+            player2Position: 450,
+            ballPosition: new Vector(800, 450),
+            ballDirection: new Vector(1, 0),
+            ballSpeed: 10,
             screenHeigth: 900,
             screenWidth: 1600,
             paddleHeigth: 90,
-            paddleWidth: 18,
-            paddleOffset: 8,
-            ballRadius: 9,
+            paddleWidth: 32,
+            paddleOffset: 16,
+            ballWidth: 40, // 2.5 % screenWidth
+            ballHeigth: 22.5, // 2.5% screenHeigth
             disconnection: false,
-        });
+        };
+        games.set(game.uuid, match);
         await this.gameGateway.sendGameID(
             player1.socketId[0],
             player2.socketId[0],
             game.uuid
+        );
+        await this.gameGateway.sendPos(
+            player1.socketId[0],
+            player1.socketId[0],
+            match
         );
         await this.countDown(player1.socketId[0], player2.socketId[0]);
         this.gameGateway.updateFrontMenu(
@@ -394,13 +478,13 @@ export class GameService {
             player2.socketId[0],
             "Game"
         );
-        let hasAWinner = await this.game(
+        let gameResults = await this.game(
             player1.socketId[0],
             player2.socketId[0],
             game.uuid
         );
         // save game results
-        if (hasAWinner) {
+        if (gameResults) {
             this.gameGateway.updateFrontMenu(
                 player1.socketId[0],
                 player2.socketId[0],
@@ -414,6 +498,6 @@ export class GameService {
     }
 }
 
+// - [ ] Gestion collision paddle dans les coins et faces inf/sup
 // - [ ] Matchmaking a regler
-// - [ ] Gestion collision paddle
-// - [ ] Affichage de la balle en %age dans le front avec ballHeigth / ballWidth ?
+// - [ ] Sauvegarder resultats match

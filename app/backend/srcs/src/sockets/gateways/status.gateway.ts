@@ -96,13 +96,13 @@ export class StatusGateway {
     ) {
         let match = games.get(data.gameID);
         if (match) {
-            if (client.id === match.player1ID) {
-                if (match.player1 > 0) {
-                    match.player1 -= match.screenHeigth / 10;
+            if (client.id === match.player1Socket) {
+                if (match.player1Position > 0) {
+                    match.player1Position -= match.screenHeigth / 10;
                 }
-            } else if (client.id === match.player2ID) {
-                if (match.player2 > 0) {
-                    match.player2 -= match.screenHeigth / 10;
+            } else if (client.id === match.player2Socket) {
+                if (match.player2Position > 0) {
+                    match.player2Position -= match.screenHeigth / 10;
                 }
             }
             games.set(data.gameID, match);
@@ -117,13 +117,13 @@ export class StatusGateway {
     ) {
         let match = games.get(data.gameID);
         if (match) {
-            if (client.id === match.player1ID) {
-                if (match.player1 < match.screenHeigth) {
-                    match.player1 += match.screenHeigth / 10;
+            if (client.id === match.player1Socket) {
+                if (match.player1Position < match.screenHeigth) {
+                    match.player1Position += match.screenHeigth / 10;
                 }
-            } else if (client.id === match.player2ID) {
-                if (match.player2 < match.screenHeigth) {
-                    match.player2 += match.screenHeigth / 10;
+            } else if (client.id === match.player2Socket) {
+                if (match.player2Position < match.screenHeigth) {
+                    match.player2Position += match.screenHeigth / 10;
                 }
             }
             games.set(data.gameID, match);
