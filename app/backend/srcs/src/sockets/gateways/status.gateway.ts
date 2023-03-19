@@ -9,14 +9,15 @@ import {
 } from "@nestjs/websockets";
 import { UsersService } from "src/users/services/users.service";
 import { UserEntity } from "src/users/entity/user.entity";
-import { GameService, games } from "src/game/services/game.service";
+import { games } from "src/game/services/game.service";
+import { MatchmakingService } from "src/game/services/matchmaking.service";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
 export class StatusGateway {
     constructor(
         private userService: UsersService,
-        private gameService: GameService
+        private matchmakingService: MatchmakingService
     ) {}
 
     @WebSocketServer()
@@ -66,7 +67,7 @@ export class StatusGateway {
             data.username
         );
         if (user) {
-            await this.gameService.userDisconnection(user, true);
+            await this.matchmakingService.userDisconnection(user, true);
             await this.disconnect(user, client.id);
         }
     }
@@ -75,7 +76,7 @@ export class StatusGateway {
     async handleDisconnect(client: Socket) {
         let user: UserEntity = await this.userService.getBySocket(client.id);
         if (user) {
-            await this.gameService.userDisconnection(user, true);
+            await this.matchmakingService.userDisconnection(user, true);
             await this.disconnect(user, client.id);
         }
     }

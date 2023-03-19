@@ -1,12 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
-import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-} from "@nestjs/websockets";
-import { GameInterface } from "src/game/services/game.service";
+import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { GameInterface } from "src/game/interfaces/game.interface";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })

@@ -7,10 +7,17 @@ import { GameController } from "./controllers/game.controller";
 import { GameEntity } from "./entities/game.entity";
 import { GameGateway } from "../sockets/gateways/game.gateway";
 import { UserGateway } from "src/sockets/gateways/user.gateway";
+import { MatchmakingService } from "./services/matchmaking.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([GameEntity, UserEntity])],
-    providers: [GameService, UsersService, GameGateway, UserGateway],
+    providers: [
+        GameService,
+        MatchmakingService,
+        UsersService,
+        GameGateway,
+        UserGateway,
+    ],
     controllers: [GameController],
 })
 export class GameModule {}

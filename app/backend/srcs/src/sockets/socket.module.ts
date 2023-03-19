@@ -10,6 +10,7 @@ import { ChatGateway } from "./gateways/chat.gateway";
 import { GameGateway } from "./gateways/game.gateway";
 import { StatusGateway } from "./gateways/status.gateway";
 import { UserGateway } from "./gateways/user.gateway";
+import { MatchmakingService } from "src/game/services/matchmaking.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([GameEntity, UserEntity, ChatEntity])],
@@ -21,6 +22,7 @@ import { UserGateway } from "./gateways/user.gateway";
         ChatGateway,
         GameGateway,
         StatusGateway,
+        MatchmakingService,
     ],
 })
 export class SocketModule {}
