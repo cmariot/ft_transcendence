@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import { SocketContext } from "../../../contexts/SocketProvider";
 import "../../../styles/test.css";
+import BoardDecoration from "./BoardDecoration";
 
 const TestMouvements = () => {
     const socket = useContext(SocketContext);
@@ -72,43 +73,7 @@ const TestMouvements = () => {
                     {Math.round(game.ball.y)}
                 </p>
             </div>
-
-            <div id="board-decoration">
-                <div id="middle" />
-                <div
-                    className="edges"
-                    style={{
-                        top: `50%`,
-                        border: "0.5px solid #737373",
-                        width: "100%",
-                    }}
-                />
-                <div
-                    className="edges"
-                    style={{
-                        left: `${(game.ballWidth / game.screenWidth) * 100}%`,
-                        border: "0.5px solid #737373",
-                        height: "100%",
-                    }}
-                />
-                <div
-                    className="edges"
-                    style={{
-                        right: `${(game.ballWidth / game.screenWidth) * 100}%`,
-                        border: "0.5px solid #737373",
-                        height: "100%",
-                    }}
-                />
-                <div
-                    className="edges"
-                    style={{
-                        bottom: `0%`,
-                        border: "0.5px solid #737373",
-                        height: "100%",
-                    }}
-                />
-            </div>
-
+            <BoardDecoration />
             <div
                 id="paddle1"
                 className="paddle"
