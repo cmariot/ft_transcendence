@@ -31,8 +31,10 @@ const JoinGame = () => {
     return (
         <div id="join-game">
             <p>Click on the button for matchmaking</p>
-            <button onClick={() => joinGame()}>Play</button>
-            <button onClick={() => cancelGame()}>cancel</button>
+            <div>
+                <button onClick={() => joinGame()}>Play</button>
+                <button onClick={() => cancelGame()}>cancel</button>
+            </div>
         </div>
     );
 };

@@ -348,10 +348,11 @@ export class GameService {
                 }
             }
             if (this.someoneDisconnect(gameID)) {
-                break;
+                return false;
             }
             await this.timeout(16);
         }
+        return true;
     }
 
     async startGame(game: GameEntity) {
@@ -393,9 +394,19 @@ export class GameService {
             player2.socketId[0],
             "Game"
         );
-        await this.game(player1.socketId[0], player2.socketId[0], game.uuid);
-        // svae game results
-
+        let hasAWinner = await this.game(
+            player1.socketId[0],
+            player2.socketId[0],
+            game.uuid
+        );
+        // save game results
+        if (hasAWinner) {
+            this.gameGateway.updateFrontMenu(
+                player1.socketId[0],
+                player2.socketId[0],
+                "Results"
+            );
+        }
         await this.userService.setStatusByID(game.hostID, "online");
         await this.userService.setStatusByID(game.guestID, "online");
         await this.gameRepository.remove(game);
