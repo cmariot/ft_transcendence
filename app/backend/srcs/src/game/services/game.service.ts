@@ -62,11 +62,12 @@ export class GameService {
         match: GameInterface,
         paddlePosition: number
     ): Promise<boolean> {
-        // [ ] face avant paddles
-        // [ ] coins paddles
+        // [x] face avant paddles
+        // [x] coins paddles
         // [ ] faces inferieures / superieures
         // [ ] mouvement paddle rentre dans balle ?
 
+        // hit the paddle front directly
         if (
             match.ballPosition.y <= paddlePosition + match.paddleHeigth / 2 &&
             match.ballPosition.y >= paddlePosition - match.paddleHeigth / 2
@@ -79,6 +80,28 @@ export class GameService {
             } else if (
                 paddle === 2 &&
                 match.ballPosition.x >=
+                    match.screenWidth - match.paddleOffset - match.paddleWidth
+            )
+                return true;
+        }
+        // hit the paddle edges
+        else if (
+            match.ballPosition.y <=
+                paddlePosition +
+                    match.paddleHeigth / 2 +
+                    match.ballHeigth / 2 &&
+            match.ballPosition.y >=
+                paddlePosition - match.paddleHeigth / 2 - match.ballHeigth / 2
+        ) {
+            if (
+                paddle === 1 &&
+                match.ballPosition.x + match.ballWidth / 2 <=
+                    match.paddleOffset + match.paddleWidth
+            ) {
+                return true;
+            } else if (
+                paddle === 2 &&
+                match.ballPosition.x - match.ballWidth / 2 >=
                     match.screenWidth - match.paddleOffset - match.paddleWidth
             )
                 return true;
@@ -144,16 +167,8 @@ export class GameService {
                 match.ballDirection.x,
                 -match.ballDirection.y
             );
-        } else if (
-            (await this.hitPaddle(1, match, match.player1Position)) ||
-            (await this.hitPaddle(2, match, match.player2Position))
-        ) {
-            //match.ballDirection = new Vector(0, 0);
-            match.ballDirection = new Vector(
-                -match.ballDirection.x,
-                match.ballDirection.y
-            );
         }
+
         return match;
     }
 
@@ -177,6 +192,31 @@ export class GameService {
                 (await this.hitPaddle(1, match, match.player1Position)) ||
                 (await this.hitPaddle(2, match, match.player2Position))
             ) {
+                match.ballDirection = new Vector(
+                    -match.ballDirection.x,
+                    match.ballDirection.y
+                );
+                while (
+                    (await this.hitPaddle(1, match, match.player1Position)) ||
+                    (await this.hitPaddle(2, match, match.player2Position))
+                ) {
+                    match.ballPosition = match.ballPosition.add(
+                        match.ballDirection
+                    );
+                    if (
+                        match.ballPosition.x >= match.screenWidth ||
+                        match.ballPosition.x <= 0 ||
+                        match.ballPosition.y >= match.screenHeigth ||
+                        match.ballPosition.y <= 0
+                    ) {
+                        if (match.ballPosition.x <= 0) {
+                            match.player2Score++;
+                        } else if (match.ballPosition.x >= match.screenWidth) {
+                            match.player1Score++;
+                        }
+                        break;
+                    }
+                }
                 break;
             }
         }
