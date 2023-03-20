@@ -401,6 +401,7 @@ export class UsersService {
         return this.blockedList(user.blocked);
     }
 
+    // Save win / lose ratio
     async setScore(winner: UserEntity, loser: UserEntity) {
         winner.score.victory++;
         loser.score.defeat++;
@@ -414,6 +415,7 @@ export class UsersService {
         );
     }
 
+    // Save game history
     async saveGameResult(
         player1: string,
         player2: string,

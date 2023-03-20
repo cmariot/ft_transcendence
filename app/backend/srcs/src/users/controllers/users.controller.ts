@@ -57,6 +57,8 @@ export class UsersController {
             email: completeUser.email,
             twoFactorsAuth: completeUser.twoFactorsAuth,
             firstLog: completeUser.firstLog,
+            ratio: completeUser.score,
+            gameHistory: completeUser.history,
         };
     }
 

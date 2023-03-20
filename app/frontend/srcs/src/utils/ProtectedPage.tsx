@@ -46,6 +46,8 @@ export default function ProtectedPage() {
                     const avatar = "/api/profile/" + username + "/image";
                     const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
                     const firstLog = profileResponse.data.firstLog;
+                    const winRatio = profileResponse.data.ratio;
+                    const gamehistory = profileResponse.data.gameHistory;
                     const friends = friendsResponse.data;
                     const blocked = blockedResponse.data;
 
@@ -113,6 +115,8 @@ export default function ProtectedPage() {
                     user.editUsername(username);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
+                    user.setWinRatio(winRatio);
+                    user.setGamehistory(gamehistory);
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);

@@ -10,6 +10,16 @@ export type UserContextType = {
     isLogged: boolean;
     isFirstLog: boolean;
     isForcedLogout: boolean;
+    winRatio: {
+        victory: number;
+        defeat: number;
+    };
+    gameHistory: {
+        winner: string;
+        loser: string;
+        winner_score: number;
+        loser_score: number;
+    }[];
 };
 
 export const UserContext = createContext({
@@ -47,6 +57,22 @@ export const UserContext = createContext({
     setClickOnLogin: (newValue: boolean) => {},
     clickOnLogout: false,
     setClickOnLogout: (newValue: boolean) => {},
+    winRatio: { victory: 0, defeat: 0 },
+    setWinRatio: (newValue: { victory: number; defeat: number }) => {},
+    gameHistory: new Array<{
+        winner: string;
+        loser: string;
+        winner_score: number;
+        loser_score: number;
+    }>(),
+    setGamehistory: (
+        newValue: {
+            winner: string;
+            loser: string;
+            winner_score: number;
+            loser_score: number;
+        }[]
+    ) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -66,6 +92,21 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const [isForcedLogout, setIsForcedLogout] = useState(false);
     const [clickOnLogin, setClickOnLogin] = useState(false);
     const [clickOnLogout, setClickOnLogout] = useState(false);
+    const [winRatio, setWinRatio] = useState<{
+        victory: number;
+        defeat: number;
+    }>({
+        victory: 0,
+        defeat: 0,
+    });
+    const [gameHistory, setGamehistory] = useState<
+        {
+            winner: string;
+            loser: string;
+            winner_score: number;
+            loser_score: number;
+        }[]
+    >([]);
 
     async function addFriend(friendUsername: string) {
         let friendList = friends;
@@ -203,6 +244,10 @@ const UserProvider = ({ children }: UserProviderProps) => {
         setClickOnLogin,
         clickOnLogout,
         setClickOnLogout,
+        winRatio,
+        setWinRatio,
+        gameHistory,
+        setGamehistory,
     };
 
     return (
