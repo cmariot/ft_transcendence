@@ -113,7 +113,39 @@ export class GameService {
                 return true;
             }
         }
-
+        if (
+            ballY <= paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
+            ballY >= paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
+        ) {
+            let ball = new Vector(ballX, ballY);
+            if (paddle === 1) {
+                let edge_top = new Vector(
+                    paddle1X,
+                    paddleY + match.paddleHeigth / 2
+                );
+                if (ball.subtract(edge_top).length() <= match.ballWidth / 2)
+                    return true;
+                let edge_bottom = new Vector(
+                    paddle1X,
+                    paddleY - match.paddleHeigth / 2
+                );
+                if (ball.subtract(edge_bottom).length() <= match.ballWidth / 2)
+                    return true;
+            } else if (paddle === 2) {
+                let edge_top = new Vector(
+                    paddle2X,
+                    paddleY + match.paddleHeigth / 2
+                );
+                if (ball.subtract(edge_top).length() <= match.ballWidth / 2)
+                    return true;
+                let edge_bottom = new Vector(
+                    paddle2X,
+                    paddleY - match.paddleHeigth / 2
+                );
+                if (ball.subtract(edge_bottom).length() <= match.ballWidth / 2)
+                    return true;
+            }
+        }
         return false;
     }
 
