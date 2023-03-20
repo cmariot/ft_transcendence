@@ -106,53 +106,6 @@ export class GameService {
             )
                 return true;
         }
-        //} else if (
-        //    match.ballPosition.y >=
-        //        paddlePosition -
-        //            match.paddleHeigth / 2 -
-        //            match.ballHeigth / 2 &&
-        //    match.ballPosition.y <=
-        //        paddlePosition + match.paddleHeigth / 2 + match.ballHeigth / 2
-        //) {
-        //    if (paddle === 1) {
-        //        let ballPosition = new Vector(
-        //            match.ballPosition.x - match.ballWidth / 2,
-        //            match.ballPosition.y - match.ballHeigth / 2
-        //        );
-        //        let bottom_corner = new Vector(
-        //            match.paddleOffset + match.paddleWidth,
-        //            match.player1Position - match.paddleHeigth / 2
-        //        );
-        //        let distance = Math.sqrt(
-        //            Math.pow(bottom_corner.x - ballPosition.x, 2) +
-        //                Math.pow(bottom_corner.y - ballPosition.y, 2)
-        //        );
-        //        if (Math.round(distance) < 1) return true;
-        //        let top_corner = new Vector(
-        //            match.paddleOffset + match.paddleWidth,
-        //            match.player1Position + match.paddleHeigth / 2
-        //        );
-        //        distance = Math.sqrt(
-        //            Math.pow(top_corner.x - match.ballPosition.x, 2) +
-        //                Math.pow(top_corner.y - match.ballPosition.y, 2)
-        //        );
-        //        if (Math.round(distance) < 1) return true;
-        //    } else if (paddle === 2) {
-        //        let bottom_corner = new Vector(
-        //            match.screenWidth - match.paddleOffset - match.paddleWidth,
-        //            match.player2Position - match.paddleHeigth / 2
-        //        );
-        //        let distance = bottom_corner.subtract(match.ballPosition);
-        //        if (distance.length() <= match.ballWidth / 2) return true;
-        //        let top_corner = new Vector(
-        //            match.screenWidth - match.paddleOffset - match.paddleWidth,
-        //            match.player2Position + match.paddleHeigth / 2
-        //        );
-        //        distance = top_corner.subtract(match.ballPosition);
-        //        if (distance.length() <= match.ballWidth / 2) return true;
-        //    }
-        //}
-
         return false;
     }
 
@@ -238,7 +191,6 @@ export class GameService {
         }
         const random = Math.floor(Math.random() * 91 - 45);
         match.ballDirection = match.ballDirection.rotateByDegrees(random);
-        //match.ballDirection = new Vector(-1, 0);
         return match;
     }
 
@@ -304,7 +256,7 @@ export class GameService {
     // Set the defaults settings for the game
     createGame(player1: UserEntity, player2: UserEntity): GameInterface {
         const screenHeigth = 900;
-        const screenWidth = 1600;
+        const screenWidth = 900;
         const paddleHeigth = 10;
         const ballSize = 2.5;
 
@@ -319,7 +271,7 @@ export class GameService {
             player2Position: screenHeigth / 2,
             ballPosition: new Vector(screenWidth / 2, screenHeigth / 2),
             ballDirection: new Vector(1, 0),
-            ballSpeed: 10,
+            ballSpeed: 5,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
             paddleHeigth: (screenHeigth / 100) * paddleHeigth,
@@ -338,6 +290,11 @@ export class GameService {
         const player2 = await this.userService.getByID(game.guestID);
         if (!player1 || !player2) {
             throw new UnauthorizedException("User not found");
+        } else if (
+            player1.socketId.length === 0 ||
+            player2.socketId.length === 0
+        ) {
+            throw new UnauthorizedException("Invalid user sockets");
         }
         await this.userService.setStatusByID(player1.uuid, "ingame");
         await this.userService.setStatusByID(player2.uuid, "ingame");
@@ -391,6 +348,6 @@ export class GameService {
     }
 }
 
-// - [ ] Gestion collision paddle dans les coins et faces inf/sup
-// - [ ] Matchmaking a regler + invitation a tester
-// - [ ] Sauvegarder resultats match
+// - [ ] Gestion collision paddle sur les faces inf/sup
+// - [ ] Mouvement paddles, gerer mouvement dans la balle
+// - [ ] Invitation a tester

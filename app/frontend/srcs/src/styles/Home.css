@@ -1,8 +1,11 @@
 #home-main {
-    display: flex;
+    display: grid;
     height: -webkit-fill-available;
     height: -moz-available;
+    width: -webkit-fill-available;
+    width: -moz-available;
     grid-gap: 10px;
+    grid-template-columns: 2fr 1fr;
 }
 
 #game {
@@ -15,4 +18,6 @@
     min-width: 500px;
     border-radius: 15px;
     border: 2px #737373 solid;
+    align-self: center;
+    justify-self: center;
 }
