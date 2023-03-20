@@ -37,8 +37,6 @@ const Profile = () => {
         return null;
     }
 
-    console.log(user.gameHistory);
-
     return (
         <div>
             <main id="profile">

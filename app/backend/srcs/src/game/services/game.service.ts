@@ -62,50 +62,58 @@ export class GameService {
         match: GameInterface,
         paddlePosition: number
     ): Promise<boolean> {
-        // [x] face avant paddles
-        // [x] coins paddles
+        // [ ] face avant paddles
+        // [ ] coins paddles
         // [ ] faces inferieures / superieures
         // [ ] mouvement paddle rentre dans balle ?
 
         // hit the paddle front directly
+
+        const posPaddleYPercentage =
+            (paddlePosition / match.screenHeigth) * 100;
+        const realPaddleYPercentage =
+            posPaddleYPercentage *
+            ((match.screenHeigth - match.paddleHeigth) / match.screenHeigth);
+        const paddleY =
+            match.paddleHeigth / 2 +
+            (match.screenHeigth / 100) * realPaddleYPercentage;
+
+        const posBallYPercentage =
+            (match.ballPosition.y / match.screenHeigth) * 100;
+        const realBallYPercentage =
+            posBallYPercentage *
+            ((match.screenHeigth - match.ballHeigth) / match.screenHeigth);
+        const ballY =
+            match.ballHeigth / 2 +
+            (match.screenHeigth / 100) * realBallYPercentage;
+
+        const posBallXPercentage =
+            (match.ballPosition.x / match.screenWidth) * 100;
+        const realBallXPercentage =
+            posBallXPercentage *
+            ((match.screenWidth - match.ballWidth) / match.screenWidth);
+        const ballX =
+            match.ballWidth / 2 +
+            (match.screenWidth / 100) * realBallXPercentage;
+
+        const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
+        const paddle2X =
+            match.screenWidth - match.paddleOffset - match.paddleWidth;
+
         if (
-            match.ballPosition.y <= paddlePosition + match.paddleHeigth / 2 &&
-            match.ballPosition.y >= paddlePosition - match.paddleHeigth / 2
+            ballY <= paddleY + match.paddleHeigth / 2 &&
+            ballY >= paddleY - match.paddleHeigth / 2
         ) {
-            if (
-                paddle === 1 &&
-                match.ballPosition.x <= match.paddleOffset + match.paddleWidth
-            ) {
+            if (paddle === 1 && ballX <= paddle1X + match.ballWidth * 0.5) {
                 return true;
             } else if (
                 paddle === 2 &&
-                match.ballPosition.x >=
-                    match.screenWidth - match.paddleOffset - match.paddleWidth
-            )
-                return true;
-        }
-        // hit the paddle edges
-        else if (
-            match.ballPosition.y <=
-                paddlePosition +
-                    match.paddleHeigth / 2 +
-                    match.ballHeigth / 2 &&
-            match.ballPosition.y >=
-                paddlePosition - match.paddleHeigth / 2 - match.ballHeigth / 2
-        ) {
-            if (
-                paddle === 1 &&
-                match.ballPosition.x + match.ballWidth / 2 <=
-                    match.paddleOffset + match.paddleWidth
+                ballX >= paddle2X - match.ballWidth * 0.5
             ) {
                 return true;
-            } else if (
-                paddle === 2 &&
-                match.ballPosition.x - match.ballWidth / 2 >=
-                    match.screenWidth - match.paddleOffset - match.paddleWidth
-            )
-                return true;
+            }
         }
+
         return false;
     }
 
@@ -121,26 +129,12 @@ export class GameService {
                 -match.ballDirection.y
             );
         }
-
         return match;
     }
 
     async moveBall(match: GameInterface): Promise<GameInterface> {
         for (let i = 0; i < match.ballSpeed; i++) {
             match.ballPosition = match.ballPosition.add(match.ballDirection);
-            if (
-                match.ballPosition.x >= match.screenWidth ||
-                match.ballPosition.x <= 0 ||
-                match.ballPosition.y >= match.screenHeigth ||
-                match.ballPosition.y <= 0
-            ) {
-                if (match.ballPosition.x <= 0) {
-                    match.player2Score++;
-                } else if (match.ballPosition.x >= match.screenWidth) {
-                    match.player1Score++;
-                }
-                break;
-            }
             if (
                 (await this.hitPaddle(1, match, match.player1Position)) ||
                 (await this.hitPaddle(2, match, match.player2Position))
@@ -169,6 +163,18 @@ export class GameService {
                         }
                         break;
                     }
+                }
+                break;
+            } else if (
+                match.ballPosition.x >= match.screenWidth ||
+                match.ballPosition.x <= 0 ||
+                match.ballPosition.y >= match.screenHeigth ||
+                match.ballPosition.y <= 0
+            ) {
+                if (match.ballPosition.x <= 0) {
+                    match.player2Score++;
+                } else if (match.ballPosition.x >= match.screenWidth) {
+                    match.player1Score++;
                 }
                 break;
             }
@@ -255,8 +261,8 @@ export class GameService {
 
     // Set the defaults settings for the game
     createGame(player1: UserEntity, player2: UserEntity): GameInterface {
-        const screenHeigth = 900;
-        const screenWidth = 900;
+        const screenHeigth = 500;
+        const screenWidth = 500;
         const paddleHeigth = 10;
         const ballSize = 2.5;
 
@@ -271,7 +277,7 @@ export class GameService {
             player2Position: screenHeigth / 2,
             ballPosition: new Vector(screenWidth / 2, screenHeigth / 2),
             ballDirection: new Vector(1, 0),
-            ballSpeed: 5,
+            ballSpeed: 3,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
             paddleHeigth: (screenHeigth / 100) * paddleHeigth,
@@ -324,8 +330,8 @@ export class GameService {
         if (gameResults) {
             // save game results
             await this.userService.saveGameResult(
-                match.player1Username,
-                match.player2Username,
+                player1.uuid,
+                player2.uuid,
                 match.player1Score,
                 match.player2Score
             );

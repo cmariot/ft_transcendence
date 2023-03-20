@@ -99,11 +99,11 @@ export class StatusGateway {
         if (match) {
             if (client.id === match.player1Socket) {
                 if (match.player1Position > 0) {
-                    match.player1Position -= match.screenHeigth / 10;
+                    match.player1Position -= match.paddleHeigth;
                 }
             } else if (client.id === match.player2Socket) {
                 if (match.player2Position > 0) {
-                    match.player2Position -= match.screenHeigth / 10;
+                    match.player2Position -= match.paddleHeigth;
                 }
             }
             games.set(data.gameID, match);
@@ -120,11 +120,11 @@ export class StatusGateway {
         if (match) {
             if (client.id === match.player1Socket) {
                 if (match.player1Position < match.screenHeigth) {
-                    match.player1Position += match.screenHeigth / 10;
+                    match.player1Position += match.paddleHeigth;
                 }
             } else if (client.id === match.player2Socket) {
                 if (match.player2Position < match.screenHeigth) {
-                    match.player2Position += match.screenHeigth / 10;
+                    match.player2Position += match.paddleHeigth;
                 }
             }
             games.set(data.gameID, match);

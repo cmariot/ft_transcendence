@@ -9,7 +9,6 @@ const TestMouvements = () => {
     const game = useContext(GameContext);
 
     function handleKeyPress(event: any) {
-        console.log(game);
         if (event.key === "ArrowUp") {
             socket.emit("up", { gameID: game.gameID });
         } else if (event.key === "ArrowDown") {
