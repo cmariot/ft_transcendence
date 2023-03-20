@@ -420,34 +420,34 @@ export class UsersService {
         player1Score: number,
         player2Score: number
     ) {
-        let user1 = await this.getByUsername(player1);
-        let user2 = await this.getByUsername(player2);
+        let user1 = await this.getByID(player1);
+        let user2 = await this.getByID(player2);
         if (user1 && user2) {
             if (player1Score > player2Score) {
                 this.setScore(user1, user2);
                 user1.history.push({
-                    winner: player1,
-                    loser: player2,
+                    winner: user1.uuid,
+                    loser: user2.uuid,
                     winner_score: player1Score,
                     loser_score: player2Score,
                 });
                 user2.history.push({
-                    winner: player1,
-                    loser: player2,
+                    winner: user1.uuid,
+                    loser: user2.uuid,
                     winner_score: player1Score,
                     loser_score: player2Score,
                 });
             } else if (player2Score > player1Score) {
                 this.setScore(user2, user1);
                 user1.history.push({
-                    winner: player2,
-                    loser: player1,
+                    winner: user2.uuid,
+                    loser: user1.uuid,
                     winner_score: player2Score,
                     loser_score: player1Score,
                 });
                 user2.history.push({
-                    winner: player2,
-                    loser: player1,
+                    winner: user2.uuid,
+                    loser: user1.uuid,
                     winner_score: player2Score,
                     loser_score: player1Score,
                 });
