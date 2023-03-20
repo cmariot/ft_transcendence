@@ -62,12 +62,14 @@ export class GameService {
         match: GameInterface,
         paddlePosition: number
     ): Promise<boolean> {
-        // [x] face avant paddles
+        // [ ] face avant paddles
+        // [ ] coins paddles
+        // [ ] faces inferieures / superieures
+        // [ ] mouvement paddle rentre dans balle ?
+
         if (
-            match.ballPosition.y >=
-                paddlePosition - match.paddleHeigth / 2 - match.ballHeigth &&
-            match.ballPosition.y <=
-                paddlePosition + match.paddleHeigth / 2 + match.ballHeigth
+            match.ballPosition.y <= paddlePosition + match.paddleHeigth / 2 &&
+            match.ballPosition.y >= paddlePosition - match.paddleHeigth / 2
         ) {
             if (
                 paddle === 1 &&
@@ -78,13 +80,56 @@ export class GameService {
                 paddle === 2 &&
                 match.ballPosition.x >=
                     match.screenWidth - match.paddleOffset - match.paddleWidth
-            ) {
+            )
                 return true;
-            }
         }
-        // [ ] coins paddles
-        // [ ] faces inferieures / superieures
-        // [ ] mouvement paddle rentre dans balle ?
+        //} else if (
+        //    match.ballPosition.y >=
+        //        paddlePosition -
+        //            match.paddleHeigth / 2 -
+        //            match.ballHeigth / 2 &&
+        //    match.ballPosition.y <=
+        //        paddlePosition + match.paddleHeigth / 2 + match.ballHeigth / 2
+        //) {
+        //    if (paddle === 1) {
+        //        let ballPosition = new Vector(
+        //            match.ballPosition.x - match.ballWidth / 2,
+        //            match.ballPosition.y - match.ballHeigth / 2
+        //        );
+        //        let bottom_corner = new Vector(
+        //            match.paddleOffset + match.paddleWidth,
+        //            match.player1Position - match.paddleHeigth / 2
+        //        );
+        //        let distance = Math.sqrt(
+        //            Math.pow(bottom_corner.x - ballPosition.x, 2) +
+        //                Math.pow(bottom_corner.y - ballPosition.y, 2)
+        //        );
+        //        if (Math.round(distance) < 1) return true;
+        //        let top_corner = new Vector(
+        //            match.paddleOffset + match.paddleWidth,
+        //            match.player1Position + match.paddleHeigth / 2
+        //        );
+        //        distance = Math.sqrt(
+        //            Math.pow(top_corner.x - match.ballPosition.x, 2) +
+        //                Math.pow(top_corner.y - match.ballPosition.y, 2)
+        //        );
+        //        if (Math.round(distance) < 1) return true;
+        //    } else if (paddle === 2) {
+        //        let bottom_corner = new Vector(
+        //            match.screenWidth - match.paddleOffset - match.paddleWidth,
+        //            match.player2Position - match.paddleHeigth / 2
+        //        );
+        //        let distance = bottom_corner.subtract(match.ballPosition);
+        //        if (distance.length() <= match.ballWidth / 2) return true;
+        //        let top_corner = new Vector(
+        //            match.screenWidth - match.paddleOffset - match.paddleWidth,
+        //            match.player2Position + match.paddleHeigth / 2
+        //        );
+        //        distance = top_corner.subtract(match.ballPosition);
+        //        if (distance.length() <= match.ballWidth / 2) return true;
+        //    }
+        //}
+
         return false;
     }
 
@@ -128,6 +173,12 @@ export class GameService {
                 }
                 break;
             }
+            if (
+                (await this.hitPaddle(1, match, match.player1Position)) ||
+                (await this.hitPaddle(2, match, match.player2Position))
+            ) {
+                break;
+            }
         }
         return match;
     }
@@ -147,9 +198,11 @@ export class GameService {
         }
         const random = Math.floor(Math.random() * 91 - 45);
         match.ballDirection = match.ballDirection.rotateByDegrees(random);
+        //match.ballDirection = new Vector(-1, 0);
         return match;
     }
 
+    // Return true if the score changes
     someoneGoal(
         match: GameInterface,
         previousScorePlayer1: number,
@@ -161,6 +214,7 @@ export class GameService {
         );
     }
 
+    // Return true if someone disconnects during the game
     someoneDisconnect(gameID: string) {
         let match = games.get(gameID);
         if (!match) {
@@ -176,6 +230,7 @@ export class GameService {
         return match.disconnection;
     }
 
+    // Game loop
     async game(player1Socket: string, player2Socket: string, gameID: string) {
         let match = games.get(gameID);
         if (!match) {
@@ -206,6 +261,7 @@ export class GameService {
         return true;
     }
 
+    // Set the defaults settings for the game
     createGame(player1: UserEntity, player2: UserEntity): GameInterface {
         const screenHeigth = 900;
         const screenWidth = 1600;
@@ -236,6 +292,7 @@ export class GameService {
         return match;
     }
 
+    // Send info to the frontend via socket and start a game
     async startGame(game: GameEntity) {
         const player1 = await this.userService.getByID(game.hostID);
         const player2 = await this.userService.getByID(game.guestID);
