@@ -446,8 +446,8 @@ export class UsersService {
                     loser_score: player1Score,
                 });
                 user2.history.push({
-                    winner: player1,
-                    loser: player2,
+                    winner: player2,
+                    loser: player1,
                     winner_score: player2Score,
                     loser_score: player1Score,
                 });
