@@ -256,7 +256,7 @@ export class GameService {
     // Set the defaults settings for the game
     createGame(player1: UserEntity, player2: UserEntity): GameInterface {
         const screenHeigth = 900;
-        const screenWidth = 1600;
+        const screenWidth = 900;
         const paddleHeigth = 10;
         const ballSize = 2.5;
 
@@ -271,7 +271,7 @@ export class GameService {
             player2Position: screenHeigth / 2,
             ballPosition: new Vector(screenWidth / 2, screenHeigth / 2),
             ballDirection: new Vector(1, 0),
-            ballSpeed: 10,
+            ballSpeed: 5,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
             paddleHeigth: (screenHeigth / 100) * paddleHeigth,
@@ -290,6 +290,11 @@ export class GameService {
         const player2 = await this.userService.getByID(game.guestID);
         if (!player1 || !player2) {
             throw new UnauthorizedException("User not found");
+        } else if (
+            player1.socketId.length === 0 ||
+            player2.socketId.length === 0
+        ) {
+            throw new UnauthorizedException("Invalid user sockets");
         }
         await this.userService.setStatusByID(player1.uuid, "ingame");
         await this.userService.setStatusByID(player2.uuid, "ingame");
@@ -324,8 +329,8 @@ export class GameService {
                 "Results"
             );
         }
-        await this.userService.setStatusByID(game.hostID, "online");
-        await this.userService.setStatusByID(game.guestID, "online");
+        await this.userService.setStatusByID(player1.uuid, "online");
+        await this.userService.setStatusByID(player2.uuid, "online");
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }
@@ -333,5 +338,4 @@ export class GameService {
 
 // - [ ] Gestion collision paddle sur les faces inf/sup
 // - [ ] Mouvement paddles, gerer mouvement dans la balle
-// - [ ] Matchmaking a regler + invitation a tester
-// - [ ] Sauvegarder resultats match
+// - [ ] Invitation a tester
