@@ -73,4 +73,15 @@ export class UserEntity {
 
     @Column("text", { array: true, default: [] })
     blocked: string[];
+
+    @Column("json", { default: { victory: 0, defeat: 0 } })
+    score: { victory: number; defeat: number };
+
+    @Column("text", { array: true, default: [] })
+    history: {
+        winner: string;
+        loser: string;
+        winner_score: number;
+        loser_score: number;
+    }[];
 }

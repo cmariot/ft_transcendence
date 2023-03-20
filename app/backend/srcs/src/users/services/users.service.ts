@@ -130,6 +130,19 @@ export class UsersService {
         return null;
     }
 
+    async setStatusIfNotOffline(uuid: string, status: string) {
+        let user: UserEntity = await this.getByID(uuid);
+        if (user && user.status !== "offline") {
+            await this.userRepository.update(
+                { uuid: uuid },
+                { status: status }
+            );
+            this.userGateway.sendStatus(user.username, status);
+            return status;
+        }
+        return null;
+    }
+
     async setStatus(socket: string, status: string) {
         let user: UserEntity = await this.getBySocket(socket);
         if (user) {
@@ -386,5 +399,68 @@ export class UsersService {
             { blocked: user.blocked }
         );
         return this.blockedList(user.blocked);
+    }
+
+    async setScore(winner: UserEntity, loser: UserEntity) {
+        winner.score.victory++;
+        loser.score.defeat++;
+        this.userRepository.update(
+            { uuid: winner.uuid },
+            { score: winner.score }
+        );
+        this.userRepository.update(
+            { uuid: loser.uuid },
+            { score: loser.score }
+        );
+    }
+
+    async saveGameResult(
+        player1: string,
+        player2: string,
+        player1Score: number,
+        player2Score: number
+    ) {
+        let user1 = await this.getByUsername(player1);
+        let user2 = await this.getByUsername(player2);
+        if (user1 && user2) {
+            if (player1Score > player2Score) {
+                this.setScore(user1, user2);
+                user1.history.push({
+                    winner: player1,
+                    loser: player2,
+                    winner_score: player1Score,
+                    loser_score: player2Score,
+                });
+                user2.history.push({
+                    winner: player1,
+                    loser: player2,
+                    winner_score: player1Score,
+                    loser_score: player2Score,
+                });
+            } else if (player2Score > player1Score) {
+                this.setScore(user2, user1);
+                user1.history.push({
+                    winner: player2,
+                    loser: player1,
+                    winner_score: player2Score,
+                    loser_score: player1Score,
+                });
+                user2.history.push({
+                    winner: player1,
+                    loser: player2,
+                    winner_score: player2Score,
+                    loser_score: player1Score,
+                });
+            }
+            this.userRepository.update(
+                { uuid: user1.uuid },
+                { history: user1.history }
+            );
+            this.userRepository.update(
+                { uuid: user2.uuid },
+                { history: user2.history }
+            );
+        }
+        return;
     }
 }

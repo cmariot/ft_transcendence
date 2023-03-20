@@ -366,14 +366,26 @@ export class GameService {
         );
         if (gameResults) {
             // save game results
+            await this.userService.saveGameResult(
+                match.player1Username,
+                match.player2Username,
+                match.player1Score,
+                match.player2Score
+            );
             this.gameGateway.updateFrontMenu(
                 player1.socketId[0],
                 player2.socketId[0],
                 "Results"
             );
+            await this.userService.setStatusByID(game.hostID, "online");
+            await this.userService.setStatusByID(game.guestID, "online");
+        } else {
+            await this.userService.setStatusIfNotOffline(game.hostID, "online");
+            await this.userService.setStatusIfNotOffline(
+                game.guestID,
+                "online"
+            );
         }
-        await this.userService.setStatusByID(game.hostID, "online");
-        await this.userService.setStatusByID(game.guestID, "online");
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }
