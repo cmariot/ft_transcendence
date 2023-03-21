@@ -465,4 +465,29 @@ export class UsersService {
         }
         return;
     }
+
+    // return the match history and convert uuid -> username
+    async getGameHistory(user: UserEntity) {
+        let history = user.history;
+        for (let i = 0; i < history.length; i++) {
+            if (history[i].winner === user.uuid) {
+                const loser = await this.getByID(history[i].loser);
+                if (loser) {
+                    history[i].loser = loser.username;
+                } else {
+                    history[i].loser = "unknown";
+                }
+                history[i].winner = user.username;
+            } else {
+                const winner = await this.getByID(history[i].winner);
+                if (winner) {
+                    history[i].winner = winner.username;
+                } else {
+                    history[i].winner = "unknown";
+                }
+                history[i].loser = user.username;
+            }
+        }
+        return history;
+    }
 }

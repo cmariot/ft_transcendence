@@ -17,23 +17,11 @@ const JoinGame = () => {
         }
     }
 
-    async function cancelGame() {
-        try {
-            const cancelResponse = await axios.post("/api/game/queue/cancel");
-            if (cancelResponse.status === 201) {
-                game.setMenu("JoinGame");
-            }
-        } catch (error: any) {
-            alert(error.response.data.message);
-        }
-    }
-
     return (
         <div id="join-game">
             <p>Click on the button for matchmaking</p>
             <div>
-                <button onClick={() => joinGame()}>Play</button>
-                <button onClick={() => cancelGame()}>cancel</button>
+                <button onClick={() => joinGame()}>play</button>
             </div>
         </div>
     );

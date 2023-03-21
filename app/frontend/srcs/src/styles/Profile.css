@@ -14,3 +14,36 @@
 #profile {
     width: 500px;
 }
+
+li.match-results:nth-child(2) {
+    list-style-type: none;
+}
+
+.match-results {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    background-color: #a3a3a3;
+    color: #1e1e1e;
+    border: 3px #737373 solid;
+    border-radius: 15px;
+    justify-content: center;
+    align-content: center;
+}
+
+#games-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.vs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

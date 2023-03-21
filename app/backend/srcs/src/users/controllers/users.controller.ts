@@ -52,13 +52,14 @@ export class UsersController {
         if (!completeUser) {
             throw new UnauthorizedException("User not found");
         }
+        const history = await this.userService.getGameHistory(completeUser);
         return {
             username: completeUser.username,
             email: completeUser.email,
             twoFactorsAuth: completeUser.twoFactorsAuth,
             firstLog: completeUser.firstLog,
             ratio: completeUser.score,
-            gameHistory: completeUser.history,
+            gameHistory: history,
         };
     }
 

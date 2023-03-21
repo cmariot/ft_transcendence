@@ -73,16 +73,21 @@ const Profile = () => {
                 <div>
                     {user.gameHistory.length && (
                         <ul id="games-list">
-                            <h2>Games list</h2>
+                            <h2>Match history</h2>
                             {user.gameHistory.map(
                                 (game: any, index: number) => (
-                                    <li className="friend" key={index}>
-                                        <p>Winner : {game.winner}</p>
-                                        <p>Loser : {game.loser}</p>
-                                        <p>
-                                            Score : {game.winner_score} vs{" "}
-                                            {game.loser_score}
-                                        </p>
+                                    <li className="match-results" key={index}>
+                                        <div className="winner">
+                                            <p>{game.winner}</p>
+                                            <p>{game.winner_score}</p>
+                                        </div>
+                                        <div className="vs">
+                                            <p>vs</p>
+                                        </div>
+                                        <div className="winner">
+                                            <p>{game.loser}</p>
+                                            <p>{game.loser_score}</p>
+                                        </div>
                                     </li>
                                 )
                             )}
