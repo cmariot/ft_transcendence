@@ -147,20 +147,6 @@ export class GameService {
         }
         return false;
     }
-    async computeBallDirection(match: GameInterface) {
-        if (match.ballPosition.y <= 0) {
-            match.ballDirection = new Vector(
-                match.ballDirection.x,
-                -match.ballDirection.y
-            );
-        } else if (match.ballPosition.y >= match.screenHeigth) {
-            match.ballDirection = new Vector(
-                match.ballDirection.x,
-                -match.ballDirection.y
-            );
-        }
-        return match;
-    }
 
     async hitHorizontal(
         paddle: number,
@@ -201,6 +187,21 @@ export class GameService {
             }
         }
         return false;
+    }
+
+    async computeBallDirection(match: GameInterface) {
+        if (match.ballPosition.y <= 0) {
+            match.ballDirection = new Vector(
+                match.ballDirection.x,
+                -match.ballDirection.y
+            );
+        } else if (match.ballPosition.y >= match.screenHeigth) {
+            match.ballDirection = new Vector(
+                match.ballDirection.x,
+                -match.ballDirection.y
+            );
+        }
+        return match;
     }
 
     async moveBall(match: GameInterface): Promise<GameInterface> {
@@ -265,7 +266,6 @@ export class GameService {
                         -match.ballDirection.x,
                         match.ballDirection.y
                     );
-
                     while (
                         (await this.hitPaddleCorner(
                             1,
@@ -460,6 +460,11 @@ export class GameService {
                 player2.uuid,
                 match.player1Score,
                 match.player2Score
+            );
+            this.gameGateway.emitGameResults(
+                player1.socketId[0],
+                player2.socketId[0],
+                match
             );
             this.gameGateway.updateFrontMenu(
                 player1.socketId[0],

@@ -9,30 +9,30 @@ const Profile = () => {
 
     function winPercentage() {
         if (user.winRatio.victory + user.winRatio.defeat > 0) {
-            return (
-                "(" +
-                (
+            let scale = Math.pow(10, 1);
+            let percent =
+                Math.round(
                     (user.winRatio.victory /
                         (user.winRatio.victory + user.winRatio.defeat)) *
-                    100
-                ).toString() +
-                "%)"
-            );
+                        100 *
+                        scale
+                ) / scale;
+            return "(" + percent.toString() + "%)";
         }
         return null;
     }
 
     function losePercentage() {
         if (user.winRatio.victory + user.winRatio.defeat > 0) {
-            return (
-                "(" +
-                (
-                    (user.winRatio.victory /
+            let scale = Math.pow(10, 1);
+            let percent =
+                Math.round(
+                    (user.winRatio.defeat /
                         (user.winRatio.victory + user.winRatio.defeat)) *
-                    100
-                ).toString() +
-                "%)"
-            );
+                        100 *
+                        scale
+                ) / scale;
+            return "(" + percent.toString() + "%)";
         }
         return null;
     }
@@ -57,7 +57,7 @@ const Profile = () => {
                     edit
                 </button>
             </main>
-            <div id="profile">
+            <div id="stats">
                 <div>
                     <p>
                         Game played :{" "}

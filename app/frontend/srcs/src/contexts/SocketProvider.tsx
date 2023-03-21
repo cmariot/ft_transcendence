@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect } from "react";
 import { Socket, io } from "socket.io-client";
 import { UserContext } from "./UserProvider";
 import axios from "axios";
-import { ChatContext } from "./ChatProvider";
 
 export type SocketContextType = Socket;
 
@@ -13,7 +12,6 @@ export const SocketContext = createContext(socket);
 type SocketProviderProps = { children: JSX.Element | JSX.Element[] };
 const SocketProvider = ({ children }: SocketProviderProps) => {
     const user = useContext(UserContext);
-    const chat = useContext(ChatContext);
 
     useEffect(() => {
         async function updateFriendAvatar(data: { username: string }) {

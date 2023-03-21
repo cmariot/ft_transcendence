@@ -45,6 +45,33 @@ export class GameGateway {
         this.server.to(room).emit("game.name", ID);
     }
 
+    emitGameResults(
+        player1Socket: string,
+        player2Socket: string,
+        match: GameInterface
+    ) {
+        let room = [player1Socket, player2Socket];
+        let p1Winner = match.player1Score > match.player2Score ? true : false;
+        let data: {};
+        if (p1Winner) {
+            data = {
+                winner: match.player1Username,
+                loser: match.player2Username,
+                winner_score: match.player1Score,
+                loser_score: match.player2Score,
+            };
+        } else {
+            data = {
+                winner: match.player2Username,
+                loser: match.player1Username,
+                winner_score: match.player2Score,
+                loser_score: match.player1Score,
+            };
+        }
+
+        this.server.to(room).emit("game.results", data);
+    }
+
     async sendCancel(socketId: string, status: string) {
         //this.server.to(socketId).emit("gameStatus", {
         //    status: "Cancel",
