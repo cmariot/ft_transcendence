@@ -184,16 +184,16 @@ export class GameService {
 
     async computeIfTouch(match: GameInterface) {
         if (
-            (await this.hitHorizontal(1, match, match.player1Position)) ||
-            (await this.hitHorizontal(2, match, match.player2Position))
+            (await this.hitPaddle(1, match, match.player1Position)) ||
+            (await this.hitPaddle(2, match, match.player2Position))
         ) {
             match.ballDirection = new Vector(
-                match.ballDirection.x,
-                -match.ballDirection.y
+                -match.ballDirection.x,
+                match.ballDirection.y
             );
             while (
-                (await this.hitHorizontal(1, match, match.player1Position)) ||
-                (await this.hitHorizontal(2, match, match.player2Position))
+                (await this.hitPaddle(1, match, match.player1Position)) ||
+                (await this.hitPaddle(2, match, match.player2Position))
             ) {
                 match.ballPosition = match.ballPosition.add(
                     match.ballDirection
@@ -214,16 +214,16 @@ export class GameService {
             }
             return { match: match, break: true };
         } else if (
-            (await this.hitPaddle(1, match, match.player1Position)) ||
-            (await this.hitPaddle(2, match, match.player2Position))
+            (await this.hitHorizontal(1, match, match.player1Position)) ||
+            (await this.hitHorizontal(2, match, match.player2Position))
         ) {
             match.ballDirection = new Vector(
-                -match.ballDirection.x,
-                match.ballDirection.y
+                match.ballDirection.x,
+                -match.ballDirection.y
             );
             while (
-                (await this.hitPaddle(1, match, match.player1Position)) ||
-                (await this.hitPaddle(2, match, match.player2Position))
+                (await this.hitHorizontal(1, match, match.player1Position)) ||
+                (await this.hitHorizontal(2, match, match.player2Position))
             ) {
                 match.ballPosition = match.ballPosition.add(
                     match.ballDirection
