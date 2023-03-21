@@ -440,7 +440,7 @@ export class GameService {
         );
         await this.gameGateway.sendPos(
             player1.socketId[0],
-            player1.socketId[0],
+            player2.socketId[0],
             match
         );
         await this.countDown(player1.socketId[0], player2.socketId[0]);
@@ -471,12 +471,15 @@ export class GameService {
                 player2.socketId[0],
                 "Results"
             );
-            await this.userService.setStatusByID(game.hostID, "online");
-            await this.userService.setStatusByID(game.guestID, "online");
+            await this.userService.setStatusByID(player1.uuid, "online");
+            await this.userService.setStatusByID(player2.uuid, "online");
         } else {
-            await this.userService.setStatusIfNotOffline(game.hostID, "online");
             await this.userService.setStatusIfNotOffline(
-                game.guestID,
+                player1.uuid,
+                "online"
+            );
+            await this.userService.setStatusIfNotOffline(
+                player2.uuid,
                 "online"
             );
         }

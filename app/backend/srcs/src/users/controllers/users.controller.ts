@@ -192,4 +192,18 @@ export class UsersController {
     async unBlock(@Body() Username: UsernameDto, @Req() req) {
         return await this.userService.unBlock(req.user.uuid, Username.username);
     }
+
+    @Post("game")
+    @UseGuards(isLogged)
+    async getGameHistory(@Body() username: UsernameDto) {
+        const user = await this.userService.getByUsername(username.username);
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
+        const history = await this.userService.getGameHistory(user);
+        return {
+            winRatio: user.score,
+            gameHistory: history,
+        };
+    }
 }

@@ -20,6 +20,21 @@ const UserProfile = () => {
     const [image, setImage] = useState("");
     const [friend, setFriend] = useState(false);
     const [blocked, setBlocked] = useState(false);
+    const [winRatio, setWinRatio] = useState<{
+        victory: number;
+        defeat: number;
+    }>({
+        victory: 0,
+        defeat: 0,
+    });
+    const [gameHistory, setGamehistory] = useState<
+        {
+            winner: string;
+            loser: string;
+            winner_score: number;
+            loser_score: number;
+        }[]
+    >([]);
 
     let user = useContext(UserContext);
     let chat = useContext(ChatContext);
@@ -61,6 +76,15 @@ const UserProfile = () => {
                     }
                 } else {
                     setFound(false);
+                }
+
+                const gameHistoryResponse = await axios.post(
+                    "/api/profile/game",
+                    { username: username }
+                );
+                if (gameHistoryResponse.status === 201) {
+                    setGamehistory(gameHistoryResponse.data.gameHistory);
+                    setWinRatio(gameHistoryResponse.data.winRatio);
                 }
             } catch (error) {
                 console.log(error);
@@ -119,6 +143,34 @@ const UserProfile = () => {
             socket.off("user.update.username", updateUsername);
         };
     }, [user, socket, username, navigate]);
+
+    function winPercentage() {
+        if (winRatio.victory + winRatio.defeat > 0) {
+            let scale = Math.pow(10, 1);
+            let percent =
+                Math.round(
+                    (winRatio.victory / (winRatio.victory + winRatio.defeat)) *
+                        100 *
+                        scale
+                ) / scale;
+            return "(" + percent.toString() + "%)";
+        }
+        return null;
+    }
+
+    function losePercentage() {
+        if (winRatio.victory + winRatio.defeat > 0) {
+            let scale = Math.pow(10, 1);
+            let percent =
+                Math.round(
+                    (winRatio.defeat / (winRatio.victory + winRatio.defeat)) *
+                        100 *
+                        scale
+                ) / scale;
+            return "(" + percent.toString() + "%)";
+        }
+        return null;
+    }
 
     function displayProfileOrError() {
         if (found) {
@@ -205,6 +257,47 @@ const UserProfile = () => {
                             </button>
                         )}
                         <button onClick={() => goToPrevious()}>return</button>
+                    </div>
+                    <div id="stats">
+                        <div>
+                            <p>
+                                Game played :{" "}
+                                {winRatio.defeat + winRatio.victory}
+                            </p>
+                            <p>
+                                Game win : {winRatio.victory} {winPercentage()}
+                            </p>
+                            <p>
+                                Game lose : {winRatio.defeat} {losePercentage()}
+                            </p>
+                        </div>
+                        <div>
+                            {gameHistory.length && (
+                                <ul id="games-list">
+                                    <h2>Match history</h2>
+                                    {gameHistory.map(
+                                        (game: any, index: number) => (
+                                            <li
+                                                className="match-results"
+                                                key={index}
+                                            >
+                                                <div className="winner">
+                                                    <p>{game.winner}</p>
+                                                    <p>{game.winner_score}</p>
+                                                </div>
+                                                <div className="vs">
+                                                    <p>vs</p>
+                                                </div>
+                                                <div className="winner">
+                                                    <p>{game.loser}</p>
+                                                    <p>{game.loser_score}</p>
+                                                </div>
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            )}
+                        </div>
                     </div>
                 </>
             );
