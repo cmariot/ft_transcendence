@@ -9,7 +9,6 @@
     height: inherit;
     justify-content: flex-start;
     overflow-y: scroll;
-    max-height: 400px;
     background-color: #3a3a3a;
     padding-inline: 5px;
 }
@@ -230,6 +229,7 @@
     justify-self: center;
     height: 100%;
     width: 100%;
+    max-width: 500px;
 }
 
 .chat-user-message-options {

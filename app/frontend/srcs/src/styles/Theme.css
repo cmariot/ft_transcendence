@@ -383,6 +383,14 @@ textarea {
     border-block: 0.5px #737373 solid;
 }
 
-#home-main {
-    margin: 10px;
+.chat-header {
+    margin: 2%;
+}
+
+.chat-footer {
+    margin: 2%;
+}
+
+.chat-section {
+    padding-block: 2%;
 }

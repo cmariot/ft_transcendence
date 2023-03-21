@@ -1,23 +1,21 @@
 #home-main {
-    display: grid;
-    height: -webkit-fill-available;
-    height: -moz-available;
-    width: -webkit-fill-available;
-    width: -moz-available;
-    grid-gap: 10px;
-    grid-template-columns: 2fr 1fr;
+    display: flex;
+    height: 100%;
+    gap: 2vw;
+    justify-content: center;
+    align-items: center;
+    margin-block: 3vh;
+    margin-inline: 2vw;
+    flex-wrap: wrap;
+    overflow-y: scroll;
 }
 
 #game {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 500px;
-    border: 1px black solid;
-    width: 500px;
-    min-width: 500px;
+    min-height: 100%;
+    aspect-ratio: 1 / 1;
     border-radius: 15px;
     border: 2px #737373 solid;
-    align-self: center;
-    justify-self: center;
 }

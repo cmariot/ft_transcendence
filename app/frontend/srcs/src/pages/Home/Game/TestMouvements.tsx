@@ -10,8 +10,10 @@ const TestMouvements = () => {
 
     function handleKeyPress(event: any) {
         if (event.key === "ArrowUp") {
+            event.preventDefault();
             socket.emit("up", { gameID: game.gameID });
         } else if (event.key === "ArrowDown") {
+            event.preventDefault();
             socket.emit("down", { gameID: game.gameID });
         }
     }
