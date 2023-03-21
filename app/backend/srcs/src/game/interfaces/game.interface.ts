@@ -20,4 +20,5 @@ export interface GameInterface {
     ballWidth: number;
     ballHeigth: number;
     disconnection: boolean;
+    lose: boolean;
 }

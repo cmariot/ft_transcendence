@@ -35,40 +35,6 @@ export class GameService {
         }
     }
 
-    async hitHorizontal(
-        paddle: number,
-        match: GameInterface,
-        paddlePosition: number
-    ): Promise<boolean> {
-        const paddleY = this.getPaddleY(paddlePosition, match);
-        const ballY = this.getBallY(match);
-        const ballX = this.getBallX(match);
-        const paddle1X = 0 + match.paddleOffset + match.paddleWidth / 2;
-        const paddle2X =
-            match.screenWidth - match.paddleOffset - match.paddleWidth / 2;
-        if (
-            ballY <= paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
-            ballY >= paddleY - match.paddleHeigth / 2 + match.ballHeigth / 2
-        ) {
-            if (
-                paddle === 1 &&
-                ballX - match.ballWidth / 2 <=
-                    paddle1X + match.paddleWidth / 2 &&
-                ballX + match.ballWidth / 2 >= paddle1X - match.paddleWidth / 2
-            ) {
-                return true;
-            } else if (
-                paddle === 2 &&
-                ballX - match.ballWidth / 2 <=
-                    paddle2X + match.paddleWidth / 2 &&
-                ballX + match.ballWidth / 2 >= paddle2X - match.paddleWidth / 2
-            ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     getPaddleY(paddlePosition: number, match: GameInterface): number {
         const posPaddleYPercentage =
             (paddlePosition / match.screenHeigth) * 100;
@@ -105,7 +71,7 @@ export class GameService {
         );
     }
 
-    async hitPaddle(
+    async hitPaddleFront(
         paddle: number,
         match: GameInterface,
         paddlePosition: number
@@ -116,13 +82,14 @@ export class GameService {
         const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
         const paddle2X =
             match.screenWidth - match.paddleOffset - match.paddleWidth;
-        // faces avant
         if (
             ballY <= paddleY + match.paddleHeigth / 2 &&
             ballY >= paddleY - match.paddleHeigth / 2
         ) {
             if (paddle === 1 && ballX <= paddle1X + match.ballWidth * 0.5) {
-                return true;
+                {
+                    return true;
+                }
             } else if (
                 paddle === 2 &&
                 ballX >= paddle2X - match.ballWidth * 0.5
@@ -130,43 +97,56 @@ export class GameService {
                 return true;
             }
         }
-        // corner paddles
+        return false;
+    }
+
+    async hitPaddleCorner(
+        paddle: number,
+        match: GameInterface,
+        paddlePosition: number
+    ): Promise<boolean> {
+        const paddleY = this.getPaddleY(paddlePosition, match);
+        const ballY = this.getBallY(match);
+        const ballX = this.getBallX(match);
+        const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
+        const paddle2X =
+            match.screenWidth - match.paddleOffset - match.paddleWidth;
         if (
             ballY <= paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
             ballY >= paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
         ) {
-            const ball = new Vector(ballX, ballY);
             if (paddle === 1) {
-                const edge_top = new Vector(
-                    paddle1X,
-                    paddleY + match.paddleHeigth / 2
-                );
-                let difference = edge_top.subtract(ball);
-                if (difference.length() <= match.ballWidth / 2) return true;
-                const edge_bottom = new Vector(
-                    paddle1X,
-                    paddleY - match.paddleHeigth / 2
-                );
-                difference = edge_bottom.subtract(ball);
-                if (difference.length() <= match.ballWidth / 2) return true;
+                let xa = paddle1X;
+                let ya = paddleY + match.paddleHeigth / 2;
+                let xb = ballX;
+                let yb = ballY;
+                let ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
+                if (ab <= match.ballHeigth / 2) {
+                    return true;
+                }
+                ya = paddleY - match.paddleHeigth / 2;
+                ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
+                if (ab <= match.ballHeigth / 2) {
+                    return true;
+                }
             } else if (paddle === 2) {
-                const edge_top = new Vector(
-                    paddle2X,
-                    paddleY + match.paddleHeigth / 2
-                );
-                let difference = edge_top.subtract(ball);
-                if (difference.length() <= match.ballWidth / 2) return true;
-                const edge_bottom = new Vector(
-                    paddle2X,
-                    paddleY - match.paddleHeigth / 2
-                );
-                difference = edge_bottom.subtract(ball);
-                if (difference.length() <= match.ballWidth / 2) return true;
+                let xa = paddle2X;
+                let ya = paddleY + match.paddleHeigth / 2;
+                let xb = ballX;
+                let yb = ballY;
+                let ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
+                if (ab <= match.ballHeigth / 2) {
+                    return true;
+                }
+                ya = paddleY - match.paddleHeigth / 2;
+                ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
+                if (ab <= match.ballHeigth / 2) {
+                    return true;
+                }
             }
         }
         return false;
     }
-
     async computeBallDirection(match: GameInterface) {
         if (match.ballPosition.y <= 0) {
             match.ballDirection = new Vector(
@@ -182,90 +162,143 @@ export class GameService {
         return match;
     }
 
-    async computeIfTouch(match: GameInterface) {
-        if (
-            (await this.hitPaddle(1, match, match.player1Position)) ||
-            (await this.hitPaddle(2, match, match.player2Position))
-        ) {
-            match.ballDirection = new Vector(
-                -match.ballDirection.x,
-                match.ballDirection.y
-            );
-            while (
-                (await this.hitPaddle(1, match, match.player1Position)) ||
-                (await this.hitPaddle(2, match, match.player2Position))
-            ) {
-                match.ballPosition = match.ballPosition.add(
-                    match.ballDirection
-                );
+    async hitHorizontal(
+        paddle: number,
+        match: GameInterface,
+        paddlePosition: number
+    ): Promise<boolean> {
+        const paddleY = this.getPaddleY(paddlePosition, match);
+        const ballY = this.getBallY(match);
+        const ballX = this.getBallX(match);
+        const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
+        const paddle2X =
+            match.screenWidth - match.paddleOffset - match.paddleWidth;
+        if (paddle === 1) {
+            if (ballX < paddle1X) {
                 if (
-                    match.ballPosition.x >= match.screenWidth ||
-                    match.ballPosition.x <= 0 ||
-                    match.ballPosition.y >= match.screenHeigth ||
-                    match.ballPosition.y <= 0
+                    ballY <=
+                        paddleY +
+                            match.paddleHeigth / 2 +
+                            match.ballHeigth / 2 &&
+                    ballY >=
+                        paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
                 ) {
-                    if (match.ballPosition.x <= 0) {
-                        match.player2Score++;
-                    } else if (match.ballPosition.x >= match.screenWidth) {
-                        match.player1Score++;
-                    }
-                    break;
+                    return true;
                 }
             }
-            return { match: match, break: true };
-        } else if (
-            (await this.hitHorizontal(1, match, match.player1Position)) ||
-            (await this.hitHorizontal(2, match, match.player2Position))
-        ) {
-            match.ballDirection = new Vector(
-                match.ballDirection.x,
-                -match.ballDirection.y
-            );
-            while (
-                (await this.hitHorizontal(1, match, match.player1Position)) ||
-                (await this.hitHorizontal(2, match, match.player2Position))
-            ) {
-                match.ballPosition = match.ballPosition.add(
-                    match.ballDirection
-                );
+        } else if (paddle === 2) {
+            if (ballX > paddle2X) {
                 if (
-                    match.ballPosition.x >= match.screenWidth ||
-                    match.ballPosition.x <= 0 ||
-                    match.ballPosition.y >= match.screenHeigth ||
-                    match.ballPosition.y <= 0
+                    ballY <=
+                        paddleY +
+                            match.paddleHeigth / 2 +
+                            match.ballHeigth / 2 &&
+                    ballY >=
+                        paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
                 ) {
-                    if (match.ballPosition.x <= 0) {
-                        match.player2Score++;
-                    } else if (match.ballPosition.x >= match.screenWidth) {
-                        match.player1Score++;
-                    }
-                    break;
+                    return true;
                 }
             }
-            return { match: match, break: true };
-        } else if (
-            match.ballPosition.x >= match.screenWidth ||
-            match.ballPosition.x <= 0 ||
-            match.ballPosition.y >= match.screenHeigth ||
-            match.ballPosition.y <= 0
-        ) {
-            if (match.ballPosition.x <= 0) {
-                match.player2Score++;
-            } else if (match.ballPosition.x >= match.screenWidth) {
-                match.player1Score++;
-            }
-            return { match: match, break: true };
         }
-        return { match: match, break: false };
+        return false;
     }
 
     async moveBall(match: GameInterface): Promise<GameInterface> {
         for (let i = 0; i < match.ballSpeed; i++) {
             match.ballPosition = match.ballPosition.add(match.ballDirection);
-            let results = await this.computeIfTouch(match);
-            match = results.match;
-            if (results.break) {
-                break;
+            if (
+                match.ballPosition.x >= match.screenWidth ||
+                match.ballPosition.x <= 0 ||
+                match.ballPosition.y >= match.screenHeigth ||
+                match.ballPosition.y <= 0
+            ) {
+                if (match.ballPosition.x <= 0) {
+                    match.player2Score++;
+                } else if (match.ballPosition.x >= match.screenWidth) {
+                    match.player1Score++;
+                }
+                return match;
+            }
+            if (match.lose === false) {
+                if (
+                    (await this.hitPaddleFront(
+                        1,
+                        match,
+                        match.player1Position
+                    )) ||
+                    (await this.hitPaddleFront(2, match, match.player2Position))
+                ) {
+                    match.ballDirection = new Vector(
+                        -match.ballDirection.x,
+                        match.ballDirection.y
+                    );
+                    while (
+                        (await this.hitPaddleFront(
+                            1,
+                            match,
+                            match.player1Position
+                        )) ||
+                        (await this.hitPaddleFront(
+                            2,
+                            match,
+                            match.player2Position
+                        ))
+                    ) {
+                        match.ballPosition = match.ballPosition.add(
+                            match.ballDirection
+                        );
+                    }
+                    break;
+                } else if (
+                    (await this.hitPaddleCorner(
+                        1,
+                        match,
+                        match.player1Position
+                    )) ||
+                    (await this.hitPaddleCorner(
+                        2,
+                        match,
+                        match.player2Position
+                    ))
+                ) {
+                    match.ballDirection = new Vector(
+                        -match.ballDirection.x,
+                        match.ballDirection.y
+                    );
+
+                    while (
+                        (await this.hitPaddleCorner(
+                            1,
+                            match,
+                            match.player1Position
+                        )) ||
+                        (await this.hitPaddleCorner(
+                            2,
+                            match,
+                            match.player2Position
+                        ))
+                    ) {
+                        match.ballPosition = match.ballPosition.add(
+                            match.ballDirection
+                        );
+                    }
+                    break;
+                } else if (
+                    (await this.hitHorizontal(
+                        1,
+                        match,
+                        match.player1Position
+                    )) ||
+                    (await this.hitHorizontal(2, match, match.player2Position))
+                ) {
+                    if (match.lose === false) {
+                        match.ballDirection = new Vector(
+                            match.ballDirection.x,
+                            -match.ballDirection.y
+                        );
+                        match.lose = true;
+                    }
+                }
             }
         }
         return match;
@@ -286,6 +319,10 @@ export class GameService {
         }
         const random = Math.floor(Math.random() * 91 - 45);
         match.ballDirection = match.ballDirection.rotateByDegrees(random);
+        // pour tester rebond sur face inferieure paddle 2 :
+        //match.ballDirection = new Vector(1, 0);
+        //match.ballDirection = match.ballDirection.rotateByDegrees(39);
+        match.lose = false;
         return match;
     }
 
@@ -375,6 +412,7 @@ export class GameService {
             ballWidth: (screenWidth / 100) * ballSize,
             ballHeigth: (screenHeigth / 100) * ballSize,
             disconnection: false,
+            lose: false,
         };
         return match;
     }
