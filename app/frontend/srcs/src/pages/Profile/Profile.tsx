@@ -58,22 +58,23 @@ const Profile = () => {
                     edit
                 </button>
             </main>
-            <div id="stats">
-                <div>
-                    <p>Leaderboard rank : {user.rank}</p>
-                    <p>
-                        Game played :{" "}
-                        {user.winRatio.defeat + user.winRatio.victory}
-                    </p>
-                    <p>
-                        Game win : {user.winRatio.victory} {winPercentage()}
-                    </p>
-                    <p>
-                        Game lose : {user.winRatio.defeat} {losePercentage()}
-                    </p>
-                </div>
-                <div>
-                    {user.gameHistory.length && (
+            {user.gameHistory.length > 0 && (
+                <div id="stats">
+                    <div>
+                        <p>Leaderboard rank : {user.rank}</p>
+                        <p>
+                            Game played :{" "}
+                            {user.winRatio.defeat + user.winRatio.victory}
+                        </p>
+                        <p>
+                            Game win : {user.winRatio.victory} {winPercentage()}
+                        </p>
+                        <p>
+                            Game lose : {user.winRatio.defeat}{" "}
+                            {losePercentage()}
+                        </p>
+                    </div>
+                    <div>
                         <ul id="games-list">
                             <h2>Match history</h2>
                             {user.gameHistory.map(
@@ -94,9 +95,9 @@ const Profile = () => {
                                 )
                             )}
                         </ul>
-                    )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

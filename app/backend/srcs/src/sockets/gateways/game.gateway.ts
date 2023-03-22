@@ -48,9 +48,10 @@ export class GameGateway {
     emitGameResults(
         player1Socket: string,
         player2Socket: string,
-        match: GameInterface
+        match: GameInterface,
+        player1Rank: number,
+        player2Rank: number
     ) {
-        let room = [player1Socket, player2Socket];
         let p1Winner = match.player1Score > match.player2Score ? true : false;
         let data: {};
         if (p1Winner) {
@@ -59,17 +60,35 @@ export class GameGateway {
                 loser: match.player2Username,
                 winner_score: match.player1Score,
                 loser_score: match.player2Score,
+                rank: player1Rank,
             };
+            this.server.to(player1Socket).emit("game.results", data);
+            data = {
+                winner: match.player1Username,
+                loser: match.player2Username,
+                winner_score: match.player1Score,
+                loser_score: match.player2Score,
+                rank: player2Rank,
+            };
+            this.server.to(player2Socket).emit("game.results", data);
         } else {
             data = {
                 winner: match.player2Username,
                 loser: match.player1Username,
                 winner_score: match.player2Score,
                 loser_score: match.player1Score,
+                rank: player1Rank,
             };
+            this.server.to(player1Socket).emit("game.results", data);
+            data = {
+                winner: match.player2Username,
+                loser: match.player1Username,
+                winner_score: match.player2Score,
+                loser_score: match.player1Score,
+                rank: player2Rank,
+            };
+            this.server.to(player2Socket).emit("game.results", data);
         }
-
-        this.server.to(room).emit("game.results", data);
     }
 
     async sendCancel(socketId: string, status: string) {

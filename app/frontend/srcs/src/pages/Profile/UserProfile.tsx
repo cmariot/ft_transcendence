@@ -157,7 +157,6 @@ const UserProfile = () => {
                 ) / scale;
             return "(" + percent.toString() + "%)";
         }
-        return null;
     }
 
     function losePercentage() {
@@ -171,13 +170,12 @@ const UserProfile = () => {
                 ) / scale;
             return "(" + percent.toString() + "%)";
         }
-        return null;
     }
 
     function displayProfileOrError() {
         if (found) {
             return (
-                <>
+                <div>
                     <h2>{username}'s profile</h2>
                     {image && (
                         <img
@@ -260,22 +258,24 @@ const UserProfile = () => {
                         )}
                         <button onClick={() => goToPrevious()}>return</button>
                     </div>
-                    <div id="stats">
-                        <div>
-                            <p>Leaderboard rank : {rank}</p>
-                            <p>
-                                Game played :{" "}
-                                {winRatio.defeat + winRatio.victory}
-                            </p>
-                            <p>
-                                Game win : {winRatio.victory} {winPercentage()}
-                            </p>
-                            <p>
-                                Game lose : {winRatio.defeat} {losePercentage()}
-                            </p>
-                        </div>
-                        <div>
-                            {gameHistory.length && (
+                    {gameHistory.length > 0 && (
+                        <div id="stats">
+                            <div>
+                                <p>Leaderboard rank : {rank}</p>
+                                <p>
+                                    Game played :{" "}
+                                    {winRatio.defeat + winRatio.victory}
+                                </p>
+                                <p>
+                                    Game win : {winRatio.victory}{" "}
+                                    {winPercentage()}
+                                </p>
+                                <p>
+                                    Game lose : {winRatio.defeat}{" "}
+                                    {losePercentage()}
+                                </p>
+                            </div>
+                            <div>
                                 <ul id="games-list">
                                     <h2>Match history</h2>
                                     {gameHistory.map(
@@ -299,10 +299,10 @@ const UserProfile = () => {
                                         )
                                     )}
                                 </ul>
-                            )}
+                            </div>
                         </div>
-                    </div>
-                </>
+                    )}
+                </div>
             );
         } else {
             return <h2>not found</h2>;

@@ -428,7 +428,7 @@ export class UsersService {
         if (user1 && user2) {
             if (player1Score > player2Score) {
                 xpUser1 += 5;
-                this.setScore(user1, user2);
+                await this.setScore(user1, user2);
                 user1.history.push({
                     winner: user1.uuid,
                     loser: user2.uuid,
@@ -443,7 +443,7 @@ export class UsersService {
                 });
             } else if (player2Score > player1Score) {
                 xpUser2 += 5;
-                this.setScore(user2, user1);
+                await this.setScore(user2, user1);
                 user1.history.push({
                     winner: user2.uuid,
                     loser: user1.uuid,
@@ -457,11 +457,11 @@ export class UsersService {
                     loser_score: player1Score,
                 });
             }
-            this.userRepository.update(
+            await this.userRepository.update(
                 { uuid: user1.uuid },
                 { history: user1.history, xp: xpUser1 }
             );
-            this.userRepository.update(
+            await this.userRepository.update(
                 { uuid: user2.uuid },
                 { history: user2.history, xp: xpUser2 }
             );

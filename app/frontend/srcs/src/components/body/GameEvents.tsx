@@ -41,6 +41,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             loser: string;
             winner_score: number;
             loser_score: number;
+            rank: number;
         }) {
             let history = user.gameHistory;
             history.push(data);
@@ -52,6 +53,8 @@ export const GameEvents = ({ children }: GameEventsProps) => {
                 ratio.defeat++;
             }
             user.setWinRatio(ratio);
+            console.log("RANK = ", data.rank);
+            user.setRank(data.rank);
         }
         socket.on("game.results", updateHistory);
         return () => {

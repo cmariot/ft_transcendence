@@ -445,8 +445,8 @@ export class GameService {
 
     // Send info to the frontend via socket and start a game
     async startGame(game: GameEntity) {
-        const player1 = await this.userService.getByID(game.hostID);
-        const player2 = await this.userService.getByID(game.guestID);
+        let player1 = await this.userService.getByID(game.hostID);
+        let player2 = await this.userService.getByID(game.guestID);
         if (!player1 || !player2) {
             throw new UnauthorizedException("User not found");
         } else if (
@@ -487,10 +487,16 @@ export class GameService {
                 match.player1Score,
                 match.player2Score
             );
+            let p1 = await this.userService.getByID(player1.uuid);
+            let p2 = await this.userService.getByID(player2.uuid);
+            let player1Rank = await this.userService.getLeaderBoardRank(p1);
+            let player2Rank = await this.userService.getLeaderBoardRank(p2);
             this.gameGateway.emitGameResults(
                 player1.socketId[0],
                 player2.socketId[0],
-                match
+                match,
+                player1Rank,
+                player2Rank
             );
             this.gameGateway.updateFrontMenu(
                 player1.socketId[0],
