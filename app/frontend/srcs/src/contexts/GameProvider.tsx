@@ -55,6 +55,14 @@ export const GameContext = createContext({
     setP2Name: (newValue: string) => {},
     p2Score: 0,
     setP2Score: (newValue: number) => {},
+    currentGames: new Array<{
+        game_id: string;
+        player1: string;
+        player2: string;
+    }>(),
+    setCurrentGames: (
+        newValue: { game_id: string; player1: string; player2: string }[]
+    ) => {},
 });
 
 type GameProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -76,6 +84,9 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [p1Score, setP1Score] = useState<number>(50);
     const [p2Name, setP2Name] = useState<string>("");
     const [p2Score, setP2Score] = useState<number>(50);
+    const [currentGames, setCurrentGames] = useState<
+        { game_id: string; player1: string; player2: string }[]
+    >([]);
 
     const value = {
         menu,
@@ -112,6 +123,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setP2Name,
         p2Score,
         setP2Score,
+        currentGames,
+        setCurrentGames,
     };
 
     return (

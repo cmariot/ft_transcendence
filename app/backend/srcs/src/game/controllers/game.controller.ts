@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/authentification.guards";
 import { InvitationResponseDto, InvitationDto } from "../dtos/GameUtility.dto";
 import { MatchmakingService } from "../services/matchmaking.service";
+import { GameService } from "../services/game.service";
 
 @Controller("game")
 export class GameController {
@@ -32,5 +33,11 @@ export class GameController {
     @UseGuards(isLogged)
     async responseInvitation(@Req() req, @Body() users: InvitationResponseDto) {
         return await this.matchmakingService.ResponseInvitation(users);
+    }
+
+    @Get("current")
+    @UseGuards()
+    async getCurrentGames() {
+        return await this.matchmakingService.getCurrentGames();
     }
 }

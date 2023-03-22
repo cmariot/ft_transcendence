@@ -413,8 +413,8 @@ export class GameService {
 
     // Set the defaults settings for the game
     createGame(player1: UserEntity, player2: UserEntity): GameInterface {
-        const screenHeigth = 500;
-        const screenWidth = 500;
+        const screenHeigth = 1000;
+        const screenWidth = 1000;
         const paddleHeigth = 10;
         const ballSize = 2.5;
 
@@ -429,7 +429,7 @@ export class GameService {
             player2Position: screenHeigth / 2,
             ballPosition: new Vector(screenWidth / 2, screenHeigth / 2),
             ballDirection: new Vector(1, 0),
-            ballSpeed: 4,
+            ballSpeed: 10,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
             paddleHeigth: (screenHeigth / 100) * paddleHeigth,

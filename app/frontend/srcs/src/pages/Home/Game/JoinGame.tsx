@@ -21,10 +21,17 @@ const JoinGame = () => {
         game.setMenu("Rules");
     }
 
+    async function selectStream() {
+        game.setMenu("SelectStream");
+    }
+
     return (
         <div id="join-game">
             <p>Click on the button for matchmaking</p>
-            <button onClick={() => joinGame()}>play</button>
+            <div>
+                <button onClick={() => joinGame()}>play</button>
+                <button onClick={() => selectStream()}>stream</button>
+            </div>
             <button onClick={() => rules()}>how to play</button>
         </div>
     );

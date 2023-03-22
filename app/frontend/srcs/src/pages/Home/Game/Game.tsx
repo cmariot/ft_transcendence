@@ -7,6 +7,7 @@ import TestMouvements from "./TestMouvements";
 import Disconnection from "./Disconnection";
 import Results from "./Results";
 import Rules from "./Rules";
+import SelectStream from "./SelectStream";
 
 const Game = () => {
     const game = useContext(GameContext);
@@ -20,6 +21,7 @@ const Game = () => {
             {game.menu === "Game" && <TestMouvements />}
             {game.menu === "Disconnection" && <Disconnection />}
             {game.menu === "Results" && <Results />}
+            {game.menu === "SelectStream" && <SelectStream />}
         </div>
     );
 };

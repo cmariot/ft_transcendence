@@ -3,9 +3,11 @@ import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
+import { GameContext } from "../contexts/GameProvider";
 
 export default function ProtectedPage() {
     const user = useContext(UserContext);
+    const game = useContext(GameContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -26,17 +28,23 @@ export default function ProtectedPage() {
             }
             (async () => {
                 try {
-                    const [profileResponse, friendsResponse, blockedResponse] =
-                        await Promise.all([
-                            axios.get("/api/profile"),
-                            axios.get("/api/profile/friends"),
-                            axios.get("/api/profile/blocked"),
-                        ]);
+                    const [
+                        profileResponse,
+                        friendsResponse,
+                        blockedResponse,
+                        gameResponse,
+                    ] = await Promise.all([
+                        axios.get("/api/profile"),
+                        axios.get("/api/profile/friends"),
+                        axios.get("/api/profile/blocked"),
+                        axios.get("/api/game/current"),
+                    ]);
 
                     if (
                         friendsResponse.status !== 200 ||
                         profileResponse.status !== 200 ||
-                        blockedResponse.status !== 200
+                        blockedResponse.status !== 200 ||
+                        gameResponse.status !== 200
                     ) {
                         console.log("Cannot fetch your profile.");
                         return navigate("/login");
@@ -124,6 +132,8 @@ export default function ProtectedPage() {
                     user.setIsFirstLog(firstLog);
                     user.setClickOnLogin(true);
                     user.setClickOnLogout(false);
+                    game.setCurrentGames(gameResponse.data);
+
                     if (firstLog) {
                         return navigate("/welcome");
                     }
@@ -134,7 +144,7 @@ export default function ProtectedPage() {
                 }
             })();
         }
-    }, [navigate, user]);
+    }, [navigate, user, game]);
 
     return user.isLogged ? <Outlet /> : null;
 }

@@ -162,4 +162,34 @@ export class MatchmakingService {
         //    this.startGame(game);
         //    return "Game accepted";
     }
+
+    // return the games with status 'playing'
+    async getCurrentGames(): Promise<
+        {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }[]
+    > {
+        let currentGames: {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }[] = [];
+        let game = await this.gameRepository.find();
+        for (let i = 0; i < game.length; i++) {
+            if (game[i].status === "playing") {
+                let player1 = await this.userService.getByID(game[i].hostID);
+                let player2 = await this.userService.getByID(game[i].guestID);
+                if (player1 && player2) {
+                    currentGames.push({
+                        game_id: game[i].uuid,
+                        player1: player1.username,
+                        player2: player2.username,
+                    });
+                }
+            }
+        }
+        return currentGames;
+    }
 }
