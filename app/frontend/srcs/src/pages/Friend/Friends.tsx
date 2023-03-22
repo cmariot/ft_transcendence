@@ -105,12 +105,6 @@ export default function Friends() {
             previousUsername: string;
             newUsername: string;
         }) {
-            console.log(
-                "user.update.username :",
-                data.previousUsername,
-                "changed his username to",
-                data.newUsername
-            );
             if (data.newUsername !== user.username) {
                 let friends = user.friends;
                 let index = friends.findIndex(

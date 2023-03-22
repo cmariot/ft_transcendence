@@ -138,13 +138,23 @@ const UserProfile = () => {
         }) {
             if (data.previousUsername === username) {
                 return navigate("/profile/" + data.newUsername);
+            } else {
+                let history = gameHistory;
+                for (let i = 0; i < history.length; i++) {
+                    if (history[i].loser === data.previousUsername) {
+                        history[i].loser = data.newUsername;
+                    } else if (history[i].winner === data.previousUsername) {
+                        history[i].winner = data.newUsername;
+                    }
+                }
+                setGamehistory(history);
             }
         }
         socket.on("user.update.username", updateUsername);
         return () => {
             socket.off("user.update.username", updateUsername);
         };
-    }, [user, socket, username, navigate]);
+    }, [user, socket, username, navigate, gameHistory]);
 
     function winPercentage() {
         if (winRatio.victory + winRatio.defeat > 0) {

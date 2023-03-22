@@ -1,6 +1,8 @@
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../contexts/UserProvider";
 import { SocketContext } from "../../contexts/SocketProvider";
+import axios from "axios";
+import { ChatContext } from "../../contexts/ChatProvider";
 
 type StatusEventsProps = { children: JSX.Element | JSX.Element[] };
 export const StatusEvents = ({ children }: StatusEventsProps) => {
@@ -63,6 +65,60 @@ export const StatusEvents = ({ children }: StatusEventsProps) => {
             socket.off("status.update", updateStatus);
         };
     }, [user, socket]);
+
+    const chat = useContext(ChatContext);
+
+    useEffect(() => {
+        function updateFriendUsername(data: {
+            previousUsername: string;
+            newUsername: string;
+        }) {
+            if (data.newUsername !== user.username) {
+                let friends = user.friends;
+                let index = friends.findIndex(
+                    (friend) => friend.username === data.previousUsername
+                );
+                if (index !== -1) {
+                    friends[index].username = data.newUsername;
+                    user.setFriends(friends);
+                }
+                let blocked = user.blocked;
+                index = blocked.findIndex(
+                    (blocked) => blocked.username === data.previousUsername
+                );
+                if (index !== -1) {
+                    blocked[index].username = data.newUsername;
+                    user.setBlocked(friends);
+                }
+                let history = user.gameHistory;
+                for (let i = 0; i < history.length; i++) {
+                    if (history[i].loser === data.previousUsername) {
+                        history[i].loser = data.newUsername;
+                    } else if (history[i].winner === data.previousUsername) {
+                        history[i].winner = data.newUsername;
+                    }
+                }
+                user.setGamehistory(history);
+                if (chat.channel.length)
+                    axios
+                        .post("/api/chat/connect", {
+                            channelName: chat.channel,
+                        })
+                        .then(function (response: any) {
+                            chat.setMessages(response.data.messages);
+                        })
+                        .catch(function (error) {
+                            alert(error.response.data.message);
+                        });
+            }
+        }
+
+        socket.on("user.update.username", updateFriendUsername);
+
+        return () => {
+            socket.off("user.update.username", updateFriendUsername);
+        };
+    }, [user, socket, chat]);
 
     return <>{children}</>;
 };

@@ -1,11 +1,13 @@
 import "../../styles/Profile.css";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserProvider";
 import { useNavigate } from "react-router-dom";
+import { SocketContext } from "../../contexts/SocketProvider";
 
 const Profile = () => {
     const user = useContext(UserContext);
     const navigate = useNavigate();
+    const [update, setUpdate] = useState(false);
 
     function winPercentage() {
         if (user.winRatio.victory + user.winRatio.defeat > 0) {
@@ -36,6 +38,32 @@ const Profile = () => {
         }
         return null;
     }
+
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        function updateFriendUsername(data: {
+            previousUsername: string;
+            newUsername: string;
+        }) {
+            if (data.newUsername !== user.username) {
+                let history = user.gameHistory;
+                for (let i = 0; i < history.length; i++) {
+                    if (history[i].loser === data.previousUsername) {
+                        history[i].loser = data.newUsername;
+                    } else if (history[i].winner === data.previousUsername) {
+                        history[i].winner = data.newUsername;
+                    }
+                }
+                user.setGamehistory(history);
+                setUpdate((prevState) => !prevState);
+            }
+        }
+        socket.on("user.update.username", updateFriendUsername);
+        return () => {
+            socket.off("user.update.username", updateFriendUsername);
+        };
+    }, [user, socket]);
 
     return (
         <div>
