@@ -50,7 +50,8 @@ const Profile = () => {
                 )}
                 <h3>{user.username}</h3>
                 <button
-                    onClick={() => {
+                    onClick={(event: any) => {
+                        event.preventDefault();
                         navigate("/settings");
                     }}
                 >
@@ -59,6 +60,7 @@ const Profile = () => {
             </main>
             <div id="stats">
                 <div>
+                    <p>Leaderboard rank : {user.rank}</p>
                     <p>
                         Game played :{" "}
                         {user.winRatio.defeat + user.winRatio.victory}

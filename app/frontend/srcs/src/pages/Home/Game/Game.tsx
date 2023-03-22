@@ -6,6 +6,7 @@ import CountDown from "./CountDown";
 import TestMouvements from "./TestMouvements";
 import Disconnection from "./Disconnection";
 import Results from "./Results";
+import Rules from "./Rules";
 
 const Game = () => {
     const game = useContext(GameContext);
@@ -13,6 +14,7 @@ const Game = () => {
     return (
         <div id="game">
             {game.menu === "JoinGame" && <JoinGame />}
+            {game.menu === "Rules" && <Rules />}
             {game.menu === "WaitingScreen" && <WaitingScreen />}
             {game.menu === "countDown" && <CountDown time={game.countDown} />}
             {game.menu === "Game" && <TestMouvements />}

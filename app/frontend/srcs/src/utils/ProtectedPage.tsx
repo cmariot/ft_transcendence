@@ -48,6 +48,7 @@ export default function ProtectedPage() {
                     const firstLog = profileResponse.data.firstLog;
                     const winRatio = profileResponse.data.ratio;
                     const gamehistory = profileResponse.data.gameHistory;
+                    const rank = profileResponse.data.rank;
                     const friends = friendsResponse.data;
                     const blocked = blockedResponse.data;
 
@@ -117,6 +118,7 @@ export default function ProtectedPage() {
                     user.setFriends(friends);
                     user.setWinRatio(winRatio);
                     user.setGamehistory(gamehistory);
+                    user.setRank(rank);
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);

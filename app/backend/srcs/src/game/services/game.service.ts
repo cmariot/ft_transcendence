@@ -75,7 +75,15 @@ export class GameService {
         paddle: number,
         match: GameInterface,
         paddlePosition: number
-    ): Promise<boolean> {
+    ): Promise<{ hit: boolean; angle: Vector | null }> {
+        if (
+            match.ballPosition.x >= match.screenWidth ||
+            match.ballPosition.x <= 0 ||
+            match.ballPosition.y >= match.screenHeigth ||
+            match.ballPosition.y <= 0
+        ) {
+            return { hit: false, angle: null };
+        }
         const paddleY = this.getPaddleY(paddlePosition, match);
         const ballY = this.getBallY(match);
         const ballX = this.getBallX(match);
@@ -88,16 +96,24 @@ export class GameService {
         ) {
             if (paddle === 1 && ballX <= paddle1X + match.ballWidth * 0.5) {
                 {
-                    return true;
+                    let angle = new Vector(
+                        -match.ballDirection.x,
+                        match.ballDirection.y + (ballY - paddleY) / paddleY
+                    );
+                    return { hit: true, angle: angle };
                 }
             } else if (
                 paddle === 2 &&
                 ballX >= paddle2X - match.ballWidth * 0.5
             ) {
-                return true;
+                let angle = new Vector(
+                    -match.ballDirection.x,
+                    match.ballDirection.y + (ballY - paddleY) / paddleY
+                );
+                return { hit: true, angle: angle };
             }
         }
-        return false;
+        return { hit: false, angle: null };
     }
 
     async hitPaddleCorner(
@@ -221,29 +237,39 @@ export class GameService {
                 return match;
             }
             if (match.lose === false) {
-                if (
-                    (await this.hitPaddleFront(
-                        1,
+                let response = await this.hitPaddleFront(
+                    1,
+                    match,
+                    match.player1Position
+                );
+                if (response.hit === false)
+                    response = await this.hitPaddleFront(
+                        2,
                         match,
-                        match.player1Position
-                    )) ||
-                    (await this.hitPaddleFront(2, match, match.player2Position))
-                ) {
-                    match.ballDirection = new Vector(
-                        -match.ballDirection.x,
-                        match.ballDirection.y
+                        match.player2Position
                     );
+                if (response.hit === true) {
+                    match.ballDirection = response.angle;
+                    // new Vector(
+                    //     -match.ballDirection.x,
+                    //     match.ballDirection.y
+                    // ).add(response.angle);
+                    //match.ballDirection = match.ballDirection.normalize();
                     while (
-                        (await this.hitPaddleFront(
-                            1,
-                            match,
-                            match.player1Position
-                        )) ||
-                        (await this.hitPaddleFront(
-                            2,
-                            match,
-                            match.player2Position
-                        ))
+                        (
+                            await this.hitPaddleFront(
+                                1,
+                                match,
+                                match.player1Position
+                            )
+                        ).hit === true ||
+                        (
+                            await this.hitPaddleFront(
+                                2,
+                                match,
+                                match.player2Position
+                            )
+                        ).hit === true
                     ) {
                         match.ballPosition = match.ballPosition.add(
                             match.ballDirection

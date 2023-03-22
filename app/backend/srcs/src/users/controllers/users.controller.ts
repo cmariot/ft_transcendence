@@ -53,6 +53,7 @@ export class UsersController {
             throw new UnauthorizedException("User not found");
         }
         const history = await this.userService.getGameHistory(completeUser);
+        const rank = await this.userService.getLeaderBoardRank(completeUser);
         return {
             username: completeUser.username,
             email: completeUser.email,
@@ -60,6 +61,7 @@ export class UsersController {
             firstLog: completeUser.firstLog,
             ratio: completeUser.score,
             gameHistory: history,
+            rank: rank,
         };
     }
 
@@ -193,6 +195,7 @@ export class UsersController {
         return await this.userService.unBlock(req.user.uuid, Username.username);
     }
 
+    // get the game history and win ratio of an user
     @Post("game")
     @UseGuards(isLogged)
     async getGameHistory(@Body() username: UsernameDto) {
@@ -201,9 +204,11 @@ export class UsersController {
             throw new UnauthorizedException("User not found");
         }
         const history = await this.userService.getGameHistory(user);
+        const rank = await this.userService.getLeaderBoardRank(user);
         return {
             winRatio: user.score,
             gameHistory: history,
+            rank: rank,
         };
     }
 }

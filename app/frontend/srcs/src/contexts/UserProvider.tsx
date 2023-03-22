@@ -20,6 +20,7 @@ export type UserContextType = {
         winner_score: number;
         loser_score: number;
     }[];
+    rank: number;
 };
 
 export const UserContext = createContext({
@@ -73,6 +74,8 @@ export const UserContext = createContext({
             loser_score: number;
         }[]
     ) => {},
+    rank: 0,
+    setRank: (newRank: number) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -107,6 +110,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
             loser_score: number;
         }[]
     >([]);
+    const [rank, setRank] = useState(0);
 
     async function addFriend(friendUsername: string) {
         let friendList = friends;
@@ -248,6 +252,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
         setWinRatio,
         gameHistory,
         setGamehistory,
+        rank,
+        setRank,
     };
 
     return (

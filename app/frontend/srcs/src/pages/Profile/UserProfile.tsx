@@ -35,6 +35,7 @@ const UserProfile = () => {
             loser_score: number;
         }[]
     >([]);
+    const [rank, setRank] = useState(0);
 
     let user = useContext(UserContext);
     let chat = useContext(ChatContext);
@@ -85,6 +86,7 @@ const UserProfile = () => {
                 if (gameHistoryResponse.status === 201) {
                     setGamehistory(gameHistoryResponse.data.gameHistory);
                     setWinRatio(gameHistoryResponse.data.winRatio);
+                    setRank(gameHistoryResponse.data.rank);
                 }
             } catch (error) {
                 console.log(error);
@@ -260,6 +262,7 @@ const UserProfile = () => {
                     </div>
                     <div id="stats">
                         <div>
+                            <p>Leaderboard rank : {rank}</p>
                             <p>
                                 Game played :{" "}
                                 {winRatio.defeat + winRatio.victory}

@@ -84,4 +84,7 @@ export class UserEntity {
         winner_score: number;
         loser_score: number;
     }[];
+
+    @Column({ default: 0 })
+    xp: number;
 }

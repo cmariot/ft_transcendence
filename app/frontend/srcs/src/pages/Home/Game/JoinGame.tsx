@@ -17,12 +17,15 @@ const JoinGame = () => {
         }
     }
 
+    async function rules() {
+        game.setMenu("Rules");
+    }
+
     return (
         <div id="join-game">
             <p>Click on the button for matchmaking</p>
-            <div>
-                <button onClick={() => joinGame()}>play</button>
-            </div>
+            <button onClick={() => joinGame()}>play</button>
+            <button onClick={() => rules()}>how to play</button>
         </div>
     );
 };

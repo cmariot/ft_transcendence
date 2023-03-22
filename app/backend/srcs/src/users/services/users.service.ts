@@ -13,7 +13,6 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { UserGateway } from "src/sockets/gateways/user.gateway";
-import { StatusGateway } from "src/sockets/gateways/status.gateway";
 @Injectable()
 export class UsersService {
     constructor(
@@ -424,8 +423,11 @@ export class UsersService {
     ) {
         let user1 = await this.getByID(player1);
         let user2 = await this.getByID(player2);
+        let xpUser1 = player1Score;
+        let xpUser2 = player2Score;
         if (user1 && user2) {
             if (player1Score > player2Score) {
+                xpUser1 += 5;
                 this.setScore(user1, user2);
                 user1.history.push({
                     winner: user1.uuid,
@@ -440,6 +442,7 @@ export class UsersService {
                     loser_score: player2Score,
                 });
             } else if (player2Score > player1Score) {
+                xpUser2 += 5;
                 this.setScore(user2, user1);
                 user1.history.push({
                     winner: user2.uuid,
@@ -456,11 +459,11 @@ export class UsersService {
             }
             this.userRepository.update(
                 { uuid: user1.uuid },
-                { history: user1.history }
+                { history: user1.history, xp: xpUser1 }
             );
             this.userRepository.update(
                 { uuid: user2.uuid },
-                { history: user2.history }
+                { history: user2.history, xp: xpUser2 }
             );
         }
         return;
@@ -489,5 +492,63 @@ export class UsersService {
             }
         }
         return history;
+    }
+
+    // Return a game leaderboard based on the user xp
+    // victory => + 5 xp
+    // 1 point => + 1 xp
+    async getLeaderBoard() {
+        let leaderboard: {
+            rank: number;
+            username: string;
+            win: number;
+            lose: number;
+            xp: number;
+        }[] = [];
+        let users: UserEntity[] = await this.getUsers();
+        if (!users) throw new UnauthorizedException("User not found");
+
+        const sortedUsers: UserEntity[] = users.sort((user1, user2) => {
+            if (user1.xp > user2.xp) {
+                return -1;
+            }
+            if (user1.xp < user2.xp) {
+                return 1;
+            }
+            return 0;
+        });
+        let rank = 1;
+        for (let i = 0; i < sortedUsers.length; i++) {
+            if (sortedUsers[i].history.length > 0) {
+                leaderboard.push({
+                    rank: rank,
+                    username: sortedUsers[i].username,
+                    win: sortedUsers[i].score.victory,
+                    lose: sortedUsers[i].score.defeat,
+                    xp: sortedUsers[i].xp,
+                });
+                if (i + 1 < sortedUsers.length) {
+                    if (sortedUsers[i].xp > sortedUsers[i + 1].xp) {
+                        rank++;
+                    }
+                }
+            }
+        }
+        return leaderboard;
+    }
+
+    async getLeaderBoardRank(user: UserEntity): Promise<number> {
+        let rank = 0;
+        const leaderboard = await this.getLeaderBoard();
+
+        if (leaderboard) {
+            let index = leaderboard.findIndex(
+                (element) => element.username === user.username
+            );
+            if (index !== -1) {
+                rank = index + 1;
+            }
+        }
+        return rank;
     }
 }
