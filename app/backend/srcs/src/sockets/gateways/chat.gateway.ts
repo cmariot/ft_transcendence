@@ -194,10 +194,35 @@ export class ChatGateway {
         }
     }
 
-    leave_privateChannel(username: string, channelName: string) {
-        //this.server.emit("userLeaveChannel", {
-        //    username: username,
-        //    channel: channelName,
-        //});
+    leave_privateChannel(
+        username: string,
+        channelName: string,
+        target_list: string[]
+    ) {
+        for (let i = 0; i < target_list.length; i++) {
+            let socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("user.leave.private", {
+                    username: username,
+                    channel: channelName,
+                });
+            }
+        }
+    }
+
+    addUser_privateChannel(
+        username: string,
+        channelName: string,
+        target_list: string[]
+    ) {
+        for (let i = 0; i < target_list.length; i++) {
+            let socket = this.server.sockets.sockets.get(target_list[i]);
+            if (socket) {
+                socket.emit("user.join.private", {
+                    username: username,
+                    channel: channelName,
+                });
+            }
+        }
     }
 }

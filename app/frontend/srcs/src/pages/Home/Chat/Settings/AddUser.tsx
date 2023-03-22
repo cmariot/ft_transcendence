@@ -1,10 +1,12 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
+import { SocketContext } from "../../../../contexts/SocketProvider";
 
 const AddUser = () => {
     const chat = useContext(ChatContext);
     const [newUser, setNewUser] = useState("");
+    const [update, setUpdate] = useState(false);
 
     function handleNewUser(event: ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
@@ -46,21 +48,47 @@ const AddUser = () => {
             });
     }
 
-    function currentUsers() {
-        if (chat.users.length) {
-            return (
-                <ul id="channel-users-list">
-                    <p>Channel users :</p>
-                    {chat.users.map((user, index) => (
-                        <li className="admin-channel" key={index}>
-                            <p className="admin-channel-username">{user}</p>
-                            <button onClick={() => kickUser(user)}>kick</button>
-                        </li>
-                    ))}
-                </ul>
-            );
-        } else return <p>You are alone in this channel.</p>;
-    }
+    const socket = useContext(SocketContext);
+
+    // When an user leave a private channel
+    useEffect(() => {
+        async function updateUsers(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex((muted) => muted === data.username);
+            if (index !== -1) {
+                users.splice(index, 1);
+                chat.setUsers(users);
+            }
+            setUpdate((prevState) => !prevState);
+        }
+        socket.on("user.leave.private", updateUsers);
+        return () => {
+            socket.off("user.leave.private", updateUsers);
+        };
+    }, [chat, socket]);
+
+    // When an user is added in a private channel
+    useEffect(() => {
+        async function updateUsers(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex((user) => user === data.username);
+            if (index === -1) {
+                users.push(data.username);
+                chat.setUsers(users);
+            }
+            setUpdate((prevState) => !prevState);
+        }
+        socket.on("user.join.private", updateUsers);
+        return () => {
+            socket.off("user.join.private", updateUsers);
+        };
+    }, [chat, socket]);
 
     return (
         <menu id="add-user-menu" className="chat-menu">
@@ -84,7 +112,21 @@ const AddUser = () => {
                         add
                     </button>
                 </form>
-                {currentUsers()}
+                {chat.users.length > 0 ? (
+                    <ul id="channel-users-list">
+                        <p>Channel users :</p>
+                        {chat.users.map((user, index) => (
+                            <li className="admin-channel" key={index}>
+                                <p className="admin-channel-username">{user}</p>
+                                <button onClick={() => kickUser(user)}>
+                                    kick
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>You are alone in this channel.</p>
+                )}
             </section>
             <footer className="chat-footer"></footer>
         </menu>

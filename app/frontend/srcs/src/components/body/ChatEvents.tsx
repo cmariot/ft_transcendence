@@ -404,5 +404,43 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         };
     }, [chat, socket, user]);
 
+    // When an user leave a private channel
+    useEffect(() => {
+        async function updateUsers(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex((muted) => muted === data.username);
+            if (index !== -1) {
+                users.splice(index, 1);
+                chat.setUsers(users);
+            }
+        }
+        socket.on("user.leave.private", updateUsers);
+        return () => {
+            socket.off("user.leave.private", updateUsers);
+        };
+    }, [chat, socket]);
+
+    // When an user is added in a private channel
+    useEffect(() => {
+        async function updateUsers(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex((user) => user === data.username);
+            if (index === -1) {
+                users.push(data.username);
+                chat.setUsers(users);
+            }
+        }
+        socket.on("user.join.private", updateUsers);
+        return () => {
+            socket.off("user.join.private", updateUsers);
+        };
+    }, [chat, socket]);
+
     return <>{children}</>;
 };

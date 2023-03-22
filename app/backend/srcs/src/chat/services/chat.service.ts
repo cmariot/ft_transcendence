@@ -666,9 +666,11 @@ export class ChatService {
                             false
                         );
                     }
+                    let target_list = await this.get_Admin_Owner(channel);
                     this.chatGateway.leave_privateChannel(
                         user.username,
-                        channelName
+                        channelName,
+                        target_list
                     );
                 } else {
                     throw new UnauthorizedException();
@@ -923,6 +925,12 @@ export class ChatService {
                 }
             }
             this.chatGateway.newChannelAvailable(channel.channelName);
+            let target_list = await this.get_Admin_Owner(channel);
+            this.chatGateway.addUser_privateChannel(
+                addUser.username,
+                addUser.channelName,
+                target_list
+            );
             return users_list;
         }
     }

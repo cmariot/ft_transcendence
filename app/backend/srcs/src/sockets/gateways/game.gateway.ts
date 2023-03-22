@@ -45,6 +45,7 @@ export class GameGateway {
         this.server.to(room).emit("game.name", ID);
     }
 
+    // Send the match results and their new leaderboard rank to the players
     emitGameResults(
         player1Socket: string,
         player2Socket: string,
