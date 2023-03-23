@@ -59,6 +59,7 @@ export class GameGateway {
     ) {
         let room = [player1, player2];
         this.server.to(room).emit("game.name", ID);
+        this.server.to(game.watchersSockets).emit("game.name", ID);
 
         this.server.emit("game.start", {
             game_id: ID,

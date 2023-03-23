@@ -539,5 +539,35 @@ export class GameService {
         }
         match.watchersSockets.push(user.socketId[0]);
         games.set(game_id, match);
+        await this.gameGateway.sendGameID(
+            match.player1Socket,
+            match.player2Socket,
+            game_id,
+            match
+        );
+        await this.gameGateway.sendPos(
+            match.player1Socket,
+            match.player2Socket,
+            match,
+            game_id
+        );
+    }
+
+    async leaveStream(uuid: string, game_id: string) {
+        const user = await this.userService.getByID(uuid);
+        if (!user || user.socketId.length === 0) {
+            throw new UnauthorizedException("User not found.");
+        }
+        let match: GameInterface = games.get(game_id);
+        if (!match) {
+            return;
+        }
+        let index = match.watchersSockets.findIndex(
+            (element) => element === user.socketId[0]
+        );
+        if (index !== -1) {
+            match.watchersSockets.splice(index, 1);
+            games.set(game_id, match);
+        }
     }
 }

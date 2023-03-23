@@ -56,4 +56,13 @@ export class GameController {
             gameId.game_id
         );
     }
+
+    @Post("leaveStream")
+    @UseGuards(isLogged)
+    async leaveStream(@Req() req, @Body() gameId: GameIdDto) {
+        return await this.gameService.leaveStream(
+            req.user.uuid,
+            gameId.game_id
+        );
+    }
 }

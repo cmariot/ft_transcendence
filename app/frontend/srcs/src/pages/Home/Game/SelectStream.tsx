@@ -22,7 +22,9 @@ const SelectStream = () => {
         const watchResponse = await axios.post("/api/game/watch", {
             game_id: match.game_id,
         });
-        game.setMenu("Game");
+        if (watchResponse.status === 201) {
+            game.setMenu("Stream");
+        }
     }
 
     useEffect(() => {
