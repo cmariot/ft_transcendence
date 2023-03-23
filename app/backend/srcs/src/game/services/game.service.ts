@@ -7,6 +7,7 @@ import { GameGateway } from "../../sockets/gateways/game.gateway";
 import { Vector } from "vecti";
 import { GameInterface } from "../interfaces/game.interface";
 import { UserEntity } from "src/users/entity/user.entity";
+import { getRandomBetween } from "./random";
 
 export let games = new Map<string, GameInterface>();
 
@@ -24,7 +25,7 @@ export class GameService {
     }
 
     async countDown(player1Socket: string, player2Socket: string) {
-        for (let i = 5; i >= 0; i--) {
+        for (let i = 4; i !== 0; i--) {
             await this.gameGateway.updateCountDown(
                 player1Socket,
                 player2Socket,
@@ -250,11 +251,6 @@ export class GameService {
                     );
                 if (response.hit === true) {
                     match.ballDirection = response.angle;
-                    // new Vector(
-                    //     -match.ballDirection.x,
-                    //     match.ballDirection.y
-                    // ).add(response.angle);
-                    //match.ballDirection = match.ballDirection.normalize();
                     while (
                         (
                             await this.hitPaddleFront(
@@ -338,13 +334,21 @@ export class GameService {
             match.screenWidth / 2,
             match.screenHeigth / 2
         );
-        if (Math.round(Math.random()) % 2 === 1) {
+        if (getRandomBetween(0, 1) === 1) {
             match.ballDirection = new Vector(1, 0);
         } else {
             match.ballDirection = new Vector(-1, 0);
         }
-        const random = Math.floor(Math.random() * 91 - 45);
-        match.ballDirection = match.ballDirection.rotateByDegrees(random);
+        const random = getRandomBetween(-45, 45);
+        if (random === 0) {
+            if (getRandomBetween(0, 1) === 0) {
+                match.ballDirection = match.ballDirection.rotateByDegrees(-20);
+            } else {
+                match.ballDirection = match.ballDirection.rotateByDegrees(20);
+            }
+        } else {
+            match.ballDirection = match.ballDirection.rotateByDegrees(random);
+        }
         // pour tester rebond sur face inferieure paddle 2 :
         //match.ballDirection = new Vector(1, 0);
         //match.ballDirection = match.ballDirection.rotateByDegrees(39);
