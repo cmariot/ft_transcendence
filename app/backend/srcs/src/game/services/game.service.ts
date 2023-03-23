@@ -462,7 +462,8 @@ export class GameService {
         await this.gameGateway.sendGameID(
             player1.socketId[0],
             player2.socketId[0],
-            game.uuid
+            game.uuid,
+            match
         );
         await this.gameGateway.sendPos(
             player1.socketId[0],
@@ -515,6 +516,7 @@ export class GameService {
                 "online"
             );
         }
+        await this.gameGateway.emitEndGame(game.uuid, match);
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }

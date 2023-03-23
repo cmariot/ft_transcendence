@@ -40,9 +40,20 @@ export class GameGateway {
     }
 
     // Share the game uuid with the players
-    async sendGameID(player1: string, player2: string, ID: string) {
+    async sendGameID(
+        player1: string,
+        player2: string,
+        ID: string,
+        game: GameInterface
+    ) {
         let room = [player1, player2];
         this.server.to(room).emit("game.name", ID);
+
+        this.server.emit("game.start", {
+            game_id: ID,
+            player1: game.player1Username,
+            player2: game.player2Username,
+        });
     }
 
     // Send the match results and their new leaderboard rank to the players
@@ -90,6 +101,14 @@ export class GameGateway {
             };
             this.server.to(player2Socket).emit("game.results", data);
         }
+    }
+
+    async emitEndGame(game_id: string, match: GameInterface) {
+        this.server.emit("game.end", {
+            game_id: game_id,
+            player1: match.player1Username,
+            player2: match.player2Username,
+        });
     }
 
     async sendCancel(socketId: string, status: string) {

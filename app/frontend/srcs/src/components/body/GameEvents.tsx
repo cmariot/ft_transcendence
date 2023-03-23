@@ -36,6 +36,46 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     }, [game, socket]);
 
     useEffect(() => {
+        async function updateGamesList(data: {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }) {
+            let games = game.currentGames;
+            let index = games.findIndex((element) => element === data);
+            if (index === -1) {
+                games.push(data);
+                game.setCurrentGames(games);
+            }
+        }
+        socket.on("game.start", updateGamesList);
+        return () => {
+            socket.off("game.start", updateGamesList);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
+        async function updateGamesList(data: {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }) {
+            let games = game.currentGames;
+            let index = games.findIndex(
+                (element) => element.game_id === data.game_id
+            );
+            if (index !== -1) {
+                games.splice(index, 1);
+                game.setCurrentGames(games);
+            }
+        }
+        socket.on("game.end", updateGamesList);
+        return () => {
+            socket.off("game.end", updateGamesList);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
         async function updateHistory(data: {
             winner: string;
             loser: string;
