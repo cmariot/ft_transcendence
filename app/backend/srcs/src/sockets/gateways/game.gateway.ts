@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { GameInterface } from "src/game/interfaces/game.interface";
 import { games } from "src/game/services/game.service";
+import { GameEntity } from "src/game/entities/game.entity";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
@@ -121,6 +122,12 @@ export class GameGateway {
             player1: match.player1Username,
             player2: match.player2Username,
         });
+    }
+
+    async streamResults(match: GameInterface) {
+        this.server
+            .to(match.watchersSockets)
+            .emit("game.menu.change", { menu: "StreamResults" });
     }
 
     async sendCancel(socketId: string, status: string) {

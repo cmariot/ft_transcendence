@@ -34,7 +34,9 @@ const SelectStream = () => {
             player2: string;
         }) {
             let games = game.currentGames;
-            let index = games.findIndex((element) => element === data);
+            let index = games.findIndex(
+                (element) => element.game_id === data.game_id
+            );
             if (index === -1) {
                 games.push(data);
                 game.setCurrentGames(games);

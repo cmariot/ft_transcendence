@@ -42,12 +42,14 @@ export class GameController {
         return await this.matchmakingService.ResponseInvitation(users);
     }
 
+    // List of curent 'playing' games
     @Get("current")
     @UseGuards(isLogged)
     async getCurrentGames() {
         return await this.matchmakingService.getCurrentGames();
     }
 
+    // Join a stream
     @Post("watch")
     @UseGuards(isLogged)
     async watchGame(@Req() req, @Body() gameId: GameIdDto) {
@@ -57,6 +59,7 @@ export class GameController {
         );
     }
 
+    // Leave a stream
     @Post("leaveStream")
     @UseGuards(isLogged)
     async leaveStream(@Req() req, @Body() gameId: GameIdDto) {

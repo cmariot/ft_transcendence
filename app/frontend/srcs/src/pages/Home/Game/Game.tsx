@@ -9,6 +9,7 @@ import Results from "./Results";
 import Rules from "./Rules";
 import SelectStream from "./SelectStream";
 import Stream from "./Stream";
+import StreamResults from "./StreamResults";
 
 const Game = () => {
     const game = useContext(GameContext);
@@ -24,6 +25,7 @@ const Game = () => {
             {game.menu === "Results" && <Results />}
             {game.menu === "SelectStream" && <SelectStream />}
             {game.menu === "Stream" && <Stream />}
+            {game.menu === "StreamResults" && <StreamResults />}
         </div>
     );
 };

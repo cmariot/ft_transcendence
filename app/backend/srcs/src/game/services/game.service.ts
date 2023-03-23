@@ -511,6 +511,7 @@ export class GameService {
                 player2.socketId[0],
                 "Results"
             );
+            this.gameGateway.streamResults(match);
             await this.userService.setStatusByID(player1.uuid, "online");
             await this.userService.setStatusByID(player2.uuid, "online");
         } else {

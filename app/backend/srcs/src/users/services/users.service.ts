@@ -423,11 +423,11 @@ export class UsersService {
     ) {
         let user1 = await this.getByID(player1);
         let user2 = await this.getByID(player2);
-        let xpUser1 = player1Score;
-        let xpUser2 = player2Score;
+        user1.xp += player1Score;
+        user2.xp += player2Score;
         if (user1 && user2) {
             if (player1Score > player2Score) {
-                xpUser1 += 5;
+                user1.xp += 5;
                 await this.setScore(user1, user2);
                 user1.history.push({
                     winner: user1.uuid,
@@ -442,7 +442,7 @@ export class UsersService {
                     loser_score: player2Score,
                 });
             } else if (player2Score > player1Score) {
-                xpUser2 += 5;
+                user2.xp += 5;
                 await this.setScore(user2, user1);
                 user1.history.push({
                     winner: user2.uuid,
@@ -459,11 +459,11 @@ export class UsersService {
             }
             await this.userRepository.update(
                 { uuid: user1.uuid },
-                { history: user1.history, xp: xpUser1 }
+                { history: user1.history, xp: user1.xp }
             );
             await this.userRepository.update(
                 { uuid: user2.uuid },
-                { history: user2.history, xp: xpUser2 }
+                { history: user2.history, xp: user2.xp }
             );
         }
         return;

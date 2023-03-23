@@ -51,28 +51,15 @@ const TestMouvements = () => {
 
     return (
         <div id="board">
-            <div>
-                <div id="player-names">
-                    <div className="score">
-                        <h2>{game.p1Name}</h2>
-                        <h3>{game.p1Score}</h3>
-                    </div>
-                    <div className="score">
-                        <h2>{game.p2Name}</h2>
-                        <h3>{game.p2Score}</h3>
-                    </div>
+            <div id="player-names">
+                <div className="score">
+                    <h2>{game.p1Name}</h2>
+                    <h3>{game.p1Score}</h3>
                 </div>
-                <p>gameID: {game.gameID}</p>
-                <p>
-                    paddle2: {game.paddle1} / {getBottom(game.paddle1)}
-                </p>
-                <p>
-                    paddle2: {game.paddle2} / {getBottom(game.paddle2)}
-                </p>
-                <p>
-                    ball: x = {Math.round(game.ball.x)}, y ={" "}
-                    {Math.round(game.ball.y)}
-                </p>
+                <div className="score">
+                    <h2>{game.p2Name}</h2>
+                    <h3>{game.p2Score}</h3>
+                </div>
             </div>
             <BoardDecoration />
             <div
