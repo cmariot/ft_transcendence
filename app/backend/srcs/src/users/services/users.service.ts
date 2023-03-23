@@ -527,6 +527,15 @@ export class UsersService {
                     lose: sortedUsers[i].score.defeat,
                     xp: sortedUsers[i].xp,
                 });
+                if (
+                    sortedUsers[i].status !== "offline" &&
+                    sortedUsers[i].socketId.length > 0
+                ) {
+                    this.userGateway.rankUpdate(
+                        rank,
+                        sortedUsers[i].socketId[0]
+                    );
+                }
                 if (i + 1 < sortedUsers.length) {
                     if (sortedUsers[i].xp > sortedUsers[i + 1].xp) {
                         rank++;

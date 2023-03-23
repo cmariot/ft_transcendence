@@ -30,4 +30,11 @@ export class UserGateway {
             status: status,
         });
     }
+
+    // Send a leaderboard rank update
+    rankUpdate(rank: number, socket: string) {
+        this.server.to(socket).emit("rank.update", {
+            rank: rank,
+        });
+    }
 }

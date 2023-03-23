@@ -120,5 +120,16 @@ export const StatusEvents = ({ children }: StatusEventsProps) => {
         };
     }, [user, socket, chat]);
 
+    // When leaderboard rank update
+    useEffect(() => {
+        function updateLeaderboardRank(data: { rank: number }) {
+            user.setRank(data.rank);
+        }
+        socket.on("rank.update", updateLeaderboardRank);
+        return () => {
+            socket.off("rank.update", updateLeaderboardRank);
+        };
+    }, [user, socket]);
+
     return <>{children}</>;
 };
