@@ -392,7 +392,12 @@ export class GameService {
         while (true) {
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
-            await this.gameGateway.sendPos(player1Socket, player2Socket, match);
+            await this.gameGateway.sendPos(
+                player1Socket,
+                player2Socket,
+                match,
+                gameID
+            );
             if (this.someoneGoal(match, scorePlayer1, scorePlayer2)) {
                 if (match.player1Score >= 15 || match.player2Score >= 15) {
                     break;
@@ -439,6 +444,7 @@ export class GameService {
             ballHeigth: (screenHeigth / 100) * ballSize,
             disconnection: false,
             lose: false,
+            watchersSockets: [],
         };
         return match;
     }
@@ -468,7 +474,8 @@ export class GameService {
         await this.gameGateway.sendPos(
             player1.socketId[0],
             player2.socketId[0],
-            match
+            match,
+            game.uuid
         );
         await this.countDown(player1.socketId[0], player2.socketId[0]);
         this.gameGateway.updateFrontMenu(
@@ -519,5 +526,18 @@ export class GameService {
         await this.gameGateway.emitEndGame(game.uuid, match);
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
+    }
+
+    async watchStream(uuid: string, game_id: string) {
+        const user = await this.userService.getByID(uuid);
+        if (!user || user.socketId.length === 0) {
+            throw new UnauthorizedException("User not found.");
+        }
+        let match: GameInterface = games.get(game_id);
+        if (!match) {
+            return;
+        }
+        match.watchersSockets.push(user.socketId[0]);
+        games.set(game_id, match);
     }
 }

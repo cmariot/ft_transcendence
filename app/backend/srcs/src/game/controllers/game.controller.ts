@@ -1,12 +1,19 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/authentification.guards";
-import { InvitationResponseDto, InvitationDto } from "../dtos/GameUtility.dto";
+import {
+    InvitationResponseDto,
+    InvitationDto,
+    GameIdDto,
+} from "../dtos/GameUtility.dto";
 import { MatchmakingService } from "../services/matchmaking.service";
 import { GameService } from "../services/game.service";
 
 @Controller("game")
 export class GameController {
-    constructor(private matchmakingService: MatchmakingService) {}
+    constructor(
+        private matchmakingService: MatchmakingService,
+        private gameService: GameService
+    ) {}
 
     // Rejoint la queue
     @Post("queue")
@@ -36,8 +43,17 @@ export class GameController {
     }
 
     @Get("current")
-    @UseGuards()
+    @UseGuards(isLogged)
     async getCurrentGames() {
         return await this.matchmakingService.getCurrentGames();
+    }
+
+    @Post("watch")
+    @UseGuards(isLogged)
+    async watchGame(@Req() req, @Body() gameId: GameIdDto) {
+        return await this.gameService.watchStream(
+            req.user.uuid,
+            gameId.game_id
+        );
     }
 }

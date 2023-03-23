@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import { SocketContext } from "../../../contexts/SocketProvider";
+import axios from "axios";
 
 const SelectStream = () => {
     const game = useContext(GameContext);
@@ -18,7 +19,10 @@ const SelectStream = () => {
         player1: string;
         player2: string;
     }) {
-        console.log(match);
+        const watchResponse = await axios.post("/api/game/watch", {
+            game_id: match.game_id,
+        });
+        game.setMenu("Game");
     }
 
     useEffect(() => {
@@ -67,13 +71,13 @@ const SelectStream = () => {
         <div id="select-stream">
             <button onClick={() => cancel()}>cancel</button>
             {game.currentGames.length ? (
-                <>
+                <div>
                     {game.currentGames.map((match, index) => (
                         <button key={index} onClick={() => watchStream(match)}>
                             {match.player1} vs {match.player2}
                         </button>
                     ))}
-                </>
+                </div>
             ) : (
                 <div id="no-channels">
                     <p>No stream available.</p>

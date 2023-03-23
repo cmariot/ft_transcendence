@@ -21,4 +21,5 @@ export interface GameInterface {
     ballHeigth: number;
     disconnection: boolean;
     lose: boolean;
+    watchersSockets: string[];
 }

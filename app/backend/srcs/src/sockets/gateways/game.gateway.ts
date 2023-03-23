@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { GameInterface } from "src/game/interfaces/game.interface";
+import { games } from "src/game/services/game.service";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
@@ -34,9 +35,19 @@ export class GameGateway {
     }
 
     // Send the game elements position
-    async sendPos(player1: string, player2: string, pos: GameInterface) {
+    async sendPos(
+        player1: string,
+        player2: string,
+        pos: GameInterface,
+        game_id: string
+    ) {
         let room = [player1, player2];
         this.server.to(room).emit("game.pos.update", pos);
+        let match: GameInterface = games.get(game_id);
+        if (!match) {
+            return;
+        }
+        this.server.to(match.watchersSockets).emit("game.pos.update", pos);
     }
 
     // Share the game uuid with the players
