@@ -5,14 +5,16 @@ import { ChatContext } from "../../contexts/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import axios, { HttpStatusCode } from "axios";
 import { SocketContext } from "../../contexts/SocketProvider";
+import { GameContext } from "../../contexts/GameProvider";
 
 export default function Friends() {
-    let user = useContext(UserContext);
     const [username, setUsername] = useState("");
     let [showMenu, setShowMenu] = useState("");
     let [update, setUpdate] = useState(false);
     let socket = useContext(SocketContext);
     let chat = useContext(ChatContext);
+    let user = useContext(UserContext);
+    const game = useContext(GameContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -199,6 +201,25 @@ export default function Friends() {
         setUsername("");
     }
 
+    async function watchStream(username: string) {
+        let currentGames = game.currentGames;
+        for (let i = 0; i < currentGames.length; i++) {
+            if (
+                currentGames[i].player1 === username ||
+                currentGames[i].player2 === username
+            ) {
+                const watchResponse = await axios.post("/api/game/watch", {
+                    game_id: currentGames[i].game_id,
+                });
+                if (watchResponse.status === 201) {
+                    game.setMenu("Stream");
+                    navigate("/");
+                }
+                return;
+            }
+        }
+    }
+
     return (
         <div id="friends">
             <aside id="add-friend">
@@ -245,9 +266,23 @@ export default function Friends() {
                                 </div>
                                 {showMenu === friend.username && (
                                     <menu className="friend-menu">
-                                        <button className="friend-menu-button">
-                                            Invite to play (todo)
-                                        </button>
+                                        {friend.status === "ingame" ? (
+                                            <button
+                                                className="friend-menu-button"
+                                                onClick={() => {
+                                                    watchStream(
+                                                        friend.username
+                                                    );
+                                                }}
+                                            >
+                                                Watch stream
+                                            </button>
+                                        ) : (
+                                            <button className="friend-menu-button">
+                                                Invite to play (todo)
+                                            </button>
+                                        )}
+
                                         <button
                                             className="friend-menu-button"
                                             onClick={() =>
