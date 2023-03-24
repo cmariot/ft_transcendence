@@ -85,12 +85,29 @@ export class MatchmakingService {
         throw new UnauthorizedException("Game not found");
     }
 
+    leaveStream(user: UserEntity) {
+        if (!user || user.socketId.length === 0) {
+            throw new UnauthorizedException("User not found.");
+        }
+        games.forEach((value: GameInterface, key: string) => {
+            if (
+                value.watchersSockets.findIndex(
+                    (socket: string) => socket === user.socketId[0]
+                )
+            ) {
+                this.gameService.leaveStream(user.uuid, key);
+                return;
+            }
+        });
+    }
+
     async userDisconnection(user: UserEntity, recursive: boolean) {
         let game: GameEntity;
         if (recursive === true) {
             game = await this.gameRepository.findOneBy({
                 hostID: user.uuid,
             });
+            this.leaveStream(user);
         } else {
             game = await this.gameRepository.findOneBy({
                 guestID: user.uuid,
