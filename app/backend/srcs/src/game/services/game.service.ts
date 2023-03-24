@@ -380,6 +380,9 @@ export class GameService {
                 match.player2Socket,
                 "Disconnection"
             );
+            if (match.watchersSockets.length > 0) {
+                this.gameGateway.endStreamPlayerDisconnect(match);
+            }
         }
         return match.disconnection;
     }
@@ -394,6 +397,10 @@ export class GameService {
         let scorePlayer2 = match.player1Score;
         match = await this.startBallDir(match);
         while (true) {
+            let match = games.get(gameID);
+            if (!match) {
+                return false;
+            }
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
             await this.gameGateway.sendPos(
@@ -415,6 +422,7 @@ export class GameService {
             if (this.someoneDisconnect(gameID)) {
                 return false;
             }
+            games.set(gameID, match);
             await this.sleep(16);
         }
         return true;
@@ -492,6 +500,10 @@ export class GameService {
             player2.socketId[0],
             game.uuid
         );
+        match = games.get(game.uuid);
+        if (!match) {
+            return;
+        }
         if (gameResults) {
             await this.userService.saveGameResult(
                 player1.uuid,
@@ -515,7 +527,7 @@ export class GameService {
                 player2.socketId[0],
                 "Results"
             );
-            this.gameGateway.streamResults(match);
+            this.gameGateway.streamResults(match, game.uuid);
             await this.userService.setStatusByID(player1.uuid, "online");
             await this.userService.setStatusByID(player2.uuid, "online");
         } else {
@@ -533,6 +545,7 @@ export class GameService {
         games.delete(game.uuid);
     }
 
+    // Join a game stream
     async watchStream(uuid: string, game_id: string) {
         const user = await this.userService.getByID(uuid);
         if (!user || user.socketId.length === 0) {
@@ -558,6 +571,7 @@ export class GameService {
         );
     }
 
+    // Leave a game stream
     async leaveStream(uuid: string, game_id: string) {
         const user = await this.userService.getByID(uuid);
         if (!user || user.socketId.length === 0) {

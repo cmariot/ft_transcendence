@@ -18,6 +18,13 @@ export type GameContextType = {
     p1Score: 0;
     p2Name: "";
     p2Score: 0;
+    streamResults: {
+        winner: "";
+        player1: "";
+        player2: "";
+        p1Score: 0;
+        p2Score: 0;
+    };
 };
 
 export const GameContext = createContext({
@@ -63,6 +70,20 @@ export const GameContext = createContext({
     setCurrentGames: (
         newValue: { game_id: string; player1: string; player2: string }[]
     ) => {},
+    streamResults: {
+        winner: "",
+        player1: "",
+        player2: "",
+        p1Score: 0,
+        p2Score: 0,
+    },
+    setStreamResults: (newValue: {
+        winner: string;
+        player1: string;
+        player2: string;
+        p1Score: number;
+        p2Score: number;
+    }) => {},
 });
 
 type GameProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -87,6 +108,19 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [currentGames, setCurrentGames] = useState<
         { game_id: string; player1: string; player2: string }[]
     >([]);
+    const [streamResults, setStreamResults] = useState<{
+        winner: string;
+        player1: string;
+        player2: string;
+        p1Score: number;
+        p2Score: number;
+    }>({
+        winner: "",
+        player1: "",
+        player2: "",
+        p1Score: 0,
+        p2Score: 0,
+    });
 
     const value = {
         menu,
@@ -125,6 +159,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setP2Score,
         currentGames,
         setCurrentGames,
+        streamResults,
+        setStreamResults,
     };
 
     return (

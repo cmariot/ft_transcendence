@@ -105,6 +105,36 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     }, [game, socket, user]);
 
     useEffect(() => {
+        async function setGameID(id: string) {
+            game.setGameID(id);
+        }
+        socket.on("game.name", setGameID);
+        return () => {
+            socket.off("game.name", setGameID);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
+        async function displayStreamResults(data: {
+            gameId: string;
+            results: {
+                winner: string;
+                player1: string;
+                player2: string;
+                p1Score: number;
+                p2Score: number;
+            };
+        }) {
+            game.setStreamResults(data.results);
+            game.setMenu("StreamResults");
+        }
+        socket.on("stream.results", displayStreamResults);
+        return () => {
+            socket.off("stream.results", displayStreamResults);
+        };
+    }, [game, socket]);
+
+    useEffect(() => {
         async function updateGame(data: any) {
             game.setPaddle1(data.player1Position);
             game.setPaddle2(data.player2Position);

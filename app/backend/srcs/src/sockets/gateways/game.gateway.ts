@@ -22,6 +22,13 @@ export class GameGateway {
         this.server.to(room).emit("game.menu.change", { menu: menu });
     }
 
+    // Change the app menu in the frontend
+    async endStreamPlayerDisconnect(match: GameInterface) {
+        this.server
+            .to(match.watchersSockets)
+            .emit("game.menu.change", { menu: "EndStreamPlayerDisconnect" });
+    }
+
     // 5, 4, 3, 2, 1
     async updateCountDown(
         player1: string,
@@ -123,10 +130,23 @@ export class GameGateway {
         });
     }
 
-    async streamResults(match: GameInterface) {
-        this.server
-            .to(match.watchersSockets)
-            .emit("game.menu.change", { menu: "StreamResults" });
+    async streamResults(match: GameInterface, gameId: string) {
+        if (match.watchersSockets.length > 0) {
+            const winner: string =
+                match.player1Score > match.player2Score
+                    ? match.player1Username
+                    : match.player2Username;
+            this.server.to(match.watchersSockets).emit("stream.results", {
+                gameId: gameId,
+                results: {
+                    winner: winner,
+                    player1: match.player1Username,
+                    player2: match.player2Username,
+                    p1Score: match.player1Score,
+                    p2Score: match.player2Score,
+                },
+            });
+        }
     }
 
     async sendCancel(socketId: string, status: string) {
