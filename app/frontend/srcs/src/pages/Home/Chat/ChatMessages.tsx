@@ -3,6 +3,7 @@ import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../contexts/UserProvider";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { GameContext } from "../../../contexts/GameProvider";
 
 const ChatMessages = () => {
     const chat = useContext(ChatContext);
@@ -66,12 +67,48 @@ const ChatMessages = () => {
         navigate("/profile/" + username);
     }
 
+    const game = useContext(GameContext);
+
+    async function watchStream(username: string) {
+        let currentGames = game.currentGames;
+        for (let i = 0; i < currentGames.length; i++) {
+            if (
+                currentGames[i].player1 === username ||
+                currentGames[i].player2 === username
+            ) {
+                const watchResponse = await axios.post("/api/game/watch", {
+                    game_id: currentGames[i].game_id,
+                });
+                if (watchResponse.status === 201) {
+                    game.setMenu("Stream");
+                    navigate("/");
+                }
+                return;
+            }
+        }
+    }
+
     function messageMenu(username: string) {
         if (username !== user.username) {
             if (chat.channelType === "direct_message") {
                 return (
                     <div className="chat-user-message-options">
-                        <button>play</button>
+                        {game.currentGames.findIndex(
+                            (element) => element.player1 === username
+                        ) !== -1 ||
+                        game.currentGames.findIndex(
+                            (element) => element.player2 === username
+                        ) !== -1 ? (
+                            <button
+                                onClick={() => {
+                                    watchStream(username);
+                                }}
+                            >
+                                watch stream
+                            </button>
+                        ) : (
+                            <button>play</button>
+                        )}
                         <button onClick={() => profile(username)}>
                             profile
                         </button>
@@ -86,7 +123,27 @@ const ChatMessages = () => {
                         <button onClick={() => directMessage(username)}>
                             message
                         </button>
-                        <button>play</button>
+                        {game.currentGames.findIndex(
+                            (element) =>
+                                element.player1 === username &&
+                                element.player2 !== user.username
+                        ) !== -1 ||
+                        game.currentGames.findIndex(
+                            (element) =>
+                                element.player1 !== user.username &&
+                                element.player2 === username
+                        ) !== -1 ? (
+                            <button
+                                onClick={() => {
+                                    watchStream(username);
+                                }}
+                            >
+                                watch stream
+                            </button>
+                        ) : (
+                            <button>play</button>
+                        )}
+
                         <button onClick={() => profile(username)}>
                             profile
                         </button>
