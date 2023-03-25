@@ -1,9 +1,11 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const EditChannelPassword = () => {
     const chat = useContext(ChatContext);
+    const menu = useContext(MenuContext);
 
     const [protectedChannel, setProtectedChannel] = useState(false);
     const [newChannelPassword, setNewChannelPassword] = useState("");
@@ -65,7 +67,7 @@ const EditChannelPassword = () => {
                 chat.setPage("ChatConv");
             })
             .catch(function (error) {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     };
 

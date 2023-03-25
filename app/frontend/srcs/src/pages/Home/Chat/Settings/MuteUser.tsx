@@ -3,6 +3,7 @@ import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
 import { UserContext } from "../../../../contexts/UserProvider";
 import { SocketContext } from "../../../../contexts/SocketProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const MuteUser = () => {
     const chat = useContext(ChatContext);
@@ -11,6 +12,7 @@ const MuteUser = () => {
     const [newMute, setNewMute] = useState("");
     const [muteDuration, setMuteDuration] = useState("600"); // default 10 minutes
     const [update, setUpdate] = useState(false);
+    const menu = useContext(MenuContext);
 
     useEffect(() => {
         setUpdate((prevState) => !prevState);
@@ -45,7 +47,7 @@ const MuteUser = () => {
                 setNewMute("");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -61,7 +63,7 @@ const MuteUser = () => {
                 setUpdate(!update);
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

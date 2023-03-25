@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios, { HttpStatusCode } from "axios";
 import { SocketContext } from "../../contexts/SocketProvider";
 import { GameContext } from "../../contexts/GameProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function Friends() {
     const [username, setUsername] = useState("");
@@ -15,6 +16,7 @@ export default function Friends() {
     let chat = useContext(ChatContext);
     let user = useContext(UserContext);
     const game = useContext(GameContext);
+    const menu = useContext(MenuContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -340,7 +342,7 @@ export default function Friends() {
                                                         .catch(function (
                                                             error
                                                         ) {
-                                                            alert(
+                                                            menu.displayError(
                                                                 error.response
                                                                     .data
                                                                     .message
@@ -389,7 +391,7 @@ export default function Friends() {
                                                     );
                                                 })
                                                 .catch(function (error) {
-                                                    alert(
+                                                    menu.displayError(
                                                         error.response.data
                                                             .message
                                                     );

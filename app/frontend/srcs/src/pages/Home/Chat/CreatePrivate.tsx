@@ -1,9 +1,11 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const CreatePrivate = () => {
     const chat = useContext(ChatContext);
+    const menu = useContext(MenuContext);
 
     const [newChannelName, setNewChannelName] = useState("");
 
@@ -22,7 +24,7 @@ const CreatePrivate = () => {
     const submitCreateChannelForm = async (event: any) => {
         event.preventDefault();
         if (newChannelName.length === 0) {
-            alert("You must set a name for your new conversation");
+            menu.displayError("You must set a name for your new conversation");
             return;
         }
         await axios
@@ -43,7 +45,7 @@ const CreatePrivate = () => {
                 chat.setPage("ChatConv");
             })
             .catch(function (error) {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     };
 

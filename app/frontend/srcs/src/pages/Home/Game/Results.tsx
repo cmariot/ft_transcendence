@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const Results = () => {
     const game = useContext(GameContext);
+    const menu = useContext(MenuContext);
 
     function winnerName() {
         return game.p1Score > game.p2Score ? game.p1Name : game.p2Name;
@@ -17,7 +19,7 @@ const Results = () => {
                 game.setMenu("WaitingScreen");
             }
         } catch (error: any) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         }
     }
 

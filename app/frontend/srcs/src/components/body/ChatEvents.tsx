@@ -3,12 +3,14 @@ import { SocketContext } from "../../contexts/SocketProvider";
 import { ChatContext } from "../../contexts/ChatProvider";
 import axios from "axios";
 import { UserContext } from "../../contexts/UserProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 type ChatEventsProps = { children: JSX.Element | JSX.Element[] };
 export const ChatEvents = ({ children }: ChatEventsProps) => {
     const chat = useContext(ChatContext);
     const socket = useContext(SocketContext);
     const user = useContext(UserContext);
+    const menu = useContext(MenuContext);
 
     function arrayToMap(array: Array<any>) {
         let map = new Map<
@@ -131,7 +133,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                             chat.setbannedUsers(response.data.banned_users);
                         })
                         .catch(function (error) {
-                            alert(error.response.data.message);
+                            menu.displayError(error.response.data.message);
                         });
                 }
             }
@@ -393,7 +395,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                             chat.setbannedUsers(response.data.banned_users);
                         })
                         .catch(function (error) {
-                            alert(error.response.data.message);
+                            menu.displayError(error.response.data.message);
                         });
                 }
             }
@@ -402,7 +404,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         return () => {
             socket.off("chat.user.kicked", updateUsers);
         };
-    }, [chat, socket, user]);
+    }, [chat, socket, user, menu]);
 
     // When an user leave a private channel
     useEffect(() => {

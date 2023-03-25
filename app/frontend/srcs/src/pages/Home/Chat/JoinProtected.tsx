@@ -1,10 +1,12 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const JoinProtected = () => {
     const chat = useContext(ChatContext);
     const [password, setPassword] = useState("");
+    const menu = useContext(MenuContext);
 
     function handlePasswordChange(event: any) {
         event.preventDefault();
@@ -43,7 +45,7 @@ const JoinProtected = () => {
             })
             .catch((error) => {
                 setPassword("");
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

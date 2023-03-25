@@ -1,13 +1,15 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../styles/Register.css";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function Register() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [doubleAuth, setDoubleAuth] = useState(true);
+    const menu = useContext(MenuContext);
 
     const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ export default function Register() {
             password.length === 0 ||
             email.length === 0
         ) {
-            alert("Error, all the fields are required");
+            menu.displayError("Error, all the fields are required");
             return;
         }
         await axios
@@ -52,11 +54,11 @@ export default function Register() {
                         error.response.data.message
                     ) === "[object Array]"
                 ) {
-                    alert(error.response.data.message[0]);
+                    menu.displayError(error.response.data.message[0]);
                 } else if (error.response.data.message) {
-                    alert(error.response.data.message);
+                    menu.displayError(error.response.data.message);
                 } else {
-                    alert("Register error");
+                    menu.displayError("Register error");
                 }
                 return;
             });

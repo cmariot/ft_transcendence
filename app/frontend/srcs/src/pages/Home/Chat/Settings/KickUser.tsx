@@ -1,9 +1,11 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const KickUser = () => {
     const chat = useContext(ChatContext);
+    const menu = useContext(MenuContext);
     const [newKickName, setNewKickName] = useState("");
 
     function handleNewKickChange(event: ChangeEvent<HTMLInputElement>) {
@@ -28,7 +30,7 @@ const KickUser = () => {
                 setNewKickName("");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

@@ -1,9 +1,11 @@
 import axios from "axios";
 import { ChangeEvent, useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function EditUsername() {
     const user = useContext(UserContext);
+    const menu = useContext(MenuContext);
     const [newUsername, setNewUsername] = useState(user.username);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +18,7 @@ export default function EditUsername() {
     const submitUsernameForm = async (event: any) => {
         event.preventDefault();
         if (newUsername === user.username) {
-            alert("Change your username");
+            menu.displayError("Change your username");
             return;
         }
         await axios
@@ -27,7 +29,7 @@ export default function EditUsername() {
                 user.editUsername(newUsername);
             })
             .catch(function (error) {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     };
 

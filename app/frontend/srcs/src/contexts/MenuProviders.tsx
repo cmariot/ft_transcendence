@@ -5,6 +5,11 @@ export type MenuContextType = {
     setDisplay: (newValue: boolean) => {};
     toogle: () => {};
     close: () => {};
+
+    error: boolean;
+    errorMessage: string;
+    displayError: (error: string) => {};
+    closeError: () => {};
 };
 
 export const MenuContext = createContext({
@@ -12,6 +17,11 @@ export const MenuContext = createContext({
     setDisplay: (newValue: boolean) => {},
     toogle: () => {},
     close: () => {},
+
+    error: false,
+    errorMessage: "",
+    displayError: (error: string) => {},
+    closeError: () => {},
 });
 
 type MenuProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -19,11 +29,26 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
     const [display, setDisplay] = useState(false);
 
     function toogle() {
+        closeError();
         setDisplay((prevState) => !prevState);
     }
 
     function close() {
+        closeError();
         setDisplay(false);
+    }
+
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    function displayError(error: string) {
+        setErrorMessage(error);
+        setError(true);
+    }
+
+    function closeError() {
+        setErrorMessage("");
+        setError(false);
     }
 
     const value = {
@@ -31,6 +56,10 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         setDisplay,
         toogle,
         close,
+        error,
+        errorMessage,
+        displayError,
+        closeError,
     };
 
     return (

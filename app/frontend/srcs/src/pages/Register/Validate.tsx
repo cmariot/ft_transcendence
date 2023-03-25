@@ -1,11 +1,13 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "../../styles/Validate.css";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 const Validate = () => {
     const navigate = useNavigate();
+    const menu = useContext(MenuContext);
     const [code, setCode] = useState("");
 
     const handleValidateChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +27,7 @@ const Validate = () => {
                 navigate("/");
             })
             .catch(function (error) {
-                alert("Your code is not valide.");
+                menu.displayError("Your code is not valide.");
                 setCode("");
             });
     };
@@ -33,7 +35,7 @@ const Validate = () => {
     const resendCode = async (event: any) => {
         event.preventDefault();
         await axios.get("/api/register/resend").catch(function (error) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         });
     };
 

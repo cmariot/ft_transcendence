@@ -1,12 +1,14 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../styles/DoubleAuth.css";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 const DoubleAuth = () => {
     const navigate = useNavigate();
     const [code2fa, setCode2fa] = useState("");
+    const menu = useContext(MenuContext);
 
     const handleValidate2faChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
@@ -25,14 +27,14 @@ const DoubleAuth = () => {
                 navigate("/");
             })
             .catch(function (error) {
-                alert("Your code is not valide.");
+                menu.displayError("Your code is not valide.");
                 setCode2fa("");
             });
     };
 
     const resend2faCode = () => {
         axios.get("/api/second_auth/resend").catch(function (error) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         });
     };
 

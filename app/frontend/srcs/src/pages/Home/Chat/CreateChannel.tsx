@@ -1,12 +1,14 @@
 import { ChangeEvent, useContext, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const CreateChannel = () => {
     const chat = useContext(ChatContext);
     const [channelName, setChannelName] = useState("");
     const [channelType, setChannelType] = useState("public");
     const [channelPassword, setNewChannelPassword] = useState("");
+    const menu = useContext(MenuContext);
 
     function cancelCreateChannel() {
         chat.setPage("YourChannels");
@@ -103,7 +105,7 @@ const CreateChannel = () => {
                 chat.setPage("ChatConv");
             })
             .catch(function (error) {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     };
 

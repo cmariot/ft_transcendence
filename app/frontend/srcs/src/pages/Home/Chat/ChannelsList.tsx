@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const ChannelsList = () => {
     const chat = useContext(ChatContext);
+    const menu = useContext(MenuContext);
 
     async function joinChannel(channel: string, channelType: string) {
         if (channelType === "protected") {
@@ -31,7 +33,7 @@ const ChannelsList = () => {
                     chat.setPage("ChatConv");
                 })
                 .catch(function (error) {
-                    alert(error.response.data.message);
+                    menu.displayError(error.response.data.message);
                 });
         }
     }

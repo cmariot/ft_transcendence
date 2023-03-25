@@ -3,6 +3,7 @@ import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
 import { SocketContext } from "../../../../contexts/SocketProvider";
 import { UserContext } from "../../../../contexts/UserProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const EditAdmins = () => {
     const chat = useContext(ChatContext);
@@ -10,6 +11,7 @@ const EditAdmins = () => {
     const user = useContext(UserContext);
     const [newAdminName, setNewAdmin] = useState("");
     const [update, setUpdate] = useState(false);
+    const menu = useContext(MenuContext);
 
     // When a admin is removed
     useEffect(() => {
@@ -85,7 +87,7 @@ const EditAdmins = () => {
                 setNewAdmin("");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -105,7 +107,7 @@ const EditAdmins = () => {
                 setUpdate((prevState) => !prevState);
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

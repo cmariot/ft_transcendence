@@ -3,6 +3,7 @@ import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
 import { UserContext } from "../../../../contexts/UserProvider";
 import { SocketContext } from "../../../../contexts/SocketProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const BanUser = () => {
     const chat = useContext(ChatContext);
@@ -11,6 +12,7 @@ const BanUser = () => {
     const [newBanName, setNewBan] = useState("");
     const [banDuration, setBanDuration] = useState("600"); // default 10 minutes
     const [update, setUpdate] = useState(false);
+    const menu = useContext(MenuContext);
 
     // When an user is banned
     useEffect(() => {
@@ -103,7 +105,7 @@ const BanUser = () => {
                 setNewBan("");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -119,7 +121,7 @@ const BanUser = () => {
                 setUpdate(!update);
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

@@ -2,10 +2,12 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../../contexts/ChatProvider";
 import { SocketContext } from "../../../../contexts/SocketProvider";
+import { MenuContext } from "../../../../contexts/MenuProviders";
 
 const AddUser = () => {
     const chat = useContext(ChatContext);
     const [newUser, setNewUser] = useState("");
+    const menu = useContext(MenuContext);
     const [update, setUpdate] = useState(false);
 
     function handleNewUser(event: ChangeEvent<HTMLInputElement>) {
@@ -28,7 +30,7 @@ const AddUser = () => {
                 setNewUser("");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -44,7 +46,7 @@ const AddUser = () => {
                 }
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 

@@ -3,11 +3,13 @@ import { UserContext } from "../../contexts/UserProvider";
 import { SocketContext } from "../../contexts/SocketProvider";
 import axios from "axios";
 import { ChatContext } from "../../contexts/ChatProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 type StatusEventsProps = { children: JSX.Element | JSX.Element[] };
 export const StatusEvents = ({ children }: StatusEventsProps) => {
     const user = useContext(UserContext);
     const socket = useContext(SocketContext);
+    const menu = useContext(MenuContext);
 
     // Emit an event at login
     useEffect(() => {
@@ -108,7 +110,7 @@ export const StatusEvents = ({ children }: StatusEventsProps) => {
                             chat.setMessages(response.data.messages);
                         })
                         .catch(function (error) {
-                            alert(error.response.data.message);
+                            menu.displayError(error.response.data.message);
                         });
             }
         }
@@ -118,7 +120,7 @@ export const StatusEvents = ({ children }: StatusEventsProps) => {
         return () => {
             socket.off("user.update.username", updateFriendUsername);
         };
-    }, [user, socket, chat]);
+    }, [user, socket, chat, menu]);
 
     // When leaderboard rank update
     useEffect(() => {

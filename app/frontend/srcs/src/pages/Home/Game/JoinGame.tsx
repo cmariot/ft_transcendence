@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const JoinGame = () => {
     const game = useContext(GameContext);
+    const menu = useContext(MenuContext);
 
     async function joinGame() {
         try {
@@ -13,7 +15,7 @@ const JoinGame = () => {
                 game.setMenu("WaitingScreen");
             }
         } catch (error: any) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         }
     }
 

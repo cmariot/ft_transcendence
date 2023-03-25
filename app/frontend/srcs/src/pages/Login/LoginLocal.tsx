@@ -1,12 +1,14 @@
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../utils/GetCookie";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const menu = useContext(MenuContext);
     const navigate = useNavigate();
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +25,7 @@ const LoginLocal = () => {
     const submitLoginForm = async (event: any) => {
         event.preventDefault();
         if (username.length === 0 || password.length === 0) {
-            alert("Error, all the fields are required");
+            menu.displayError("Error, all the fields are required");
             return;
         }
         await axios
@@ -41,14 +43,14 @@ const LoginLocal = () => {
                 } else if (getCookie("authentification")) {
                     return navigate("/");
                 } else {
-                    alert("Unable to login. Please try again.");
+                    menu.displayError("Unable to login. Please try again.");
                     return navigate("/login");
                 }
             })
             .catch((error) => {
                 setUsername("");
                 setPassword("");
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     };
 

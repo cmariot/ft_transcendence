@@ -1,5 +1,6 @@
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
+import { MenuContext } from "./MenuProviders";
 
 export type UserContextType = {
     username: string;
@@ -80,6 +81,8 @@ export const UserContext = createContext({
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
 const UserProvider = ({ children }: UserProviderProps) => {
+    const menu = useContext(MenuContext);
+
     const [username, editUsername] = useState("");
     const [avatar, editAvatar] = useState("");
     const [doubleAuth, editDoubleAuth] = useState(true);
@@ -145,7 +148,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
                 }
             }
         } catch (error: any) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         }
         return friendList;
     }
@@ -166,7 +169,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
                 }
             })
             .catch(function (error) {
-                alert(error.response.data.message);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -199,7 +202,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
                 }
             }
         } catch (error: any) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         }
     }
 

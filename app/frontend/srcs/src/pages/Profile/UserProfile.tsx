@@ -5,8 +5,10 @@ import axios from "axios";
 import { UserContext } from "../../contexts/UserProvider";
 import { ChatContext } from "../../contexts/ChatProvider";
 import { SocketContext } from "../../contexts/SocketProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 const UserProfile = () => {
+    const menu = useContext(MenuContext);
     const params = useParams();
     const username: string =
         params.userprofile === undefined ? "" : params.userprofile;
@@ -183,139 +185,141 @@ const UserProfile = () => {
         if (found) {
             return (
                 <div>
-                    <h2>{username}'s profile</h2>
-                    {image && (
-                        <img
-                            id="profile-user-picture"
-                            src={image}
-                            alt="user-imag"
-                        />
-                    )}
-                    <h3>{username}</h3>
                     <div>
-                        {friend ? (
-                            <button
-                                onClick={() => {
-                                    user.removeFriend(username);
-                                    setFriend(false);
-                                }}
-                            >
-                                remove friend
-                            </button>
-                        ) : (
-                            <button
-                                onClick={() => {
-                                    user.addFriend(username);
-                                    setFriend(true);
-                                }}
-                            >
-                                add friend
-                            </button>
+                        <h2>{username}'s profile</h2>
+                        {image && (
+                            <img
+                                id="profile-user-picture"
+                                src={image}
+                                alt="user-imag"
+                            />
                         )}
-                        {blocked ? (
-                            <button
-                                onClick={async () => {
-                                    user.unblock(username);
-                                    if (chat.channel.length) {
-                                        await axios
-                                            .post("/api/chat/connect", {
-                                                channelName: chat.channel,
-                                            })
-                                            .then(function (response: any) {
-                                                chat.setMessages(
-                                                    response.data.messages
-                                                );
-                                            })
-                                            .catch(function (error) {
-                                                alert(
-                                                    error.response.data.message
-                                                );
-                                            });
-                                    }
-                                    setBlocked(false);
-                                }}
-                            >
-                                unblock
+                        <h3>{username}</h3>
+                        <div>
+                            {friend ? (
+                                <button
+                                    onClick={() => {
+                                        user.removeFriend(username);
+                                        setFriend(false);
+                                    }}
+                                >
+                                    remove friend
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        user.addFriend(username);
+                                        setFriend(true);
+                                    }}
+                                >
+                                    add friend
+                                </button>
+                            )}
+                            {blocked ? (
+                                <button
+                                    onClick={async () => {
+                                        user.unblock(username);
+                                        if (chat.channel.length) {
+                                            await axios
+                                                .post("/api/chat/connect", {
+                                                    channelName: chat.channel,
+                                                })
+                                                .then(function (response: any) {
+                                                    chat.setMessages(
+                                                        response.data.messages
+                                                    );
+                                                })
+                                                .catch(function (error) {
+                                                    menu.displayError(
+                                                        error.response.data
+                                                            .message
+                                                    );
+                                                });
+                                        }
+                                        setBlocked(false);
+                                    }}
+                                >
+                                    unblock
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={async () => {
+                                        user.block(username);
+                                        if (chat.channel.length) {
+                                            await axios
+                                                .post("/api/chat/connect", {
+                                                    channelName: chat.channel,
+                                                })
+                                                .then(function (response: any) {
+                                                    chat.setMessages(
+                                                        response.data.messages
+                                                    );
+                                                })
+                                                .catch(function (error) {
+                                                    menu.displayError(
+                                                        error.response.data
+                                                            .message
+                                                    );
+                                                });
+                                        }
+                                        setBlocked(true);
+                                    }}
+                                >
+                                    block
+                                </button>
+                            )}
+                            <button onClick={() => goToPrevious()}>
+                                return
                             </button>
-                        ) : (
-                            <button
-                                onClick={async () => {
-                                    user.block(username);
-                                    if (chat.channel.length) {
-                                        await axios
-                                            .post("/api/chat/connect", {
-                                                channelName: chat.channel,
-                                            })
-                                            .then(function (response: any) {
-                                                chat.setMessages(
-                                                    response.data.messages
-                                                );
-                                            })
-                                            .catch(function (error) {
-                                                alert(
-                                                    error.response.data.message
-                                                );
-                                            });
-                                    }
-                                    setBlocked(true);
-                                }}
-                            >
-                                block
-                            </button>
-                        )}
-                        <button onClick={() => goToPrevious()}>return</button>
-                    </div>
-                    {gameHistory.length > 0 && (
-                        <div id="stats">
-                            <div>
-                                <p>Leaderboard rank : {rank}</p>
-                                <p>
-                                    Game played :{" "}
-                                    {winRatio.defeat + winRatio.victory}
-                                </p>
-                                <p>
-                                    Game win : {winRatio.victory}{" "}
-                                    {winPercentage()}
-                                </p>
-                                <p>
-                                    Game lose : {winRatio.defeat}{" "}
-                                    {losePercentage()}
-                                </p>
-                            </div>
-                            <div>
-                                <ul id="games-list">
-                                    <h2>Match history</h2>
-                                    {gameHistory.map(
-                                        (game: any, index: number) => (
-                                            <li
-                                                className="match-results"
-                                                key={index}
-                                            >
-                                                <div className="winner">
-                                                    <p>{game.winner}</p>
-                                                    <p>{game.winner_score}</p>
-                                                </div>
-                                                <div className="vs">
-                                                    <p>vs</p>
-                                                </div>
-                                                <div className="winner">
-                                                    <p>{game.loser}</p>
-                                                    <p>{game.loser_score}</p>
-                                                </div>
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
-                            </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             );
         } else {
             return <h2>not found</h2>;
         }
     }
-    return <main id="profile">{displayProfileOrError()}</main>;
+    return (
+        <div>
+            <main id="profile">{displayProfileOrError()}</main>
+            {gameHistory.length > 0 && (
+                <div id="stats">
+                    <div>
+                        <p>Leaderboard rank : {rank}</p>
+                        <p>
+                            Game played : {winRatio.defeat + winRatio.victory}
+                        </p>
+                        <p>
+                            Game win : {winRatio.victory} {winPercentage()}
+                        </p>
+                        <p>
+                            Game lose : {winRatio.defeat} {losePercentage()}
+                        </p>
+                    </div>
+                    <div>
+                        <ul id="games-list">
+                            <h2>Match history</h2>
+                            {gameHistory.map((game: any, index: number) => (
+                                <li className="match-results" key={index}>
+                                    <div className="winner">
+                                        <p>{game.winner}</p>
+                                        <p>{game.winner_score}</p>
+                                    </div>
+                                    <div className="vs">
+                                        <p>vs</p>
+                                    </div>
+                                    <div className="winner">
+                                        <p>{game.loser}</p>
+                                        <p>{game.loser_score}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default UserProfile;

@@ -1,9 +1,11 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { ChatContext } from "../../../contexts/ChatProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const ChatMessage = () => {
     const chat = useContext(ChatContext);
+    const menu = useContext(MenuContext);
     const [message, setMessage] = useState("");
 
     const handleMessageTyping = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +33,7 @@ const ChatMessage = () => {
                 }
             })
             .catch(() => {
-                alert(
+                menu.displayError(
                     "You are not authorized to send a message on this channel."
                 );
             });

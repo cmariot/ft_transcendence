@@ -3,10 +3,12 @@ import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
 import { UserContext } from "../../../contexts/UserProvider";
+import { MenuContext } from "../../../contexts/MenuProviders";
 
 const WaitingScreen = () => {
     const game = useContext(GameContext);
     const user = useContext(UserContext);
+    const menu = useContext(MenuContext);
 
     async function cancelGame() {
         try {
@@ -17,7 +19,7 @@ const WaitingScreen = () => {
                 game.setMenu("JoinGame");
             }
         } catch (error: any) {
-            alert(error.response.data.message);
+            menu.displayError(error.response.data.message);
         }
     }
 

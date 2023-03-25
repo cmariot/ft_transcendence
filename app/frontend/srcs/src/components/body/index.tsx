@@ -7,6 +7,7 @@ import { NavBar } from "../navbar/index";
 import { Menu } from "../menu/menu";
 import { Footer } from "../footer/index";
 import { GameEvents } from "./GameEvents";
+import ErrorPage from "../../utils/ErrorPage";
 
 export const Body = () => {
     const menu = useContext(MenuContext);
@@ -16,7 +17,13 @@ export const Body = () => {
             <ChatEvents>
                 <GameEvents>
                     <NavBar />
-                    {menu.display ? <Menu /> : <Outlet />}
+                    {menu.error ? (
+                        <ErrorPage />
+                    ) : menu.display ? (
+                        <Menu />
+                    ) : (
+                        <Outlet />
+                    )}
                     <Footer />
                 </GameEvents>
             </ChatEvents>
