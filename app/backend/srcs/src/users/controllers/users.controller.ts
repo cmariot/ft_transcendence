@@ -80,6 +80,11 @@ export class UsersController {
             req.user.uuid
         );
         if (!previousProfile) throw new UnauthorizedException("User not found");
+        else if (previousProfile.status !== "online") {
+            throw new UnauthorizedException(
+                "Your status must be different than " + previousProfile.status
+            );
+        }
         let previousUsername: string = previousProfile.username;
         let newUsername: string = newUsernameDto.username;
         return this.userService.updateUsername(previousUsername, newUsername);

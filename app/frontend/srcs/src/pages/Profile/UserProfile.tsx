@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/Profile.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
@@ -6,13 +6,10 @@ import { UserContext } from "../../contexts/UserProvider";
 import { ChatContext } from "../../contexts/ChatProvider";
 import { SocketContext } from "../../contexts/SocketProvider";
 
-export function loader({ params }: any) {
-    return params;
-}
-
 const UserProfile = () => {
-    const params: any = useLoaderData();
-    const username = params.user;
+    const params = useParams();
+    const username: string =
+        params.userprofile === undefined ? "" : params.userprofile;
 
     const navigate = useNavigate();
 

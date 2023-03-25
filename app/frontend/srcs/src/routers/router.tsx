@@ -7,7 +7,7 @@ import DoubleAuth from "../pages/DoubleAuth/DoubleAuth";
 import { Body } from "../components/body/index";
 import Home from "../pages/Home/Home";
 import Profile from "../pages/Profile/Profile";
-import UserProfile, { loader } from "../pages/Profile/UserProfile";
+import UserProfile from "../pages/Profile/UserProfile";
 import Friends from "../pages/Friend/Friends";
 import Settings from "../pages/Settings/Settings";
 import ConfirmProfile from "../pages/Settings/ConfirmProfile";
@@ -51,9 +51,8 @@ export const router = createBrowserRouter([
                         element: <Settings />,
                     },
                     {
-                        path: "profile/:user",
+                        path: "profile/:userprofile",
                         element: <UserProfile />,
-                        loader: loader,
                     },
                 ],
             },
