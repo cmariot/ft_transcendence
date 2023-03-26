@@ -102,9 +102,11 @@ const ChatProvider = ({ children }: ChatProviderProps) => {
     const [isChannelDeleted, setisChannelDeleted] = useState(false);
     const [showMenu, setShownMenu] = useState(false);
     const [page, setPage] = useState("YourChannels");
+
     function toogleMenu() {
         setShownMenu((prevState) => !prevState);
     }
+
     function closeMenu() {
         setShownMenu(false);
     }

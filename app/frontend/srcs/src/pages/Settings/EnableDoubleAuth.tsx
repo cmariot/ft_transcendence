@@ -2,10 +2,12 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import "../../styles/Settings.css";
 import { UserContext } from "../../contexts/UserProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function EnableDoubleAuth() {
     const user = useContext(UserContext);
     const [userPref, setUserPref] = useState(user.doubleAuth);
+    const menu = useContext(MenuContext);
 
     function editDoubleAuth() {
         axios
@@ -16,7 +18,7 @@ export default function EnableDoubleAuth() {
                 user.editDoubleAuth(newValue);
             })
             .catch(function (error) {
-                console.log(error);
+                menu.displayError(error.response.data.message);
             });
     }
 

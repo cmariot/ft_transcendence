@@ -23,10 +23,10 @@ const Validate = () => {
             .post("/api/register/validate", {
                 code: code,
             })
-            .then(function (response) {
+            .then(function () {
                 navigate("/");
             })
-            .catch(function (error) {
+            .catch(function () {
                 menu.displayError("Your code is not valide.");
                 setCode("");
             });
@@ -47,7 +47,7 @@ const Validate = () => {
                 navigate("/");
             })
             .catch(function (error) {
-                console.log(error);
+                menu.displayError(error.response.data.message);
             });
     };
 

@@ -87,8 +87,8 @@ const UserProfile = () => {
                     setWinRatio(gameHistoryResponse.data.winRatio);
                     setRank(gameHistoryResponse.data.rank);
                 }
-            } catch (error) {
-                console.log(error);
+            } catch (error: any) {
+                menu.displayError(error.response.data.message);
                 setFound(false);
             }
         })();
@@ -99,6 +99,7 @@ const UserProfile = () => {
         user.friends,
         user.username,
         username,
+        menu,
     ]);
 
     async function goToPrevious() {
@@ -119,8 +120,8 @@ const UserProfile = () => {
                         let imageUrl = URL.createObjectURL(avatarResponse.data);
                         setImage(imageUrl);
                     }
-                } catch (error) {
-                    console.log(error);
+                } catch (error: any) {
+                    menu.displayError(error.response.data.message);
                 }
             }
         }
@@ -128,7 +129,7 @@ const UserProfile = () => {
         return () => {
             socket.off("user.update.avatar", updateUserAvatar);
         };
-    }, [user, socket, username]);
+    }, [user, socket, username, menu]);
 
     useEffect(() => {
         function updateUsername(data: {

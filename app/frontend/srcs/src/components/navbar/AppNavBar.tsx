@@ -22,8 +22,10 @@ const AppNavBar = () => {
                     <Link to="/" onClick={() => menu.close()}>
                         ft_transcendence
                     </Link>
+
                     {user?.username && user?.avatar ? (
                         <div id="nav-user-infos">
+                            <button>notifications</button>
                             <button onClick={() => toogleMenu()}>
                                 {user?.username}
                             </button>

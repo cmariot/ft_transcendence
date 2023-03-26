@@ -3,9 +3,11 @@ import "../../styles/Settings.css";
 import "../../styles/Theme.css";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserProvider";
+import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function EditProfilePicture() {
     const user = useContext(UserContext);
+    const menu = useContext(MenuContext);
 
     async function uploadImage(event: any) {
         event.preventDefault();
@@ -22,7 +24,7 @@ export default function EditProfilePicture() {
                     user.editAvatar(URL.createObjectURL(event.target.files[0]));
                 })
                 .catch((error) => {
-                    console.log(error);
+                    menu.displayError(error.response.data.message);
                 });
         }
     }

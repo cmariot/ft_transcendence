@@ -4,11 +4,13 @@ import axios from "axios";
 import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
 import { GameContext } from "../contexts/GameProvider";
+import { MenuContext } from "../contexts/MenuProviders";
 
 export default function ProtectedPage() {
     const user = useContext(UserContext);
     const game = useContext(GameContext);
     const navigate = useNavigate();
+    const menu = useContext(MenuContext);
 
     useEffect(() => {
         if (user.isForcedLogout) {
@@ -46,7 +48,7 @@ export default function ProtectedPage() {
                         blockedResponse.status !== 200 ||
                         gameResponse.status !== 200
                     ) {
-                        console.log("Cannot fetch your profile.");
+                        menu.displayError("Cannot fetch your profile.");
                         return navigate("/login");
                     }
 
@@ -72,9 +74,9 @@ export default function ProtectedPage() {
                         } else {
                             user.editAvatar(avatar);
                         }
-                    } catch (error) {
+                    } catch (error: any) {
                         user.editAvatar(avatar);
-                        console.log(error);
+                        menu.displayError(error);
                     }
 
                     for (let i = 0; i < friends.length; i++) {
@@ -94,8 +96,8 @@ export default function ProtectedPage() {
                             } else {
                                 friends[i].avatar = url;
                             }
-                        } catch (error) {
-                            console.log(error);
+                        } catch (error: any) {
+                            menu.displayError(error.response.data.message);
                         }
                     }
 
@@ -116,8 +118,8 @@ export default function ProtectedPage() {
                             } else {
                                 blocked[i].avatar = url;
                             }
-                        } catch (error) {
-                            console.log(error);
+                        } catch (error: any) {
+                            menu.displayError(error.response.data.message);
                         }
                     }
 

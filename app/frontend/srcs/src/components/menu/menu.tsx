@@ -20,8 +20,8 @@ export const Menu = () => {
             menu.close();
             user.setClickOnLogout(true);
             return navigate("/login");
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            menu.displayError(error.response.data);
         }
     }
 

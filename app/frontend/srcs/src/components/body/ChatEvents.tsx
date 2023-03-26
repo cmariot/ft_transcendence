@@ -41,15 +41,15 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                         arrayToMap(channelsResponse.data.availableChannels)
                     );
                 }
-            } catch (error) {
-                console.log(error);
+            } catch (error: any) {
+                menu.displayError(error.response.data.message);
             }
         }
         socket.on("chat.new.channel", updateChannels);
         return () => {
             socket.off("chat.new.channel", updateChannels);
         };
-    }, [chat, socket]);
+    }, [chat, socket, menu]);
 
     // When a channel is deleted
     useEffect(() => {
@@ -183,7 +183,9 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                             );
                         }
                     } catch (connectResponse: any) {
-                        console.log(connectResponse.response.data.message);
+                        menu.displayError(
+                            connectResponse.response.data.message
+                        );
                     }
                 }
             }
@@ -192,7 +194,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         return () => {
             socket.off("chat.remove.admin", updateAdmins);
         };
-    }, [chat, socket, user]);
+    }, [chat, socket, user, menu]);
 
     // When an user is mute
     useEffect(() => {

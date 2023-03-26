@@ -95,7 +95,6 @@ export const GameEvents = ({ children }: GameEventsProps) => {
                 ratio.defeat++;
             }
             user.setWinRatio(ratio);
-            console.log("RANK = ", data.rank);
             user.setRank(data.rank);
         }
         socket.on("game.results", updateHistory);
