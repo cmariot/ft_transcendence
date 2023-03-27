@@ -22,6 +22,10 @@ export type UserContextType = {
         loser_score: number;
     }[];
     rank: number;
+    notifications: {
+        message: string;
+        type: string;
+    }[];
 };
 
 export const UserContext = createContext({
@@ -77,6 +81,16 @@ export const UserContext = createContext({
     ) => {},
     rank: 0,
     setRank: (newRank: number) => {},
+    notifications: new Array<{
+        message: string;
+        type: string;
+    }>(),
+    setNotifications: (
+        newValue: {
+            message: string;
+            type: string;
+        }[]
+    ) => {},
 });
 
 type UserProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -114,6 +128,12 @@ const UserProvider = ({ children }: UserProviderProps) => {
         }[]
     >([]);
     const [rank, setRank] = useState(0);
+    const [notifications, setNotifications] = useState<
+        {
+            message: string;
+            type: string;
+        }[]
+    >([]);
 
     async function addFriend(friendUsername: string) {
         let friendList = friends;
@@ -257,6 +277,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
         setGamehistory,
         rank,
         setRank,
+        notifications,
+        setNotifications,
     };
 
     return (

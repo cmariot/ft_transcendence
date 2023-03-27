@@ -8,6 +8,7 @@ import { Menu } from "../menu/menu";
 import { Footer } from "../footer/index";
 import { GameEvents } from "./GameEvents";
 import ErrorPage from "../../utils/ErrorPage";
+import { Notifications } from "../notifications/notifications";
 
 export const Body = () => {
     const menu = useContext(MenuContext);
@@ -21,6 +22,8 @@ export const Body = () => {
                         <ErrorPage />
                     ) : menu.display ? (
                         <Menu />
+                    ) : menu.displayNotifs ? (
+                        <Notifications />
                     ) : (
                         <Outlet />
                     )}

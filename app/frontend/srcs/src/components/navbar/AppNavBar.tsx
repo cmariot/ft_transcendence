@@ -15,33 +15,39 @@ const AppNavBar = () => {
         chat.closeMenu();
     }
 
-    return (
-        <>
-            <header>
-                <nav id="app-nav-bar">
-                    <Link to="/" onClick={() => menu.close()}>
-                        ft_transcendence
-                    </Link>
+    function toogleNotifs() {
+        menu.toogleNotifs();
+    }
 
-                    {user?.username && user?.avatar ? (
-                        <div id="nav-user-infos">
-                            <button>notifications</button>
-                            <button onClick={() => toogleMenu()}>
-                                {user?.username}
+    return (
+        <header>
+            <nav id="app-nav-bar">
+                <Link to="/" onClick={() => menu.close()}>
+                    ft_transcendence
+                </Link>
+
+                {user?.username && user?.avatar ? (
+                    <div id="nav-user-infos">
+                        {user.notifications.length > -1 && (
+                            <button onClick={toogleNotifs}>
+                                {user.notifications.length} notification(s)
                             </button>
-                            <img
-                                id="nav-user-picture"
-                                src={user.avatar}
-                                onClick={() => toogleMenu()}
-                                alt="Menu"
-                            />
-                        </div>
-                    ) : (
-                        <button onClick={() => toogleMenu()}>menu</button>
-                    )}
-                </nav>
-            </header>
-        </>
+                        )}
+                        <button onClick={() => toogleMenu()}>
+                            {user?.username}
+                        </button>
+                        <img
+                            id="nav-user-picture"
+                            src={user.avatar}
+                            onClick={() => toogleMenu()}
+                            alt="Menu"
+                        />
+                    </div>
+                ) : (
+                    <button onClick={() => toogleMenu()}>menu</button>
+                )}
+            </nav>
+        </header>
     );
 };
 

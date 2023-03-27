@@ -6,6 +6,11 @@ export type MenuContextType = {
     toogle: () => {};
     close: () => {};
 
+    displayNotifs: boolean;
+    setDisplayNotifs: (newValue: boolean) => {};
+    toogleNotifs: () => {};
+    closeNotifs: () => {};
+
     error: boolean;
     errorMessage: string;
     displayError: (error: string) => {};
@@ -18,6 +23,11 @@ export const MenuContext = createContext({
     toogle: () => {},
     close: () => {},
 
+    displayNotifs: false,
+    setDisplayNotifs: (newValue: boolean) => {},
+    toogleNotifs: () => {},
+    closeNotifs: () => {},
+
     error: false,
     errorMessage: "",
     displayError: (error: string) => {},
@@ -27,15 +37,29 @@ export const MenuContext = createContext({
 type MenuProviderProps = { children: JSX.Element | JSX.Element[] };
 const MenuProvider = ({ children }: MenuProviderProps) => {
     const [display, setDisplay] = useState(false);
+    const [displayNotifs, setDisplayNotifs] = useState(false);
 
     function toogle() {
-        closeError();
+        setError(false);
+        setDisplayNotifs(false);
         setDisplay((prevState) => !prevState);
     }
 
     function close() {
-        closeError();
+        setError(false);
+        setErrorMessage("");
+        setDisplayNotifs(false);
         setDisplay(false);
+    }
+
+    function toogleNotifs() {
+        setError(false);
+        setDisplay(false);
+        setDisplayNotifs((prevState) => !prevState);
+    }
+
+    function closeNotifs() {
+        close();
     }
 
     const [error, setError] = useState(false);
@@ -47,8 +71,7 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
     }
 
     function closeError() {
-        setErrorMessage("");
-        setError(false);
+        close();
     }
 
     const value = {
@@ -60,6 +83,10 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         errorMessage,
         displayError,
         closeError,
+        displayNotifs,
+        setDisplayNotifs,
+        toogleNotifs,
+        closeNotifs,
     };
 
     return (

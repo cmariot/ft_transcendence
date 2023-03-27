@@ -62,6 +62,7 @@ export class UsersController {
             ratio: completeUser.score,
             gameHistory: history,
             rank: rank,
+            notifications: completeUser.notifications,
         };
     }
 

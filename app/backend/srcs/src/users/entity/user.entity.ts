@@ -87,4 +87,10 @@ export class UserEntity {
 
     @Column({ default: 0 })
     xp: number;
+
+    @Column("jsonb", { default: [] })
+    notifications: {
+        message: string;
+        type: string;
+    }[];
 }

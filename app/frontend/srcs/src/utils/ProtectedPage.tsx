@@ -59,6 +59,7 @@ export default function ProtectedPage() {
                     const winRatio = profileResponse.data.ratio;
                     const gamehistory = profileResponse.data.gameHistory;
                     const rank = profileResponse.data.rank;
+                    const notifications = profileResponse.data.notifications;
                     const friends = friendsResponse.data;
                     const blocked = blockedResponse.data;
 
@@ -129,6 +130,7 @@ export default function ProtectedPage() {
                     user.setWinRatio(winRatio);
                     user.setGamehistory(gamehistory);
                     user.setRank(rank);
+                    user.setNotifications(notifications);
                     user.setBlocked(blocked);
                     user.setIsLogged(true);
                     user.setIsFirstLog(firstLog);
@@ -146,7 +148,7 @@ export default function ProtectedPage() {
                 }
             })();
         }
-    }, [navigate, user, game]);
+    }, [navigate, user, game, menu]);
 
     return user.isLogged ? <Outlet /> : null;
 }
