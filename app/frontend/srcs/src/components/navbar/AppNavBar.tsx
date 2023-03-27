@@ -1,14 +1,18 @@
 import { Link } from "react-router-dom";
 import "../../styles/AppNavBar.css";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserProvider";
 import { MenuContext } from "../../contexts/MenuProviders";
 import { ChatContext } from "../../contexts/ChatProvider";
+import { SocketContext } from "../../contexts/SocketProvider";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);
     const user = useContext(UserContext);
     const chat = useContext(ChatContext);
+    const socket = useContext(SocketContext);
+
+    const [update, setUpdate] = useState(false);
 
     function toogleMenu() {
         menu.toogle();
@@ -18,6 +22,20 @@ const AppNavBar = () => {
     function toogleNotifs() {
         menu.toogleNotifs();
     }
+
+    // When new notification
+    useEffect(() => {
+        function updateNotifications(notif: { message: string; type: string }) {
+            var notifs = user.notifications;
+            notifs.push(notif);
+            user.setNotifications(notifs);
+            setUpdate((prevState) => !prevState);
+        }
+        socket.on("user.new.notif", updateNotifications);
+        return () => {
+            socket.off("user.new.notif", updateNotifications);
+        };
+    }, [user, socket]);
 
     return (
         <header>

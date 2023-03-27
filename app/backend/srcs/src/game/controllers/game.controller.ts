@@ -4,6 +4,7 @@ import {
     InvitationResponseDto,
     InvitationDto,
     GameIdDto,
+    UsernameDto,
 } from "../dtos/GameUtility.dto";
 import { MatchmakingService } from "../services/matchmaking.service";
 import { GameService } from "../services/game.service";
@@ -31,8 +32,11 @@ export class GameController {
 
     @Post("invitation/send")
     @UseGuards(isLogged)
-    async invitation(@Req() req, @Body() users: InvitationDto) {
-        return await this.matchmakingService.invitation(users);
+    async invitation(@Req() req, @Body() player2: UsernameDto) {
+        return await this.matchmakingService.invitation(
+            req.user.uuid,
+            player2.username
+        );
     }
 
     // Il doit recevoir le gars qu'il a invite (hostuuid), son username(guest)

@@ -13,7 +13,4 @@ export class GameEntity {
 
     @Column({ default: "" })
     guestID: string;
-
-    @Column("text", { array: true, default: [] })
-    watchers: string[];
 }

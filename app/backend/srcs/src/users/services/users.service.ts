@@ -560,4 +560,21 @@ export class UsersService {
         }
         return rank;
     }
+
+    async addNotif(uuid: string, message: string, type: string) {
+        const user = await this.getByID(uuid);
+        if (user) {
+            let notifs = user.notifications;
+            notifs.push({ message: message, type: type });
+            await this.userRepository.update(
+                {
+                    uuid: uuid,
+                },
+                {
+                    notifications: notifs,
+                }
+            );
+            this.userGateway.newNotification(user, message, type);
+        }
+    }
 }

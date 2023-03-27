@@ -1,3 +1,14 @@
 #notifications {
+    padding: 0;
     color: #1e1e1e;
+    overflow: scroll;
+}
+
+.notif {
+    border: 3px solid #737373;
+    margin: 25px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: #a3a3a3;
 }

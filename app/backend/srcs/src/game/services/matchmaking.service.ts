@@ -131,29 +131,22 @@ export class MatchmakingService {
         }
     }
 
-    async invitation(users: InvitationDto) {
-        //    let host: UserEntity = await this.userService.getByUsername(users.host);
-        //    let guest: UserEntity = await this.userService.getByUsername(
-        //        users.guest
-        //    );
-        //    if (!host) {
-        //        throw new HttpException(
-        //            "Host do not exist",
-        //            HttpStatus.BAD_REQUEST
-        //        );
-        //    }
-        //    if (!guest) {
-        //        throw new HttpException(
-        //            "Guest do not exist",
-        //            HttpStatus.BAD_REQUEST
-        //        );
-        //    }
-        //    let game: GameEntity;
-        //    game.hostID = host.uuid;
-        //    await this.gameRepository.save(game);
-        //    await this.userService.setStatusByID(game.hostID, "matchmaking");
-        //    await this.gameGateway.sendInvitation(guest.socketId[0], host.uuid);
-        //    return "Invitation pending";
+    async invitation(uuid: string, player2: string) {
+        let host: UserEntity = await this.userService.getByID(uuid);
+        let guest: UserEntity = await this.userService.getByUsername(player2);
+        if (!host || !guest) {
+            throw new UnauthorizedException("User not found");
+        }
+        let game: GameEntity = new GameEntity();
+        game.hostID = uuid;
+        game.guestID = guest.uuid;
+        game.status = "invitation";
+        await this.gameRepository.save(game);
+        await this.userService.addNotif(
+            guest.uuid,
+            host.username + " wants to play with you.",
+            "game"
+        );
     }
 
     async ResponseInvitation(users: InvitationResponseDto) {

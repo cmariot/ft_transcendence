@@ -11,8 +11,8 @@ export const Notifications = () => {
                 <>
                     {user.notifications.map((item, index) => (
                         <div className="notif" key={index}>
-                            <p className="notif-message">{item.message}</p>
                             <p className="notif-type">{item.type}</p>
+                            <p className="notif-message">{item.message}</p>
                             <div>
                                 <button>accept</button>
                                 <button>deny</button>

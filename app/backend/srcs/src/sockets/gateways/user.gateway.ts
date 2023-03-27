@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { UserEntity } from "src/users/entity/user.entity";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
@@ -35,6 +36,13 @@ export class UserGateway {
     rankUpdate(rank: number, socket: string) {
         this.server.to(socket).emit("rank.update", {
             rank: rank,
+        });
+    }
+
+    newNotification(user: UserEntity, message: string, type: string) {
+        this.server.to(user.socketId[0]).emit("user.new.notif", {
+            message: message,
+            type: type,
         });
     }
 }

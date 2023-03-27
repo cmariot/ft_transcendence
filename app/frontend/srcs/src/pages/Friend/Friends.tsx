@@ -222,6 +222,17 @@ export default function Friends() {
         }
     }
 
+    async function invitePlay(username: string) {
+        await axios
+            .post("/api/game/invitation/send", { username: username })
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
     return (
         <div id="friends">
             <aside id="add-friend">
@@ -280,8 +291,13 @@ export default function Friends() {
                                                 Watch stream
                                             </button>
                                         ) : (
-                                            <button className="friend-menu-button">
-                                                Invite to play (todo)
+                                            <button
+                                                className="friend-menu-button"
+                                                onClick={() =>
+                                                    invitePlay(friend.username)
+                                                }
+                                            >
+                                                Invite to play
                                             </button>
                                         )}
 

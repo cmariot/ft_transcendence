@@ -69,6 +69,17 @@ const ChatMessages = () => {
 
     const game = useContext(GameContext);
 
+    async function invitePlay(username: string) {
+        await axios
+            .post("/api/game/invitation/send", { username: username })
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
     async function watchStream(username: string) {
         let currentGames = game.currentGames;
         for (let i = 0; i < currentGames.length; i++) {
@@ -141,7 +152,13 @@ const ChatMessages = () => {
                                 watch stream
                             </button>
                         ) : (
-                            <button>play</button>
+                            <button
+                                onClick={() => {
+                                    invitePlay(username);
+                                }}
+                            >
+                                play
+                            </button>
                         )}
 
                         <button onClick={() => profile(username)}>
