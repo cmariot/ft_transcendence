@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../contexts/UserProvider";
@@ -173,15 +173,26 @@ const ChatMessages = () => {
         }
     }
 
+    const [display, setDisplay] = useState(-1);
+
     return (
         <ul id="chat-main-ul">
-            {chat.messages.map((item: any, index: any) => (
-                <li className="chat-main-li" key={index}>
+            {chat.messages.map((item: any, index: number) => (
+                <li
+                    className="chat-main-li"
+                    key={index}
+                    onMouseOver={() => {
+                        setDisplay(index);
+                    }}
+                    onMouseLeave={() => {
+                        setDisplay(-1);
+                    }}
+                >
                     <p className="chat-menu-channel chatMessages">
                         {item.username} :<br />
                         {item.message}
                     </p>
-                    {messageMenu(item.username)}
+                    {display === index && messageMenu(item.username)}
                 </li>
             ))}
         </ul>
