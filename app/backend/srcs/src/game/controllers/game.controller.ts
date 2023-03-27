@@ -39,11 +39,13 @@ export class GameController {
         );
     }
 
-    // Il doit recevoir le gars qu'il a invite (hostuuid), son username(guest)
-    @Post("invitation/response")
+    @Post("invitation/accept")
     @UseGuards(isLogged)
-    async responseInvitation(@Req() req, @Body() users: InvitationResponseDto) {
-        return await this.matchmakingService.ResponseInvitation(users);
+    async accept_invitation(@Req() req, @Body() player1: UsernameDto) {
+        return await this.matchmakingService.acceptInvitation(
+            req.user.uuid,
+            player1.username
+        );
     }
 
     // List of curent 'playing' games

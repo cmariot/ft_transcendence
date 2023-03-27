@@ -229,7 +229,7 @@ export default function Friends() {
                 console.log(response);
             })
             .catch((error) => {
-                console.log(error);
+                menu.displayError(error.response.data.message);
             });
     }
 
@@ -250,7 +250,7 @@ export default function Friends() {
                 {!user.friends.length && !user.blocked.length && (
                     <p>Let's add some friends !</p>
                 )}
-                {user.friends.length && (
+                {user.friends.length > 0 && (
                     <ul id="friend-list">
                         <h2>Friends list</h2>
                         {user.friends.map((friend: any, index: number) => (
@@ -378,7 +378,7 @@ export default function Friends() {
                         ))}
                     </ul>
                 )}
-                {user.blocked.length && (
+                {user.blocked.length > 0 && (
                     <ul id="friend-list">
                         <h2>blocked list</h2>
                         {user.blocked.map((blocked, index) => (

@@ -131,22 +131,62 @@ export class MatchmakingService {
         }
     }
 
+    // obtenir les 2 utilisateurs
+    // verifier qu'il n'y ait pas deja une invitation
+    // envoyer l'invitation
     async invitation(uuid: string, player2: string) {
         let host: UserEntity = await this.userService.getByID(uuid);
         let guest: UserEntity = await this.userService.getByUsername(player2);
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
-        let game: GameEntity = new GameEntity();
+        var game: GameEntity = await this.gameRepository.findOneBy({
+            hostID: uuid,
+            status: "invitation",
+            guestID: guest.uuid,
+        });
+        if (game) {
+            // l'utilisateur l'a deja invite
+            throw new UnauthorizedException("Already invited");
+        } else {
+            game = await this.gameRepository.findOneBy({
+                hostID: guest.uuid,
+                status: "invitation",
+                guestID: uuid,
+            });
+            if (game) {
+                return await this.acceptInvitation(uuid, guest.username);
+            }
+        }
+        game = new GameEntity();
         game.hostID = uuid;
         game.guestID = guest.uuid;
         game.status = "invitation";
         await this.gameRepository.save(game);
         await this.userService.addNotif(
             guest.uuid,
-            host.username + " wants to play with you.",
-            "game"
+            host.username,
+            "game invitation"
         );
+    }
+
+    async acceptInvitation(uuid: string, username: string) {
+        let host: UserEntity = await this.userService.getByUsername(username);
+        let guest: UserEntity = await this.userService.getByID(uuid);
+        if (!host || !guest) {
+            throw new UnauthorizedException("User not found");
+        }
+        var game: GameEntity = await this.gameRepository.findOneBy({
+            hostID: host.uuid,
+            status: "invitation",
+            guestID: guest.uuid,
+        });
+        if (game) {
+            game.status = "playing";
+            await this.gameRepository.save(game);
+            this.gameService.startGame(game);
+        }
+        // delete notif
     }
 
     async ResponseInvitation(users: InvitationResponseDto) {
