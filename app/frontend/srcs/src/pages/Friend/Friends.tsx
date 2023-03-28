@@ -12,11 +12,13 @@ export default function Friends() {
     const [username, setUsername] = useState("");
     const [showMenu, setShowMenu] = useState("");
     const [update, setUpdate] = useState(false);
+
     const socket = useContext(SocketContext);
     const chat = useContext(ChatContext);
     const user = useContext(UserContext);
     const game = useContext(GameContext);
     const menu = useContext(MenuContext);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -257,7 +259,7 @@ export default function Friends() {
                             <li className="friend" key={index}>
                                 <div className="div-friend-list">
                                     <img
-                                        src={friend.avatar}
+                                        src={`${friend.avatar}`}
                                         className="friend-profile-picture"
                                         alt="Friend's avatar"
                                     />

@@ -9,22 +9,22 @@ export default function EnableDoubleAuth() {
     const [userPref, setUserPref] = useState(user.doubleAuth);
     const menu = useContext(MenuContext);
 
+    useEffect(() => {
+        setUserPref(user.doubleAuth);
+    }, [user.doubleAuth]);
+
     function editDoubleAuth() {
         axios
             .post("/api/profile/update/doubleAuth")
             .then(function () {
                 const newValue = !userPref;
-                setUserPref(newValue);
+                setUserPref((prevState) => !prevState);
                 user.editDoubleAuth(newValue);
             })
             .catch(function (error) {
                 menu.displayError(error.response.data.message);
             });
     }
-
-    useEffect(() => {
-        setUserPref(user.doubleAuth);
-    }, [user.doubleAuth]);
 
     return (
         <div id="edit-double-auth">
