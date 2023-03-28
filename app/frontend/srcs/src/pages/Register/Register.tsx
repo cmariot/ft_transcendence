@@ -13,8 +13,9 @@ export default function Register() {
 
     const navigate = useNavigate();
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        const { id, value } = event.target;
         if (id === "username-register") {
             setUsername(value);
         } else if (id === "email-register") {
@@ -41,7 +42,7 @@ export default function Register() {
                 password: password,
                 enable2fa: doubleAuth,
             })
-            .then(function (response) {
+            .then(function () {
                 setUsername("");
                 setEmail("");
                 setPassword("");
@@ -60,7 +61,6 @@ export default function Register() {
                 } else {
                     menu.displayError("Register error");
                 }
-                return;
             });
     };
 
@@ -77,7 +77,6 @@ export default function Register() {
                     And a strong password (min. 10 length characters)
                 </p>
             </aside>
-
             <form id="register-form" autoComplete="off">
                 <h3>Register</h3>
                 <input
@@ -85,7 +84,7 @@ export default function Register() {
                     type="text"
                     placeholder="Username"
                     value={username}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={handleInputChange}
                     autoFocus
                     required
                 />
@@ -93,7 +92,7 @@ export default function Register() {
                     id="password-register"
                     type="password"
                     value={password}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={handleInputChange}
                     placeholder="Password"
                     required
                 />
@@ -102,7 +101,7 @@ export default function Register() {
                     type="email"
                     placeholder="Email"
                     value={email}
-                    onChange={(event) => handleInputChange(event)}
+                    onChange={handleInputChange}
                     required
                 />
                 <label>
@@ -111,7 +110,7 @@ export default function Register() {
                         id="2fa-register"
                         type="checkbox"
                         defaultChecked={true}
-                        onClick={() => setDoubleAuth(!doubleAuth)}
+                        onClick={() => setDoubleAuth((prevState) => !prevState)}
                     />
                 </label>
                 <div>
@@ -120,7 +119,7 @@ export default function Register() {
                         className="button"
                         type="submit"
                         value="Register"
-                        onClick={(e) => submitRegisterForm(e)}
+                        onClick={submitRegisterForm}
                     />
                     <Link to="/">cancel</Link>
                 </div>

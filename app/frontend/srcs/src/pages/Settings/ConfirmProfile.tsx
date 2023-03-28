@@ -35,7 +35,6 @@ export default function ConfirmProfile() {
                 <EditProfilePicture />
                 <EditUsername />
                 <EnableDoubleAuth />
-
                 <button onClick={() => confirmProfile()}>Let's play</button>
             </section>
         </main>

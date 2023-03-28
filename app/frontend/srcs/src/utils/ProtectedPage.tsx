@@ -13,21 +13,16 @@ export default function ProtectedPage() {
     const menu = useContext(MenuContext);
 
     useEffect(() => {
+        const authCookie = getCookie("authentification");
+        if (!authCookie) {
+            return navigate("/login");
+        }
         if (user.isForcedLogout) {
             user.setIsForcedLogout(false);
             user.editUsername("");
             user.setIsLogged(false);
-            navigate("/login");
-        } else if (user.isLogged) {
-            const authCookie = getCookie("authentification");
-            if (!authCookie) {
-                return navigate("/login");
-            }
+            return navigate("/login");
         } else if (user.isLogged === false) {
-            const authCookie = getCookie("authentification");
-            if (!authCookie) {
-                return navigate("/login");
-            }
             (async () => {
                 try {
                     const [
@@ -72,8 +67,6 @@ export default function ProtectedPage() {
                                 avatarResponse.data
                             );
                             user.editAvatar(imageUrl);
-                        } else {
-                            user.editAvatar(avatar);
                         }
                     } catch (error: any) {
                         user.editAvatar(avatar);

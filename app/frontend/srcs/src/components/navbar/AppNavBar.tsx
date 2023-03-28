@@ -12,14 +12,16 @@ const AppNavBar = () => {
     const chat = useContext(ChatContext);
     const socket = useContext(SocketContext);
 
-    const [update, setUpdate] = useState(false);
+    const [, setUpdate] = useState(false);
 
-    function toogleMenu() {
+    function toogleMenu(event: { preventDefault: () => void }) {
+        event.preventDefault();
         menu.toogle();
         chat.closeMenu();
     }
 
-    function toogleNotifs() {
+    function toogleNotifs(event: { preventDefault: () => void }) {
+        event.preventDefault();
         menu.toogleNotifs();
     }
 
@@ -37,6 +39,7 @@ const AppNavBar = () => {
         };
     }, [user, socket]);
 
+    // When a notification is erased
     useEffect(() => {
         function updateNotifications(data: {
             message: string;
@@ -51,8 +54,8 @@ const AppNavBar = () => {
                 notif.type === data.type
             ) {
                 notifs.splice(data.index, 1);
+                user.setNotifications(notifs);
             }
-            user.setNotifications(notifs);
             setUpdate((prevState) => !prevState);
         }
         socket.on("user.delete.notif", updateNotifications);
@@ -67,26 +70,22 @@ const AppNavBar = () => {
                 <Link to="/" onClick={() => menu.close()}>
                     ft_transcendence
                 </Link>
-
-                {user?.username && user?.avatar ? (
+                {user.username && user.avatar ? (
                     <div id="nav-user-infos">
-                        {user.notifications.length > -1 && (
-                            <button onClick={toogleNotifs}>
-                                {user.notifications.length} notification(s)
-                            </button>
-                        )}
-                        <button onClick={() => toogleMenu()}>
-                            {user?.username}
+                        <button onClick={toogleNotifs}>
+                            {user.notifications.length} notification
+                            {user.notifications.length > 1 && "s"}
                         </button>
+                        <button onClick={toogleMenu}>{user.username}</button>
                         <img
                             id="nav-user-picture"
-                            src={user.avatar}
-                            onClick={() => toogleMenu()}
+                            src={`${user.avatar}`}
                             alt="Menu"
+                            onClick={toogleMenu}
                         />
                     </div>
                 ) : (
-                    <button onClick={() => toogleMenu()}>menu</button>
+                    <button onClick={toogleMenu}>menu</button>
                 )}
             </nav>
         </header>

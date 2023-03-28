@@ -9,6 +9,9 @@ import MenuProvider from "./contexts/MenuProviders";
 import ChatProvider from "./contexts/ChatProvider";
 import SocketProvider from "./contexts/SocketProvider";
 import GameProvider from "./contexts/GameProvider";
+import { StatusEvents } from "./utils/StatusEvents";
+import { ChatEvents } from "./utils/ChatEvents";
+import { GameEvents } from "./utils/GameEvents";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -20,7 +23,13 @@ root.render(
             <GameProvider>
                 <MenuProvider>
                     <SocketProvider>
-                        <RouterProvider router={router} />
+                        <StatusEvents>
+                            <ChatEvents>
+                                <GameEvents>
+                                    <RouterProvider router={router} />
+                                </GameEvents>
+                            </ChatEvents>
+                        </StatusEvents>
                     </SocketProvider>
                 </MenuProvider>
             </GameProvider>

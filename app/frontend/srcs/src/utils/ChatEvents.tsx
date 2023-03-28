@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
-import { SocketContext } from "../../contexts/SocketProvider";
-import { ChatContext } from "../../contexts/ChatProvider";
 import axios from "axios";
-import { UserContext } from "../../contexts/UserProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { ChatContext } from "../contexts/ChatProvider";
+import { SocketContext } from "../contexts/SocketProvider";
+import { UserContext } from "../contexts/UserProvider";
+import { MenuContext } from "../contexts/MenuProviders";
 
 type ChatEventsProps = { children: JSX.Element | JSX.Element[] };
 export const ChatEvents = ({ children }: ChatEventsProps) => {

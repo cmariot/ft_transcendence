@@ -6,8 +6,9 @@ import { SocketContext } from "../../contexts/SocketProvider";
 
 const Profile = () => {
     const user = useContext(UserContext);
+    const socket = useContext(SocketContext);
     const navigate = useNavigate();
-    const [update, setUpdate] = useState(false);
+    const [, setUpdate] = useState(false);
 
     function winPercentage() {
         if (user.winRatio.victory + user.winRatio.defeat > 0) {
@@ -39,10 +40,8 @@ const Profile = () => {
         return null;
     }
 
-    const socket = useContext(SocketContext);
-
     useEffect(() => {
-        function updateFriendUsername(data: {
+        function updateMatchHistoryUsernames(data: {
             previousUsername: string;
             newUsername: string;
         }) {
@@ -59,9 +58,9 @@ const Profile = () => {
                 setUpdate((prevState) => !prevState);
             }
         }
-        socket.on("user.update.username", updateFriendUsername);
+        socket.on("user.update.username", updateMatchHistoryUsernames);
         return () => {
-            socket.off("user.update.username", updateFriendUsername);
+            socket.off("user.update.username", updateMatchHistoryUsernames);
         };
     }, [user, socket]);
 

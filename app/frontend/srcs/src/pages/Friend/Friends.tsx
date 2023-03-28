@@ -10,11 +10,11 @@ import { MenuContext } from "../../contexts/MenuProviders";
 
 export default function Friends() {
     const [username, setUsername] = useState("");
-    let [showMenu, setShowMenu] = useState("");
-    let [update, setUpdate] = useState(false);
-    let socket = useContext(SocketContext);
-    let chat = useContext(ChatContext);
-    let user = useContext(UserContext);
+    const [showMenu, setShowMenu] = useState("");
+    const [update, setUpdate] = useState(false);
+    const socket = useContext(SocketContext);
+    const chat = useContext(ChatContext);
+    const user = useContext(UserContext);
     const game = useContext(GameContext);
     const menu = useContext(MenuContext);
     const navigate = useNavigate();
