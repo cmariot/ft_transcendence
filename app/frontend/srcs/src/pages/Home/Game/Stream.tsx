@@ -1,6 +1,5 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { GameContext } from "../../../contexts/GameProvider";
-import { SocketContext } from "../../../contexts/SocketProvider";
 import "../../../styles/test.css";
 import BoardDecoration from "./BoardDecoration";
 import axios from "axios";

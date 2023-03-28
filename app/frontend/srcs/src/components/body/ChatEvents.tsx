@@ -142,7 +142,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         return () => {
             socket.off("chat.new.admin", updateAdmins);
         };
-    }, [chat, socket, user]);
+    }, [chat, socket, user, menu]);
 
     // When a admin is removed
     useEffect(() => {
