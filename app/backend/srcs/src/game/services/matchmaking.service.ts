@@ -176,17 +176,25 @@ export class MatchmakingService {
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
-        var game: GameEntity = await this.gameRepository.findOneBy({
-            hostID: host.uuid,
-            status: "invitation",
-            guestID: guest.uuid,
-        });
-        if (game) {
-            game.status = "playing";
-            await this.gameRepository.save(game);
-            this.gameService.startGame(game);
+        if (host.status === "online" && guest.status === "online") {
+            var game: GameEntity = await this.gameRepository.findOneBy({
+                hostID: host.uuid,
+                status: "invitation",
+                guestID: guest.uuid,
+            });
+            if (game) {
+                await this.userService.removeNotif(
+                    uuid,
+                    username,
+                    "game invitation"
+                );
+                game.status = "playing";
+                await this.gameRepository.save(game);
+                this.gameService.startGame(game);
+            }
+        } else {
+            throw new UnauthorizedException("status !== 'online'");
         }
-        // delete notif
     }
 
     async ResponseInvitation(users: InvitationResponseDto) {

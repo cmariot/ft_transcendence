@@ -45,4 +45,17 @@ export class UserGateway {
             type: type,
         });
     }
+
+    deleteNotification(
+        user: UserEntity,
+        message: string,
+        type: string,
+        index: number
+    ) {
+        this.server.to(user.socketId[0]).emit("user.delete.notif", {
+            message: message,
+            type: type,
+            index: index,
+        });
+    }
 }

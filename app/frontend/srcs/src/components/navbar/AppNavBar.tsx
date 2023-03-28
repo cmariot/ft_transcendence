@@ -37,6 +37,30 @@ const AppNavBar = () => {
         };
     }, [user, socket]);
 
+    useEffect(() => {
+        function updateNotifications(data: {
+            message: string;
+            type: string;
+            index: number;
+        }) {
+            var notifs = user.notifications;
+            var notif = notifs.at(data.index);
+            if (
+                notif &&
+                notif.message === data.message &&
+                notif.type === data.type
+            ) {
+                notifs.splice(data.index, 1);
+            }
+            user.setNotifications(notifs);
+            setUpdate((prevState) => !prevState);
+        }
+        socket.on("user.delete.notif", updateNotifications);
+        return () => {
+            socket.off("user.delete.notif", updateNotifications);
+        };
+    }, [user, socket]);
+
     return (
         <header>
             <nav id="app-nav-bar">
