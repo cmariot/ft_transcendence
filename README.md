@@ -1,5 +1,3 @@
 ### ft_transcendence :
 
-#### ./configure.sh
-#### make
-#### https://localhost:8443/
+[![CodeQL](https://github.com/cmariot/ft_transcendence/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/cmariot/ft_transcendence/actions/workflows/github-code-scanning/codeql)
