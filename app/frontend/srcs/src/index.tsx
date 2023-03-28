@@ -15,17 +15,15 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-    <React.StrictMode>
-        <UserProvider>
-            <ChatProvider>
-                <GameProvider>
-                    <MenuProvider>
-                        <SocketProvider>
-                            <RouterProvider router={router} />
-                        </SocketProvider>
-                    </MenuProvider>
-                </GameProvider>
-            </ChatProvider>
-        </UserProvider>
-    </React.StrictMode>
+    <UserProvider>
+        <ChatProvider>
+            <GameProvider>
+                <MenuProvider>
+                    <SocketProvider>
+                        <RouterProvider router={router} />
+                    </SocketProvider>
+                </MenuProvider>
+            </GameProvider>
+        </ChatProvider>
+    </UserProvider>
 );

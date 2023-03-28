@@ -197,28 +197,25 @@ export class MatchmakingService {
         }
     }
 
-    async ResponseInvitation(users: InvitationResponseDto) {
-        //    if (!users.response) {
-        //        let host: UserEntity = await this.userService.getByID(users.hostID);
-        //        return await this.cancelQueue(host.username);
-        //    }
-        //    let game: GameEntity = await this.gameRepository.findOneBy({
-        //        hostID: users.hostID,
-        //    });
-        //    if (!game) {
-        //        throw new HttpException(
-        //            "Host Game do not exist",
-        //            HttpStatus.NOT_FOUND
-        //        );
-        //    }
-        //    let guest: UserEntity = await this.userService.getByUsername(
-        //        users.guest
-        //    );
-        //    game.guestID = guest.uuid;
-        //    await this.userService.setStatusByID(game.hostID, "matchmaking");
-        //    await this.gameRepository.save(game);
-        //    this.startGame(game);
-        //    return "Game accepted";
+    async denyInvitation(uuid: string, username: string) {
+        let host: UserEntity = await this.userService.getByUsername(username);
+        let guest: UserEntity = await this.userService.getByID(uuid);
+        if (!host || !guest) {
+            throw new UnauthorizedException("User not found");
+        }
+        var game: GameEntity = await this.gameRepository.findOneBy({
+            hostID: host.uuid,
+            status: "invitation",
+            guestID: guest.uuid,
+        });
+        if (game) {
+            await this.userService.removeNotif(
+                uuid,
+                username,
+                "game invitation"
+            );
+            await this.gameRepository.delete(game);
+        }
     }
 
     // return the games with status 'playing'

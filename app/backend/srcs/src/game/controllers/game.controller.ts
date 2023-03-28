@@ -48,6 +48,15 @@ export class GameController {
         );
     }
 
+    @Post("invitation/deny")
+    @UseGuards(isLogged)
+    async deny_invitation(@Req() req, @Body() player1: UsernameDto) {
+        return await this.matchmakingService.denyInvitation(
+            req.user.uuid,
+            player1.username
+        );
+    }
+
     // List of curent 'playing' games
     @Get("current")
     @UseGuards(isLogged)

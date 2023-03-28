@@ -584,11 +584,9 @@ export class UsersService {
             throw new UnauthorizedException("User not found");
         }
         let notifs = user.notifications;
-        console.log(user.username, "notifs :", notifs);
         let index = notifs.findIndex(
             (element) => element.message === message && element.type === type
         );
-        console.log(index);
         if (index !== -1) {
             notifs.splice(index, 1);
             await this.userRepository.update(

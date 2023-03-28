@@ -1,5 +1,5 @@
 import { UserContext } from "../../contexts/UserProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "../../styles/Notifications.css";
 import axios from "axios";
 import { MenuContext } from "../../contexts/MenuProviders";
@@ -10,9 +10,23 @@ export const Notifications = () => {
     const menu = useContext(MenuContext);
     const navigate = useNavigate();
 
+    useEffect(() => {}, [user.notifications]);
+
     async function acceptInvitation(username: string) {
         await axios
             .post("/api/game/invitation/accept", { username: username })
+            .then(() => {
+                navigate("/");
+                menu.toogleNotifs();
+            })
+            .catch((error) => {
+                menu.displayError(error.response.data.message);
+            });
+    }
+
+    async function denyInvitation(username: string) {
+        await axios
+            .post("/api/game/invitation/deny", { username: username })
             .then(() => {
                 navigate("/");
                 menu.toogleNotifs();
@@ -38,7 +52,11 @@ export const Notifications = () => {
                                 >
                                     accept
                                 </button>
-                                <button>deny</button>
+                                <button
+                                    onClick={() => denyInvitation(item.message)}
+                                >
+                                    deny
+                                </button>
                             </div>
                         </div>
                     ))}
