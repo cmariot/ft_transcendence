@@ -48,7 +48,6 @@ export default function ProtectedPage() {
                         menu.displayError("Cannot fetch your profile.");
                         return navigate("/login");
                     }
-
                     const username = profileResponse.data.username;
                     const avatar = "/api/profile/" + username + "/image";
                     const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
@@ -59,7 +58,6 @@ export default function ProtectedPage() {
                     const notifications = profileResponse.data.notifications;
                     const friends = friendsResponse.data;
                     const blocked = blockedResponse.data;
-
                     try {
                         const avatarResponse = await axios.get(avatar, {
                             responseType: "blob",
@@ -74,7 +72,6 @@ export default function ProtectedPage() {
                         user.editAvatar(avatar);
                         menu.displayError(error);
                     }
-
                     for (let i = 0; i < friends.length; i++) {
                         try {
                             const url =
@@ -118,7 +115,6 @@ export default function ProtectedPage() {
                             menu.displayError(error.response.data.message);
                         }
                     }
-
                     user.editUsername(username);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
@@ -132,7 +128,6 @@ export default function ProtectedPage() {
                     user.setClickOnLogin(true);
                     user.setClickOnLogout(false);
                     game.setCurrentGames(gameResponse.data);
-
                     if (firstLog) {
                         return navigate("/welcome");
                     }

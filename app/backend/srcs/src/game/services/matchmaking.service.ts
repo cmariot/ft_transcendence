@@ -180,7 +180,7 @@ export class MatchmakingService {
         }
         if (
             (host.status === "online" || host.status === "matchmaking") &&
-            guest.status === "online"
+            (guest.status === "online" || guest.status === "matchmaking")
         ) {
             var game: GameEntity = await this.gameRepository.findOneBy({
                 hostID: host.uuid,
@@ -199,7 +199,7 @@ export class MatchmakingService {
                 this.gameService.startGame(game);
             }
         } else {
-            if (guest.status !== "online") {
+            if (guest.status !== "online" && guest.status !== "matchmaking") {
                 throw new UnauthorizedException(
                     "You cannot accept the invitation when you're " +
                         guest.status
