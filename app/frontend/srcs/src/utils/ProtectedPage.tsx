@@ -5,6 +5,7 @@ import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
 import { GameContext } from "../contexts/GameProvider";
 import { MenuContext } from "../contexts/MenuProviders";
+import { SocketContext } from "../contexts/SocketProvider";
 
 export default function ProtectedPage() {
     const user = useContext(UserContext);
@@ -143,6 +144,18 @@ export default function ProtectedPage() {
             })();
         }
     }, [navigate, user, game, menu]);
+
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        async function goHome() {
+            navigate("/");
+        }
+        socket.on("game.start", goHome);
+        return () => {
+            socket.off("game.start", goHome);
+        };
+    }, [socket, navigate]);
 
     return user.isLogged ? <Outlet /> : null;
 }

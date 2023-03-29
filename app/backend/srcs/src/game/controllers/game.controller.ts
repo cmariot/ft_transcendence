@@ -1,11 +1,6 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/authentification.guards";
-import {
-    InvitationResponseDto,
-    InvitationDto,
-    GameIdDto,
-    UsernameDto,
-} from "../dtos/GameUtility.dto";
+import { GameIdDto, UsernameDto } from "../dtos/GameUtility.dto";
 import { MatchmakingService } from "../services/matchmaking.service";
 import { GameService } from "../services/game.service";
 
@@ -30,6 +25,7 @@ export class GameController {
         return await this.matchmakingService.cancelQueue(req.user.uuid);
     }
 
+    // Send a game invitation to a player
     @Post("invitation/send")
     @UseGuards(isLogged)
     async invitation(@Req() req, @Body() player2: UsernameDto) {
@@ -39,6 +35,7 @@ export class GameController {
         );
     }
 
+    // Accept the game invitation from a player
     @Post("invitation/accept")
     @UseGuards(isLogged)
     async accept_invitation(@Req() req, @Body() player1: UsernameDto) {
@@ -48,6 +45,7 @@ export class GameController {
         );
     }
 
+    // Deny the game invitation from a player
     @Post("invitation/deny")
     @UseGuards(isLogged)
     async deny_invitation(@Req() req, @Body() player1: UsernameDto) {

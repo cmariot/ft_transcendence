@@ -149,6 +149,10 @@ export class GameGateway {
         }
     }
 
+    async sendAcceptedInvitation(socketID: string[]) {
+        this.server.to(socketID).emit("game.start", {});
+    }
+
     async sendCancel(socketId: string, status: string) {
         //this.server.to(socketId).emit("gameStatus", {
         //    status: "Cancel",

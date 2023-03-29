@@ -3,10 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UsersService } from "src/users/services/users.service";
 import { GameEntity } from "../entities/game.entity";
-import { InvitationDto, InvitationResponseDto } from "../dtos/GameUtility.dto";
 import { UserEntity } from "src/users/entity/user.entity";
 import { GameService, games } from "./game.service";
 import { GameInterface } from "../interfaces/game.interface";
+import { GameGateway } from "src/sockets/gateways/game.gateway";
 
 @Injectable()
 export class MatchmakingService {
@@ -14,7 +14,8 @@ export class MatchmakingService {
         @InjectRepository(GameEntity)
         private gameRepository: Repository<GameEntity>,
         private userService: UsersService,
-        private gameService: GameService
+        private gameService: GameService,
+        private gameGateway: GameGateway
     ) {}
 
     async joinQueue(uuid: string) {
@@ -102,11 +103,19 @@ export class MatchmakingService {
     }
 
     async userDisconnection(user: UserEntity, recursive: boolean) {
+        console.log("userDisconnection: ", user);
         let game: GameEntity;
         if (recursive === true) {
             game = await this.gameRepository.findOneBy({
                 hostID: user.uuid,
+                status: "waiting",
             });
+            if (!game) {
+                game = await this.gameRepository.findOneBy({
+                    hostID: user.uuid,
+                    status: "playing",
+                });
+            }
             this.leaveStream(user);
         } else {
             game = await this.gameRepository.findOneBy({
@@ -114,6 +123,7 @@ export class MatchmakingService {
             });
         }
         if (game) {
+            console.log("GAME =", game);
             if (game.status === "waiting") {
                 await this.gameRepository.remove(game);
                 return;
@@ -146,7 +156,6 @@ export class MatchmakingService {
             guestID: guest.uuid,
         });
         if (game) {
-            // l'utilisateur l'a deja invite
             throw new UnauthorizedException("Already invited");
         } else {
             game = await this.gameRepository.findOneBy({
@@ -176,7 +185,10 @@ export class MatchmakingService {
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
-        if (host.status === "online" && guest.status === "online") {
+        if (
+            (host.status === "online" || host.status === "matchmaking") &&
+            guest.status === "online"
+        ) {
             var game: GameEntity = await this.gameRepository.findOneBy({
                 hostID: host.uuid,
                 status: "invitation",
@@ -190,6 +202,7 @@ export class MatchmakingService {
                 );
                 game.status = "playing";
                 await this.gameRepository.save(game);
+                await this.gameGateway.sendAcceptedInvitation(host.socketId);
                 this.gameService.startGame(game);
             }
         } else {

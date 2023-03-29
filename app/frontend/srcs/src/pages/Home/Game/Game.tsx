@@ -18,12 +18,12 @@ const Game = () => {
     return (
         <div id="game">
             {game.menu === "JoinGame" && <JoinGame />}
-            {game.menu === "Rules" && <Rules />}
             {game.menu === "WaitingScreen" && <WaitingScreen />}
             {game.menu === "countDown" && <CountDown time={game.countDown} />}
             {game.menu === "Game" && <TestMouvements />}
             {game.menu === "Disconnection" && <Disconnection />}
             {game.menu === "Results" && <Results />}
+            {game.menu === "Rules" && <Rules />}
             {game.menu === "SelectStream" && <SelectStream />}
             {game.menu === "Stream" && <Stream />}
             {game.menu === "StreamResults" && <StreamResults />}
