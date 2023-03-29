@@ -378,47 +378,45 @@ export class GameService {
         return match.disconnection;
     }
 
+    getScore(match: GameInterface): [number, number] {
+        return [match.player1Score, match.player2Score];
+    }
+
     // Game loop
-    async game(gameID: string) {
-        let match = games.get(gameID);
-        if (!match) {
-            return;
-        }
+    async launchMatch(
+        match: GameInterface
+    ): Promise<[error: boolean, match: GameInterface]> {
         await this.countDown(match);
         this.gameGateway.updateFrontMenu(match, "Game");
-        let scorePlayer1 = match.player1Score;
-        let scorePlayer2 = match.player1Score;
+        var [score1, score2] = this.getScore(match);
         match = await this.startBallDir(match);
         while (true) {
-            let match = games.get(gameID);
-            if (!match) {
-                return false;
-            }
+            match = games.get(match.uuid);
+            if (!match) return [true, undefined];
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
-            await this.gameGateway.sendPos(match, gameID);
-            if (this.someoneGoal(match, scorePlayer1, scorePlayer2)) {
+            await this.gameGateway.sendPos(match);
+            if (this.someoneGoal(match, score1, score2)) {
                 if (match.player1Score >= 15 || match.player2Score >= 15) {
                     break;
                 } else {
-                    scorePlayer1 = match.player1Score;
-                    scorePlayer2 = match.player2Score;
+                    [score1, score2] = this.getScore(match);
                     match = await this.startBallDir(match);
                     await this.sleep(1000);
                 }
             }
-            if (this.someoneDisconnect(gameID)) {
-                return false;
+            if (this.someoneDisconnect(match.uuid)) {
+                return [true, undefined];
             }
-            games.set(gameID, match);
+            games.set(match.uuid, match);
             await this.sleep(16);
         }
-        return true;
+        return [false, match];
     }
 
     // Set the defaults settings for the game
-    async createGame(
-        uuid: string,
+    async createMatch(
+        game: GameEntity,
         player1: UserEntity,
         player2: UserEntity
     ): Promise<GameInterface> {
@@ -426,8 +424,8 @@ export class GameService {
         const screenWidth = 1000;
         const paddleHeigth = 10;
         const ballSize = 2.5;
-
-        let match: GameInterface = {
+        const match: GameInterface = {
+            uuid: game.uuid,
             player1Username: player1.username,
             player2Username: player2.username,
             sockets: player1.socketId.concat(player2.socketId),
@@ -450,15 +448,19 @@ export class GameService {
             disconnection: false,
             lose: false,
             watchersSockets: [],
+            power_up: game.options.power_up,
+            different_map: game.options.different_map,
         };
-        games.set(uuid, match);
-        await this.gameGateway.sendGameID(uuid, match);
-        await this.gameGateway.sendPos(match, uuid);
+
+        games.set(game.uuid, match);
+        await this.gameGateway.sendGameID(match);
+        await this.gameGateway.sendPos(match);
         return match;
     }
 
-    // Send info to the frontend via socket and start a game
-    async startGame(game: GameEntity) {
+    async getPlayers(
+        game: GameEntity
+    ): Promise<[player1: UserEntity, player2: UserEntity]> {
         let player1 = await this.userService.getByID(game.hostID);
         let player2 = await this.userService.getByID(game.guestID);
         if (!player1 || !player2) {
@@ -469,34 +471,28 @@ export class GameService {
         }
         await this.userService.setStatusByID(player1.uuid, "ingame");
         await this.userService.setStatusByID(player2.uuid, "ingame");
+        return [player1, player2];
+    }
 
-        let match = await this.createGame(game.uuid, player1, player2);
+    // Send info to the frontend via socket and start a game
+    async startGame(game: GameEntity) {
+        let [player1, player2] = await this.getPlayers(game);
+        let match = await this.createMatch(game, player1, player2);
+        let [gameError, results] = await this.launchMatch(match);
 
-        let gameResults = await this.game(game.uuid);
-        match = games.get(game.uuid);
-        if (!match) {
-            return;
-        }
-        if (gameResults) {
+        if (gameError === false) {
             await this.userService.saveGameResult(
+                results,
                 player1.uuid,
-                player2.uuid,
-                match.player1Score,
-                match.player2Score
+                player2.uuid
             );
             let p1 = await this.userService.getByID(player1.uuid);
             let p2 = await this.userService.getByID(player2.uuid);
             let player1Rank = await this.userService.getLeaderBoardRank(p1);
             let player2Rank = await this.userService.getLeaderBoardRank(p2);
-            this.gameGateway.emitGameResults(
-                player1.socketId[0],
-                player2.socketId[0],
-                match,
-                player1Rank,
-                player2Rank
-            );
-            this.gameGateway.updateFrontMenu(match, "Results");
-            this.gameGateway.streamResults(match, game.uuid);
+            this.gameGateway.emitGameResults(results, player1Rank, player2Rank);
+            this.gameGateway.updateFrontMenu(results, "Results");
+            this.gameGateway.streamResults(results, game.uuid);
             await this.userService.setStatusByID(player1.uuid, "online");
             await this.userService.setStatusByID(player2.uuid, "online");
         } else {
@@ -509,7 +505,7 @@ export class GameService {
                 "online"
             );
         }
-        await this.gameGateway.emitEndGame(game.uuid, match);
+        await this.gameGateway.emitEndGame(game.uuid, results);
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }
@@ -526,8 +522,8 @@ export class GameService {
         }
         match.watchersSockets.push(user.socketId[0]);
         games.set(game_id, match);
-        await this.gameGateway.sendGameID(game_id, match);
-        await this.gameGateway.sendPos(match, game_id);
+        await this.gameGateway.sendGameID(match);
+        await this.gameGateway.sendPos(match);
     }
 
     // Leave a game stream

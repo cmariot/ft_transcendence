@@ -1,6 +1,7 @@
 import { Vector } from "vecti";
 
 export interface GameInterface {
+    uuid: string;
     player1Username: string;
     player2Username: string;
     sockets: string[];
@@ -23,4 +24,6 @@ export interface GameInterface {
     disconnection: boolean;
     lose: boolean;
     watchersSockets: string[];
+    power_up: boolean;
+    different_map: boolean;
 }

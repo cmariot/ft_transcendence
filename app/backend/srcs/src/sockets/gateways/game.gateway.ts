@@ -40,9 +40,9 @@ export class GameGateway {
     }
 
     // Send the game elements position
-    async sendPos(pos: GameInterface, game_id: string) {
+    async sendPos(pos: GameInterface) {
         this.server.to(pos.sockets).emit("game.pos.update", pos);
-        let match: GameInterface = games.get(game_id);
+        let match: GameInterface = games.get(pos.uuid);
         if (!match) {
             return;
         }
@@ -50,11 +50,11 @@ export class GameGateway {
     }
 
     // Share the game uuid with the players
-    async sendGameID(ID: string, game: GameInterface) {
-        this.server.to(game.sockets).emit("game.name", ID);
-        this.server.to(game.watchersSockets).emit("game.name", ID);
+    async sendGameID(game: GameInterface) {
+        this.server.to(game.sockets).emit("game.name", game.uuid);
+        this.server.to(game.watchersSockets).emit("game.name", game.uuid);
         this.server.emit("game.start", {
-            game_id: ID,
+            game_id: game.uuid,
             player1: game.player1Username,
             player2: game.player2Username,
         });
@@ -62,8 +62,6 @@ export class GameGateway {
 
     // Send the match results and their new leaderboard rank to the players
     emitGameResults(
-        player1Socket: string,
-        player2Socket: string,
         match: GameInterface,
         player1Rank: number,
         player2Rank: number
@@ -78,7 +76,7 @@ export class GameGateway {
                 loser_score: match.player2Score,
                 rank: player1Rank,
             };
-            this.server.to(player1Socket).emit("game.results", data);
+            this.server.to(match.player1Socket).emit("game.results", data);
             data = {
                 winner: match.player1Username,
                 loser: match.player2Username,
@@ -86,7 +84,7 @@ export class GameGateway {
                 loser_score: match.player2Score,
                 rank: player2Rank,
             };
-            this.server.to(player2Socket).emit("game.results", data);
+            this.server.to(match.player2Socket).emit("game.results", data);
         } else {
             data = {
                 winner: match.player2Username,
@@ -95,7 +93,7 @@ export class GameGateway {
                 loser_score: match.player1Score,
                 rank: player1Rank,
             };
-            this.server.to(player1Socket).emit("game.results", data);
+            this.server.to(match.player1Socket).emit("game.results", data);
             data = {
                 winner: match.player2Username,
                 loser: match.player1Username,
@@ -103,7 +101,7 @@ export class GameGateway {
                 loser_score: match.player1Score,
                 rank: player2Rank,
             };
-            this.server.to(player2Socket).emit("game.results", data);
+            this.server.to(match.player2Socket).emit("game.results", data);
         }
     }
 

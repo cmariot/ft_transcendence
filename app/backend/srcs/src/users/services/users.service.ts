@@ -13,6 +13,7 @@ import { createReadStream } from "fs";
 import * as fs from "fs";
 import { join } from "path";
 import { UserGateway } from "src/sockets/gateways/user.gateway";
+import { GameInterface } from "src/game/interfaces/game.interface";
 @Injectable()
 export class UsersService {
     constructor(
@@ -416,45 +417,45 @@ export class UsersService {
 
     // Save game history
     async saveGameResult(
+        results: GameInterface,
         player1: string,
-        player2: string,
-        player1Score: number,
-        player2Score: number
+        player2: string
     ) {
         let user1 = await this.getByID(player1);
         let user2 = await this.getByID(player2);
-        user1.xp += player1Score;
-        user2.xp += player2Score;
+        const [score1, score2] = [results.player1Score, results.player2Score];
+        user1.xp += score1;
+        user2.xp += score2;
         if (user1 && user2) {
-            if (player1Score > player2Score) {
+            if (score1 > score2) {
                 user1.xp += 5;
                 await this.setScore(user1, user2);
                 user1.history.push({
                     winner: user1.uuid,
                     loser: user2.uuid,
-                    winner_score: player1Score,
-                    loser_score: player2Score,
+                    winner_score: score1,
+                    loser_score: score2,
                 });
                 user2.history.push({
                     winner: user1.uuid,
                     loser: user2.uuid,
-                    winner_score: player1Score,
-                    loser_score: player2Score,
+                    winner_score: score1,
+                    loser_score: score2,
                 });
-            } else if (player2Score > player1Score) {
+            } else if (score2 > score1) {
                 user2.xp += 5;
                 await this.setScore(user2, user1);
                 user1.history.push({
                     winner: user2.uuid,
                     loser: user1.uuid,
-                    winner_score: player2Score,
-                    loser_score: player1Score,
+                    winner_score: score2,
+                    loser_score: score1,
                 });
                 user2.history.push({
                     winner: user2.uuid,
                     loser: user1.uuid,
-                    winner_score: player2Score,
-                    loser_score: player1Score,
+                    winner_score: score2,
+                    loser_score: score1,
                 });
             }
             await this.userRepository.update(
