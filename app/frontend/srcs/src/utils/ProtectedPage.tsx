@@ -15,6 +15,7 @@ export default function ProtectedPage() {
     useEffect(() => {
         const authCookie = getCookie("authentification");
         if (!authCookie) {
+            user.setIsLogged(false);
             return navigate("/login");
         }
         if (user.isForcedLogout) {

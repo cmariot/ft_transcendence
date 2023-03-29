@@ -18,21 +18,23 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-    <UserProvider>
-        <ChatProvider>
-            <GameProvider>
-                <MenuProvider>
-                    <SocketProvider>
-                        <StatusEvents>
-                            <ChatEvents>
-                                <GameEvents>
-                                    <RouterProvider router={router} />
-                                </GameEvents>
-                            </ChatEvents>
-                        </StatusEvents>
-                    </SocketProvider>
-                </MenuProvider>
-            </GameProvider>
-        </ChatProvider>
-    </UserProvider>
+    <React.StrictMode>
+        <UserProvider>
+            <ChatProvider>
+                <GameProvider>
+                    <MenuProvider>
+                        <SocketProvider>
+                            <StatusEvents>
+                                <ChatEvents>
+                                    <GameEvents>
+                                        <RouterProvider router={router} />
+                                    </GameEvents>
+                                </ChatEvents>
+                            </StatusEvents>
+                        </SocketProvider>
+                    </MenuProvider>
+                </GameProvider>
+            </ChatProvider>
+        </UserProvider>
+    </React.StrictMode>
 );
