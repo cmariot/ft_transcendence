@@ -103,36 +103,29 @@ export class MatchmakingService {
     }
 
     async userDisconnection(user: UserEntity, recursive: boolean) {
-        console.log("userDisconnection: ", user);
-        let game: GameEntity;
+        let game: GameEntity[];
         if (recursive === true) {
-            game = await this.gameRepository.findOneBy({
+            game = await this.gameRepository.findBy({
                 hostID: user.uuid,
-                status: "waiting",
             });
-            if (!game) {
-                game = await this.gameRepository.findOneBy({
-                    hostID: user.uuid,
-                    status: "playing",
-                });
-            }
             this.leaveStream(user);
         } else {
-            game = await this.gameRepository.findOneBy({
+            game = await this.gameRepository.findBy({
                 guestID: user.uuid,
             });
         }
-        if (game) {
-            console.log("GAME =", game);
-            if (game.status === "waiting") {
-                await this.gameRepository.remove(game);
-                return;
-            } else if (game.status === "playing") {
-                let foundGame: GameInterface = games.get(game.uuid);
-                if (foundGame) {
-                    foundGame.disconnection = true;
-                    games.set(game.uuid, foundGame);
+        if (game && game.length > 0) {
+            for (let i = 0; i < game.length; i++) {
+                if (game[i].status === "waiting") {
+                    await this.gameRepository.remove(game);
                     return;
+                } else if (game[i].status === "playing") {
+                    let foundGame: GameInterface = games.get(game[i].uuid);
+                    if (foundGame) {
+                        foundGame.disconnection = true;
+                        games.set(game[i].uuid, foundGame);
+                        return;
+                    }
                 }
             }
         }
@@ -206,7 +199,16 @@ export class MatchmakingService {
                 this.gameService.startGame(game);
             }
         } else {
-            throw new UnauthorizedException("status !== 'online'");
+            if (guest.status !== "online") {
+                throw new UnauthorizedException(
+                    "You cannot accept the invitation when you're " +
+                        guest.status
+                );
+            } else {
+                throw new UnauthorizedException(
+                    "Your opponent is " + host.status
+                );
+            }
         }
     }
 
