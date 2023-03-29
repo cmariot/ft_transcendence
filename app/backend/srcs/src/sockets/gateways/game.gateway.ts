@@ -17,9 +17,8 @@ export class GameGateway {
     }
 
     // Change the app menu in the frontend
-    async updateFrontMenu(player1: string, player2: string, menu: string) {
-        let room = [player1, player2];
-        this.server.to(room).emit("game.menu.change", { menu: menu });
+    async updateFrontMenu(match: GameInterface, menu: string) {
+        this.server.to(match.sockets).emit("game.menu.change", { menu: menu });
     }
 
     // Change the app menu in the frontend
@@ -31,26 +30,18 @@ export class GameGateway {
 
     // 5, 4, 3, 2, 1
     async updateCountDown(
-        player1: string,
-        player2: string,
+        match: GameInterface,
         menu: string,
         countDown: number
     ) {
-        let room = [player1, player2];
         this.server
-            .to(room)
+            .to(match.sockets)
             .emit("game.menu.change", { menu: menu, countDown: countDown });
     }
 
     // Send the game elements position
-    async sendPos(
-        player1: string,
-        player2: string,
-        pos: GameInterface,
-        game_id: string
-    ) {
-        let room = [player1, player2];
-        this.server.to(room).emit("game.pos.update", pos);
+    async sendPos(pos: GameInterface, game_id: string) {
+        this.server.to(pos.sockets).emit("game.pos.update", pos);
         let match: GameInterface = games.get(game_id);
         if (!match) {
             return;
@@ -59,14 +50,8 @@ export class GameGateway {
     }
 
     // Share the game uuid with the players
-    async sendGameID(
-        player1: string,
-        player2: string,
-        ID: string,
-        game: GameInterface
-    ) {
-        let room = [player1, player2];
-        this.server.to(room).emit("game.name", ID);
+    async sendGameID(ID: string, game: GameInterface) {
+        this.server.to(game.sockets).emit("game.name", ID);
         this.server.to(game.watchersSockets).emit("game.name", ID);
         this.server.emit("game.start", {
             game_id: ID,

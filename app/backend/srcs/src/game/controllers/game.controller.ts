@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/authentification.guards";
-import { GameIdDto, UsernameDto } from "../dtos/GameUtility.dto";
+import {
+    GameIdDto,
+    UsernameDto,
+    gameOptionsDTO,
+} from "../dtos/GameUtility.dto";
 import { MatchmakingService } from "../services/matchmaking.service";
 import { GameService } from "../services/game.service";
 
@@ -14,8 +18,8 @@ export class GameController {
     // Rejoint la queue
     @Post("queue")
     @UseGuards(isLogged)
-    async join_queue(@Req() req) {
-        return await this.matchmakingService.joinQueue(req.user.uuid);
+    async join_queue(@Req() req, @Body() options: gameOptionsDTO) {
+        return await this.matchmakingService.joinQueue(req.user.uuid, options);
     }
 
     // pour cancel quand il est dans la queue

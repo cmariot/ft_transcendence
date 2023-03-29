@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class UsernameDto {
     @IsNotEmpty()
@@ -12,4 +12,13 @@ export class GameIdDto {
     @MinLength(3)
     @IsString()
     game_id: string;
+}
+export class gameOptionsDTO {
+    @IsNotEmpty()
+    @IsBoolean()
+    power_up: boolean;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    different_map: boolean;
 }

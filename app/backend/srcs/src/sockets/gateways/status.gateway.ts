@@ -97,13 +97,21 @@ export class StatusGateway {
     ) {
         let match = games.get(data.gameID);
         if (match) {
-            if (client.id === match.player1Socket) {
+            if (
+                match.player1Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
                 if (match.player1Position > 0) {
-                    match.player1Position -= match.paddleHeigth;
+                    match.player1Position -= match.screenHeigth / 10;
                 }
-            } else if (client.id === match.player2Socket) {
+            } else if (
+                match.player2Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
                 if (match.player2Position > 0) {
-                    match.player2Position -= match.paddleHeigth;
+                    match.player2Position -= match.screenHeigth / 10;
                 }
             }
             games.set(data.gameID, match);
@@ -118,13 +126,21 @@ export class StatusGateway {
     ) {
         let match = games.get(data.gameID);
         if (match) {
-            if (client.id === match.player1Socket) {
+            if (
+                match.player1Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
                 if (match.player1Position < match.screenHeigth) {
-                    match.player1Position += match.paddleHeigth;
+                    match.player1Position += match.screenHeigth / 10;
                 }
-            } else if (client.id === match.player2Socket) {
+            } else if (
+                match.player2Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
                 if (match.player2Position < match.screenHeigth) {
-                    match.player2Position += match.paddleHeigth;
+                    match.player2Position += match.screenHeigth / 10;
                 }
             }
             games.set(data.gameID, match);

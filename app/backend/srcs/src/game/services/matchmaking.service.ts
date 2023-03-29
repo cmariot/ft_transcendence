@@ -7,6 +7,7 @@ import { UserEntity } from "src/users/entity/user.entity";
 import { GameService, games } from "./game.service";
 import { GameInterface } from "../interfaces/game.interface";
 import { GameGateway } from "src/sockets/gateways/game.gateway";
+import { gameOptionsDTO } from "../dtos/GameUtility.dto";
 
 @Injectable()
 export class MatchmakingService {
@@ -18,7 +19,10 @@ export class MatchmakingService {
         private gameGateway: GameGateway
     ) {}
 
-    async joinQueue(uuid: string) {
+    async joinQueue(
+        uuid: string,
+        options: { power_up: boolean; different_map: boolean }
+    ) {
         let user: UserEntity = await this.userService.getByID(uuid);
         if (!user) {
             throw new UnauthorizedException("User not found");
@@ -44,21 +48,31 @@ export class MatchmakingService {
                 await this.gameRepository.remove(game);
             }
         }
-        game = await this.gameRepository.findOneBy({
+        let waitingGames: GameEntity[] = await this.gameRepository.findBy({
             status: "waiting",
         });
-        if (!game) {
-            game = new GameEntity();
-            game.hostID = uuid;
-            game.status = "waiting";
-            await this.gameRepository.save(game);
-            await this.userService.setStatusByID(uuid, "matchmaking");
-        } else {
-            game.guestID = uuid;
-            game.status = "playing";
-            await this.gameRepository.save(game);
-            this.gameService.startGame(game);
+        if (waitingGames) {
+            for (let i = 0; i < waitingGames.length; i++) {
+                if (
+                    waitingGames[i].options.power_up === options.power_up &&
+                    waitingGames[i].options.different_map ===
+                        options.different_map
+                ) {
+                    waitingGames[i].guestID = uuid;
+                    waitingGames[i].status = "playing";
+                    await this.gameRepository.save(waitingGames[i]);
+                    this.gameService.startGame(waitingGames[i]);
+                    return;
+                }
+            }
         }
+        game = new GameEntity();
+        game.hostID = uuid;
+        game.status = "waiting";
+        game.options = options;
+        await this.gameRepository.save(game);
+        await this.userService.setStatusByID(uuid, "matchmaking");
+        return;
     }
 
     async cancelQueue(uuid: string) {

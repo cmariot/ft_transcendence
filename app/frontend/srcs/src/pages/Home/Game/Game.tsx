@@ -11,6 +11,7 @@ import SelectStream from "./SelectStream";
 import Stream from "./Stream";
 import StreamResults from "./StreamResults";
 import EndStreamPlayerDisconnect from "./EndStreamPlayerDisconnect";
+import GameOptions from "./GameOptions";
 
 const Game = () => {
     const game = useContext(GameContext);
@@ -18,6 +19,7 @@ const Game = () => {
     return (
         <div id="game">
             {game.menu === "JoinGame" && <JoinGame />}
+            {game.menu === "GameOptions" && <GameOptions />}
             {game.menu === "WaitingScreen" && <WaitingScreen />}
             {game.menu === "countDown" && <CountDown time={game.countDown} />}
             {game.menu === "Game" && <TestMouvements />}
