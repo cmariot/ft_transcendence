@@ -36,7 +36,10 @@ const Results = () => {
                     <h3>{game.p2Score}</h3>
                 </div>
             </div>
-            <button onClick={() => joinGame()}>New game</button>
+            <div>
+                <button onClick={joinGame}>New game</button>
+                <button onClick={() => game.setMenu("JoinGame")}>Exit</button>
+            </div>
         </div>
     );
 };
