@@ -8,13 +8,14 @@ const TestMouvements = () => {
     const socket = useContext(SocketContext);
     const game = useContext(GameContext);
 
-    function handleKeyPress(event: any) {
+    function handleKeyPress(event: KeyboardEvent) {
+        event.preventDefault();
         if (event.key === "ArrowUp") {
-            event.preventDefault();
             socket.emit("up", { gameID: game.gameID });
         } else if (event.key === "ArrowDown") {
-            event.preventDefault();
             socket.emit("down", { gameID: game.gameID });
+        } else if (event.key === " ") {
+            socket.emit("powerUp", { gameID: game.gameID });
         }
     }
 
@@ -107,19 +108,25 @@ const TestMouvements = () => {
                     bottom: `${getBottom(game.paddle2)}%`,
                 }}
             />
-            {game.powerUps.map((power_up, index) => (
-                <div
-                    id="ball"
-                    style={{
-                        height: `${
-                            (game.ballHeigth / game.screenHeigth) * 100
-                        }%`,
-                        width: `${(game.ballWidth / game.screenWidth) * 100}%`,
-                        left: `${getPowerUpLeft(power_up.position.x)}%`,
-                        bottom: `${getPowerUpBottom(power_up.position.y)}%`,
-                    }}
-                />
-            ))}
+            {game.powerUps.length > 0 &&
+                game.powerUps.map((power_up, index) => (
+                    <div
+                        key={index}
+                        id="ball"
+                        style={{
+                            height: `${
+                                (game.ballHeigth / game.screenHeigth) * 100
+                            }%`,
+                            width: `${
+                                (game.ballWidth / game.screenWidth) * 100
+                            }%`,
+                            left: `${getPowerUpLeft(power_up.position.x)}%`,
+                            bottom: `${getPowerUpBottom(power_up.position.y)}%`,
+                        }}
+                    >
+                        ?
+                    </div>
+                ))}
         </div>
     );
 };

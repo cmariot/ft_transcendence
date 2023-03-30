@@ -146,4 +146,32 @@ export class StatusGateway {
             games.set(data.gameID, match);
         }
     }
+
+    @SubscribeMessage("powerUp")
+    async usePowerUp(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: { gameID: string }
+    ) {
+        let match = games.get(data.gameID);
+        if (match) {
+            if (
+                match.player1Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
+                if (match.power_up_player1 !== "") {
+                    match.player1_usePower = true;
+                }
+            } else if (
+                match.player2Socket.findIndex(
+                    (element) => element === client.id
+                ) !== -1
+            ) {
+                if (match.power_up_player2 !== "") {
+                    match.player2_usePower = true;
+                }
+            }
+            games.set(data.gameID, match);
+        }
+    }
 }

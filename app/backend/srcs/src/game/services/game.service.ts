@@ -244,6 +244,18 @@ export class GameService {
         return match.ballPosition;
     }
 
+    async adjustBallPositionAfterHitHorizontal(
+        match: GameInterface
+    ): Promise<Vector> {
+        while (
+            this.isBallOutsideScreen(match).outside === false &&
+            (await this.hitPaddleHorizontal(match)) === true
+        ) {
+            match.ballPosition = match.ballPosition.add(match.ballDirection);
+        }
+        return match.ballPosition;
+    }
+
     async checkPowerUp(match: GameInterface): Promise<GameInterface> {
         const ball = new Vector(match.ballPosition.x, match.ballPosition.y);
         for (let i = 0; i < match.power_up_list.length; i++) {
@@ -251,7 +263,7 @@ export class GameService {
                 ball.subtract(match.power_up_list[i].position).length() <
                 match.ballHeigth
             ) {
-                if (match.ballDirection.x > 0) {
+                if (match.ballDirection.x < 0) {
                     match.power_up_player2 = match.power_up_list[i].type;
                 } else {
                     match.power_up_player1 = match.power_up_list[i].type;
@@ -294,6 +306,8 @@ export class GameService {
                         match.ballDirection.x,
                         -match.ballDirection.y
                     );
+                    match.ballPosition =
+                        await this.adjustBallPositionAfterHitHorizontal(match);
                     match.lose = true;
                     break;
                 }
@@ -386,11 +400,11 @@ export class GameService {
             "slow",
             "biggerPaddle",
             "smallerPaddle",
-            "freeze",
-            "invisibility",
+            "freeze", // galere a gerer dans le back, a voir si on le garde
+            "invisibility", // galere a gerer dans le front, a voir si on le garde
         ];
         const random = getRandomBetween(0, list.length - 1);
-        const chance = getRandomBetween(0, 333);
+        const chance = getRandomBetween(0, 450);
 
         if (chance === 42) {
             match.power_up_list.push({
@@ -405,6 +419,43 @@ export class GameService {
                     getRandomBetween(0, match.screenHeigth)
                 ),
             });
+        }
+        return match;
+    }
+
+    async checkPowerUpUse(
+        match: GameInterface,
+        recursive: boolean
+    ): Promise<GameInterface> {
+        var used: boolean;
+        var power_up: string;
+        var player: number;
+
+        if (recursive === true) {
+            player = 1;
+            used = match.player1_usePower;
+            power_up = match.power_up_player1;
+        } else {
+            player = 2;
+            used = match.player2_usePower;
+            power_up = match.power_up_player2;
+        }
+
+        if (used === true && power_up) {
+            console.log("Player " + player + " used " + power_up);
+            // update match here
+
+            if (player === 1) {
+                match.power_up_player1 = "";
+                match.player1_usePower = false;
+            } else {
+                match.power_up_player2 = "";
+                match.player2_usePower = false;
+            }
+        }
+
+        if (recursive === true) {
+            match = await this.checkPowerUpUse(match, false);
         }
         return match;
     }
@@ -424,6 +475,7 @@ export class GameService {
             match = await this.moveBall(match);
             if (match.power_up === true) {
                 match = await this.spawnPowerUp(match);
+                match = await this.checkPowerUpUse(match, true);
             }
             if (match.solo === true) {
                 match = await this.movePaddleIA(match);
@@ -486,6 +538,8 @@ export class GameService {
             power_up_list: new Array<{ type: string; position: Vector }>(),
             power_up_player1: "",
             power_up_player2: "",
+            player1_usePower: false,
+            player2_usePower: false,
         };
         games.set(game.uuid, match);
         await this.gameGateway.sendGameID(match);
@@ -504,7 +558,6 @@ export class GameService {
         if (player1.socketId.length === 0) {
             throw new UnauthorizedException("Invalid user sockets");
         }
-
         if (game.options.solo === false) {
             var player2 = await this.userService.getByID(game.guestID);
             await this.userService.setStatusByID(player2.uuid, "ingame");
@@ -516,9 +569,8 @@ export class GameService {
             }
         } else {
             var player2 = new UserEntity();
-            player2.username = "ia";
+            player2.username = "gigachad";
         }
-
         return [player1, player2];
     }
 

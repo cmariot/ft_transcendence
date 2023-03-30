@@ -29,4 +29,6 @@ export interface GameInterface {
     power_up_list: { type: string; position: Vector }[];
     power_up_player1: string;
     power_up_player2: string;
+    player1_usePower: boolean;
+    player2_usePower: boolean;
 }
