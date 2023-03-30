@@ -63,10 +63,7 @@ export class MatchmakingService {
         });
         if (waitingGames) {
             for (let i = 0; i < waitingGames.length; i++) {
-                if (
-                    waitingGames[i].options.power_up === options.power_up &&
-                    waitingGames[i].options.solo === options.solo
-                ) {
+                if (waitingGames[i].options.power_up === options.power_up) {
                     waitingGames[i].guestID = uuid;
                     waitingGames[i].status = "playing";
                     await this.gameRepository.save(waitingGames[i]);

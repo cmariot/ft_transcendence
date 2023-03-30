@@ -244,9 +244,31 @@ export class GameService {
         return match.ballPosition;
     }
 
+    async checkPowerUp(match: GameInterface): Promise<GameInterface> {
+        const ball = new Vector(match.ballPosition.x, match.ballPosition.y);
+        for (let i = 0; i < match.power_up_list.length; i++) {
+            if (
+                ball.subtract(match.power_up_list[i].position).length() <
+                match.ballHeigth
+            ) {
+                if (match.ballDirection.x > 0) {
+                    match.power_up_player2 = match.power_up_list[i].type;
+                } else {
+                    match.power_up_player1 = match.power_up_list[i].type;
+                }
+                match.power_up_list.splice(i, 1);
+            }
+        }
+        return match;
+    }
+
     async moveBall(match: GameInterface): Promise<GameInterface> {
         for (let i = 0; i < match.ballSpeed; i++) {
             match.ballPosition = match.ballPosition.add(match.ballDirection);
+
+            if (match.power_up === true) {
+                match = await this.checkPowerUp(match);
+            }
 
             const outsideResponse = this.isBallOutsideScreen(match);
             if (outsideResponse.outside === true) {
@@ -358,6 +380,35 @@ export class GameService {
         return match;
     }
 
+    async spawnPowerUp(match: GameInterface): Promise<GameInterface> {
+        const list = [
+            "speed",
+            "slow",
+            "biggerPaddle",
+            "smallerPaddle",
+            "freeze",
+            "invisibility",
+        ];
+        const random = getRandomBetween(0, list.length - 1);
+        const chance = getRandomBetween(0, 333);
+
+        if (chance === 42) {
+            match.power_up_list.push({
+                type: list[random],
+                position: new Vector(
+                    getRandomBetween(
+                        0 + match.paddleWidth + match.paddleOffset,
+                        match.screenWidth -
+                            match.paddleWidth -
+                            match.paddleOffset
+                    ),
+                    getRandomBetween(0, match.screenHeigth)
+                ),
+            });
+        }
+        return match;
+    }
+
     // Game loop
     async launchMatch(
         match: GameInterface
@@ -371,6 +422,9 @@ export class GameService {
             if (!match) return [true, undefined];
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
+            if (match.power_up === true) {
+                match = await this.spawnPowerUp(match);
+            }
             if (match.solo === true) {
                 match = await this.movePaddleIA(match);
             }
@@ -429,6 +483,9 @@ export class GameService {
             watchersSockets: [],
             power_up: game.options.power_up,
             solo: game.options.solo,
+            power_up_list: new Array<{ type: string; position: Vector }>(),
+            power_up_player1: "",
+            power_up_player2: "",
         };
         games.set(game.uuid, match);
         await this.gameGateway.sendGameID(match);

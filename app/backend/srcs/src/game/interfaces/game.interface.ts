@@ -26,4 +26,7 @@ export interface GameInterface {
     watchersSockets: string[];
     power_up: boolean;
     solo: boolean;
+    power_up_list: { type: string; position: Vector }[];
+    power_up_player1: string;
+    power_up_player2: string;
 }

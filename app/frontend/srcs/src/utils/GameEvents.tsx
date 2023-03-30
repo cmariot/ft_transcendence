@@ -149,6 +149,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             game.setP2Name(data.player2Username);
             game.setP1Score(data.player1Score);
             game.setP2Score(data.player2Score);
+            game.setPowerUps(data.power_up_list);
         }
         socket.on("game.pos.update", updateGame);
         return () => {

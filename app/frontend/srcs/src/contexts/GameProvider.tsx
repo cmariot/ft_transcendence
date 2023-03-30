@@ -25,6 +25,7 @@ export type GameContextType = {
         p1Score: 0;
         p2Score: 0;
     };
+    power_ups: Array<{ type: string; position: { x: number; y: number } }>;
 };
 
 export const GameContext = createContext({
@@ -84,6 +85,11 @@ export const GameContext = createContext({
         p1Score: number;
         p2Score: number;
     }) => {},
+
+    powerUps: new Array<{ type: string; position: { x: number; y: number } }>(),
+    setPowerUps: (
+        newValue: Array<{ type: string; position: { x: number; y: number } }>
+    ) => {},
 });
 
 type GameProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -121,6 +127,9 @@ const GameProvider = ({ children }: GameProviderProps) => {
         p1Score: 0,
         p2Score: 0,
     });
+    const [powerUps, setPowerUps] = useState<
+        { type: string; position: { x: number; y: number } }[]
+    >([]);
 
     const value = {
         menu,
@@ -161,6 +170,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setCurrentGames,
         streamResults,
         setStreamResults,
+        powerUps,
+        setPowerUps,
     };
 
     return (
