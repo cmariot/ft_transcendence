@@ -117,6 +117,14 @@ export class GameService {
         match: GameInterface,
         paddlePosition: number
     ): Promise<boolean> {
+        if (
+            match.ballPosition.x >= match.screenWidth ||
+            match.ballPosition.x <= 0 ||
+            match.ballPosition.y >= match.screenHeigth ||
+            match.ballPosition.y <= 0
+        ) {
+            return false;
+        }
         const paddleY = this.getPaddleY(paddlePosition, match);
         const ballY = this.getBallY(match);
         const ballX = this.getBallX(match);
@@ -165,38 +173,26 @@ export class GameService {
         match: GameInterface,
         paddlePosition: number
     ): Promise<boolean> {
-        const paddleY = this.getPaddleY(paddlePosition, match);
         const ballY = this.getBallY(match);
         const ballX = this.getBallX(match);
-        const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
-        const paddle2X =
-            match.screenWidth - match.paddleOffset - match.paddleWidth;
+
+        var hit: boolean;
         if (paddle === 1) {
-            if (ballX < paddle1X) {
-                if (
-                    ballY <=
-                        paddleY +
-                            match.paddleHeigth / 2 +
-                            match.ballHeigth / 2 &&
-                    ballY >=
-                        paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
-                ) {
-                    return true;
-                }
-            }
+            const paddle1X = 0 + match.paddleOffset + match.paddleWidth;
+            hit = ballX < paddle1X;
         } else if (paddle === 2) {
-            if (ballX > paddle2X) {
-                if (
-                    ballY <=
-                        paddleY +
-                            match.paddleHeigth / 2 +
-                            match.ballHeigth / 2 &&
-                    ballY >=
-                        paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
-                ) {
-                    return true;
-                }
-            }
+            const paddle2X =
+                match.screenWidth - match.paddleOffset - match.paddleWidth;
+            hit = ballX > paddle2X;
+        }
+        const paddleY = this.getPaddleY(paddlePosition, match);
+
+        if (
+            hit &&
+            ballY <= paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
+            ballY >= paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
+        ) {
+            return true;
         }
         return false;
     }
@@ -325,6 +321,7 @@ export class GameService {
     // engagement direction
     // engagement angle
     async startBallDir(match: GameInterface): Promise<GameInterface> {
+        match.lose = false;
         match.ballPosition = new Vector(
             match.screenWidth / 2,
             match.screenHeigth / 2
@@ -344,10 +341,6 @@ export class GameService {
         } else {
             match.ballDirection = match.ballDirection.rotateByDegrees(random);
         }
-        // pour tester rebond sur face inferieure paddle 2 :
-        //match.ballDirection = new Vector(1, 0);
-        //match.ballDirection = match.ballDirection.rotateByDegrees(39);
-        match.lose = false;
         return match;
     }
 
@@ -364,11 +357,7 @@ export class GameService {
     }
 
     // Return true if someone disconnects during the game
-    someoneDisconnect(gameID: string) {
-        let match = games.get(gameID);
-        if (!match) {
-            return true;
-        }
+    someoneDisconnect(match: GameInterface) {
         if (match.disconnection) {
             this.gameGateway.updateFrontMenu(match, "Disconnection");
             if (match.watchersSockets.length > 0) {
@@ -380,6 +369,29 @@ export class GameService {
 
     getScore(match: GameInterface): [number, number] {
         return [match.player1Score, match.player2Score];
+    }
+
+    async movePaddleIA(match: GameInterface): Promise<GameInterface> {
+        if (
+            this.getBallY(match) <
+            this.getPaddleY(match.player2Position, match) +
+                match.paddleHeigth / 2
+        ) {
+            // down
+            if (match.player2Position > 0) {
+                match.player2Position -= match.screenHeigth / 10;
+            }
+        } else if (
+            this.getBallY(match) >
+            this.getPaddleY(match.player2Position, match) -
+                match.paddleHeigth / 2
+        ) {
+            // up
+            if (match.player2Position < match.screenHeigth) {
+                match.player2Position += match.screenHeigth / 10;
+            }
+        }
+        return match;
     }
 
     // Game loop
@@ -395,6 +407,9 @@ export class GameService {
             if (!match) return [true, undefined];
             match = await this.computeBallDirection(match);
             match = await this.moveBall(match);
+            if (match.solo === true) {
+                match = await this.movePaddleIA(match);
+            }
             await this.gameGateway.sendPos(match);
             if (this.someoneGoal(match, score1, score2)) {
                 if (match.player1Score >= 15 || match.player2Score >= 15) {
@@ -405,7 +420,7 @@ export class GameService {
                     await this.sleep(1000);
                 }
             }
-            if (this.someoneDisconnect(match.uuid)) {
+            if (this.someoneDisconnect(match)) {
                 return [true, undefined];
             }
             games.set(match.uuid, match);
@@ -449,7 +464,7 @@ export class GameService {
             lose: false,
             watchersSockets: [],
             power_up: game.options.power_up,
-            different_map: game.options.different_map,
+            solo: game.options.solo,
         };
 
         games.set(game.uuid, match);
@@ -462,15 +477,28 @@ export class GameService {
         game: GameEntity
     ): Promise<[player1: UserEntity, player2: UserEntity]> {
         let player1 = await this.userService.getByID(game.hostID);
-        let player2 = await this.userService.getByID(game.guestID);
-        if (!player1 || !player2) {
+        await this.userService.setStatusByID(player1.uuid, "ingame");
+        if (!player1) {
             throw new UnauthorizedException("User not found");
         }
-        if (player1.socketId.length === 0 || player2.socketId.length === 0) {
+        if (player1.socketId.length === 0) {
             throw new UnauthorizedException("Invalid user sockets");
         }
-        await this.userService.setStatusByID(player1.uuid, "ingame");
-        await this.userService.setStatusByID(player2.uuid, "ingame");
+
+        if (game.options.solo === false) {
+            var player2 = await this.userService.getByID(game.guestID);
+            await this.userService.setStatusByID(player2.uuid, "ingame");
+            if (!player2) {
+                throw new UnauthorizedException("User not found");
+            }
+            if (player2.socketId.length === 0) {
+                throw new UnauthorizedException("Invalid user sockets");
+            }
+        } else {
+            var player2 = new UserEntity();
+            player2.username = "ia";
+        }
+
         return [player1, player2];
     }
 
@@ -481,13 +509,13 @@ export class GameService {
         let [gameError, results] = await this.launchMatch(match);
 
         if (gameError === false) {
+            let p1 = await this.userService.getByID(player1.uuid);
+            let p2 = await this.userService.getByID(player2.uuid);
             await this.userService.saveGameResult(
                 results,
                 player1.uuid,
                 player2.uuid
             );
-            let p1 = await this.userService.getByID(player1.uuid);
-            let p2 = await this.userService.getByID(player2.uuid);
             let player1Rank = await this.userService.getLeaderBoardRank(p1);
             let player2Rank = await this.userService.getLeaderBoardRank(p2);
             this.gameGateway.emitGameResults(results, player1Rank, player2Rank);

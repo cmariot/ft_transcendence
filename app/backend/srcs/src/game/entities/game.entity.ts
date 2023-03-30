@@ -14,6 +14,6 @@ export class GameEntity {
     @Column({ default: "" })
     guestID: string;
 
-    @Column("jsonb", { default: { power_up: false, different_map: false } })
-    options: { power_up: boolean; different_map: boolean };
+    @Column("jsonb", { default: { power_up: false, solo: false } })
+    options: { power_up: boolean; solo: boolean };
 }

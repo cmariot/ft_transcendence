@@ -25,5 +25,5 @@ export interface GameInterface {
     lose: boolean;
     watchersSockets: string[];
     power_up: boolean;
-    different_map: boolean;
+    solo: boolean;
 }

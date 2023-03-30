@@ -9,13 +9,13 @@ const GameOptions = () => {
     const menu = useContext(MenuContext);
 
     const [power_up, setPowerUp] = useState(false);
-    const [different_map, setDifferentMap] = useState(false);
+    const [solo, setDifferentMap] = useState(false);
 
     async function joinGame() {
         try {
             const joinResponse = await axios.post("/api/game/queue", {
                 power_up: power_up,
-                different_map: different_map,
+                solo: solo,
             });
             if (joinResponse.status === 201) {
                 game.setMenu("WaitingScreen");
@@ -33,7 +33,7 @@ const GameOptions = () => {
                         Solo
                         <input
                             type="checkbox"
-                            checked={different_map}
+                            checked={solo}
                             id="input-double-auth"
                             onChange={() =>
                                 setDifferentMap((prevState) => !prevState)

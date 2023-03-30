@@ -20,5 +20,5 @@ export class gameOptionsDTO {
 
     @IsNotEmpty()
     @IsBoolean()
-    different_map: boolean;
+    solo: boolean;
 }

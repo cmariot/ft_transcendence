@@ -21,7 +21,7 @@ export class MatchmakingService {
 
     async joinQueue(
         uuid: string,
-        options: { power_up: boolean; different_map: boolean }
+        options: { power_up: boolean; solo: boolean }
     ) {
         let user: UserEntity = await this.userService.getByID(uuid);
         if (!user) {
@@ -45,8 +45,18 @@ export class MatchmakingService {
                     games.set(game.uuid, foundGame);
                     return;
                 }
-                await this.gameRepository.remove(game);
+                //await this.gameRepository.remove(game);
             }
+        }
+        if (options.solo === true) {
+            game = new GameEntity();
+            game.hostID = uuid;
+            game.guestID = uuid;
+            game.options = options;
+            game.status = "playing";
+            await this.gameRepository.save(game);
+            this.gameService.startGame(game);
+            return;
         }
         let waitingGames: GameEntity[] = await this.gameRepository.findBy({
             status: "waiting",
@@ -55,8 +65,7 @@ export class MatchmakingService {
             for (let i = 0; i < waitingGames.length; i++) {
                 if (
                     waitingGames[i].options.power_up === options.power_up &&
-                    waitingGames[i].options.different_map ===
-                        options.different_map
+                    waitingGames[i].options.solo === options.solo
                 ) {
                     waitingGames[i].guestID = uuid;
                     waitingGames[i].status = "playing";
