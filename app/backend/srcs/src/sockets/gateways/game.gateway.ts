@@ -105,11 +105,9 @@ export class GameGateway {
         }
     }
 
-    async emitEndGame(game_id: string, match: GameInterface) {
+    async emitEndGame(game_id: string) {
         this.server.emit("game.end", {
             game_id: game_id,
-            player1: match.player1Username,
-            player2: match.player2Username,
         });
     }
 

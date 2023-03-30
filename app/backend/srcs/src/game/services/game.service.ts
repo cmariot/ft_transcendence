@@ -509,21 +509,31 @@ export class GameService {
         let [gameError, results] = await this.launchMatch(match);
 
         if (gameError === false) {
-            let p1 = await this.userService.getByID(player1.uuid);
-            let p2 = await this.userService.getByID(player2.uuid);
-            await this.userService.saveGameResult(
-                results,
-                player1.uuid,
-                player2.uuid
-            );
-            let player1Rank = await this.userService.getLeaderBoardRank(p1);
-            let player2Rank = await this.userService.getLeaderBoardRank(p2);
-            this.gameGateway.emitGameResults(results, player1Rank, player2Rank);
-            this.gameGateway.updateFrontMenu(results, "Results");
-            this.gameGateway.streamResults(results, game.uuid);
-            await this.userService.setStatusByID(player1.uuid, "online");
-            await this.userService.setStatusByID(player2.uuid, "online");
-        } else {
+            if (results.solo === true) {
+                this.gameGateway.updateFrontMenu(results, "Results");
+                this.gameGateway.streamResults(results, game.uuid);
+                await this.userService.setStatusByID(player1.uuid, "online");
+            } else {
+                let p1 = await this.userService.getByID(player1.uuid);
+                let p2 = await this.userService.getByID(player2.uuid);
+                await this.userService.saveGameResult(
+                    results,
+                    player1.uuid,
+                    player2.uuid
+                );
+                let player1Rank = await this.userService.getLeaderBoardRank(p1);
+                let player2Rank = await this.userService.getLeaderBoardRank(p2);
+                this.gameGateway.emitGameResults(
+                    results,
+                    player1Rank,
+                    player2Rank
+                );
+                this.gameGateway.updateFrontMenu(results, "Results");
+                this.gameGateway.streamResults(results, game.uuid);
+                await this.userService.setStatusByID(player1.uuid, "online");
+                await this.userService.setStatusByID(player2.uuid, "online");
+            }
+        } else if (match.solo === false) {
             await this.userService.setStatusIfNotOffline(
                 player1.uuid,
                 "online"
@@ -533,7 +543,7 @@ export class GameService {
                 "online"
             );
         }
-        await this.gameGateway.emitEndGame(game.uuid, results);
+        await this.gameGateway.emitEndGame(game.uuid);
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }
