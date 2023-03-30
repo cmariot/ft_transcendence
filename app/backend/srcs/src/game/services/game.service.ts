@@ -373,8 +373,8 @@ export class GameService {
 
     async movePaddleIA(match: GameInterface): Promise<GameInterface> {
         if (
-            this.getBallY(match) <
-            this.getPaddleY(match.player2Position, match) +
+            this.getBallY(match) + match.ballHeigth / 2 <
+            this.getPaddleY(match.player2Position, match) -
                 match.paddleHeigth / 2
         ) {
             // down
@@ -382,8 +382,8 @@ export class GameService {
                 match.player2Position -= match.screenHeigth / 10;
             }
         } else if (
-            this.getBallY(match) >
-            this.getPaddleY(match.player2Position, match) -
+            this.getBallY(match) - match.ballHeigth / 2 >
+            this.getPaddleY(match.player2Position, match) +
                 match.paddleHeigth / 2
         ) {
             // up
