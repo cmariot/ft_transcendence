@@ -13,7 +13,14 @@ RUN npm install -g npm@9.6.3
 WORKDIR /srcs
 
 # Copy the backend files
-COPY ./srcs .
+COPY ./srcs/default default
+COPY ./srcs/src src
+COPY ./srcs/nest-cli.json nest-cli.json
+COPY ./srcs/package.json package.json
+COPY ./srcs/package-lock.json package-lock.json
+COPY ./srcs/tsconfig.build.json tsconfig.build.json
+COPY ./srcs/tsconfig.build.json tsconfig.build.json
+
 COPY ./entrypoint.sh /
 
 # Launch the backend entrypoint script
