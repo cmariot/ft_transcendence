@@ -1,4 +1,4 @@
 #!/bin/sh
 
 npm install
-exec npm run start:debug
+exec npm run start:prod
