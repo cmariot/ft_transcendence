@@ -395,18 +395,17 @@ export class GameService {
     }
 
     async spawnPowerUp(match: GameInterface): Promise<GameInterface> {
-        const list = [
-            "speed",
-            "slow",
-            "biggerPaddle",
-            "smallerPaddle",
-            "freeze", // galere a gerer dans le back, a voir si on le garde
-            "invisibility", // galere a gerer dans le front, a voir si on le garde
-        ];
-        const random = getRandomBetween(0, list.length - 1);
         const chance = getRandomBetween(0, 450);
-
         if (chance === 42) {
+            const list = [
+                "speed",
+                "slow",
+                "biggerPaddle",
+                "smallerPaddle",
+                "freeze", // galere a gerer dans le back, a voir si on le garde
+                "invisibility", // galere a gerer dans le front, a voir si on le garde
+            ];
+            const random = getRandomBetween(0, list.length - 1);
             match.power_up_list.push({
                 type: list[random],
                 position: new Vector(
