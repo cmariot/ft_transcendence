@@ -46,6 +46,22 @@ const Stream = () => {
         }
     }
 
+    function getPowerUpBottom(y: number): number {
+        const percentage = (y / game.screenHeigth) * 100;
+        return (
+            percentage *
+            ((game.screenHeigth - game.ballHeigth) / game.screenHeigth)
+        );
+    }
+
+    function getPowerUpLeft(x: number): number {
+        const percentage = (x / game.screenWidth) * 100;
+        return (
+            percentage *
+            ((game.screenWidth - game.ballWidth) / game.screenWidth)
+        );
+    }
+
     return (
         <div id="board">
             <div id="player-names">
@@ -101,6 +117,22 @@ const Stream = () => {
                     bottom: `${getBottom(game.paddle2, 2)}%`,
                 }}
             />
+            {game.powerUps.map((power_up, index) => (
+                <div
+                    key={index}
+                    id="ball"
+                    style={{
+                        height: `${
+                            (game.ballHeigth / game.screenHeigth) * 100
+                        }%`,
+                        width: `${(game.ballWidth / game.screenWidth) * 100}%`,
+                        left: `${getPowerUpLeft(power_up.position.x)}%`,
+                        bottom: `${getPowerUpBottom(power_up.position.y)}%`,
+                    }}
+                >
+                    ?
+                </div>
+            ))}
         </div>
     );
 };
