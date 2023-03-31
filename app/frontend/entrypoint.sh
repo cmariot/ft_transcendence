@@ -1,4 +1,4 @@
 #!/bin/sh
 
 npm install
-exec npm run start
+exec npm run dev

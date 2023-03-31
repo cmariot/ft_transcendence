@@ -11,6 +11,9 @@
     # Update and Upgrade the list of packages
     RUN apk -U upgrade
     
+	# Install new minor version of npm
+	RUN npm install -g npm@9.6.3
+
     # Create the frontend directory
     WORKDIR /development
     
