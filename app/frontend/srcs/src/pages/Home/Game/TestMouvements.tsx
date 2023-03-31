@@ -27,11 +27,17 @@ const TestMouvements = () => {
         };
     });
 
-    function getBottom(paddlePos: number): number {
+    function getBottom(paddlePos: number, paddle: number): number {
+        var paddleHeigth: number;
+        if (paddle === 1) {
+            paddleHeigth = game.paddle1Heigth;
+        } else {
+            paddleHeigth = game.paddle2Heigth;
+        }
         const percentage = (paddlePos / game.screenHeigth) * 100;
         return (
             percentage *
-            ((game.screenHeigth - game.paddleHeigth) / game.screenHeigth)
+            ((game.screenHeigth - paddleHeigth) / game.screenHeigth)
         );
     }
 
@@ -84,10 +90,12 @@ const TestMouvements = () => {
                 id="paddle1"
                 className="paddle"
                 style={{
-                    height: `${(game.paddleHeigth / game.screenHeigth) * 100}%`,
+                    height: `${
+                        (game.paddle1Heigth / game.screenHeigth) * 100
+                    }%`,
                     width: `${(game.paddleWidth / game.screenWidth) * 100}%`,
                     left: `${(game.paddleOffset / game.screenWidth) * 100}%`,
-                    bottom: `${getBottom(game.paddle1)}%`,
+                    bottom: `${getBottom(game.paddle1, 1)}%`,
                 }}
             />
             <div
@@ -103,10 +111,12 @@ const TestMouvements = () => {
                 id="paddle2"
                 className="paddle"
                 style={{
-                    height: `${(game.paddleHeigth / game.screenHeigth) * 100}%`,
+                    height: `${
+                        (game.paddle2Heigth / game.screenHeigth) * 100
+                    }%`,
                     width: `${(game.paddleWidth / game.screenWidth) * 100}%`,
                     right: `${(game.paddleOffset / game.screenWidth) * 100}%`,
-                    bottom: `${getBottom(game.paddle2)}%`,
+                    bottom: `${getBottom(game.paddle2, 2)}%`,
                 }}
             />
             {game.powerUps.map((power_up, index) => (

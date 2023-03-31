@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { GameInterface } from "src/game/interfaces/game.interface";
 import { games } from "src/game/services/game.service";
-import { GameEntity } from "src/game/entities/game.entity";
+import { Vector } from "vecti";
 
 @Injectable()
 @WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })

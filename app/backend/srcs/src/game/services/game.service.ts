@@ -31,14 +31,25 @@ export class GameService {
         }
     }
 
-    getPaddleY(paddlePosition: number, match: GameInterface): number {
+    getPaddleY(
+        paddlePosition: number,
+        player: number,
+        match: GameInterface
+    ): number {
+        var paddleHeigth: number;
+        if (player == 1) {
+            paddleHeigth = match.paddle1Heigth;
+        } else {
+            paddleHeigth = match.paddle2Heigth;
+        }
+
         const posPaddleYPercentage =
             (paddlePosition / match.screenHeigth) * 100;
         const realPaddleYPercentage =
             posPaddleYPercentage *
-            ((match.screenHeigth - match.paddleHeigth) / match.screenHeigth);
+            ((match.screenHeigth - paddleHeigth) / match.screenHeigth);
         return (
-            match.paddleHeigth / 2 +
+            paddleHeigth / 2 +
             (match.screenHeigth / 100) * realPaddleYPercentage
         );
     }
@@ -76,21 +87,24 @@ export class GameService {
             var paddlePosition: number;
             var paddleX: number;
             var isHit: boolean;
+            var paddleHeigth: number;
             if (player === 1) {
                 paddlePosition = match.player1Position;
                 paddleX = 0 + match.paddleOffset + match.paddleWidth;
                 isHit = ballX <= paddleX + match.ballWidth * 0.5;
+                paddleHeigth = match.paddle1Heigth;
             } else {
                 paddlePosition = match.player2Position;
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
                 isHit = ballX >= paddleX - match.ballWidth * 0.5;
+                paddleHeigth = match.paddle2Heigth;
             }
-            const paddleY = this.getPaddleY(paddlePosition, match);
+            const paddleY = this.getPaddleY(paddlePosition, player, match);
             if (
                 isHit &&
-                ballY <= paddleY + match.paddleHeigth / 2 &&
-                ballY >= paddleY - match.paddleHeigth / 2
+                ballY <= paddleY + paddleHeigth / 2 &&
+                ballY >= paddleY - paddleHeigth / 2
             ) {
                 let angle = new Vector(
                     -match.ballDirection.x,
@@ -110,22 +124,24 @@ export class GameService {
         for (let player = 1; player <= 2; player++) {
             var paddlePosition: number;
             var paddleX: number;
+            var paddleHeigth: number;
             if (player === 1) {
                 paddlePosition = match.player1Position;
                 paddleX = 0 + match.paddleOffset + match.paddleWidth;
+                paddleHeigth = match.paddle1Heigth;
             } else if (player === 2) {
                 paddlePosition = match.player2Position;
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
+                paddleHeigth = match.paddle2Heigth;
             }
-            const paddleY = this.getPaddleY(paddlePosition, match);
+            const paddleY = this.getPaddleY(paddlePosition, player, match);
             if (
-                ballY <=
-                    paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
-                ballY >= paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
+                ballY <= paddleY + paddleHeigth / 2 + match.ballHeigth / 2 &&
+                ballY >= paddleY - paddleHeigth / 2 - match.ballHeigth / 2
             ) {
                 let xa = paddleX;
-                let ya = paddleY + match.paddleHeigth / 2;
+                let ya = paddleY + paddleHeigth / 2;
                 let xb = ballX;
                 let yb = ballY;
                 let ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
@@ -138,7 +154,7 @@ export class GameService {
                         ),
                     };
                 }
-                ya = paddleY - match.paddleHeigth / 2;
+                ya = paddleY - paddleHeigth / 2;
                 ab = Math.sqrt(Math.pow(xb - xa, 2) + Math.pow(yb - ya, 2));
                 if (ab <= match.ballHeigth / 2) {
                     return {
@@ -161,24 +177,26 @@ export class GameService {
         var paddlePosition: number;
         var paddleX: number;
         var paddleY: number;
+        var paddleHeigth: number;
 
         for (let player = 1; player <= 2; player++) {
             if (player === 1) {
                 paddleX = 0 + match.paddleOffset + match.paddleWidth;
                 hit = ballX < paddleX;
                 paddlePosition = match.player1Position;
+                paddleHeigth = match.paddle1Heigth;
             } else if (player === 2) {
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
                 hit = ballX > paddleX;
                 paddlePosition = match.player2Position;
+                paddleHeigth = match.paddle2Heigth;
             }
-            paddleY = this.getPaddleY(paddlePosition, match);
+            paddleY = this.getPaddleY(paddlePosition, player, match);
             if (
                 hit &&
-                ballY <=
-                    paddleY + match.paddleHeigth / 2 + match.ballHeigth / 2 &&
-                ballY >= paddleY - match.paddleHeigth / 2 - match.ballHeigth / 2
+                ballY <= paddleY + paddleHeigth / 2 + match.ballHeigth / 2 &&
+                ballY >= paddleY - paddleHeigth / 2 - match.ballHeigth / 2
             ) {
                 return true;
             }
@@ -372,10 +390,11 @@ export class GameService {
     }
 
     async movePaddleIA(match: GameInterface): Promise<GameInterface> {
+        if (match.freeze2 === true) return match;
         if (
             this.getBallY(match) + match.ballHeigth / 2 <
-            this.getPaddleY(match.player2Position, match) -
-                match.paddleHeigth / 2
+            this.getPaddleY(match.player2Position, 2, match) -
+                match.paddle2Heigth / 2
         ) {
             // down
             if (match.player2Position > 0) {
@@ -383,8 +402,8 @@ export class GameService {
             }
         } else if (
             this.getBallY(match) - match.ballHeigth / 2 >
-            this.getPaddleY(match.player2Position, match) +
-                match.paddleHeigth / 2
+            this.getPaddleY(match.player2Position, 2, match) +
+                match.paddle2Heigth / 2
         ) {
             // up
             if (match.player2Position < match.screenHeigth) {
@@ -395,15 +414,14 @@ export class GameService {
     }
 
     async spawnPowerUp(match: GameInterface): Promise<GameInterface> {
-        const chance = getRandomBetween(0, 450);
+        const chance = getRandomBetween(0, 100);
         if (chance === 42) {
             const list = [
                 "speed",
                 "slow",
                 "biggerPaddle",
                 "smallerPaddle",
-                "freeze", // galere a gerer dans le back, a voir si on le garde
-                "invisibility", // galere a gerer dans le front, a voir si on le garde
+                "freeze",
             ];
             const random = getRandomBetween(0, list.length - 1);
             match.power_up_list.push({
@@ -419,6 +437,81 @@ export class GameService {
                 ),
             });
         }
+        return match;
+    }
+
+    async increaseSpeed(match: GameInterface): Promise<GameInterface> {
+        const three_seconds = 3000;
+        match.ballSpeed *= 2;
+        setTimeout(async () => {
+            match.ballSpeed /= 2;
+        }, three_seconds);
+        return match;
+    }
+
+    async decreaseSpeed(match: GameInterface): Promise<GameInterface> {
+        const three_seconds = 3000;
+        match.ballSpeed /= 3;
+        setTimeout(async () => {
+            match.ballSpeed *= 3;
+        }, three_seconds);
+        return match;
+    }
+
+    async increasePaddle(
+        match: GameInterface,
+        player: number
+    ): Promise<GameInterface> {
+        const ten_seconds = 10000;
+        if (player === 1) {
+            match.paddle1Heigth *= 2;
+        } else {
+            match.paddle2Heigth *= 2;
+        }
+        setTimeout(async () => {
+            if (player === 1) {
+                match.paddle1Heigth /= 2;
+            } else {
+                match.paddle2Heigth /= 2;
+            }
+        }, ten_seconds);
+        return match;
+    }
+
+    async decreasePaddle(
+        match: GameInterface,
+        player: number
+    ): Promise<GameInterface> {
+        const ten_seconds = 10000;
+        if (player === 1) {
+            match.paddle2Heigth /= 2;
+        } else {
+            match.paddle1Heigth /= 2;
+        }
+        setTimeout(async () => {
+            if (player === 1) {
+                match.paddle2Heigth *= 2;
+            } else {
+                match.paddle1Heigth *= 2;
+            }
+        }, ten_seconds);
+        return match;
+    }
+
+    async freeze(match: GameInterface, player: number): Promise<GameInterface> {
+        const one_second = 1000;
+        if (player === 1) {
+            match.freeze2 = true;
+        } else {
+            match.freeze1 = true;
+        }
+        setTimeout(async () => {
+            if (player === 1) {
+                match.freeze2 = false;
+            } else {
+                match.freeze1 = false;
+            }
+        }, one_second);
         return match;
     }
 
@@ -439,10 +532,19 @@ export class GameService {
             used = match.player2_usePower;
             power_up = match.power_up_player2;
         }
-
         if (used === true && power_up) {
             console.log("Player " + player + " used " + power_up);
-            // update match here
+            if (power_up === "speed") {
+                match = await this.increaseSpeed(match);
+            } else if (power_up === "slow") {
+                match = await this.decreaseSpeed(match);
+            } else if (power_up === "biggerPaddle") {
+                match = await this.increasePaddle(match, player);
+            } else if (power_up === "smallerPaddle") {
+                match = await this.decreasePaddle(match, player);
+            } else if (power_up === "freeze") {
+                match = await this.freeze(match, player);
+            }
 
             if (player === 1) {
                 match.power_up_player1 = "";
@@ -452,7 +554,6 @@ export class GameService {
                 match.player2_usePower = false;
             }
         }
-
         if (recursive === true) {
             match = await this.checkPowerUpUse(match, false);
         }
@@ -524,7 +625,8 @@ export class GameService {
             ballSpeed: 9,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
-            paddleHeigth: (screenHeigth / 100) * paddleHeigth,
+            paddle1Heigth: (screenHeigth / 100) * paddleHeigth,
+            paddle2Heigth: (screenHeigth / 100) * paddleHeigth,
             paddleWidth: (screenWidth / 100) * 2,
             paddleOffset: (screenWidth / 100) * 1,
             ballWidth: (screenWidth / 100) * ballSize,
@@ -539,6 +641,8 @@ export class GameService {
             power_up_player2: "",
             player1_usePower: false,
             player2_usePower: false,
+            freeze1: false,
+            freeze2: false,
         };
         games.set(game.uuid, match);
         await this.gameGateway.sendGameID(match);
@@ -651,12 +755,4 @@ export class GameService {
             }
         }
     }
-
-    //Mode Bonus
-    //Balle qui disparait 1,5 s
-    //padlle plus grand
-    //paddle plus petit
-    //freeze paddle 1,5 s
-    //Balle acceleration 1,5 s
-    //Balle deceleration 1,5 s
 }

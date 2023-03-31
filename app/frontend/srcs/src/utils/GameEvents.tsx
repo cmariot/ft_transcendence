@@ -140,7 +140,8 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             game.setBall(data.ballPosition);
             game.setScreenHeigth(data.screenHeigth);
             game.setScreenWidth(data.screenWidth);
-            game.setPaddleHeigth(data.paddleHeigth);
+            game.setPaddle1Heigth(data.paddle1Heigth);
+            game.setPaddle2Heigth(data.paddle2Heigth);
             game.setPaddleWidth(data.paddleWidth);
             game.setPaddleOffset(data.paddleOffset);
             game.setBallHeigth(data.ballHeigth);
@@ -150,6 +151,8 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             game.setP1Score(data.player1Score);
             game.setP2Score(data.player2Score);
             game.setPowerUps(data.power_up_list);
+            game.setP1Power(data.power_up_player1);
+            game.setP2Power(data.power_up_player2);
         }
         socket.on("game.pos.update", updateGame);
         return () => {

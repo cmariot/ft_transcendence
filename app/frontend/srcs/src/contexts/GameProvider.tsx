@@ -9,7 +9,8 @@ export type GameContextType = {
     ball: { x: 50; y: 50 };
     screenHeigth: 900;
     screenWidth: 1600;
-    paddleHeigth: 90;
+    paddle1Heigth: 90;
+    paddle2Heigth: 90;
     paddleWidth: 18;
     paddleOffset: 9;
     ballHeigth: 22.5;
@@ -26,6 +27,8 @@ export type GameContextType = {
         p2Score: 0;
     };
     power_ups: Array<{ type: string; position: { x: number; y: number } }>;
+    p1Power: "";
+    p2Power: "";
 };
 
 export const GameContext = createContext({
@@ -45,8 +48,10 @@ export const GameContext = createContext({
     setScreenHeigth: (newValue: number) => {},
     screenWidth: 1600,
     setScreenWidth: (newValue: number) => {},
-    paddleHeigth: 90,
-    setPaddleHeigth: (newValue: number) => {},
+    paddle1Heigth: 90,
+    setPaddle1Heigth: (newValue: number) => {},
+    paddle2Heigth: 90,
+    setPaddle2Heigth: (newValue: number) => {},
     paddleWidth: 18,
     setPaddleWidth: (newValue: number) => {},
     paddleOffset: 9,
@@ -90,6 +95,10 @@ export const GameContext = createContext({
     setPowerUps: (
         newValue: Array<{ type: string; position: { x: number; y: number } }>
     ) => {},
+    p1Power: "",
+    setP1Power: (newValue: string) => {},
+    p2Power: "",
+    setP2Power: (newValue: string) => {},
 });
 
 type GameProviderProps = { children: JSX.Element | JSX.Element[] };
@@ -102,7 +111,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [ball, setBall] = useState({ x: 50, y: 50 });
     const [screenHeigth, setScreenHeigth] = useState<number>(50);
     const [screenWidth, setScreenWidth] = useState<number>(50);
-    const [paddleHeigth, setPaddleHeigth] = useState<number>(50);
+    const [paddle1Heigth, setPaddle1Heigth] = useState<number>(50);
+    const [paddle2Heigth, setPaddle2Heigth] = useState<number>(50);
     const [paddleWidth, setPaddleWidth] = useState<number>(50);
     const [paddleOffset, setPaddleOffset] = useState<number>(50);
     const [ballWidth, setBallWidth] = useState<number>(16);
@@ -130,6 +140,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
     const [powerUps, setPowerUps] = useState<
         { type: string; position: { x: number; y: number } }[]
     >([]);
+    const [p1Power, setP1Power] = useState<string>("");
+    const [p2Power, setP2Power] = useState<string>("");
 
     const value = {
         menu,
@@ -148,8 +160,10 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setScreenHeigth,
         screenWidth,
         setScreenWidth,
-        paddleHeigth,
-        setPaddleHeigth,
+        paddle1Heigth,
+        setPaddle1Heigth,
+        paddle2Heigth,
+        setPaddle2Heigth,
         paddleWidth,
         setPaddleWidth,
         paddleOffset,
@@ -172,6 +186,10 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setStreamResults,
         powerUps,
         setPowerUps,
+        p1Power,
+        setP1Power,
+        p2Power,
+        setP2Power,
     };
 
     return (

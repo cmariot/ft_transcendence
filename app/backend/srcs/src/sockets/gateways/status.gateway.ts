@@ -98,6 +98,7 @@ export class StatusGateway {
         let match = games.get(data.gameID);
         if (match) {
             if (
+                match.freeze1 === false &&
                 match.player1Socket.findIndex(
                     (element) => element === client.id
                 ) !== -1
@@ -106,6 +107,7 @@ export class StatusGateway {
                     match.player1Position -= match.screenHeigth / 10;
                 }
             } else if (
+                match.freeze2 === false &&
                 match.player2Socket.findIndex(
                     (element) => element === client.id
                 ) !== -1
@@ -127,6 +129,7 @@ export class StatusGateway {
         let match = games.get(data.gameID);
         if (match) {
             if (
+                match.freeze1 === false &&
                 match.player1Socket.findIndex(
                     (element) => element === client.id
                 ) !== -1
@@ -135,6 +138,7 @@ export class StatusGateway {
                     match.player1Position += match.screenHeigth / 10;
                 }
             } else if (
+                match.freeze2 === false &&
                 match.player2Socket.findIndex(
                     (element) => element === client.id
                 ) !== -1

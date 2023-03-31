@@ -16,7 +16,8 @@ export interface GameInterface {
     player2Score: number;
     screenHeigth: number;
     screenWidth: number;
-    paddleHeigth: number;
+    paddle1Heigth: number;
+    paddle2Heigth: number;
     paddleWidth: number;
     paddleOffset: number;
     ballWidth: number;
@@ -31,4 +32,6 @@ export interface GameInterface {
     power_up_player2: string;
     player1_usePower: boolean;
     player2_usePower: boolean;
+    freeze1: boolean;
+    freeze2: boolean;
 }
