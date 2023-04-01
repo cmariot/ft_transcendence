@@ -891,32 +891,41 @@ export class ChatService {
         return ban_usernames_list;
     }
 
-    async addUserInPrivate(addUser: AddOptionsDTO) {
-        var user: UserEntity | null = await this.userService.getByUsername(
+    async addUserInPrivate(addUser: AddOptionsDTO, uuid: string) {
+        var newUser: UserEntity | null = await this.userService.getByUsername(
             addUser.username
         );
-        if (!user) {
+        if (!newUser) {
             throw new UnauthorizedException("Invalid user");
         }
         let channel = await this.getByName(addUser.channelName);
         if (!channel) {
             throw new UnauthorizedException("Invalid channel");
         }
-        var uuid = user.uuid;
         if (
-            channel.banned_users.findIndex((banned) => banned.uuid === uuid) !==
-            -1
+            this.checkPermission(uuid, "owner_and_admins", channel) ===
+            "Unauthorized"
+        ) {
+            throw new UnauthorizedException(
+                "Not allowed to do this on this channel"
+            );
+        }
+        var newUserUuid = newUser.uuid;
+        if (
+            channel.banned_users.findIndex(
+                (banned) => banned.uuid === newUserUuid
+            ) !== -1
         ) {
             throw new UnauthorizedException("Banned user");
         } else if (
             channel.allowed_users.findIndex(
-                (allowed) => allowed.uuid === uuid
+                (allowed) => allowed.uuid === newUserUuid
             ) !== -1
         ) {
             throw new UnauthorizedException("Already allowed");
         } else {
             let allowed = channel.allowed_users;
-            allowed.push({ uuid: user.uuid });
+            allowed.push({ uuid: newUserUuid });
             await this.chatRepository.update(
                 { uuid: channel.uuid },
                 { allowed_users: allowed }

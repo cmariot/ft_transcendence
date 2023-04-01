@@ -26,6 +26,7 @@ const WaitingScreen = () => {
     return (
         <div id="waiting-screen">
             <p>Searching for a player ...</p>
+            <progress value={undefined} />
             <button onClick={() => cancelGame()}>cancel</button>
         </div>
     );

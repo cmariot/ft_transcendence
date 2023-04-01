@@ -137,7 +137,7 @@ export class ChatController {
     @Post("private/add-user")
     @UseGuards(isLogged)
     async add_private_channel(@Req() req, @Body() user: AddOptionsDTO) {
-        return await this.chatService.addUserInPrivate(user);
+        return await this.chatService.addUserInPrivate(user, req.user.uuid);
     }
 
     @Post("join/protected")
