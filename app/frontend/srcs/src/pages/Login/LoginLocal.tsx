@@ -2,7 +2,7 @@ import axios from "axios";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../utils/GetCookie";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 const LoginLocal = () => {
     const [username, setUsername] = useState("");

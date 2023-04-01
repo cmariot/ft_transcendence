@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../styles/DoubleAuth.css";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 const DoubleAuth = () => {
     const navigate = useNavigate();

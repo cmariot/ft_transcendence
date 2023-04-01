@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/test.css";
 import BoardDecoration from "./BoardDecoration";
 import axios from "axios";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const Stream = () => {
     const game = useContext(GameContext);

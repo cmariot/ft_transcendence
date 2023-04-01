@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ChatContext } from "../../../../contexts/ChatProvider";
+import { ChatContext } from "../../../../contexts/chat/ChatContext";
 
 const OwnerPannel = () => {
     const chat = useContext(ChatContext);

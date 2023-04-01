@@ -1,10 +1,10 @@
 import { useContext, useEffect } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatMessages from "./ChatMessages";
-import { ChatContext } from "../../../contexts/ChatProvider";
 import UserPannel from "./Pannels/UserPannel";
 import OwnerPannel from "./Pannels/OwnerPannel";
 import AdminPannel from "./Pannels/AdminPannel";
+import { ChatContext } from "../../../contexts/chat/ChatContext";
 
 const ChatConv = () => {
     const chat = useContext(ChatContext);

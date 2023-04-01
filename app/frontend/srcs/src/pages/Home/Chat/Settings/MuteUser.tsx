@@ -1,9 +1,9 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../../contexts/ChatProvider";
-import { UserContext } from "../../../../contexts/UserProvider";
-import { SocketContext } from "../../../../contexts/SocketProvider";
-import { MenuContext } from "../../../../contexts/MenuProviders";
+import { SocketContext } from "../../../../contexts/sockets/SocketProvider";
+import { ChatContext } from "../../../../contexts/chat/ChatContext";
+import { UserContext } from "../../../../contexts/user/UserContext";
+import { MenuContext } from "../../../../contexts/menu/MenuContext";
 
 const MuteUser = () => {
     const chat = useContext(ChatContext);

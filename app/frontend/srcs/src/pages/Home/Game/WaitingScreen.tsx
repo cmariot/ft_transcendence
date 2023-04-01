@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
-import { UserContext } from "../../../contexts/UserProvider";
-import { MenuContext } from "../../../contexts/MenuProviders";
+import { GameContext } from "../../../contexts/game/GameContext";
+import { UserContext } from "../../../contexts/user/UserContext";
+import { MenuContext } from "../../../contexts/menu/MenuContext";
 
 const WaitingScreen = () => {
     const game = useContext(GameContext);

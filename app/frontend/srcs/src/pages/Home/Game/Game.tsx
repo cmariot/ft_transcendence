@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import JoinGame from "./JoinGame";
 import WaitingScreen from "./WaitingScreen";
 import CountDown from "./CountDown";
@@ -12,6 +11,7 @@ import Stream from "./Stream";
 import StreamResults from "./StreamResults";
 import EndStreamPlayerDisconnect from "./EndStreamPlayerDisconnect";
 import GameOptions from "./GameOptions";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const Game = () => {
     const game = useContext(GameContext);

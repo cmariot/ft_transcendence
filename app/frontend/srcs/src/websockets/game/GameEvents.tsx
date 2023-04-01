@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
-import { SocketContext } from "../contexts/SocketProvider";
-import { GameContext } from "../contexts/GameProvider";
-import { UserContext } from "../contexts/UserProvider";
+import { SocketContext } from "../../contexts/sockets/SocketProvider";
+import { GameContext } from "../../contexts/game/GameContext";
+import { UserContext } from "../../contexts/user/UserContext";
 
 type GameEventsProps = { children: JSX.Element | JSX.Element[] };
 export const GameEvents = ({ children }: GameEventsProps) => {

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../contexts/ChatProvider";
+import { ChatContext } from "../../../contexts/chat/ChatContext";
 
 // Display the list of channels the user joined and his private conversations
 const YourChannels = () => {

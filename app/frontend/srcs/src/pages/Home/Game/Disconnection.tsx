@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const Disconnection = () => {
     const game = useContext(GameContext);

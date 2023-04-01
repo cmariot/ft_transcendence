@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { UserContext } from "../../contexts/UserProvider";
+import { UserContext } from "../../contexts/user/UserContext";
 
 const AppFooter = () => {
     const user = useContext(UserContext);

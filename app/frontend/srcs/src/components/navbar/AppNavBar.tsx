@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import "../../styles/AppNavBar.css";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../contexts/UserProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
-import { ChatContext } from "../../contexts/ChatProvider";
-import { SocketContext } from "../../contexts/SocketProvider";
+import { SocketContext } from "../../contexts/sockets/SocketProvider";
+import { ChatContext } from "../../contexts/chat/ChatContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
+import { UserContext } from "../../contexts/user/UserContext";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);

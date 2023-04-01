@@ -1,8 +1,8 @@
 import { useContext, useEffect } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
-import { SocketContext } from "../../../contexts/SocketProvider";
+import { SocketContext } from "../../../contexts/sockets/SocketProvider";
 import "../../../styles/test.css";
 import BoardDecoration from "./BoardDecoration";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const TestMouvements = () => {
     const socket = useContext(SocketContext);

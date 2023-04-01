@@ -2,13 +2,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/Profile.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { UserContext } from "../../contexts/UserProvider";
-import { ChatContext } from "../../contexts/ChatProvider";
-import { SocketContext } from "../../contexts/SocketProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { SocketContext } from "../../contexts/sockets/SocketProvider";
+import { ChatContext } from "../../contexts/chat/ChatContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
+import { UserContext } from "../../contexts/user/UserContext";
 
 const UserProfile = () => {
     const menu = useContext(MenuContext);
+    let user = useContext(UserContext);
+    let chat = useContext(ChatContext);
     const params = useParams();
     const username: string =
         params.userprofile === undefined ? "" : params.userprofile;
@@ -35,9 +37,6 @@ const UserProfile = () => {
         }[]
     >([]);
     const [rank, setRank] = useState(0);
-
-    let user = useContext(UserContext);
-    let chat = useContext(ChatContext);
 
     const imageURL: string = "/api/profile/" + username + "/image";
 

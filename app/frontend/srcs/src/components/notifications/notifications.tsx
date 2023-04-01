@@ -1,9 +1,9 @@
-import { UserContext } from "../../contexts/UserProvider";
 import { useContext, useEffect } from "react";
 import "../../styles/Notifications.css";
 import axios from "axios";
-import { MenuContext } from "../../contexts/MenuProviders";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../contexts/user/UserContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export const Notifications = () => {
     const user = useContext(UserContext);

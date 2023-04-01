@@ -1,8 +1,8 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../../contexts/ChatProvider";
-import { SocketContext } from "../../../../contexts/SocketProvider";
-import { MenuContext } from "../../../../contexts/MenuProviders";
+import { SocketContext } from "../../../../contexts/sockets/SocketProvider";
+import { ChatContext } from "../../../../contexts/chat/ChatContext";
+import { MenuContext } from "../../../../contexts/menu/MenuContext";
 
 const AddUser = () => {
     const chat = useContext(ChatContext);

@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
 import axios from "axios";
-import { MenuContext } from "../../../contexts/MenuProviders";
+import { GameContext } from "../../../contexts/game/GameContext";
+import { MenuContext } from "../../../contexts/menu/MenuContext";
 
 const GameOptions = () => {
     const game = useContext(GameContext);

@@ -1,38 +1,5 @@
-import { createContext, useState } from "react";
-
-export type MenuContextType = {
-    display: boolean;
-    setDisplay: (newValue: boolean) => {};
-    toogle: () => {};
-    close: () => {};
-
-    displayNotifs: boolean;
-    setDisplayNotifs: (newValue: boolean) => {};
-    toogleNotifs: () => {};
-    closeNotifs: () => {};
-
-    error: boolean;
-    errorMessage: string;
-    displayError: (error: string) => {};
-    closeError: () => {};
-};
-
-export const MenuContext = createContext({
-    display: false,
-    setDisplay: (newValue: boolean) => {},
-    toogle: () => {},
-    close: () => {},
-
-    displayNotifs: false,
-    setDisplayNotifs: (newValue: boolean) => {},
-    toogleNotifs: () => {},
-    closeNotifs: () => {},
-
-    error: false,
-    errorMessage: "",
-    displayError: (error: string) => {},
-    closeError: () => {},
-});
+import { useState } from "react";
+import { MenuContext } from "./MenuContext";
 
 type MenuProviderProps = { children: JSX.Element | JSX.Element[] };
 const MenuProvider = ({ children }: MenuProviderProps) => {

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
-import { SocketContext } from "../../../contexts/SocketProvider";
+import { SocketContext } from "../../../contexts/sockets/SocketProvider";
 import axios from "axios";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const SelectStream = () => {
     const game = useContext(GameContext);

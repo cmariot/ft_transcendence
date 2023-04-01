@@ -2,8 +2,8 @@ import axios from "axios";
 import "../../styles/Settings.css";
 import "../../styles/Theme.css";
 import { useContext } from "react";
-import { UserContext } from "../../contexts/UserProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { UserContext } from "../../contexts/user/UserContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export default function EditProfilePicture() {
     const user = useContext(UserContext);

@@ -1,8 +1,8 @@
 import "../../styles/Profile.css";
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../contexts/UserProvider";
 import { useNavigate } from "react-router-dom";
-import { SocketContext } from "../../contexts/SocketProvider";
+import { SocketContext } from "../../contexts/sockets/SocketProvider";
+import { UserContext } from "../../contexts/user/UserContext";
 
 const Profile = () => {
     const user = useContext(UserContext);

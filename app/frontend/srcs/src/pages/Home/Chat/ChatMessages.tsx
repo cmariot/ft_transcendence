@@ -1,13 +1,14 @@
 import { useContext, useState } from "react";
 import axios, { HttpStatusCode } from "axios";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../../contexts/UserProvider";
-import { ChatContext } from "../../../contexts/ChatProvider";
-import { GameContext } from "../../../contexts/GameProvider";
+import { ChatContext } from "../../../contexts/chat/ChatContext";
+import { GameContext } from "../../../contexts/game/GameContext";
+import { UserContext } from "../../../contexts/user/UserContext";
 
 const ChatMessages = () => {
     const chat = useContext(ChatContext);
     const user = useContext(UserContext);
+    const game = useContext(GameContext);
     const navigate = useNavigate();
 
     async function directMessage(username: string) {
@@ -66,8 +67,6 @@ const ChatMessages = () => {
     async function profile(username: string) {
         navigate("/profile/" + username);
     }
-
-    const game = useContext(GameContext);
 
     async function invitePlay(username: string) {
         await axios

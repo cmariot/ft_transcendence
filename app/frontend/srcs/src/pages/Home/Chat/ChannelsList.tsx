@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../contexts/ChatProvider";
-import { MenuContext } from "../../../contexts/MenuProviders";
+import { ChatContext } from "../../../contexts/chat/ChatContext";
+import { MenuContext } from "../../../contexts/menu/MenuContext";
 
 const ChannelsList = () => {
     const chat = useContext(ChatContext);

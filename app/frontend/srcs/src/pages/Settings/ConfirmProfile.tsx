@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import EditProfilePicture from "./EditProfilePicture";
 import EditUsername from "./EditUsername";
 import EnableDoubleAuth from "./EnableDoubleAuth";
-import { UserContext } from "../../contexts/UserProvider";
+import { UserContext } from "../../contexts/user/UserContext";
 
 export default function ConfirmProfile() {
     const user = useContext(UserContext);

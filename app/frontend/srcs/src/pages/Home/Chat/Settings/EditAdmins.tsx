@@ -1,16 +1,16 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ChatContext } from "../../../../contexts/ChatProvider";
-import { SocketContext } from "../../../../contexts/SocketProvider";
-import { UserContext } from "../../../../contexts/UserProvider";
-import { MenuContext } from "../../../../contexts/MenuProviders";
+import { SocketContext } from "../../../../contexts/sockets/SocketProvider";
+import { ChatContext } from "../../../../contexts/chat/ChatContext";
+import { UserContext } from "../../../../contexts/user/UserContext";
+import { MenuContext } from "../../../../contexts/menu/MenuContext";
 
 const EditAdmins = () => {
     const chat = useContext(ChatContext);
     const socket = useContext(SocketContext);
     const user = useContext(UserContext);
     const [newAdminName, setNewAdmin] = useState("");
-    const [update, setUpdate] = useState(false);
+    const [, setUpdate] = useState(false);
     const menu = useContext(MenuContext);
 
     // When a admin is removed

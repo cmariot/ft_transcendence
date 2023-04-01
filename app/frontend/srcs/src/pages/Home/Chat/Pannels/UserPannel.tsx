@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { ChatContext } from "../../../../contexts/ChatProvider";
 import axios from "axios";
+import { ChatContext } from "../../../../contexts/chat/ChatContext";
 
 const UserPannel = () => {
     const chat = useContext(ChatContext);

@@ -3,7 +3,7 @@ import Login42 from "./Login42";
 import NoAccount from "./NoAccount";
 import "../../styles/Login.css";
 import { useContext, useEffect } from "react";
-import { UserContext } from "../../contexts/UserProvider";
+import { UserContext } from "../../contexts/user/UserContext";
 
 const Login = () => {
     const user = useContext(UserContext);

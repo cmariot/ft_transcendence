@@ -1,0 +1,30 @@
+export type GameContextType = {
+    menu: string;
+    countDown: 5;
+    gameID: "";
+    paddle1: 50;
+    paddle2: 50;
+    ball: { x: 50; y: 50 };
+    screenHeigth: 900;
+    screenWidth: 1600;
+    paddle1Heigth: 90;
+    paddle2Heigth: 90;
+    paddleWidth: 18;
+    paddleOffset: 9;
+    ballHeigth: 22.5;
+    ballWidth: 40;
+    p1Name: "";
+    p1Score: 0;
+    p2Name: "";
+    p2Score: 0;
+    streamResults: {
+        winner: "";
+        player1: "";
+        player2: "";
+        p1Score: 0;
+        p2Score: 0;
+    };
+    power_ups: Array<{ type: string; position: { x: number; y: number } }>;
+    p1Power: "";
+    p2Power: "";
+};

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
+import { UserContext } from "../contexts/user/UserContext";
 
 export default function ProtectedValidation() {
     const user = useContext(UserContext);

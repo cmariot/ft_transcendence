@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import "../../styles/Settings.css";
-import { UserContext } from "../../contexts/UserProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { UserContext } from "../../contexts/user/UserContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export default function EnableDoubleAuth() {
     const user = useContext(UserContext);
-    const [userPref, setUserPref] = useState(user.doubleAuth);
     const menu = useContext(MenuContext);
+    const [userPref, setUserPref] = useState(user.doubleAuth);
 
     useEffect(() => {
         setUserPref(user.doubleAuth);

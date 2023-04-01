@@ -1,11 +1,12 @@
 import { useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { UserContext } from "../contexts/UserProvider";
 import { getCookie } from "./GetCookie";
-import { GameContext } from "../contexts/GameProvider";
-import { MenuContext } from "../contexts/MenuProviders";
-import { SocketContext } from "../contexts/SocketProvider";
+import { SocketContext } from "../contexts/sockets/SocketProvider";
+import { ChatContext } from "../contexts/chat/ChatContext";
+import { GameContext } from "../contexts/game/GameContext";
+import { UserContext } from "../contexts/user/UserContext";
+import { MenuContext } from "../contexts/menu/MenuContext";
 
 export default function ProtectedPage() {
     const user = useContext(UserContext);
@@ -139,6 +140,48 @@ export default function ProtectedPage() {
             })();
         }
     }, [navigate, user, game, menu]);
+
+    const chat = useContext(ChatContext);
+
+    useEffect(() => {
+        function arrayToMap(array: Array<any>) {
+            let map = new Map<
+                string,
+                { channelName: string; channelType: string }
+            >();
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].channelName) {
+                    map.set(array[i].channelName, array[i]);
+                }
+            }
+            return map;
+        }
+        if (user.isLogged) {
+            (async () => {
+                try {
+                    const [channelsResponse] = await Promise.all([
+                        axios.get("/api/chat/channels"),
+                    ]);
+
+                    if (channelsResponse.status === 200) {
+                        chat.updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        chat.updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        chat.updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            })();
+        }
+    }, [user.isLogged]);
 
     const socket = useContext(SocketContext);
 

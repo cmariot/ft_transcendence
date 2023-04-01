@@ -2,7 +2,7 @@ import { ChangeEvent, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../styles/Register.css";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export default function Register() {
     const [username, setUsername] = useState("");

@@ -1,0 +1,20 @@
+export type ChatContextType = {
+    channel: string;
+    channelType: string;
+    admins: Array<string>;
+    users: Array<string>;
+    messages: Array<string>;
+    mutedUsers: Array<string>;
+    bannedUsers: Array<string>;
+    targetChannel: string;
+    isChannelOwner: boolean;
+    isChannelAdmin: boolean;
+    userChannels: Map<string, { channelType: string }>;
+    userPrivateChannels: Map<string, { channelType: string }>;
+    availableChannels: Map<string, { channelType: string }>;
+    directMessageUser: string;
+    isBan: boolean;
+    isChannelDeleted: boolean;
+    page: string;
+    showMenu: boolean;
+};

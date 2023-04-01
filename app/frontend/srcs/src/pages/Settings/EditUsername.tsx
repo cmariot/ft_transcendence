@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ChangeEvent, useContext, useState } from "react";
-import { UserContext } from "../../contexts/UserProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { UserContext } from "../../contexts/user/UserContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export default function EditUsername() {
     const user = useContext(UserContext);

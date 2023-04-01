@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "../../styles/Validate.css";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 const Validate = () => {
     const navigate = useNavigate();

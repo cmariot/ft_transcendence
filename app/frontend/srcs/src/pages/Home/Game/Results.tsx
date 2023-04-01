@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { GameContext } from "../../../contexts/GameProvider";
 import "../../../styles/JoinGame.css";
+import { GameContext } from "../../../contexts/game/GameContext";
 
 const Results = () => {
     const game = useContext(GameContext);

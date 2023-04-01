@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import "../../styles/Friends.css";
-import { UserContext } from "../../contexts/UserProvider";
-import { ChatContext } from "../../contexts/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import axios, { HttpStatusCode } from "axios";
-import { SocketContext } from "../../contexts/SocketProvider";
-import { GameContext } from "../../contexts/GameProvider";
-import { MenuContext } from "../../contexts/MenuProviders";
+import { SocketContext } from "../../contexts/sockets/SocketProvider";
+import { GameContext } from "../../contexts/game/GameContext";
+import { ChatContext } from "../../contexts/chat/ChatContext";
+import { UserContext } from "../../contexts/user/UserContext";
+import { MenuContext } from "../../contexts/menu/MenuContext";
 
 export default function Friends() {
     const [username, setUsername] = useState("");

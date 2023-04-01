@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { MenuContext } from "../contexts/MenuProviders";
 import "../styles/ErrorPage.css";
+import { MenuContext } from "../contexts/menu/MenuContext";
 
 export default function ErrorPage() {
     const menu = useContext(MenuContext);
