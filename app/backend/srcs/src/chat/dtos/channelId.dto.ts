@@ -1,7 +1,6 @@
 import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
 
 export class channelDTO {
-    @IsNotEmpty()
     @IsString()
     channelName: string;
 }

@@ -6,22 +6,17 @@ import { Footer } from "../footer/index";
 import ErrorPage from "../../utils/ErrorPage";
 import { Notifications } from "../notifications/notifications";
 import { MenuContext } from "../../contexts/menu/MenuContext";
+import { UserContext } from "../../contexts/user/UserContext";
 
 export const Body = () => {
     const menu = useContext(MenuContext);
 
+    const user = useContext(UserContext);
+
     return (
         <>
             <NavBar />
-            {menu.error ? (
-                <ErrorPage />
-            ) : menu.display ? (
-                <Menu />
-            ) : menu.displayNotifs ? (
-                <Notifications />
-            ) : (
-                <Outlet />
-            )}
+            {menu.error ? <ErrorPage /> : <Outlet />}
             <Footer />
         </>
     );

@@ -347,6 +347,7 @@ export class GameService {
     // engagement angle
     async startBallDir(match: GameInterface): Promise<GameInterface> {
         match.lose = false;
+        match.ballSpeed = 10;
         match.ballPosition = new Vector(
             match.screenWidth / 2,
             match.screenHeigth / 2
@@ -571,7 +572,7 @@ export class GameService {
     async launchMatch(
         match: GameInterface | undefined
     ): Promise<[error: boolean, match: GameInterface | undefined]> {
-        if (match === undefined) return [false, match];
+        if (match === undefined) return [false, undefined];
         await this.countDown(match);
         this.gameGateway.updateFrontMenu(match, "Game");
         var [score1, score2] = this.getScore(match);
@@ -602,7 +603,7 @@ export class GameService {
                 return [true, undefined];
             }
             games.set(match.uuid, match);
-            await this.sleep(16);
+            await this.sleep(20);
         }
         return [false, match];
     }
@@ -630,7 +631,7 @@ export class GameService {
             player2Position: screenHeigth / 2,
             ballPosition: new Vector(screenWidth / 2, screenHeigth / 2),
             ballDirection: new Vector(1, 0),
-            ballSpeed: 9,
+            ballSpeed: 10,
             screenHeigth: screenHeigth,
             screenWidth: screenWidth,
             paddle1Heigth: (screenHeigth / 100) * paddleHeigth,

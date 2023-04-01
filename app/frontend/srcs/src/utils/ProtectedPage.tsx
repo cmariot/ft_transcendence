@@ -7,6 +7,8 @@ import { ChatContext } from "../contexts/chat/ChatContext";
 import { GameContext } from "../contexts/game/GameContext";
 import { UserContext } from "../contexts/user/UserContext";
 import { MenuContext } from "../contexts/menu/MenuContext";
+import { Menu } from "../components/menu/menu";
+import { Notifications } from "../components/notifications/notifications";
 
 export default function ProtectedPage() {
     const navigate = useNavigate();
@@ -194,5 +196,10 @@ export default function ProtectedPage() {
         };
     }, [socket, navigate]);
 
-    return user.isLogged ? <Outlet /> : null;
+    return user.isLogged ? (
+        <>
+            <Outlet />
+            {menu.display ? <Menu /> : menu.displayNotifs && <Notifications />}
+        </>
+    ) : null;
 }

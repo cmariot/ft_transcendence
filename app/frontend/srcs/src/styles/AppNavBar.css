@@ -7,8 +7,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100px;
+    height: 50px;
     padding: 10px;
+    background-color: #1e1e1e;
 }
 
 #nav-user-infos {
@@ -35,5 +36,25 @@
 }
 
 #app-nav-bar > a:nth-child(1) {
+    text-decoration: none;
+}
+
+#nav-left {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#nav-logo {
+    height: 35px;
+    padding: 10px;
+    max-height: 50px;
+    max-width: 50px;
+    padding-left: 0;
+}
+
+a {
     text-decoration: none;
 }

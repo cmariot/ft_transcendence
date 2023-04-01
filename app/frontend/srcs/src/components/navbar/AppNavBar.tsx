@@ -67,15 +67,21 @@ const AppNavBar = () => {
     return (
         <header>
             <nav id="app-nav-bar">
-                <Link to="/" onClick={() => menu.close()}>
-                    ft_transcendence
-                </Link>
+                <div id="nav-left">
+                    <img id="nav-logo" src="/favicon.ico" alt="Logo" />
+                    <Link to="/" onClick={() => menu.close()}>
+                        ft_transcendence
+                    </Link>
+                </div>
+
                 {user.username && user.avatar ? (
                     <div id="nav-user-infos">
-                        <button onClick={toogleNotifs}>
-                            {user.notifications.length} notification
-                            {user.notifications.length > 1 && "s"}
-                        </button>
+                        {user.notifications.length > 0 && (
+                            <button onClick={toogleNotifs}>
+                                {user.notifications.length} notification
+                                {user.notifications.length > 1 && "s"}
+                            </button>
+                        )}
                         <button onClick={toogleMenu}>{user.username}</button>
                         <img
                             id="nav-user-picture"

@@ -12,9 +12,9 @@ import { kick } from "./functions/kick";
 import { mute } from "./functions/mute";
 import { removeAdmins } from "./functions/removeAdmin";
 import { addAdmins } from "./functions/addAdmin";
-import { updateMessages } from "./functions/updateMessages";
 import { ban } from "./functions/ban";
 import { joinPrivate } from "./functions/joinPrivate";
+import axios from "axios";
 
 type ChatEventsProps = { children: JSX.Element | JSX.Element[] };
 export const ChatEvents = ({ children }: ChatEventsProps) => {
@@ -43,7 +43,19 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
 
     // When new message
     useEffect(() => {
-        socket.on("chat.message", () => updateMessages(chat));
+        async function updateMessages() {
+            try {
+                const messageResponse = await axios.post("/api/chat/messages", {
+                    channelName: chat.channel,
+                });
+                if (messageResponse.status === 201) {
+                    chat.setMessages(messageResponse.data.messages);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        socket.on("chat.message", updateMessages);
         return () => {
             socket.off("chat.message", updateMessages);
         };
