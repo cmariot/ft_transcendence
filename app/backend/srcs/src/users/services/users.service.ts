@@ -28,17 +28,17 @@ export class UsersService {
     }
 
     // uuid -> UserEntity || null
-    async getByID(id: string) {
+    async getByID(id: string): Promise<UserEntity | null> {
         return await this.userRepository.findOneBy({ uuid: id });
     }
 
     // username -> UserEntity || null
-    async getByUsername(username: string): Promise<UserEntity> {
+    async getByUsername(username: string): Promise<UserEntity | null> {
         return await this.userRepository.findOneBy({ username: username });
     }
 
     // id42 -> UserEntity || null
-    async getById42(id42: number): Promise<UserEntity> {
+    async getById42(id42: number): Promise<UserEntity | null> {
         return await this.userRepository.findOneBy({ id42: id42 });
     }
 
@@ -46,7 +46,7 @@ export class UsersService {
     async getUsernameById(id: string): Promise<string> {
         const user = await this.getByID(id);
         if (user) return user.username;
-        return null;
+        return "";
     }
 
     // Delete an UserEntity from the database
@@ -54,7 +54,7 @@ export class UsersService {
         return await this.userRepository.delete({ uuid: uuid });
     }
 
-    async getBySocket(socket: string): Promise<UserEntity> {
+    async getBySocket(socket: string): Promise<UserEntity | null> {
         let user: UserEntity[] = await this.userRepository.find();
         let i = 0;
         while (user[i]) {
@@ -67,9 +67,9 @@ export class UsersService {
 
     // When a client connexion is closed
     async close(socketID: string): Promise<string> {
-        const user: UserEntity = await this.getBySocket(socketID);
+        const user: UserEntity | null = await this.getBySocket(socketID);
         if (!user) {
-            return null;
+            return "";
         }
         let sockets = user.socketId;
         let index = sockets.findIndex((socket) => socket === socketID);
@@ -81,7 +81,7 @@ export class UsersService {
                 { uuid: user.uuid },
                 { socketId: sockets }
             );
-            return null;
+            return "";
         } else {
             await this.userRepository.update(
                 { uuid: user.uuid },
@@ -108,8 +108,8 @@ export class UsersService {
     }
 
     async user_status(username: string, status: string) {
-        let user: UserEntity = await this.getByUsername(username);
-        if (status === "online") {
+        let user: UserEntity | null = await this.getByUsername(username);
+        if (user && status === "online") {
             return await this.userRepository.update(
                 { uuid: user.uuid },
                 { status: "online" }
@@ -118,7 +118,7 @@ export class UsersService {
     }
 
     async setStatusByID(uuid: string, status: string) {
-        let user: UserEntity = await this.getByID(uuid);
+        let user: UserEntity | null = await this.getByID(uuid);
         if (user) {
             await this.userRepository.update(
                 { uuid: uuid },
@@ -131,7 +131,7 @@ export class UsersService {
     }
 
     async setStatusIfNotOffline(uuid: string, status: string) {
-        let user: UserEntity = await this.getByID(uuid);
+        let user: UserEntity | null = await this.getByID(uuid);
         if (user && user.status !== "offline") {
             await this.userRepository.update(
                 { uuid: uuid },
@@ -144,7 +144,7 @@ export class UsersService {
     }
 
     async setStatus(socket: string, status: string) {
-        let user: UserEntity = await this.getBySocket(socket);
+        let user: UserEntity | null = await this.getBySocket(socket);
         if (user) {
             if (status === "ingame") {
                 await this.userRepository.update(
@@ -168,7 +168,7 @@ export class UsersService {
         socket: string,
         status: string
     ): Promise<string> {
-        let user: UserEntity = await this.getByUsername(username);
+        let user: UserEntity | null = await this.getByUsername(username);
         if (user) {
             await this.user_status(user.username, status);
             if (!user.socketId) user.socketId = new Array();
@@ -276,8 +276,10 @@ export class UsersService {
 
     // Add an user to the friends list
     async addFriend(userId: string, friendUsername: string) {
-        const friend: UserEntity = await this.getByUsername(friendUsername);
-        let user: UserEntity = await this.getByID(userId);
+        const friend: UserEntity | null = await this.getByUsername(
+            friendUsername
+        );
+        let user: UserEntity | null = await this.getByID(userId);
         if (!user || !friend) {
             throw new UnauthorizedException("User not found");
         }
@@ -314,8 +316,10 @@ export class UsersService {
 
     // Remove a friend
     async DelFriend(userId: string, friendUsername: string) {
-        const friend: UserEntity = await this.getByUsername(friendUsername);
-        let user: UserEntity = await this.getByID(userId);
+        const friend: UserEntity | null = await this.getByUsername(
+            friendUsername
+        );
+        let user: UserEntity | null = await this.getByID(userId);
         if (!user || !friend) {
             throw new UnauthorizedException("User not found");
         }
@@ -339,8 +343,10 @@ export class UsersService {
 
     // Add an user to the user's blocked list
     async blockUser(userId: string, blockedUsername: string) {
-        let block: UserEntity = await this.getByUsername(blockedUsername);
-        let user: UserEntity = await this.getByID(userId);
+        let block: UserEntity | null = await this.getByUsername(
+            blockedUsername
+        );
+        let user: UserEntity | null = await this.getByID(userId);
         if (!user || !block) {
             throw new UnauthorizedException("User not found");
         }
@@ -378,8 +384,10 @@ export class UsersService {
 
     // Remove an user from the user's blocked list
     async unBlock(userId: string, blockedUsername: string) {
-        let block: UserEntity = await this.getByUsername(blockedUsername);
-        let user: UserEntity = await this.getByID(userId);
+        let block: UserEntity | null = await this.getByUsername(
+            blockedUsername
+        );
+        let user: UserEntity | null = await this.getByID(userId);
         if (!user || !block) {
             throw new UnauthorizedException("User not found");
         }
@@ -424,9 +432,9 @@ export class UsersService {
         let user1 = await this.getByID(player1);
         let user2 = await this.getByID(player2);
         const [score1, score2] = [results.player1Score, results.player2Score];
-        user1.xp += score1;
-        user2.xp += score2;
         if (user1 && user2) {
+            user1.xp += score1;
+            user2.xp += score2;
             if (score1 > score2) {
                 user1.xp += 5;
                 await this.setScore(user1, user2);

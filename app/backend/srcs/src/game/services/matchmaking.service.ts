@@ -23,11 +23,11 @@ export class MatchmakingService {
         uuid: string,
         options: { power_up: boolean; solo: boolean }
     ) {
-        let user: UserEntity = await this.userService.getByID(uuid);
+        let user: UserEntity | null = await this.userService.getByID(uuid);
         if (!user) {
             throw new UnauthorizedException("User not found");
         }
-        let game: GameEntity = await this.gameRepository.findOneBy({
+        let game: GameEntity | null = await this.gameRepository.findOneBy({
             hostID: uuid,
         });
         if (!game) {
@@ -39,7 +39,7 @@ export class MatchmakingService {
             if (game.status === "waiting") {
                 throw new UnauthorizedException("Already in queue.");
             } else if (game.status === "playing") {
-                let foundGame: GameInterface = games.get(game.uuid);
+                let foundGame: GameInterface | undefined = games.get(game.uuid);
                 if (foundGame) {
                     foundGame.disconnection = true;
                     games.set(game.uuid, foundGame);
@@ -82,11 +82,11 @@ export class MatchmakingService {
     }
 
     async cancelQueue(uuid: string) {
-        let user: UserEntity = await this.userService.getByID(uuid);
+        let user: UserEntity | null = await this.userService.getByID(uuid);
         if (!user) {
             throw new UnauthorizedException("User not found");
         }
-        let game: GameEntity = await this.gameRepository.findOneBy({
+        let game: GameEntity | null = await this.gameRepository.findOneBy({
             hostID: uuid,
         });
         if (game && game.status === "waiting") {
@@ -140,7 +140,9 @@ export class MatchmakingService {
                     await this.gameRepository.remove(game);
                     return;
                 } else if (game[i].status === "playing") {
-                    let foundGame: GameInterface = games.get(game[i].uuid);
+                    let foundGame: GameInterface | undefined = games.get(
+                        game[i].uuid
+                    );
                     if (foundGame) {
                         foundGame.disconnection = true;
                         games.set(game[i].uuid, foundGame);
@@ -158,12 +160,14 @@ export class MatchmakingService {
     // verifier qu'il n'y ait pas deja une invitation
     // envoyer l'invitation
     async invitation(uuid: string, player2: string) {
-        let host: UserEntity = await this.userService.getByID(uuid);
-        let guest: UserEntity = await this.userService.getByUsername(player2);
+        let host: UserEntity | null = await this.userService.getByID(uuid);
+        let guest: UserEntity | null = await this.userService.getByUsername(
+            player2
+        );
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
-        var game: GameEntity = await this.gameRepository.findOneBy({
+        var game: GameEntity | null = await this.gameRepository.findOneBy({
             hostID: uuid,
             status: "invitation",
             guestID: guest.uuid,
@@ -193,8 +197,10 @@ export class MatchmakingService {
     }
 
     async acceptInvitation(uuid: string, username: string) {
-        let host: UserEntity = await this.userService.getByUsername(username);
-        let guest: UserEntity = await this.userService.getByID(uuid);
+        let host: UserEntity | null = await this.userService.getByUsername(
+            username
+        );
+        let guest: UserEntity | null = await this.userService.getByID(uuid);
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
@@ -202,7 +208,7 @@ export class MatchmakingService {
             (host.status === "online" || host.status === "matchmaking") &&
             (guest.status === "online" || guest.status === "matchmaking")
         ) {
-            var game: GameEntity = await this.gameRepository.findOneBy({
+            var game: GameEntity | null = await this.gameRepository.findOneBy({
                 hostID: host.uuid,
                 status: "invitation",
                 guestID: guest.uuid,
@@ -233,12 +239,14 @@ export class MatchmakingService {
     }
 
     async denyInvitation(uuid: string, username: string) {
-        let host: UserEntity = await this.userService.getByUsername(username);
-        let guest: UserEntity = await this.userService.getByID(uuid);
+        let host: UserEntity | null = await this.userService.getByUsername(
+            username
+        );
+        let guest: UserEntity | null = await this.userService.getByID(uuid);
         if (!host || !guest) {
             throw new UnauthorizedException("User not found");
         }
-        var game: GameEntity = await this.gameRepository.findOneBy({
+        var game: GameEntity | null = await this.gameRepository.findOneBy({
             hostID: host.uuid,
             status: "invitation",
             guestID: guest.uuid,

@@ -13,6 +13,6 @@ async function bootstrap() {
         origin: process.env.HOST,
         credentials: true,
     });
-    await app.listen(process.env.BACKEND_PORT);
+    await app.listen(process.env.BACKEND_PORT || 3000);
 }
 bootstrap();

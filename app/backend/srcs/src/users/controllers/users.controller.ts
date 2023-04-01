@@ -77,7 +77,7 @@ export class UsersController {
     @Post("update/username")
     @UseGuards(isLogged)
     async updateUsername(@Body() newUsernameDto: UsernameDto, @Request() req) {
-        let previousProfile: UserEntity = await this.userService.getByID(
+        let previousProfile: UserEntity | null = await this.userService.getByID(
             req.user.uuid
         );
         if (!previousProfile) throw new UnauthorizedException("User not found");

@@ -29,7 +29,7 @@ export class StatusGateway {
         @MessageBody() data: { username: string },
         @ConnectedSocket() client: Socket
     ) {
-        let user: UserEntity = await this.userService.getByUsername(
+        let user: UserEntity | null = await this.userService.getByUsername(
             data.username
         );
         if (!user) {
@@ -63,7 +63,7 @@ export class StatusGateway {
         @MessageBody() data: { username: string },
         @ConnectedSocket() client: Socket
     ) {
-        const user: UserEntity = await this.userService.getByUsername(
+        const user: UserEntity | null = await this.userService.getByUsername(
             data.username
         );
         if (user) {
@@ -74,7 +74,9 @@ export class StatusGateway {
 
     // A la deconnexion d'un client
     async handleDisconnect(client: Socket) {
-        let user: UserEntity = await this.userService.getBySocket(client.id);
+        let user: UserEntity | null = await this.userService.getBySocket(
+            client.id
+        );
         if (user) {
             await this.matchmakingService.userDisconnection(user, true);
             await this.disconnect(user, client.id);

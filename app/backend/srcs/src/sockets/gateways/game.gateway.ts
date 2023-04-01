@@ -42,7 +42,7 @@ export class GameGateway {
     // Send the game elements position
     async sendPos(pos: GameInterface) {
         this.server.to(pos.sockets).emit("game.pos.update", pos);
-        let match: GameInterface = games.get(pos.uuid);
+        let match: GameInterface | undefined = games.get(pos.uuid);
         if (!match) {
             return;
         }

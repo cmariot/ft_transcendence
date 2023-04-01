@@ -22,7 +22,9 @@ import { SocketModule } from "./sockets/socket.module";
         MailerModule.forRoot({
             transport: {
                 host: process.env.EMAIL_HOST,
-                port: parseInt(process.env.EMAIL_PORT),
+                port: parseInt(
+                    process.env.EMAIL_PORT ? process.env.EMAIL_PORT : "0"
+                ),
                 secure: true,
                 auth: {
                     user: process.env.EMAIL_ADDR,
@@ -33,7 +35,7 @@ import { SocketModule } from "./sockets/socket.module";
         TypeOrmModule.forRoot({
             type: "postgres",
             host: process.env.DB_HOST,
-            port: parseInt(process.env.DB_PORT),
+            port: parseInt(process.env.DB_PORT ? process.env.DB_PORT : "0"),
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_SCHEMA,

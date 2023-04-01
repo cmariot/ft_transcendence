@@ -118,7 +118,7 @@ export class GameService {
 
     async hitPaddleCorner(
         match: GameInterface
-    ): Promise<{ hit: boolean; angle: Vector }> {
+    ): Promise<{ hit: boolean; angle: Vector | null }> {
         const ballY = this.getBallY(match);
         const ballX = this.getBallX(match);
         for (let player = 1; player <= 2; player++) {
@@ -129,12 +129,13 @@ export class GameService {
                 paddlePosition = match.player1Position;
                 paddleX = 0 + match.paddleOffset + match.paddleWidth;
                 paddleHeigth = match.paddle1Heigth;
-            } else if (player === 2) {
+            } else {
                 paddlePosition = match.player2Position;
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
                 paddleHeigth = match.paddle2Heigth;
             }
+
             const paddleY = this.getPaddleY(paddlePosition, player, match);
             if (
                 ballY <= paddleY + paddleHeigth / 2 + match.ballHeigth / 2 &&
@@ -185,7 +186,7 @@ export class GameService {
                 hit = ballX < paddleX;
                 paddlePosition = match.player1Position;
                 paddleHeigth = match.paddle1Heigth;
-            } else if (player === 2) {
+            } else {
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
                 hit = ballX > paddleX;
@@ -306,14 +307,20 @@ export class GameService {
             }
             if (match.lose === false) {
                 const isHitPaddleFront = await this.hitPaddleFront(match);
-                if (isHitPaddleFront.hit === true) {
+                if (
+                    isHitPaddleFront.hit === true &&
+                    isHitPaddleFront.angle !== null
+                ) {
                     match.ballDirection = isHitPaddleFront.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitFront(match);
                     break;
                 }
                 const isHitPaddleCorner = await this.hitPaddleCorner(match);
-                if (isHitPaddleCorner.hit === true) {
+                if (
+                    isHitPaddleCorner.hit === true &&
+                    isHitPaddleCorner.angle !== null
+                ) {
                     match.ballDirection = isHitPaddleCorner.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitCorner(match);
@@ -562,8 +569,9 @@ export class GameService {
 
     // Game loop
     async launchMatch(
-        match: GameInterface
-    ): Promise<[error: boolean, match: GameInterface]> {
+        match: GameInterface | undefined
+    ): Promise<[error: boolean, match: GameInterface | undefined]> {
+        if (match === undefined) return [false, match];
         await this.countDown(match);
         this.gameGateway.updateFrontMenu(match, "Game");
         var [score1, score2] = this.getScore(match);
@@ -654,24 +662,24 @@ export class GameService {
         game: GameEntity
     ): Promise<[player1: UserEntity, player2: UserEntity]> {
         let player1 = await this.userService.getByID(game.hostID);
-        await this.userService.setStatusByID(player1.uuid, "ingame");
         if (!player1) {
             throw new UnauthorizedException("User not found");
         }
+        await this.userService.setStatusByID(player1.uuid, "ingame");
         if (player1.socketId.length === 0) {
             throw new UnauthorizedException("Invalid user sockets");
         }
         if (game.options.solo === false) {
             var player2 = await this.userService.getByID(game.guestID);
-            await this.userService.setStatusByID(player2.uuid, "ingame");
             if (!player2) {
                 throw new UnauthorizedException("User not found");
             }
+            await this.userService.setStatusByID(player2.uuid, "ingame");
             if (player2.socketId.length === 0) {
                 throw new UnauthorizedException("Invalid user sockets");
             }
         } else {
-            var player2 = new UserEntity();
+            var player2: UserEntity | null = new UserEntity();
             player2.username = "gigachad";
         }
         return [player1, player2];
@@ -683,26 +691,35 @@ export class GameService {
         let match = await this.createMatch(game, player1, player2);
         let [gameError, results] = await this.launchMatch(match);
 
+        if (results === undefined) {
+            return;
+        }
         if (gameError === false) {
             if (results.solo === true) {
                 this.gameGateway.updateFrontMenu(results, "Results");
                 this.gameGateway.streamResults(results, game.uuid);
                 await this.userService.setStatusByID(player1.uuid, "online");
             } else {
-                let p1 = await this.userService.getByID(player1.uuid);
-                let p2 = await this.userService.getByID(player2.uuid);
                 await this.userService.saveGameResult(
                     results,
                     player1.uuid,
                     player2.uuid
                 );
-                let player1Rank = await this.userService.getLeaderBoardRank(p1);
-                let player2Rank = await this.userService.getLeaderBoardRank(p2);
-                this.gameGateway.emitGameResults(
-                    results,
-                    player1Rank,
-                    player2Rank
-                );
+                let p1 = await this.userService.getByID(player1.uuid);
+                let p2 = await this.userService.getByID(player2.uuid);
+                if (p1 && p2) {
+                    let player1Rank = await this.userService.getLeaderBoardRank(
+                        p1
+                    );
+                    let player2Rank = await this.userService.getLeaderBoardRank(
+                        p2
+                    );
+                    this.gameGateway.emitGameResults(
+                        results,
+                        player1Rank,
+                        player2Rank
+                    );
+                }
                 this.gameGateway.updateFrontMenu(results, "Results");
                 this.gameGateway.streamResults(results, game.uuid);
                 await this.userService.setStatusByID(player1.uuid, "online");
@@ -729,7 +746,7 @@ export class GameService {
         if (!user || user.socketId.length === 0) {
             throw new UnauthorizedException("User not found.");
         }
-        let match: GameInterface = games.get(game_id);
+        let match: GameInterface | undefined = games.get(game_id);
         if (!match) {
             return;
         }
@@ -743,7 +760,7 @@ export class GameService {
     async leaveStream(uuid: string, game_id: string) {
         const user = await this.userService.getByID(uuid);
         if (user && user.socketId.length > 0) {
-            let match: GameInterface = games.get(game_id);
+            let match: GameInterface | undefined = games.get(game_id);
             if (match) {
                 let index = match.watchersSockets.findIndex(
                     (element) => element === user.socketId[0]

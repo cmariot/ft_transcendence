@@ -57,7 +57,9 @@ export class AuthService {
                 226
             );
         }
-        let user: UserEntity = await this.usersService.getById42(user_42.id42);
+        let user: UserEntity | null = await this.usersService.getById42(
+            user_42.id42
+        );
         if (user && user.createdFrom === CreatedFrom.OAUTH42) {
             if (user.twoFactorsAuth) {
                 await this.create_cookie(
@@ -82,7 +84,7 @@ export class AuthService {
     }
 
     async signin_local_user(loginDto: LoginDto, @Req() req, @Res() res) {
-        let user: UserEntity = await this.usersService.getByUsername(
+        let user: UserEntity | null = await this.usersService.getByUsername(
             loginDto.username
         );
         if (
@@ -211,7 +213,7 @@ export class AuthService {
             emailValidationCode: randomNumber,
             dateEmailCode: new Date(),
         };
-        let user: UserEntity = await this.usersService.getByUsername(
+        let user: UserEntity | null = await this.usersService.getByUsername(
             registerDto.username
         );
         if (user) {
@@ -277,21 +279,19 @@ export class AuthService {
     }
 
     async resendEmail(uuid: string) {
-        let user: UserEntity = await this.usersService.getByID(uuid);
+        let user: UserEntity | null = await this.usersService.getByID(uuid);
+        if (!user) {
+            throw new UnauthorizedException("User not found.");
+        }
         const now: Date = new Date();
         const oneMinute: number = 1000 * 60;
         const diff: number = now.valueOf() - user.dateEmailCode.valueOf();
         if (diff < oneMinute) {
             throw new UnauthorizedException("Don't spam.");
         }
-        await this.userRepository.update(
-            { uuid: uuid },
-            {
-                emailValidationCode: this.getRandomCode(),
-                dateEmailCode: new Date(),
-            }
-        );
-        user = await this.usersService.getByID(uuid);
+        user.emailValidationCode = this.getRandomCode();
+        user.dateEmailCode = new Date();
+        await this.userRepository.save(user);
         return await this.sendVerificationMail(user);
     }
 

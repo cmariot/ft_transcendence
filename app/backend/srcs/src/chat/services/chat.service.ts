@@ -232,8 +232,10 @@ export class ChatService {
             channelName: channelName,
         });
         if (!channel) throw new UnauthorizedException();
-        let user = await this.userService.getByID(userID);
-        if (!user) throw new UnauthorizedException();
+        var user: UserEntity | null = await this.userService.getByID(userID);
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
 
         // Check if banned
         if (channel.banned_users) {
@@ -277,7 +279,7 @@ export class ChatService {
             if (index_in_authorized_channels !== -1) {
                 channel = channels[index_in_authorized_channels];
                 let allowed_user = channel.allowed_users.findIndex(
-                    (element) => element.uuid === user.uuid
+                    (element) => element.uuid === userID
                 );
                 if (allowed_user === -1) {
                     throw new HttpException(
@@ -582,7 +584,9 @@ export class ChatService {
         });
         if (!channel) throw new UnauthorizedException("Invalid channel");
         let user = await this.userService.getByID(uuid);
-        if (!user) throw new UnauthorizedException("Invalid user");
+        if (!user) {
+            throw new UnauthorizedException("Invalid user");
+        }
         if (
             channel.channelType === ChannelType.PUBLIC ||
             channel.channelType === ChannelType.PROTECTED
@@ -595,7 +599,7 @@ export class ChatService {
                 );
             } else {
                 let index = channel.users.findIndex(
-                    (element) => element.uuid === user.uuid
+                    (element) => element.uuid === uuid
                 );
                 if (index !== -1) {
                     channel.users.splice(index, 1);
@@ -604,7 +608,7 @@ export class ChatService {
                         { users: channel.users }
                     );
                     index = channel.channelAdministrators.findIndex(
-                        (element) => element.uuid === user.uuid
+                        (element) => element.uuid === uuid
                     );
                     if (index !== -1) {
                         channel.channelAdministrators.splice(index, 1);
@@ -640,7 +644,7 @@ export class ChatService {
                 );
             } else {
                 let index = channel.allowed_users.findIndex(
-                    (element) => element.uuid === user.uuid
+                    (element) => element.uuid === uuid
                 );
                 if (index !== -1) {
                     channel.allowed_users.splice(index, 1);
@@ -649,7 +653,7 @@ export class ChatService {
                         { allowed_users: channel.allowed_users }
                     );
                     index = channel.channelAdministrators.findIndex(
-                        (element) => element.uuid === user.uuid
+                        (element) => element.uuid === uuid
                     );
                     if (index !== -1) {
                         channel.channelAdministrators.splice(index, 1);
@@ -799,7 +803,7 @@ export class ChatService {
             });
         }
         this.removeAdmin(targetChannel, bannedUser.uuid, user.uuid);
-        let updateChannel: ChatEntity = await this.getByName(
+        let updateChannel: ChatEntity | null = await this.getByName(
             targetChannel.channelName
         );
         if (!updateChannel) {
@@ -887,8 +891,10 @@ export class ChatService {
         return ban_usernames_list;
     }
 
-    async addUserInPrivate(addUser: AddOptionsDTO, uuid: string) {
-        let user = await this.userService.getByUsername(addUser.username);
+    async addUserInPrivate(addUser: AddOptionsDTO) {
+        var user: UserEntity | null = await this.userService.getByUsername(
+            addUser.username
+        );
         if (!user) {
             throw new UnauthorizedException("Invalid user");
         }
@@ -896,15 +902,15 @@ export class ChatService {
         if (!channel) {
             throw new UnauthorizedException("Invalid channel");
         }
+        var uuid = user.uuid;
         if (
-            channel.banned_users.findIndex(
-                (banned) => banned.uuid === user.uuid
-            ) !== -1
+            channel.banned_users.findIndex((banned) => banned.uuid === uuid) !==
+            -1
         ) {
             throw new UnauthorizedException("Banned user");
         } else if (
             channel.allowed_users.findIndex(
-                (allowed) => allowed.uuid === user.uuid
+                (allowed) => allowed.uuid === uuid
             ) !== -1
         ) {
             throw new UnauthorizedException("Already allowed");
@@ -936,9 +942,12 @@ export class ChatService {
     }
 
     async send_message(channelName: string, userID: string, message: string) {
-        let channel = await this.chatRepository.findOneBy({
+        let channel: ChatEntity | null = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
+        if (!channel) {
+            throw new UnauthorizedException("Invalid channel");
+        }
 
         let i = 0;
         while (i < channel.mutted_users.length) {
@@ -1118,9 +1127,12 @@ export class ChatService {
                         targetChannel.channelName,
                         current_users[i].uuid
                     );
-                    let updateChannel: ChatEntity = await this.getByName(
+                    let updateChannel: ChatEntity | null = await this.getByName(
                         targetChannel.channelName
                     );
+                    if (!updateChannel) {
+                        throw new UnauthorizedException("Invalid channel.");
+                    }
                     let target_list = await this.get_Admin_Owner(updateChannel);
                     await this.chatGateway.remove_admin(
                         kickedUser.username,
@@ -1189,10 +1201,9 @@ export class ChatService {
     }
 
     async get_Admin_Owner(channel: ChatEntity) {
-        let target_uuidList: string[] = null;
-        let target_list: string[] = null;
+        let target_list: string[] = new Array<string>();
         if (channel && channel.channelOwner) {
-            target_uuidList = [];
+            let target_uuidList: string[] = new Array<string>();
             target_uuidList.push(channel.channelOwner);
             for (let i = 0; i < channel.channelAdministrators.length; i++) {
                 target_uuidList.push(channel.channelAdministrators[i].uuid);
@@ -1200,9 +1211,13 @@ export class ChatService {
             if (target_uuidList.length > 0) {
                 target_list = [];
                 for (let i = 0; i < target_uuidList.length; i++) {
-                    let user = this.userService.getByID(target_uuidList[i]);
-                    for (let j = 0; j < (await user).socketId.length; j++) {
-                        target_list.push((await user).socketId[j]);
+                    let user = await this.userService.getByID(
+                        target_uuidList[i]
+                    );
+                    if (user) {
+                        for (let j = 0; j < user.socketId.length; j++) {
+                            target_list.push(user.socketId[j]);
+                        }
                     }
                 }
             }
