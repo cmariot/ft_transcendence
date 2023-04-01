@@ -9,10 +9,13 @@ import { UserContext } from "../contexts/user/UserContext";
 import { MenuContext } from "../contexts/menu/MenuContext";
 
 export default function ProtectedPage() {
+    const navigate = useNavigate();
+
     const user = useContext(UserContext);
     const game = useContext(GameContext);
-    const navigate = useNavigate();
     const menu = useContext(MenuContext);
+    const chat = useContext(ChatContext);
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
         const authCookie = getCookie("authentification");
@@ -141,8 +144,6 @@ export default function ProtectedPage() {
         }
     }, [navigate, user, game, menu]);
 
-    const chat = useContext(ChatContext);
-
     useEffect(() => {
         function arrayToMap(array: Array<any>) {
             let map = new Map<
@@ -182,8 +183,6 @@ export default function ProtectedPage() {
             })();
         }
     }, [user.isLogged]);
-
-    const socket = useContext(SocketContext);
 
     useEffect(() => {
         async function goHome() {
