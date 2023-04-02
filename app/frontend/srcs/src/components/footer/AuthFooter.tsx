@@ -1,8 +1,4 @@
 const AuthFooter = () => {
-    return (
-        <footer id="auth-footer">
-            <p>auth footer</p>
-        </footer>
-    );
+    return <footer id="app-footer"></footer>;
 };
 export default AuthFooter;

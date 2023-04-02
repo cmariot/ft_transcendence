@@ -1,4 +1,5 @@
-#app-footer {
+#app-footer,
+#auth-footer {
     position: fixed;
     bottom: 0;
     width: 100vw;

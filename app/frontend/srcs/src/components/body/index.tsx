@@ -16,7 +16,13 @@ export const Body = () => {
     return (
         <>
             <NavBar />
-            {menu.error ? <ErrorPage /> : <Outlet />}
+            {menu.error ? (
+                <ErrorPage />
+            ) : menu.displayNotifs ? (
+                <Notifications />
+            ) : (
+                <Outlet />
+            )}
             <Footer />
         </>
     );

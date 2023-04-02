@@ -198,7 +198,7 @@ export default function ProtectedPage() {
 
     return user.isLogged ? (
         <>
-            {menu.display ? <Menu /> : menu.displayNotifs && <Notifications />}
+            {menu.display && <Menu />}
             <Outlet />
         </>
     ) : null;

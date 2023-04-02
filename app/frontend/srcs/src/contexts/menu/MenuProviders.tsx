@@ -10,6 +10,14 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         setError(false);
         setDisplayNotifs(false);
         setDisplay((prevState) => !prevState);
+        let appContent = document.getElementById("home-main");
+        if (appContent) {
+            if (display === false) {
+                appContent.style.marginBlockStart = "90px";
+            } else {
+                appContent.style.marginBlockStart = "20px";
+            }
+        }
     }
 
     function close() {
@@ -17,6 +25,10 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         setErrorMessage("");
         setDisplayNotifs(false);
         setDisplay(false);
+        let appContent = document.getElementById("home-main");
+        if (appContent) {
+            appContent.style.marginBlockStart = "20px";
+        }
     }
 
     function toogleNotifs() {

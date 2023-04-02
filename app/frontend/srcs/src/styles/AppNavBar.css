@@ -1,13 +1,11 @@
-#app-content {
-    padding: 10px;
-}
-
-#app-nav-bar {
+#app-header,
+#auth-header {
+    z-index: 10;
     display: flex;
-    justify-content: space-between;
+    width: 100vw;
+    height: 70px;
     align-items: center;
-    height: 50px;
-    padding: 10px;
+    justify-content: center;
     background-image: linear-gradient(
         180deg,
         #101010 0%,
@@ -16,6 +14,17 @@
         #101010 100%
     );
     border-bottom: 0.5px #a7a7a7 dotted;
+}
+
+#app-nav,
+#auth-nav {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    padding: 10px;
 }
 
 #nav-user-infos {
@@ -30,10 +39,6 @@
     clip-path: circle();
     margin-inline-start: 10px;
     height: 35px;
-}
-
-#app-nav-bar > a:nth-child(1) {
-    text-decoration: none;
 }
 
 #nav-left {
@@ -58,10 +63,6 @@ a {
     text-decoration-style: dotted;
 }
 
-#root > header:nth-child(1) {
-    z-index: 10;
-}
-
 #app-menu {
     position: fixed;
     top: 70px;
@@ -69,7 +70,7 @@ a {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    z-index: 11;
+    z-index: 0;
     width: 100%;
     background-color: #0000;
     background-image: linear-gradient(
@@ -90,15 +91,11 @@ a {
 
 @keyframes slidein {
     from {
-        z-index: 0;
         top: 0px;
-        opacity: 0;
     }
 
     to {
-        z-index: 11;
         top: 70px;
-        opacity: 100;
     }
 }
 
@@ -112,4 +109,45 @@ a {
 .app-menu-icon {
     height: 20px;
     width: auto;
+}
+
+#app-nav-notif {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 5px;
+    padding-inline: 20px;
+}
+
+#notif-icon {
+    height: 20px;
+    width: auto;
+}
+
+#app-nav-home,
+#auth-nav-home {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+#home-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media screen and (max-width: 480px) {
+    .app-menu-icon {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 372px) {
+    #home-text,
+    #nav-username {
+        display: none;
+    }
 }

@@ -64,24 +64,31 @@ const AppNavBar = () => {
     }, [user, socket]);
 
     return (
-        <header>
-            <nav id="app-nav-bar">
+        <header id="app-header">
+            <nav id="app-nav">
                 <div id="nav-left">
-                    <img id="nav-logo" src="/icone.png" alt="Logo" />
-                    <Link to="/" onClick={() => menu.close()}>
-                        ft_transcendence
+                    <Link to="/" onClick={() => menu.close()} id="app-nav-home">
+                        <img id="nav-logo" src="/logo.svg" alt="Logo" />
+                        <p id="home-text">ft_transcendence</p>
                     </Link>
                 </div>
-
                 {user.username && user.avatar ? (
                     <div id="nav-user-infos">
                         {user.notifications.length > 0 && (
-                            <button onClick={toogleNotifs}>
-                                {user.notifications.length} notification
-                                {user.notifications.length > 1 && "s"}
-                            </button>
+                            <Link
+                                to=""
+                                id="app-nav-notif"
+                                onClick={toogleNotifs}
+                            >
+                                <p id="nb-notif">{user.notifications.length}</p>
+                                <img
+                                    id="notif-icon"
+                                    src="/icones/notif.svg"
+                                    alt="Notifications"
+                                />
+                            </Link>
                         )}
-                        <Link to="" onClick={toogleMenu}>
+                        <Link id="nav-username" to="" onClick={toogleMenu}>
                             {user.username}
                         </Link>
                         <img
