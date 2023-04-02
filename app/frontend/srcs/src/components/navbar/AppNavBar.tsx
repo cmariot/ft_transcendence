@@ -17,7 +17,6 @@ const AppNavBar = () => {
     function toogleMenu(event: { preventDefault: () => void }) {
         event.preventDefault();
         menu.toogle();
-        chat.closeMenu();
     }
 
     function toogleNotifs(event: { preventDefault: () => void }) {
@@ -68,7 +67,7 @@ const AppNavBar = () => {
         <header>
             <nav id="app-nav-bar">
                 <div id="nav-left">
-                    <img id="nav-logo" src="/favicon.ico" alt="Logo" />
+                    <img id="nav-logo" src="/icone.png" alt="Logo" />
                     <Link to="/" onClick={() => menu.close()}>
                         ft_transcendence
                     </Link>
@@ -82,7 +81,9 @@ const AppNavBar = () => {
                                 {user.notifications.length > 1 && "s"}
                             </button>
                         )}
-                        <button onClick={toogleMenu}>{user.username}</button>
+                        <Link to="" onClick={toogleMenu}>
+                            {user.username}
+                        </Link>
                         <img
                             id="nav-user-picture"
                             src={`${user.avatar}`}

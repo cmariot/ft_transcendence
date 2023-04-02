@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../contexts/user/UserContext";
 import { MenuContext } from "../../contexts/menu/MenuContext";
@@ -8,11 +8,6 @@ export const Menu = () => {
     const user = useContext(UserContext);
     const menu = useContext(MenuContext);
     const navigate = useNavigate();
-
-    function go(path: string) {
-        menu.close();
-        return navigate(path);
-    }
 
     async function goLogout() {
         try {
@@ -32,42 +27,22 @@ export const Menu = () => {
     }, [user.isForcedLogout, menu]);
 
     return (
-        <menu id="app-menu">
-            <button
-                className="app-menu-button"
-                onClick={() => {
-                    go("/");
-                }}
-            >
+        <div id="app-menu">
+            <Link to="/" onClick={() => menu.close()}>
                 Home
-            </button>
-            <button
-                className="app-menu-button"
-                onClick={() => {
-                    go("/friends");
-                }}
-            >
+            </Link>
+            <Link to="/friends" onClick={() => menu.close()}>
                 Friends
-            </button>
-            <button
-                className="app-menu-button"
-                onClick={() => {
-                    go("/profile");
-                }}
-            >
+            </Link>
+            <Link to="/profile" onClick={() => menu.close()}>
                 Profile
-            </button>
-            <button
-                className="app-menu-button"
-                onClick={() => {
-                    go("/settings");
-                }}
-            >
+            </Link>
+            <Link to="/settings" onClick={() => menu.close()}>
                 Settings
-            </button>
-            <button className="app-menu-button" onClick={goLogout}>
+            </Link>
+            <Link to="" onClick={() => goLogout()}>
                 Logout
-            </button>
-        </menu>
+            </Link>
+        </div>
     );
 };

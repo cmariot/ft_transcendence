@@ -18,15 +18,14 @@ textarea {
 
 a {
     color: #a3a3a3;
+    display: block;
+    text-decoration: underline;
+    text-decoration-style: dotted;
 }
 
 button,
 input {
     text-align: start;
-}
-
-#app-footer {
-    background-color: #1e1e1e;
 }
 
 #game {
@@ -264,11 +263,6 @@ textarea {
 
 #auth-content > article:nth-child(1) {
     color: #1e1e1e;
-}
-
-*:focus {
-    background-color: #1e1e1e;
-    color: #a3a3a3;
 }
 
 #register-form {

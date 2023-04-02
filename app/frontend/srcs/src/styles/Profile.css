@@ -44,10 +44,6 @@ li.match-results:nth-child(2) {
     align-items: center;
 }
 
-#root > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) {
-    width: 100%;
-}
-
 .match-results {
     /* justify-content: center; */
     justify-content: space-around;
@@ -56,13 +52,6 @@ li.match-results:nth-child(2) {
 
 .winner {
     width: 40%;
-}
-
-#root > div:nth-child(2) {
-    overflow-y: scroll;
-    display: flex;
-    gap: 10px;
-    padding: 2%;
 }
 
 #profile {

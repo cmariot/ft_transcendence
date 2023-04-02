@@ -127,13 +127,6 @@
     align-items: center;
 }
 
-.chat-friends-list,
-.chat-friends-list:hover,
-.chat-friends-list:focus {
-    background-color: #a3a3a3;
-    color: #1e1e1e;
-}
-
 .chat-friends-list.user-selected {
     background-color: #1e1e1e;
     color: #a3a3a3;

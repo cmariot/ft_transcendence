@@ -18,4 +18,5 @@
     aspect-ratio: 1 / 1;
     border-radius: 15px;
     border: 2px #737373 solid;
+    max-height: 100vw;
 }
