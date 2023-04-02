@@ -1,11 +1,15 @@
 #app-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    max-width: 100vw;
     display: flex;
-    padding: 10px;
     text-align: center;
     justify-content: center;
     align-items: center;
     height: 50px;
     padding: 10px;
+    border-top: 0.5px #a7a7a7 dotted;
     background-image: linear-gradient(
         180deg,
         #101010 0%,

@@ -28,21 +28,56 @@ export const Menu = () => {
 
     return (
         <div id="app-menu">
-            <Link to="/" onClick={() => menu.close()}>
-                Home
-            </Link>
-            <Link to="/friends" onClick={() => menu.close()}>
-                Friends
-            </Link>
-            <Link to="/profile" onClick={() => menu.close()}>
-                Profile
-            </Link>
-            <Link to="/settings" onClick={() => menu.close()}>
-                Settings
-            </Link>
-            <Link to="" onClick={() => goLogout()}>
-                Logout
-            </Link>
+            <div className="app-menu-div">
+                <img
+                    src="/icones/home.svg"
+                    alt="logo"
+                    className="app-menu-icon"
+                />
+                <Link to="/" onClick={() => menu.close()}>
+                    Home
+                </Link>
+            </div>
+            <div className="app-menu-div">
+                <img
+                    src="/icones/friends.svg"
+                    alt="logo"
+                    className="app-menu-icon"
+                />
+                <Link to="/friends" onClick={() => menu.close()}>
+                    Friends
+                </Link>
+            </div>
+            <div className="app-menu-div">
+                <img
+                    src="/icones/profile.svg"
+                    alt="logo"
+                    className="app-menu-icon"
+                />
+                <Link to="/profile" onClick={() => menu.close()}>
+                    Profile
+                </Link>
+            </div>
+            <div className="app-menu-div">
+                <img
+                    src="/icones/settings.svg"
+                    alt="logo"
+                    className="app-menu-icon"
+                />
+                <Link to="/settings" onClick={() => menu.close()}>
+                    Settings
+                </Link>
+            </div>
+            <div className="app-menu-div">
+                <img
+                    src="/icones/logout.svg"
+                    alt="logo"
+                    className="app-menu-icon"
+                />
+                <Link to="" onClick={() => goLogout()}>
+                    Logout
+                </Link>
+            </div>
         </div>
     );
 };
