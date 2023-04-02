@@ -28,6 +28,7 @@
     max-width: 50px;
     clip-path: circle();
     margin-inline-start: 10px;
+    height: 35px;
 }
 
 #app-nav-bar > a:nth-child(1) {
