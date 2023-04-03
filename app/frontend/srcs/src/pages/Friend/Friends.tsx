@@ -245,12 +245,16 @@ export default function Friends() {
                 currentGames[i].player1 === username ||
                 currentGames[i].player2 === username
             ) {
-                const watchResponse = await axios.post("/api/game/watch", {
-                    game_id: currentGames[i].game_id,
-                });
-                if (watchResponse.status === 201) {
-                    game.setMenu("Stream");
-                    navigate("/");
+                try {
+                    const watchResponse = await axios.post("/api/game/watch", {
+                        game_id: currentGames[i].game_id,
+                    });
+                    if (watchResponse.status === 201) {
+                        game.setMenu("Stream");
+                        navigate("/");
+                    }
+                } catch (error: any) {
+                    menu.displayError(error.response.data.message);
                 }
                 return;
             }

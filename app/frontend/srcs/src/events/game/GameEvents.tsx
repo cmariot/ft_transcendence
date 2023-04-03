@@ -115,15 +115,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             }
             user.setWinRatio(ratio);
         }
-        socket.on(
-            "game.results",
-            (data: {
-                winner: string;
-                loser: string;
-                winner_score: number;
-                loser_score: number;
-            }) => updateHistory(data)
-        );
+        socket.on("game.results", updateHistory);
 
         return () => {
             socket.off("game.results", updateHistory);
@@ -187,7 +179,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
         return () => {
             socket.off("game.pos.update", updateGame);
         };
-    }, [socket]);
+    }, [socket, game]);
 
     return <>{children}</>;
 };

@@ -738,6 +738,10 @@ export class GameService {
         const user = await this.userService.getByID(uuid);
         if (!user || user.socketId.length === 0) {
             throw new UnauthorizedException("User not found.");
+        } else if (user.status === "ingame") {
+            throw new UnauthorizedException(
+                "You cannot watch a stream when you're ingame."
+            );
         }
         let match: GameInterface | undefined = games.get(game_id);
         if (!match) {
