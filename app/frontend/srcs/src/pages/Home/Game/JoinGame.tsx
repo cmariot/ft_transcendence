@@ -5,10 +5,6 @@ import { GameContext } from "../../../contexts/game/GameContext";
 const JoinGame = () => {
     const game = useContext(GameContext);
 
-    async function rules() {
-        game.setMenu("Rules");
-    }
-
     async function selectStream() {
         game.setMenu("SelectStream");
     }
@@ -22,7 +18,6 @@ const JoinGame = () => {
                 </button>
                 <button onClick={() => selectStream()}>stream</button>
             </div>
-            <button onClick={() => rules()}>how to play</button>
         </div>
     );
 };

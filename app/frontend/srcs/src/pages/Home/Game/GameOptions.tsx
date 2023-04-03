@@ -25,6 +25,10 @@ const GameOptions = () => {
         }
     }
 
+    async function rules() {
+        game.setMenu("Rules");
+    }
+
     return (
         <div id="game-options">
             <div id="options-checkbox">
@@ -59,6 +63,7 @@ const GameOptions = () => {
                 <button onClick={() => joinGame()}>play</button>
                 <button onClick={() => game.setMenu("JoinGame")}>cancel</button>
             </div>
+            <button onClick={() => rules()}>how to play</button>
         </div>
     );
 };

@@ -23,7 +23,13 @@
     border-radius: 15px;
     padding-top: 50px;
     padding-bottom: 50px;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     border: 3px solid #737373;
 }
 

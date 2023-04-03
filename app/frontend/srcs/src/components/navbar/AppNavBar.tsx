@@ -1,24 +1,23 @@
 import { Link } from "react-router-dom";
-import "../../styles/AppNavBar.css";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../../contexts/sockets/SocketProvider";
-import { ChatContext } from "../../contexts/chat/ChatContext";
 import { MenuContext } from "../../contexts/menu/MenuContext";
 import { UserContext } from "../../contexts/user/UserContext";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);
     const user = useContext(UserContext);
-    const chat = useContext(ChatContext);
     const socket = useContext(SocketContext);
 
     const [, setUpdate] = useState(false);
 
+    // Toggle navigation menu
     function toogleMenu(event: { preventDefault: () => void }) {
         event.preventDefault();
         menu.toogle();
     }
 
+    // Toggle notifications menu
     function toogleNotifs(event: { preventDefault: () => void }) {
         event.preventDefault();
         menu.toogleNotifs();
@@ -72,35 +71,33 @@ const AppNavBar = () => {
                         <p id="home-text">ft_transcendence</p>
                     </Link>
                 </div>
-                {user.username && user.avatar ? (
-                    <div id="nav-user-infos">
-                        {user.notifications.length > 0 && (
-                            <Link
-                                to=""
-                                id="app-nav-notif"
-                                onClick={toogleNotifs}
-                            >
-                                <p id="nb-notif">{user.notifications.length}</p>
-                                <img
-                                    id="notif-icon"
-                                    src="/icones/notif.svg"
-                                    alt="Notifications"
-                                />
-                            </Link>
-                        )}
-                        <Link id="nav-username" to="" onClick={toogleMenu}>
-                            {user.username}
+                <div id="nav-user-infos">
+                    {user.notifications.length > 0 && (
+                        <Link to="" id="app-nav-notif" onClick={toogleNotifs}>
+                            <p id="nb-notif">{user.notifications.length}</p>
+                            <img
+                                id="notif-icon"
+                                src="/icones/notif.svg"
+                                alt="Notifications"
+                            />
                         </Link>
-                        <img
-                            id="nav-user-picture"
-                            src={`${user.avatar}`}
-                            alt="Menu"
-                            onClick={toogleMenu}
-                        />
-                    </div>
-                ) : (
-                    <button onClick={toogleMenu}>menu</button>
-                )}
+                    )}
+                    {user.username && user.avatar ? (
+                        <>
+                            <Link id="nav-username" to="" onClick={toogleMenu}>
+                                {user.username}
+                            </Link>
+                            <img
+                                id="nav-user-picture"
+                                src={`${user.avatar}`}
+                                alt="Menu"
+                                onClick={toogleMenu}
+                            />
+                        </>
+                    ) : (
+                        <button onClick={toogleMenu}>menu</button>
+                    )}
+                </div>
             </nav>
         </header>
     );

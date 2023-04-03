@@ -6,7 +6,7 @@ const Rules = () => {
     const game = useContext(GameContext);
 
     async function ok() {
-        game.setMenu("JoinGame");
+        game.setMenu("GameOptions");
     }
 
     return (

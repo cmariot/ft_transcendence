@@ -9,6 +9,12 @@
     margin: 25px;
     padding: 5px;
     border-radius: 5px;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     color: #a3a3a3;
 }

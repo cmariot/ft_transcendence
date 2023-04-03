@@ -7,7 +7,12 @@
     flex-direction: column;
     justify-content: flex-start;
     text-align: center;
-    background-color: #a7a7a7;
+    background: rgb(167, 167, 167);
+    background: radial-gradient(
+        circle,
+        rgba(167, 167, 167, 1) 0%,
+        rgb(152, 152, 152) 100%
+    );
 }
 
 .button {

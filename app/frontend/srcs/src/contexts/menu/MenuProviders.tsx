@@ -8,9 +8,9 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
 
     function toogle() {
         setError(false);
-        setDisplayNotifs(false);
+        setErrorMessage("");
         setDisplay((prevState) => !prevState);
-        let appContent = document.getElementById("home-main");
+        let appContent = document.getElementById("app-content");
         if (appContent) {
             if (display === false) {
                 appContent.style.marginBlockStart = "90px";
@@ -21,11 +21,11 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
     }
 
     function close() {
+        setDisplayNotifs(false);
         setError(false);
         setErrorMessage("");
-        setDisplayNotifs(false);
         setDisplay(false);
-        let appContent = document.getElementById("home-main");
+        let appContent = document.getElementById("app-content");
         if (appContent) {
             appContent.style.marginBlockStart = "20px";
         }
@@ -33,24 +33,34 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
 
     function toogleNotifs() {
         setError(false);
-        setDisplay(false);
+        setErrorMessage("");
         setDisplayNotifs((prevState) => !prevState);
     }
 
     function closeNotifs() {
-        close();
+        setError(false);
+        setErrorMessage("");
+        setDisplayNotifs(false);
     }
 
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     function displayError(error: string) {
+        closeNotifs();
         setErrorMessage(error);
         setError(true);
     }
 
     function closeError() {
-        close();
+        setDisplayNotifs(false);
+        setDisplay(false);
+        let appContent = document.getElementById("app-content");
+        if (appContent) {
+            appContent.style.marginBlockStart = "20px";
+        }
+        setErrorMessage("");
+        setError(false);
     }
 
     const value = {

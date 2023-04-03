@@ -28,7 +28,13 @@ input {
 }
 
 #game {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 .chat-main {
@@ -53,7 +59,13 @@ input {
 .app-menu-button {
     text-align: end;
     padding: 10px;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     color: #a3a3a3;
 }
 
@@ -63,16 +75,34 @@ input {
 }
 
 button:hover {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     color: #a3a3a3;
 }
 
 html {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 html {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 #profile {
@@ -80,7 +110,13 @@ html {
     border-radius: 15px;
     padding: 30px;
     margin: auto;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     border: 5px solid #737373;
 }
 
@@ -89,18 +125,32 @@ html {
 }
 
 #app-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    height: 100%;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 90px;
+    transition: margin 700ms;
+    overflow: auto;
 }
 
 #add-friend {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 #friend-list {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 .friend {
@@ -113,11 +163,24 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px solid #1e1e1e;
-    border-radius: 15px;
     width: fit-content;
-    padding: 20px;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
+    padding: 25px;
+    border-radius: 15px;
+    border: 3px solid #737373;
 }
 
 #nav-user-picture {
@@ -133,12 +196,6 @@ html {
     display: flex;
 }
 
-#main-settings {
-    background-color: #1e1e1e;
-    padding: 25px;
-    border-radius: 15px;
-}
-
 #edit-picture > label:nth-child(2) {
     background-color: #585858;
 }
@@ -152,7 +209,13 @@ html {
 }
 
 #submit {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     color: #a3a3a3;
     border-color: #a3a3a3;
 }
@@ -198,12 +261,6 @@ textarea {
     border: 3px solid #737373;
 }
 
-#app-content {
-    display: flex;
-    justify-content: center;
-    align-items: initial;
-}
-
 #profile {
     margin: auto;
 }
@@ -241,15 +298,33 @@ textarea {
 }
 
 #auth-nav-bar {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 #auth-footer {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 #login-pannel {
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
 }
 
 #login-pannel div {
@@ -288,7 +363,13 @@ textarea {
 #label-edit-picture p {
     margin: 0px;
     border: 3px #a3a3a3 solid;
-    background-color: #1e1e1e;
+    background-image: linear-gradient(
+        180deg,
+        #101010 0%,
+        #1e1e1e 40%,
+        #1e1e1e 60%,
+        #101010 100%
+    );
     color: #a3a3a3;
     border-radius: 5px;
     padding: 5px;
@@ -297,10 +378,6 @@ textarea {
 #label-edit-picture {
     padding: 0;
     border: 0;
-}
-
-#main-settings {
-    border: 3px solid #737373;
 }
 
 #chat-create-channel-form > label:nth-child(4),

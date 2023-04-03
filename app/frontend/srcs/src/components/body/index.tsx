@@ -16,13 +16,9 @@ export const Body = () => {
     return (
         <>
             <NavBar />
-            {menu.error ? (
-                <ErrorPage />
-            ) : menu.displayNotifs ? (
-                <Notifications />
-            ) : (
-                <Outlet />
-            )}
+            <div id="app-content">
+                {menu.error ? <ErrorPage /> : <Outlet />}
+            </div>
             <Footer />
         </>
     );

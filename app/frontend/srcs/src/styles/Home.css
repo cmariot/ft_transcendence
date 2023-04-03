@@ -6,10 +6,6 @@
     align-items: center;
     margin-inline: 2vw;
     flex-wrap: wrap;
-    overflow-y: scroll;
-    margin-top: 20px;
-    margin-bottom: 90px;
-    transition: margin 700ms;
 }
 
 #game {
