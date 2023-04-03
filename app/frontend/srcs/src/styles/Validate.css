@@ -45,7 +45,6 @@
         rgba(30, 30, 30, 1) 60%,
         rgba(16, 16, 16, 1) 100%
     );
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#101010",endColorstr="#101010",GradientType=1);
     border: 3px solid #737373;
 }
 
