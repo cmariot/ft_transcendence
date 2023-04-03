@@ -26,7 +26,7 @@ const ChatMessages = () => {
                         })
                         .then(function (response2) {
                             chat.setChannel(response.data.channelName);
-                            chat.setChannelType(response.data.channelType);
+                            chat.setChannelType("direct_message");
                             chat.setMessages(response2.data.messages);
                             chat.setisChannelOwner(
                                 response2.data.channel_owner

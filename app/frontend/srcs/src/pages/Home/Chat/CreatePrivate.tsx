@@ -35,7 +35,7 @@ const CreatePrivate = () => {
             })
             .then(function () {
                 chat.setChannel(newChannelName);
-                chat.setChannelType("private");
+                chat.setChannelType("direct_message");
                 chat.setisChannelOwner(true);
                 chat.setMessages([]);
                 chat.setAdmins([]);
