@@ -987,7 +987,8 @@ export class ChatService {
             i++;
         }
         let user = await this.userService.getByID(userID);
-        if (!channel || !user) throw new UnauthorizedException();
+        if (!user) throw new UnauthorizedException("Invalid user");
+
         if (channel.channelType === ChannelType.PUBLIC) {
             let channelMessages = channel.messages;
             channelMessages.push({ uuid: user.uuid, message: message });
@@ -1050,7 +1051,7 @@ export class ChatService {
             }
             throw new HttpException("Unauthorized.", HttpStatus.UNAUTHORIZED);
         } else {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Invalid channel type");
         }
     }
 
@@ -1349,6 +1350,7 @@ export class ChatService {
     }
 
     async getMessages(channelName: string, uuid: string) {
+        console.log("channelName :", channelName);
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });

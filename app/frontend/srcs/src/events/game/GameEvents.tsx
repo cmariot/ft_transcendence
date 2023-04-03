@@ -2,10 +2,6 @@ import { useContext, useEffect } from "react";
 import { SocketContext } from "../../contexts/sockets/SocketProvider";
 import { GameContext } from "../../contexts/game/GameContext";
 import { UserContext } from "../../contexts/user/UserContext";
-import { updateGameMenu } from "./functions/updateGameMenu";
-import { addToGamesList } from "./functions/addToGamesList";
-import { removeFromGamesList } from "./functions/removeFromGamesList";
-import { displayStreamResults } from "./functions/displayStreamResults";
 
 type GameEventsProps = { children: JSX.Element | JSX.Element[] };
 export const GameEvents = ({ children }: GameEventsProps) => {
@@ -14,34 +10,82 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     const user = useContext(UserContext);
 
     useEffect(() => {
-        socket.on("game.menu.change", (data: any) =>
-            updateGameMenu(data, game)
+        async function updateGameMenu(data: {
+            menu: string;
+            countDown: number;
+        }) {
+            game.setMenu(data.menu);
+            if (data.countDown !== undefined) {
+                game.setCountDown(data.countDown);
+            }
+        }
+
+        socket.on(
+            "game.menu.change",
+            (data: { menu: string; countDown: number }) => updateGameMenu(data)
         );
         return () => {
             socket.off("game.menu.change", updateGameMenu);
         };
-    }, [game, socket]);
+    }, [socket]);
 
     useEffect(() => {
         socket.on("game.name", (id: string) => game.setGameID(id));
         return () => {
             socket.off("game.name", (id: string) => game.setGameID(id));
         };
-    }, [game, socket]);
+    }, [socket]);
 
     useEffect(() => {
-        socket.on("game.start", (data: any) => addToGamesList(data, game));
+        async function addToGamesList(data: {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }) {
+            let games = game.currentGames;
+            let index = games.findIndex(
+                (element: any) => element.game_id === data.game_id
+            );
+            if (index === -1) {
+                games.push(data);
+                game.setCurrentGames(games);
+            }
+        }
+        socket.on(
+            "game.start",
+            (data: { game_id: string; player1: string; player2: string }) =>
+                addToGamesList(data)
+        );
         return () => {
             socket.off("game.start", addToGamesList);
         };
-    }, [game, socket]);
+    }, [socket]);
 
     useEffect(() => {
-        socket.on("game.end", (data: any) => removeFromGamesList(data, game));
+        async function removeFromGamesList(data: {
+            game_id: string;
+            player1: string;
+            player2: string;
+        }) {
+            let games = game.currentGames;
+            let index = games.findIndex(
+                (element: any) => element.game_id === data.game_id
+            );
+            if (index !== -1) {
+                games.splice(index, 1);
+                game.setCurrentGames(games);
+            }
+        }
+
+        socket.on(
+            "game.end",
+            (data: { game_id: string; player1: string; player2: string }) =>
+                removeFromGamesList(data)
+        );
         return () => {
             socket.off("game.end", removeFromGamesList);
         };
-    }, [game, socket]);
+    }, [socket]);
 
     useEffect(() => {
         function updateHistory(data: {
@@ -49,7 +93,6 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             loser: string;
             winner_score: number;
             loser_score: number;
-            rank: number;
         }) {
             let history: {
                 winner: string;
@@ -64,30 +107,60 @@ export const GameEvents = ({ children }: GameEventsProps) => {
                 loser_score: data.loser_score,
             });
             user.setGamehistory(history);
-            let ratio = user.winRatio;
+            var ratio = user.winRatio;
             if (data.winner === user.username) {
                 ratio.victory++;
             } else {
                 ratio.defeat++;
             }
             user.setWinRatio(ratio);
-            user.setRank(data.rank);
         }
-        socket.on("game.results", updateHistory);
+        socket.on(
+            "game.results",
+            (data: {
+                winner: string;
+                loser: string;
+                winner_score: number;
+                loser_score: number;
+            }) => updateHistory(data)
+        );
 
         return () => {
             socket.off("game.results", updateHistory);
         };
-    }, []);
+    }, [socket, user]);
 
     useEffect(() => {
-        socket.on("stream.results", (data: any) =>
-            displayStreamResults(data, game)
+        async function displayStreamResults(data: {
+            gameId: string;
+            results: {
+                winner: string;
+                player1: string;
+                player2: string;
+                p1Score: number;
+                p2Score: number;
+            };
+        }) {
+            game.setStreamResults(data.results);
+            game.setMenu("StreamResults");
+        }
+        socket.on(
+            "stream.results",
+            (data: {
+                gameId: string;
+                results: {
+                    winner: string;
+                    player1: string;
+                    player2: string;
+                    p1Score: number;
+                    p2Score: number;
+                };
+            }) => displayStreamResults(data)
         );
         return () => {
             socket.off("stream.results", displayStreamResults);
         };
-    }, [game, socket]);
+    }, [socket]);
 
     useEffect(() => {
         async function updateGame(data: any) {
@@ -114,7 +187,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
         return () => {
             socket.off("game.pos.update", updateGame);
         };
-    }, [game, socket]);
+    }, [socket]);
 
     return <>{children}</>;
 };

@@ -709,20 +709,12 @@ export class GameService {
                 let p1 = await this.userService.getByID(player1.uuid);
                 let p2 = await this.userService.getByID(player2.uuid);
                 if (p1 && p2) {
-                    let player1Rank = await this.userService.getLeaderBoardRank(
-                        p1
-                    );
-                    let player2Rank = await this.userService.getLeaderBoardRank(
-                        p2
-                    );
-                    this.gameGateway.emitGameResults(
-                        results,
-                        player1Rank,
-                        player2Rank
-                    );
+                    await this.userService.getLeaderBoardRank(p1);
+                    await this.userService.getLeaderBoardRank(p2);
+                    await this.gameGateway.emitGameResults(results);
                 }
-                this.gameGateway.updateFrontMenu(results, "Results");
-                this.gameGateway.streamResults(results, game.uuid);
+                await this.gameGateway.updateFrontMenu(results, "Results");
+                await this.gameGateway.streamResults(results, game.uuid);
                 await this.userService.setStatusByID(player1.uuid, "online");
                 await this.userService.setStatusByID(player2.uuid, "online");
             }

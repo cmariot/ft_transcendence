@@ -3,18 +3,8 @@ import { SocketContext } from "../../contexts/sockets/SocketProvider";
 import { ChatContext } from "../../contexts/chat/ChatContext";
 import { UserContext } from "../../contexts/user/UserContext";
 import { MenuContext } from "../../contexts/menu/MenuContext";
-import { updateChannels } from "./functions/updateChannels";
-import { deleteChannels } from "./functions/deleteChannel";
-import { unmute } from "./functions/unmute";
-import { unban } from "./functions/unBan";
-import { leavePrivate } from "./functions/leavePrivate";
-import { kick } from "./functions/kick";
-import { mute } from "./functions/mute";
-import { removeAdmins } from "./functions/removeAdmin";
-import { addAdmins } from "./functions/addAdmin";
-import { ban } from "./functions/ban";
-import { joinPrivate } from "./functions/joinPrivate";
 import axios from "axios";
+import { arrayToMap } from "./functions/arrayToMap";
 
 type ChatEventsProps = { children: JSX.Element | JSX.Element[] };
 export const ChatEvents = ({ children }: ChatEventsProps) => {
@@ -25,21 +15,64 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
 
     // When a new channel is available
     useEffect(() => {
-        socket.on("chat.new.channel", () => updateChannels(chat, menu));
+        async function updateChannels() {
+            try {
+                const channelsResponse = await axios.get("/api/chat/channels");
+                if (channelsResponse.status === 200) {
+                    chat.updateUserChannels(
+                        arrayToMap(channelsResponse.data.userChannels)
+                    );
+                    chat.updateUserPrivateChannels(
+                        arrayToMap(channelsResponse.data.userPrivateChannels)
+                    );
+                    chat.updateAvailableChannels(
+                        arrayToMap(channelsResponse.data.availableChannels)
+                    );
+                }
+            } catch (error: any) {
+                menu.displayError(error.response.data.message);
+            }
+        }
+        socket.on("chat.new.channel", updateChannels);
         return () => {
             socket.off("chat.new.channel", updateChannels);
         };
-    }, [chat, socket, menu]);
+    }, [socket, chat]);
 
     // When a channel is deleted
     useEffect(() => {
-        socket.on("chat.deleted.channel", (data: any) =>
-            deleteChannels(data, chat)
-        );
+        async function deleteChannels(data: { channel: string }) {
+            try {
+                const channelsResponse = await axios.get("/api/chat/channels");
+                if (channelsResponse.status === 200) {
+                    chat.updateUserChannels(
+                        arrayToMap(channelsResponse.data.userChannels)
+                    );
+                    chat.updateUserPrivateChannels(
+                        arrayToMap(channelsResponse.data.userPrivateChannels)
+                    );
+                    chat.updateAvailableChannels(
+                        arrayToMap(channelsResponse.data.availableChannels)
+                    );
+                }
+            } catch (error) {
+                console.log(error);
+            }
+            if (chat.channel === data.channel) {
+                chat.setMessages([]);
+                chat.setChannel("");
+                chat.setChannelType("");
+                chat.setmutedUsers([]);
+                chat.setbannedUsers([]);
+                chat.closeMenu();
+                chat.setPage("YourChannels");
+            }
+        }
+        socket.on("chat.deleted.channel", deleteChannels);
         return () => {
             socket.off("chat.deleted.channel", deleteChannels);
         };
-    }, [chat, socket]);
+    }, [socket, chat]);
 
     // When new message
     useEffect(() => {
@@ -59,87 +92,376 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         return () => {
             socket.off("chat.message", updateMessages);
         };
-    }, [chat, socket]);
+    }, [socket, chat]);
 
     // When a new admin is add
     useEffect(() => {
-        socket.on("chat.new.admin", (data: any) =>
-            addAdmins(data, chat, user, menu)
+        async function addAdmins(data: { username: string; channel: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let admins = chat.admins;
+                    admins.push(data.username);
+                    chat.setAdmins(admins);
+                } else if (data.username === user.username) {
+                    await axios
+                        .post("/api/chat/connect", {
+                            channelName: data.channel,
+                        })
+                        .then(function (response: any) {
+                            chat.setisChannelAdmin(response.data.channel_admin);
+                            chat.setAdmins(response.data.channel_admins);
+                            chat.setmutedUsers(response.data.muted_users);
+                            chat.setbannedUsers(response.data.banned_users);
+                        })
+                        .catch(function (error) {
+                            menu.displayError(error.response.data.message);
+                        });
+                }
+            }
+        }
+
+        socket.on(
+            "chat.new.admin",
+            (data: { username: string; channel: string }) => addAdmins(data)
         );
         return () => {
             socket.off("chat.new.admin", addAdmins);
         };
-    }, [chat, socket, user, menu]);
+    }, [socket, chat, menu]);
 
     // When a admin is removed
     useEffect(() => {
-        socket.on("chat.remove.admin", (data: any) =>
-            removeAdmins(data, chat, user, menu)
+        async function removeAdmins(data: {
+            username: string;
+            channel: string;
+        }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let admins = chat.admins;
+                    let index = admins.findIndex(
+                        (admins: any) => admins === data.username
+                    );
+                    if (index !== -1) {
+                        admins.splice(index, 1);
+                        chat.setAdmins(admins);
+                    }
+                }
+                if (data.username === user.username) {
+                    try {
+                        const connectResponse = await axios.post(
+                            "/api/chat/connect",
+                            {
+                                channelName: data.channel,
+                            }
+                        );
+                        if (connectResponse.status === 201) {
+                            chat.setisChannelAdmin(
+                                connectResponse.data.channel_admin
+                            );
+                            chat.setAdmins(connectResponse.data.channel_admins);
+                            chat.setmutedUsers(
+                                connectResponse.data.muted_users
+                            );
+                            chat.setbannedUsers(
+                                connectResponse.data.banned_users
+                            );
+                        }
+                    } catch (connectResponse: any) {
+                        menu.displayError(
+                            connectResponse.response.data.message
+                        );
+                    }
+                }
+            }
+        }
+        socket.on(
+            "chat.remove.admin",
+            (data: { username: string; channel: string }) => removeAdmins(data)
         );
         return () => {
             socket.off("chat.remove.admin", removeAdmins);
         };
-    }, [chat, socket, user, menu]);
+    }, [socket, chat, menu]);
 
     // When an user is mute
     useEffect(() => {
-        socket.on("chat.user.mute", (data: any) => mute(data, chat));
+        async function mute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    if (
+                        muted.findIndex(
+                            (mute: any) => mute === data.username
+                        ) === -1
+                    ) {
+                        muted.push(data.username);
+                        chat.setmutedUsers(muted);
+                    }
+                }
+            }
+        }
+
+        socket.on(
+            "chat.user.mute",
+            (data: { channel: string; username: string }) => mute(data)
+        );
         return () => {
             socket.off("chat.user.mute", mute);
         };
-    }, [chat, socket, user]);
+    }, [socket, chat]);
 
     // When an user is unmute
     useEffect(() => {
-        socket.on("chat.user.unmute", (data: any) => unmute(data, chat));
+        async function unmute(data: { channel: string; username: string }) {
+            if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let muted = chat.mutedUsers;
+                    let index = muted.findIndex(
+                        (muted: any) => muted === data.username
+                    );
+                    if (index !== -1) {
+                        muted.splice(index, 1);
+                        chat.setmutedUsers(muted);
+                    }
+                }
+            }
+        }
+        socket.on(
+            "chat.user.unmute",
+            (data: { channel: string; username: string }) => unmute(data)
+        );
         return () => {
             socket.off("chat.user.unmute", unmute);
         };
-    }, [chat, socket, user]);
+    }, [socket, chat]);
 
     // When an user is banned
     useEffect(() => {
-        socket.on("chat.user.ban", (data: any) => ban(data, user, chat));
+        async function ban(data: { channel: string; username: string }) {
+            if (data.username === user.username) {
+                try {
+                    const channelsResponse = await axios.get(
+                        "/api/chat/channels"
+                    );
+                    if (channelsResponse.status === 200) {
+                        chat.updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        chat.updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        chat.updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                if (chat.channel === data.channel) {
+                    chat.setMessages([]);
+                    chat.setChannel("");
+                    chat.setChannelType("");
+                    chat.setmutedUsers([]);
+                    chat.setbannedUsers([]);
+                    chat.closeMenu();
+                    chat.setPage("YourChannels");
+                }
+            } else if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let banned = chat.bannedUsers;
+                    if (
+                        banned.findIndex(
+                            (ban: any) => ban === data.username
+                        ) === -1
+                    ) {
+                        banned.push(data.username);
+                        chat.setmutedUsers(banned);
+                    }
+                }
+            }
+        }
+        socket.on(
+            "chat.user.ban",
+            (data: { channel: string; username: string }) => ban(data)
+        );
         return () => {
             socket.off("chat.user.ban", ban);
         };
-    }, [chat, socket, user]);
+    }, [socket, chat, user]);
 
     // When an user is unban
     useEffect(() => {
-        socket.on("chat.user.unban", (data: any) => unban(data, user, chat));
+        async function unban(data: { channel: string; username: string }) {
+            if (data.username === user.username) {
+                try {
+                    const channelsResponse = await axios.get(
+                        "/api/chat/channels"
+                    );
+                    if (channelsResponse.status === 200) {
+                        chat.updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        chat.updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        chat.updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            } else if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    let banned = chat.bannedUsers;
+                    let index = banned.findIndex(
+                        (banned: any) => banned === data.username
+                    );
+                    if (index !== -1) {
+                        banned.splice(index, 1);
+                        chat.setbannedUsers(banned);
+                    }
+                }
+            }
+        }
+
+        socket.on(
+            "chat.user.unban",
+            (data: { channel: string; username: string }) => unban(data)
+        );
         return () => {
             socket.off("chat.user.unban", unban);
         };
-    }, [chat, socket, user]);
+    }, [socket, chat, user]);
 
     // When an user is kicked
     useEffect(() => {
-        socket.on("chat.user.kicked", (data: any) =>
-            kick(data, chat, user, menu)
+        async function kick(data: { channel: string; username: string }) {
+            if (data.username === user.username) {
+                try {
+                    const channelsResponse = await axios.get(
+                        "/api/chat/channels"
+                    );
+                    if (channelsResponse.status === 200) {
+                        chat.updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        chat.updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        chat.updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                if (chat.channel === data.channel) {
+                    chat.setMessages([]);
+                    chat.setChannel("");
+                    chat.setChannelType("");
+                    chat.setmutedUsers([]);
+                    chat.setbannedUsers([]);
+                    chat.closeMenu();
+                    chat.setPage("YourChannels");
+                }
+            } else if (chat.channel === data.channel) {
+                if (
+                    chat.isChannelAdmin === true ||
+                    chat.isChannelOwner === true
+                ) {
+                    await axios
+                        .post("/api/chat/connect", {
+                            channelName: data.channel,
+                        })
+                        .then(function (response: any) {
+                            chat.setisChannelAdmin(response.data.channel_admin);
+                            chat.setAdmins(response.data.channel_admins);
+                            chat.setmutedUsers(response.data.muted_users);
+                            chat.setbannedUsers(response.data.banned_users);
+                        })
+                        .catch(function (error) {
+                            menu.displayError(error.response.data.message);
+                        });
+                }
+            }
+        }
+
+        socket.on(
+            "chat.user.kicked",
+            (data: { channel: string; username: string }) => kick(data)
         );
         return () => {
             socket.off("chat.user.kicked", kick);
         };
-    }, [chat, socket, user, menu]);
+    }, [socket, user, chat]);
 
     // When an user leave a private channel
     useEffect(() => {
-        socket.on("user.leave.private", (data: any) =>
-            leavePrivate(data, chat)
+        async function leavePrivate(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex(
+                (muted: any) => muted === data.username
+            );
+            if (index !== -1) {
+                users.splice(index, 1);
+                chat.setUsers(users);
+            }
+        }
+        socket.on(
+            "user.leave.private",
+            (data: { channel: string; username: string }) => leavePrivate(data)
         );
         return () => {
             socket.off("user.leave.private", leavePrivate);
         };
-    }, [chat, socket]);
+    }, [socket, chat]);
 
     // When an user is added in a private channel
     useEffect(() => {
-        socket.on("user.join.private", (data: any) => joinPrivate(data, chat));
+        async function joinPrivate(data: {
+            channel: string;
+            username: string;
+        }) {
+            let users = chat.users;
+            let index = users.findIndex((user: any) => user === data.username);
+            if (index === -1) {
+                users.push(data.username);
+                chat.setUsers(users);
+            }
+        }
+        socket.on("user.join.private", (data: any) => joinPrivate(data));
         return () => {
             socket.off("user.join.private", joinPrivate);
         };
-    }, [chat, socket]);
+    }, [socket, chat]);
 
     return <>{children}</>;
 };

@@ -9,6 +9,7 @@ import { UserContext } from "../contexts/user/UserContext";
 import { MenuContext } from "../contexts/menu/MenuContext";
 import { Menu } from "../components/menu/menu";
 import { Notifications } from "../components/notifications/notifications";
+import { arrayToMap } from "../events/chat/functions/arrayToMap";
 
 export default function ProtectedPage() {
     const navigate = useNavigate();
@@ -38,11 +39,13 @@ export default function ProtectedPage() {
                         friendsResponse,
                         blockedResponse,
                         gameResponse,
+                        channelsResponse,
                     ] = await Promise.all([
                         axios.get("/api/profile"),
                         axios.get("/api/profile/friends"),
                         axios.get("/api/profile/blocked"),
                         axios.get("/api/game/current"),
+                        axios.get("/api/chat/channels"),
                     ]);
 
                     if (
@@ -53,6 +56,20 @@ export default function ProtectedPage() {
                     ) {
                         menu.displayError("Cannot fetch your profile.");
                         return navigate("/login");
+                    }
+
+                    if (channelsResponse.status === 200) {
+                        chat.updateUserChannels(
+                            arrayToMap(channelsResponse.data.userChannels)
+                        );
+                        chat.updateUserPrivateChannels(
+                            arrayToMap(
+                                channelsResponse.data.userPrivateChannels
+                            )
+                        );
+                        chat.updateAvailableChannels(
+                            arrayToMap(channelsResponse.data.availableChannels)
+                        );
                     }
 
                     const username = profileResponse.data.username;
@@ -150,46 +167,6 @@ export default function ProtectedPage() {
             })();
         }
     }, [navigate, user, game, menu]);
-
-    useEffect(() => {
-        function arrayToMap(array: Array<any>) {
-            let map = new Map<
-                string,
-                { channelName: string; channelType: string }
-            >();
-            for (let i = 0; i < array.length; i++) {
-                if (array[i].channelName) {
-                    map.set(array[i].channelName, array[i]);
-                }
-            }
-            return map;
-        }
-        if (user.isLogged) {
-            (async () => {
-                try {
-                    const [channelsResponse] = await Promise.all([
-                        axios.get("/api/chat/channels"),
-                    ]);
-
-                    if (channelsResponse.status === 200) {
-                        chat.updateUserChannels(
-                            arrayToMap(channelsResponse.data.userChannels)
-                        );
-                        chat.updateUserPrivateChannels(
-                            arrayToMap(
-                                channelsResponse.data.userPrivateChannels
-                            )
-                        );
-                        chat.updateAvailableChannels(
-                            arrayToMap(channelsResponse.data.availableChannels)
-                        );
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            })();
-        }
-    }, [user.isLogged]);
 
     useEffect(() => {
         async function goHome() {

@@ -61,54 +61,26 @@ export class GameGateway {
     }
 
     // Send the match results and their new leaderboard rank to the players
-    emitGameResults(
-        match: GameInterface,
-        player1Rank: number,
-        player2Rank: number
-    ) {
-        let p1Winner = match.player1Score > match.player2Score ? true : false;
-        let data: {};
-        if (p1Winner) {
-            data = {
+    emitGameResults(match: GameInterface) {
+        if (match.player1Score > match.player2Score) {
+            const data = {
                 winner: match.player1Username,
                 loser: match.player2Username,
                 winner_score: match.player1Score,
                 loser_score: match.player2Score,
-                rank: player1Rank,
             };
             this.server.to(match.player1Socket).emit("game.results", data);
-            data = {
-                winner: match.player1Username,
-                loser: match.player2Username,
-                winner_score: match.player1Score,
-                loser_score: match.player2Score,
-                rank: player2Rank,
-            };
             this.server.to(match.player2Socket).emit("game.results", data);
         } else {
-            data = {
+            const data = {
                 winner: match.player2Username,
                 loser: match.player1Username,
                 winner_score: match.player2Score,
                 loser_score: match.player1Score,
-                rank: player1Rank,
             };
             this.server.to(match.player1Socket).emit("game.results", data);
-            data = {
-                winner: match.player2Username,
-                loser: match.player1Username,
-                winner_score: match.player2Score,
-                loser_score: match.player1Score,
-                rank: player2Rank,
-            };
             this.server.to(match.player2Socket).emit("game.results", data);
         }
-        console.log(
-            "Game results sent to ",
-            match.player1Socket,
-            " and ",
-            match.player2Socket
-        );
     }
 
     async emitEndGame(game_id: string) {
