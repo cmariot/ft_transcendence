@@ -103,8 +103,13 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                     chat.isChannelOwner === true
                 ) {
                     let admins = chat.admins;
-                    admins.push(data.username);
-                    chat.setAdmins(admins);
+                    let index = admins.findIndex(
+                        (element) => element === data.username
+                    );
+                    if (index === -1) {
+                        admins.push(data.username);
+                        chat.setAdmins(admins);
+                    }
                 } else if (data.username === user.username) {
                     await axios
                         .post("/api/chat/connect", {
@@ -123,10 +128,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
             }
         }
 
-        socket.on(
-            "chat.new.admin",
-            (data: { username: string; channel: string }) => addAdmins(data)
-        );
+        socket.on("chat.new.admin", addAdmins);
         return () => {
             socket.off("chat.new.admin", addAdmins);
         };
@@ -180,14 +182,11 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                 }
             }
         }
-        socket.on(
-            "chat.remove.admin",
-            (data: { username: string; channel: string }) => removeAdmins(data)
-        );
+        socket.on("chat.remove.admin", removeAdmins);
         return () => {
             socket.off("chat.remove.admin", removeAdmins);
         };
-    }, [socket, chat, menu]);
+    }, [socket, chat, menu, user]);
 
     // When an user is mute
     useEffect(() => {

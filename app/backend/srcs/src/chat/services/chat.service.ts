@@ -1350,7 +1350,6 @@ export class ChatService {
     }
 
     async getMessages(channelName: string, uuid: string) {
-        console.log("channelName :", channelName);
         let channel = await this.chatRepository.findOneBy({
             channelName: channelName,
         });
