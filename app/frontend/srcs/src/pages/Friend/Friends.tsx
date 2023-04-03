@@ -201,7 +201,40 @@ export default function Friends() {
 
     async function addFriend(event: any) {
         event.preventDefault();
-        await user.addFriend(username);
+        let friendList = user.friends;
+        try {
+            const friendsResponse = await axios.post(
+                "/api/profile/friends/add",
+                {
+                    username: username,
+                }
+            );
+            if (friendsResponse.status === 201) {
+                let avatar: string;
+                try {
+                    const url = "/api/profile/" + username + "/image";
+                    const avatarResponse = await axios.get(url, {
+                        responseType: "blob",
+                    });
+                    if (avatarResponse.status === 200) {
+                        let imageUrl = URL.createObjectURL(avatarResponse.data);
+                        avatar = imageUrl;
+                    } else {
+                        avatar = url;
+                    }
+                    friendList.push({
+                        username: username,
+                        status: friendsResponse.data.status,
+                        avatar: avatar,
+                    });
+                    user.setFriends(friendList);
+                } catch (error: any) {
+                    menu.displayError(error.response.data.message);
+                }
+            }
+        } catch (error: any) {
+            menu.displayError(error.response.data.message);
+        }
         setUsername("");
     }
 

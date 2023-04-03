@@ -3,10 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../contexts/user/UserContext";
 import { MenuContext } from "../../contexts/menu/MenuContext";
+import { ImageContext } from "../../contexts/images/ImagesContext";
 
 export const Menu = () => {
     const user = useContext(UserContext);
     const menu = useContext(MenuContext);
+    const images = useContext(ImageContext);
+
     const navigate = useNavigate();
 
     async function goLogout() {
@@ -29,18 +32,14 @@ export const Menu = () => {
     return (
         <div id="app-menu">
             <div className="app-menu-div">
-                <img
-                    src="/icones/home.svg"
-                    alt="logo"
-                    className="app-menu-icon"
-                />
+                <img src={images.home} alt="logo" className="app-menu-icon" />
                 <Link to="/" onClick={() => menu.close()}>
                     Home
                 </Link>
             </div>
             <div className="app-menu-div">
                 <img
-                    src="/icones/friends.svg"
+                    src={images.friends}
                     alt="logo"
                     className="app-menu-icon"
                 />
@@ -50,7 +49,7 @@ export const Menu = () => {
             </div>
             <div className="app-menu-div">
                 <img
-                    src="/icones/profile.svg"
+                    src={images.profile}
                     alt="logo"
                     className="app-menu-icon"
                 />
@@ -60,7 +59,7 @@ export const Menu = () => {
             </div>
             <div className="app-menu-div">
                 <img
-                    src="/icones/settings.svg"
+                    src={images.settings}
                     alt="logo"
                     className="app-menu-icon"
                 />
@@ -69,11 +68,7 @@ export const Menu = () => {
                 </Link>
             </div>
             <div className="app-menu-div">
-                <img
-                    src="/icones/logout.svg"
-                    alt="logo"
-                    className="app-menu-icon"
-                />
+                <img src={images.logout} alt="logo" className="app-menu-icon" />
                 <Link to="" onClick={() => goLogout()}>
                     Logout
                 </Link>

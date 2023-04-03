@@ -54,6 +54,7 @@ export default function ProtectedPage() {
                         menu.displayError("Cannot fetch your profile.");
                         return navigate("/login");
                     }
+
                     const username = profileResponse.data.username;
                     const avatar = "/api/profile/" + username + "/image";
                     const twoFactorsAuth = profileResponse.data.twoFactorsAuth;
@@ -121,6 +122,7 @@ export default function ProtectedPage() {
                             menu.displayError(error.response.data.message);
                         }
                     }
+
                     user.editUsername(username);
                     user.editDoubleAuth(twoFactorsAuth);
                     user.setFriends(friends);
@@ -134,8 +136,11 @@ export default function ProtectedPage() {
                     user.setClickOnLogin(true);
                     user.setClickOnLogout(false);
                     game.setCurrentGames(gameResponse.data);
+
                     if (firstLog) {
                         return navigate("/welcome");
+                    } else {
+                        return navigate("/");
                     }
                 } catch (error) {
                     user.setIsLogged(false);

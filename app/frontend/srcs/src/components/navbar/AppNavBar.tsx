@@ -3,11 +3,13 @@ import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../../contexts/sockets/SocketProvider";
 import { MenuContext } from "../../contexts/menu/MenuContext";
 import { UserContext } from "../../contexts/user/UserContext";
+import { ImageContext } from "../../contexts/images/ImagesContext";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);
     const user = useContext(UserContext);
     const socket = useContext(SocketContext);
+    const images = useContext(ImageContext);
 
     const [, setUpdate] = useState(false);
 
@@ -67,7 +69,7 @@ const AppNavBar = () => {
             <nav id="app-nav">
                 <div id="nav-left">
                     <Link to="/" onClick={() => menu.close()} id="app-nav-home">
-                        <img id="nav-logo" src="/logo.svg" alt="Logo" />
+                        <img id="nav-logo" src={images.logo} alt="Logo" />
                         <p id="home-text">ft_transcendence</p>
                     </Link>
                 </div>
@@ -77,7 +79,7 @@ const AppNavBar = () => {
                             <p id="nb-notif">{user.notifications.length}</p>
                             <img
                                 id="notif-icon"
-                                src="/icones/notif.svg"
+                                src={images.notifs}
                                 alt="Notifications"
                             />
                         </Link>
