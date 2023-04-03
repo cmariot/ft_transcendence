@@ -5,7 +5,6 @@ import { UserContext } from "../../contexts/user/UserContext";
 import { updateGameMenu } from "./functions/updateGameMenu";
 import { addToGamesList } from "./functions/addToGamesList";
 import { removeFromGamesList } from "./functions/removeFromGamesList";
-import { updateHistory } from "./functions/updateHistory";
 import { displayStreamResults } from "./functions/displayStreamResults";
 
 type GameEventsProps = { children: JSX.Element | JSX.Element[] };
@@ -45,11 +44,41 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     }, [game, socket]);
 
     useEffect(() => {
-        socket.on("game.results", (data: any) => updateHistory(data, user));
+        function updateHistory(data: {
+            winner: string;
+            loser: string;
+            winner_score: number;
+            loser_score: number;
+            rank: number;
+        }) {
+            let history: {
+                winner: string;
+                loser: string;
+                winner_score: number;
+                loser_score: number;
+            }[] = user.gameHistory;
+            history.push({
+                winner: data.winner,
+                loser: data.loser,
+                winner_score: data.winner_score,
+                loser_score: data.loser_score,
+            });
+            user.setGamehistory(history);
+            let ratio = user.winRatio;
+            if (data.winner === user.username) {
+                ratio.victory++;
+            } else {
+                ratio.defeat++;
+            }
+            user.setWinRatio(ratio);
+            user.setRank(data.rank);
+        }
+        socket.on("game.results", updateHistory);
+
         return () => {
             socket.off("game.results", updateHistory);
         };
-    }, [game, socket, user]);
+    }, []);
 
     useEffect(() => {
         socket.on("stream.results", (data: any) =>

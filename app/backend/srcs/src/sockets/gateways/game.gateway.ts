@@ -103,6 +103,12 @@ export class GameGateway {
             };
             this.server.to(match.player2Socket).emit("game.results", data);
         }
+        console.log(
+            "Game results sent to ",
+            match.player1Socket,
+            " and ",
+            match.player2Socket
+        );
     }
 
     async emitEndGame(game_id: string) {

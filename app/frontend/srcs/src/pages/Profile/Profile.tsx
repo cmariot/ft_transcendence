@@ -65,45 +65,50 @@ const Profile = () => {
     }, [user, socket]);
 
     return (
-        <div>
+        <div id="div-profile">
             <main id="profile">
-                <h2>Your profile</h2>
-                {user.avatar && (
-                    <img
-                        id="profile-user-picture"
-                        src={user.avatar}
-                        alt="Your avatar"
-                    />
-                )}
-                <h3>{user.username}</h3>
-                <button
-                    onClick={(event: any) => {
-                        event.preventDefault();
-                        navigate("/settings");
-                    }}
-                >
-                    edit
-                </button>
-            </main>
-            {user.gameHistory.length > 0 && (
-                <div id="stats">
-                    <div>
-                        <p>Leaderboard rank : {user.rank}</p>
-                        <p>
-                            Game played :{" "}
-                            {user.winRatio.defeat + user.winRatio.victory}
-                        </p>
-                        <p>
-                            Game win : {user.winRatio.victory} {winPercentage()}
-                        </p>
-                        <p>
-                            Game lose : {user.winRatio.defeat}{" "}
-                            {losePercentage()}
-                        </p>
-                    </div>
-                    <div>
+                <div>
+                    <h2>Your profile</h2>
+                    {user.avatar && (
+                        <img
+                            id="profile-user-picture"
+                            src={user.avatar}
+                            alt="Your avatar"
+                        />
+                    )}
+                    <h3>{user.username}</h3>
+
+                    <button
+                        onClick={(event: any) => {
+                            event.preventDefault();
+                            navigate("/settings");
+                        }}
+                    >
+                        Edit your profile
+                    </button>
+
+                    {user.gameHistory.length > 0 && (
+                        <div id="game-stats">
+                            <p>Leaderboard rank : {user.rank}</p>
+                            <p>
+                                Game played :{" "}
+                                {user.winRatio.defeat + user.winRatio.victory}
+                            </p>
+                            <p>
+                                Game win : {user.winRatio.victory}{" "}
+                                {winPercentage()}
+                            </p>
+                            <p>
+                                Game lose : {user.winRatio.defeat}{" "}
+                                {losePercentage()}
+                            </p>
+                        </div>
+                    )}
+                </div>
+                {user.gameHistory.length > 0 && (
+                    <div id="stats">
                         <ul id="games-list">
-                            <h2>Match history</h2>
+                            <h2>Game history</h2>
                             {user.gameHistory.map(
                                 (game: any, index: number) => (
                                     <li className="match-results" key={index}>
@@ -123,8 +128,8 @@ const Profile = () => {
                             )}
                         </ul>
                     </div>
-                </div>
-            )}
+                )}
+            </main>
         </div>
     );
 };

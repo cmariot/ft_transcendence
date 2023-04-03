@@ -298,7 +298,7 @@ const UserProfile = () => {
                     </div>
                     <div>
                         <ul id="games-list">
-                            <h2>Match history</h2>
+                            <h2>Game history</h2>
                             {gameHistory.map((game: any, index: number) => (
                                 <li className="match-results" key={index}>
                                     <div className="winner">

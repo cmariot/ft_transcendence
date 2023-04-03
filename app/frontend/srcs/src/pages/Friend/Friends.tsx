@@ -237,8 +237,8 @@ export default function Friends() {
 
     return (
         <div id="friends">
-            <aside id="add-friend">
-                <h2>Add a new friend</h2>
+            <main id="friend-list-main">
+                <h2>Your friends</h2>
                 <form onSubmit={(event) => addFriend(event)} autoComplete="off">
                     <input
                         type="text"
@@ -247,8 +247,6 @@ export default function Friends() {
                     />
                     <button type="submit">Add Friend</button>
                 </form>
-            </aside>
-            <main id="friend-list-main">
                 {!user.friends.length && !user.blocked.length && (
                     <p>Let's add some friends !</p>
                 )}

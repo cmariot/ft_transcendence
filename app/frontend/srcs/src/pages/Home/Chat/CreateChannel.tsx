@@ -28,6 +28,7 @@ const CreateChannel = () => {
                 <input
                     id="new-channel-password"
                     type="password"
+                    autoComplete="off"
                     placeholder="Channel's password"
                     value={channelPassword}
                     onChange={handleNewChannelPasswordChange}

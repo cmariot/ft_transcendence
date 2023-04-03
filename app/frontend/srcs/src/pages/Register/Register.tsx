@@ -91,6 +91,7 @@ export default function Register() {
                 <input
                     id="password-register"
                     type="password"
+                    autoComplete="off"
                     value={password}
                     onChange={handleInputChange}
                     placeholder="Password"
