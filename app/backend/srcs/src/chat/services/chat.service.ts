@@ -521,6 +521,18 @@ export class ChatService {
         };
     }
 
+    async channelTypeUpdate(channel: ChatEntity, newType: string) {
+        for (let i = 0; i < channel.users.length; i++) {
+            let user = await this.userService.getByID(channel.users[i].uuid);
+            if (user && user.socketId.length > 0) {
+                this.chatGateway.channelTypeChanged(user.socketId, {
+                    channelName: channel.channelName,
+                    channelType: newType,
+                });
+            }
+        }
+    }
+
     // Set a channel password / change it or remove it
     async updateChannelPassword(
         targetChannel: ChatEntity,
@@ -546,6 +558,7 @@ export class ChatService {
                     channelPassword: hashed_password,
                 }
             );
+            await this.channelTypeUpdate(targetChannel, "protected");
         } else if (
             targetChannel.channelType === "protected" &&
             channel.newChannelType === false
@@ -555,6 +568,7 @@ export class ChatService {
                 { uuid: targetChannel.uuid },
                 { channelPassword: "", channelType: ChannelType.PUBLIC }
             );
+            await this.channelTypeUpdate(targetChannel, "public");
         } else if (
             targetChannel.channelType === "protected" &&
             channel.newChannelType === true
@@ -572,7 +586,9 @@ export class ChatService {
                 { uuid: targetChannel.uuid },
                 { channelPassword: hashed_password }
             );
-        } else return;
+        } else {
+            return;
+        }
         this.chatGateway.newChannelAvailable(channel.channelName);
         return "updated";
     }

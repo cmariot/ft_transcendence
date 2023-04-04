@@ -37,7 +37,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         return () => {
             socket.off("chat.new.channel", updateChannels);
         };
-    }, [socket, chat]);
+    }, [socket, chat, menu]);
 
     // When a channel is deleted
     useEffect(() => {
@@ -459,6 +459,22 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
         socket.on("user.join.private", (data: any) => joinPrivate(data));
         return () => {
             socket.off("user.join.private", joinPrivate);
+        };
+    }, [socket, chat]);
+
+    // When channel type changed
+    useEffect(() => {
+        async function channelTypeUpdate(data: {
+            channelName: string;
+            channelType: string;
+        }) {
+            if (chat.channel === data.channelName) {
+                chat.setChannelType(data.channelType);
+            }
+        }
+        socket.on("chat.channelType.update", channelTypeUpdate);
+        return () => {
+            socket.off("chat.channelType.update", channelTypeUpdate);
         };
     }, [socket, chat]);
 

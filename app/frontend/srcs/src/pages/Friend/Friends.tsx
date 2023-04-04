@@ -146,21 +146,45 @@ export default function Friends() {
     async function directMessage(username: string) {
         await axios
             .post("/api/chat/direct-message", { username: username })
-            .then((response) => {
+            .then(async (response) => {
                 if (response.status === HttpStatusCode.NoContent) {
                     chat.setDirectMessageUser(username);
                     chat.setPage("CreatePrivate");
                     return navigate("/");
                 } else {
-                    chat.setPage("ChatConv");
-                    chat.setChannel(response.data.channelName);
-                    chat.setMessages(response.data.data.messages);
-                    chat.setisChannelOwner(response.data.data.channel_owner);
-                    chat.setChannelType("direct_message");
-                    chat.setAdmins(response.data.data.channel_admins);
-                    chat.setmutedUsers(response.data.data.muted_users);
-                    chat.setbannedUsers(response.data.data.banned_users);
-                    return navigate("/");
+                    try {
+                        console.log("CONNECT TO :", response.data.channelName);
+                        const connectResponse = await axios.post(
+                            "/api/chat/connect",
+                            {
+                                channelName: response.data.channelName,
+                            }
+                        );
+                        if (connectResponse.status === 201) {
+                            console.log("RESPONSE CONNECT:", connectResponse);
+                            chat.setChannel(response.data.channelName);
+                            chat.setMessages(connectResponse.data.messages);
+                            chat.setChannelType("direct_message");
+                            chat.setbannedUsers(
+                                connectResponse.data.banned_users
+                            );
+                            chat.setmutedUsers(
+                                connectResponse.data.muted_users
+                            );
+                            chat.setisChannelOwner(
+                                connectResponse.data.channel_owner
+                            );
+                            chat.setisChannelAdmin(
+                                connectResponse.data.channel_admin
+                            );
+                            chat.setAdmins(connectResponse.data.channel_admins);
+                            chat.setPage("ChatConv");
+                            console.log(chat);
+                            return navigate("/");
+                        }
+                    } catch (connectResponse: any) {
+                        console.log(connectResponse);
+                    }
                 }
             })
             .catch((error) => {
