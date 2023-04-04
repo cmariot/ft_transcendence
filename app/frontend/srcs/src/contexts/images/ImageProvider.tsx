@@ -73,8 +73,8 @@ const ImageProvider = ({ children }: ImageProviderProps) => {
                     setLogout(imageUrl);
                 }
                 if (notifsResponse.status === 200) {
-                    imageUrl = URL.createObjectURL(logoutResponse.data);
-                    setLogout(imageUrl);
+                    imageUrl = URL.createObjectURL(notifsResponse.data);
+                    setNotifs(imageUrl);
                 }
             } catch (error) {
                 alert(error);

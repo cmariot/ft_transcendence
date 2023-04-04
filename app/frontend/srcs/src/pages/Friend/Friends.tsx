@@ -161,7 +161,6 @@ export default function Friends() {
                             }
                         );
                         if (connectResponse.status === 201) {
-                            console.log("RESPONSE CONNECT:", connectResponse);
                             chat.setChannel(response.data.channelName);
                             chat.setMessages(connectResponse.data.messages);
                             chat.setChannelType("direct_message");
@@ -179,7 +178,6 @@ export default function Friends() {
                             );
                             chat.setAdmins(connectResponse.data.channel_admins);
                             chat.setPage("ChatConv");
-                            console.log(chat);
                             return navigate("/");
                         }
                     } catch (connectResponse: any) {
