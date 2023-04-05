@@ -6,13 +6,16 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    text-align: center;
     background: rgb(167, 167, 167);
     background: radial-gradient(
         circle,
         rgba(167, 167, 167, 1) 0%,
         rgb(152, 152, 152) 100%
     );
+    color: #a3a3a3;
+    text-align: center;
+    font-size: small;
+    font-family: menlo;
 }
 
 .button {

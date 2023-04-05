@@ -9,6 +9,7 @@
     max-height: 150px;
     max-width: 150px;
     clip-path: circle();
+    margin: 10px;
 }
 
 #edit-picture-input {
@@ -18,6 +19,42 @@
 #edit-picture > label:nth-child(2) {
     margin: 5px;
     border-radius: 5px;
+    background-color: #585858;
+}
+
+#label-edit-picture {
+    padding: 0;
+    border: 0;
+}
+
+#label-edit-picture p {
+    margin: 0px;
+    border: 3px #a3a3a3 solid;
+    background: rgb(16, 16, 16);
+    background: -moz-linear-gradient(
+        180deg,
+        rgba(16, 16, 16, 1) 0%,
+        rgba(30, 30, 30, 1) 40%,
+        rgba(30, 30, 30, 1) 60%,
+        rgba(16, 16, 16, 1) 100%
+    );
+    background: -webkit-linear-gradient(
+        180deg,
+        rgba(16, 16, 16, 1) 0%,
+        rgba(30, 30, 30, 1) 40%,
+        rgba(30, 30, 30, 1) 60%,
+        rgba(16, 16, 16, 1) 100%
+    );
+    background: linear-gradient(
+        180deg,
+        rgba(16, 16, 16, 1) 0%,
+        rgba(30, 30, 30, 1) 40%,
+        rgba(30, 30, 30, 1) 60%,
+        rgba(16, 16, 16, 1) 100%
+    );
+    color: #a3a3a3;
+    border-radius: 5px;
+    padding: 5px;
 }
 
 #settings-div {
@@ -26,4 +63,17 @@
     align-items: center;
     width: 100%;
     height: 100%;
+}
+
+#edit-double-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-double-auth > label:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
 }

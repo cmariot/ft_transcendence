@@ -25,6 +25,7 @@ export default function Friends() {
         setShowMenu("");
     }, [update]);
 
+    // On friend status update
     useEffect(() => {
         function updateStatus(data: { username: string; status: string }) {
             if (data.username === user.username) {
@@ -41,14 +42,13 @@ export default function Friends() {
             }
             setUpdate((prevState) => !prevState);
         }
-
         socket.on("status.update", updateStatus);
-
         return () => {
             socket.off("status.update", updateStatus);
         };
     }, [user, socket]);
 
+    // On friend/blocked avatar update
     useEffect(() => {
         async function updateFriendAvatar(data: { username: string }) {
             if (data.username !== user.username) {
@@ -98,14 +98,13 @@ export default function Friends() {
                 }
             }
         }
-
         socket.on("user.update.avatar", updateFriendAvatar);
-
         return () => {
             socket.off("user.update.avatar", updateFriendAvatar);
         };
     }, [user, socket]);
 
+    // On friend/blocked username update
     useEffect(() => {
         function updateFriendUsername(data: {
             previousUsername: string;
@@ -131,18 +130,18 @@ export default function Friends() {
             }
             setUpdate((prevState) => !prevState);
         }
-
         socket.on("user.update.username", updateFriendUsername);
-
         return () => {
             socket.off("user.update.username", updateFriendUsername);
         };
     }, [user, socket]);
 
+    // Navigate to friend's profile
     async function profile(username: string) {
         navigate("/profile/" + username);
     }
 
+    // Send a direct message to a friend
     async function directMessage(username: string) {
         await axios
             .post("/api/chat/direct-message", { username: username })
@@ -296,192 +295,184 @@ export default function Friends() {
 
     return (
         <div id="friends">
-            <main id="friend-list-main">
-                <h2>Your friends</h2>
-                <form onSubmit={(event) => addFriend(event)} autoComplete="off">
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(event) => setUsername(event.target.value)}
-                    />
-                    <button type="submit">Add Friend</button>
-                </form>
-                {!user.friends.length && !user.blocked.length && (
-                    <p>Let's add some friends !</p>
-                )}
-                {user.friends.length > 0 && (
-                    <ul id="friend-list">
-                        <h2>Friends list</h2>
-                        {user.friends.map((friend: any, index: number) => (
-                            <li className="friend" key={index}>
-                                <div className="div-friend-list">
-                                    <img
-                                        src={`${friend.avatar}`}
-                                        className="friend-profile-picture"
-                                        alt="Friend's avatar"
-                                    />
-                                    <div className="friend-middle-div">
-                                        {displayStatus(friend["status"])}
-                                        <p className="friend-username">
-                                            <b>{friend["username"]}</b>
-                                        </p>
-                                    </div>
-
-                                    <button
-                                        className="friend-profile-button"
-                                        onClick={() =>
-                                            toogleMenu(friend.username)
-                                        }
-                                    >
-                                        Menu
-                                    </button>
-                                </div>
-                                {showMenu === friend.username && (
-                                    <menu className="friend-menu">
-                                        {friend.status === "ingame" ? (
-                                            <button
-                                                className="friend-menu-button"
-                                                onClick={() => {
-                                                    watchStream(
-                                                        friend.username
-                                                    );
-                                                }}
-                                            >
-                                                Watch stream
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className="friend-menu-button"
-                                                onClick={() =>
-                                                    invitePlay(friend.username)
-                                                }
-                                            >
-                                                Invite to play
-                                            </button>
-                                        )}
-
-                                        <button
-                                            className="friend-menu-button"
-                                            onClick={() =>
-                                                directMessage(
-                                                    friend["username"]
-                                                )
-                                            }
-                                        >
-                                            Direct message
-                                        </button>
-                                        <button
-                                            className="friend-menu-button"
-                                            onClick={() =>
-                                                profile(friend["username"])
-                                            }
-                                        >
-                                            Profile
-                                        </button>
-                                        <button
-                                            className="friend-menu-button"
-                                            onClick={async () => {
-                                                await user.removeFriend(
-                                                    friend["username"]
-                                                );
-                                                setUpdate(
-                                                    (prevState) => !prevState
-                                                );
-                                            }}
-                                        >
-                                            Remove Friend
-                                        </button>
-                                        <button
-                                            className="friend-menu-button"
-                                            onClick={async () => {
-                                                await user.block(
-                                                    friend["username"]
-                                                );
-                                                if (chat.channel.length) {
-                                                    await axios
-                                                        .post(
-                                                            "/api/chat/connect",
-                                                            {
-                                                                channelName:
-                                                                    chat.channel,
-                                                            }
-                                                        )
-                                                        .then(function (
-                                                            response: any
-                                                        ) {
-                                                            chat.setMessages(
-                                                                response.data
-                                                                    .messages
-                                                            );
-                                                        })
-                                                        .catch(function (
-                                                            error
-                                                        ) {
-                                                            menu.displayError(
-                                                                error.response
-                                                                    .data
-                                                                    .message
-                                                            );
-                                                        });
-                                                }
-                                                setUpdate(
-                                                    (prevState) => !prevState
-                                                );
-                                            }}
-                                        >
-                                            Block
-                                        </button>
-                                    </menu>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-                {user.blocked.length > 0 && (
-                    <ul id="friend-list">
-                        <h2>blocked list</h2>
-                        {user.blocked.map((blocked, index) => (
-                            <li className="friend blocked" key={index}>
+            {/* FriendsList */}
+            {
+                <ul id="friend-list">
+                    <h2>Your friends</h2>
+                    {/* AddFriend */}
+                    <form
+                        onSubmit={(event) => addFriend(event)}
+                        autoComplete="off"
+                    >
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(event) =>
+                                setUsername(event.target.value)
+                            }
+                        />
+                        <button type="submit">Add Friend</button>
+                    </form>
+                    {user.friends.map((friend: any, index: number) => (
+                        <li className="friend" key={index}>
+                            {/* Friend */}
+                            <div className="div-friend-list">
                                 <img
-                                    src={blocked["avatar"]}
+                                    src={`${friend.avatar}`}
                                     className="friend-profile-picture"
                                     alt="Friend's avatar"
                                 />
                                 <div className="friend-middle-div">
+                                    {displayStatus(friend["status"])}
                                     <p className="friend-username">
-                                        <b>{blocked["username"]}</b>
+                                        <b>{friend["username"]}</b>
                                     </p>
                                 </div>
+
                                 <button
-                                    onClick={async () => {
-                                        await user.unblock(blocked["username"]);
-                                        if (chat.channel.length) {
-                                            await axios
-                                                .post("/api/chat/connect", {
-                                                    channelName: chat.channel,
-                                                })
-                                                .then(function (response: any) {
-                                                    chat.setMessages(
-                                                        response.data.messages
-                                                    );
-                                                })
-                                                .catch(function (error) {
-                                                    menu.displayError(
-                                                        error.response.data
-                                                            .message
-                                                    );
-                                                });
-                                        }
-                                        setUpdate((prevState) => !prevState);
-                                    }}
+                                    className="friend-profile-button"
+                                    onClick={() => toogleMenu(friend.username)}
                                 >
-                                    unblock
+                                    Menu
                                 </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </main>
+                            </div>
+                            {/* FriendMenu */}
+                            {showMenu === friend.username && (
+                                <menu className="friend-menu">
+                                    {friend.status === "ingame" ? (
+                                        <button
+                                            className="friend-menu-button"
+                                            onClick={() => {
+                                                watchStream(friend.username);
+                                            }}
+                                        >
+                                            Watch stream
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="friend-menu-button"
+                                            onClick={() =>
+                                                invitePlay(friend.username)
+                                            }
+                                        >
+                                            Invite to play
+                                        </button>
+                                    )}
+
+                                    <button
+                                        className="friend-menu-button"
+                                        onClick={() =>
+                                            directMessage(friend["username"])
+                                        }
+                                    >
+                                        Direct message
+                                    </button>
+                                    <button
+                                        className="friend-menu-button"
+                                        onClick={() =>
+                                            profile(friend["username"])
+                                        }
+                                    >
+                                        Profile
+                                    </button>
+                                    <button
+                                        className="friend-menu-button"
+                                        onClick={async () => {
+                                            await user.removeFriend(
+                                                friend["username"]
+                                            );
+                                            setUpdate(
+                                                (prevState) => !prevState
+                                            );
+                                        }}
+                                    >
+                                        Remove Friend
+                                    </button>
+                                    <button
+                                        className="friend-menu-button"
+                                        onClick={async () => {
+                                            await user.block(
+                                                friend["username"]
+                                            );
+                                            if (chat.channel.length) {
+                                                await axios
+                                                    .post("/api/chat/connect", {
+                                                        channelName:
+                                                            chat.channel,
+                                                    })
+                                                    .then(function (
+                                                        response: any
+                                                    ) {
+                                                        chat.setMessages(
+                                                            response.data
+                                                                .messages
+                                                        );
+                                                    })
+                                                    .catch(function (error) {
+                                                        menu.displayError(
+                                                            error.response.data
+                                                                .message
+                                                        );
+                                                    });
+                                            }
+                                            setUpdate(
+                                                (prevState) => !prevState
+                                            );
+                                        }}
+                                    >
+                                        Block
+                                    </button>
+                                </menu>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            }
+            {/* BlockedList */}
+            {user.blocked.length > 0 && (
+                <ul id="friend-list">
+                    <h2>blocked list</h2>
+                    {user.blocked.map((blocked, index) => (
+                        <li className="friend blocked" key={index}>
+                            {/* Blocked */}
+                            <img
+                                src={blocked["avatar"]}
+                                className="friend-profile-picture"
+                                alt="Friend's avatar"
+                            />
+                            <div className="friend-middle-div">
+                                <p className="friend-username">
+                                    <b>{blocked["username"]}</b>
+                                </p>
+                            </div>
+                            <button
+                                onClick={async () => {
+                                    await user.unblock(blocked["username"]);
+                                    if (chat.channel.length) {
+                                        await axios
+                                            .post("/api/chat/connect", {
+                                                channelName: chat.channel,
+                                            })
+                                            .then(function (response: any) {
+                                                chat.setMessages(
+                                                    response.data.messages
+                                                );
+                                            })
+                                            .catch(function (error) {
+                                                menu.displayError(
+                                                    error.response.data.message
+                                                );
+                                            });
+                                    }
+                                    setUpdate((prevState) => !prevState);
+                                }}
+                            >
+                                unblock
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
