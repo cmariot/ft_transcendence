@@ -13,9 +13,9 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         let appContent = document.getElementById("app-content");
         if (appContent) {
             if (display === false) {
-                appContent.style.marginBlockStart = "90px";
+                appContent.style.marginBlockStart = "160px";
             } else {
-                appContent.style.marginBlockStart = "20px";
+                appContent.style.marginBlockStart = "90px";
             }
         }
     }
@@ -27,7 +27,7 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         setDisplay(false);
         let appContent = document.getElementById("app-content");
         if (appContent) {
-            appContent.style.marginBlockStart = "20px";
+            appContent.style.marginBlockStart = "90px";
         }
     }
 
@@ -57,7 +57,7 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         setDisplay(false);
         let appContent = document.getElementById("app-content");
         if (appContent) {
-            appContent.style.marginBlockStart = "20px";
+            appContent.style.marginBlockStart = "90px";
         }
         setErrorMessage("");
         setError(false);
