@@ -52,36 +52,40 @@ const Validate = () => {
     };
 
     return (
-        <section id="validation-section">
-            <aside id="validation-aside">
-                <h2>Validate your email</h2>
-                <p>Check your emails, we just send you a verification code.</p>
-                <button onClick={resendCode}>Resend code</button>
-            </aside>
+        <div className="flex">
+            <section id="validation-section">
+                <aside id="validation-aside">
+                    <h2>Validate your email</h2>
+                    <p>
+                        Check your emails, we just send you a verification code.
+                    </p>
+                    <button onClick={resendCode}>Resend code</button>
+                </aside>
 
-            <form id="validation-form" autoComplete="off">
-                <h3>Enter the code you received by email</h3>
-                <input
-                    type="text"
-                    id="code"
-                    placeholder="your code"
-                    onChange={handleValidateChange}
-                    autoFocus
-                    required
-                />
-                <div id="form-validation-choices">
+                <form id="validation-form" autoComplete="off">
+                    <h3>Enter the code you received by email</h3>
                     <input
-                        type="submit"
-                        className="button"
-                        onClick={submitValidateForm}
-                        value="Validate"
+                        type="text"
+                        id="code"
+                        placeholder="your code"
+                        onChange={handleValidateChange}
+                        autoFocus
+                        required
                     />
-                    <Link onClick={cancelRegister} to="">
-                        cancel
-                    </Link>
-                </div>
-            </form>
-        </section>
+                    <div id="form-validation-choices">
+                        <input
+                            type="submit"
+                            className="button"
+                            onClick={submitValidateForm}
+                            value="Validate"
+                        />
+                        <Link onClick={cancelRegister} to="">
+                            cancel
+                        </Link>
+                    </div>
+                </form>
+            </section>
+        </div>
     );
 };
 export default Validate;

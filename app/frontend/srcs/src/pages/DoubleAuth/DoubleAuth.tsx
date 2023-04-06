@@ -50,34 +50,38 @@ const DoubleAuth = () => {
     };
 
     return (
-        <section id="validation-2fa-section">
-            <aside id="validation-2fa-aside">
-                <h2>Double Authentification</h2>
-                <p>Check your emails, we just send you a verification code.</p>
-                <button onClick={() => resend2faCode()}>Resend code</button>
-            </aside>
+        <div className="flex">
+            <section id="validation-2fa-section">
+                <aside id="validation-2fa-aside">
+                    <h2>Double Authentification</h2>
+                    <p>
+                        Check your emails, we just send you a verification code.
+                    </p>
+                    <button onClick={() => resend2faCode()}>Resend code</button>
+                </aside>
 
-            <form id="validation-2fa-form" autoComplete="off">
-                <h3>Enter the code you received by email</h3>
-                <input
-                    type="text"
-                    id="double_auth_code"
-                    placeholder="Check your emails"
-                    onChange={(event) => handleValidate2faChange(event)}
-                    autoFocus
-                    required
-                />
-                <div id="form-2fa-choices">
+                <form id="validation-2fa-form" autoComplete="off">
+                    <h3>Enter the code you received by email</h3>
                     <input
-                        type="submit"
-                        className="button"
-                        onClick={(event) => submitValidate2faForm(event)}
-                        value="Validate"
+                        type="text"
+                        id="double_auth_code"
+                        placeholder="Check your emails"
+                        onChange={(event) => handleValidate2faChange(event)}
+                        autoFocus
+                        required
                     />
-                    <button onClick={() => cancel2fa()}>cancel</button>
-                </div>
-            </form>
-        </section>
+                    <div id="form-2fa-choices">
+                        <input
+                            type="submit"
+                            className="button"
+                            onClick={(event) => submitValidate2faForm(event)}
+                            value="Validate"
+                        />
+                        <button onClick={() => cancel2fa()}>cancel</button>
+                    </div>
+                </form>
+            </section>
+        </div>
     );
 };
 export default DoubleAuth;

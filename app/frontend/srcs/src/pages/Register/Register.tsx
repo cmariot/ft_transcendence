@@ -65,66 +65,70 @@ export default function Register() {
     };
 
     return (
-        <section id="register-section">
-            <aside id="register-aside">
-                <h2>Create your account</h2>
-                <p>
-                    Your username must be unique, it will be displayed on the
-                    website.
-                    <br />
-                    You must provide a valid email address
-                    <br />
-                    And a strong password (min. 10 length characters)
-                </p>
-            </aside>
-            <form id="register-form" autoComplete="off">
-                <h3>Register</h3>
-                <input
-                    id="username-register"
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={handleInputChange}
-                    autoFocus
-                    required
-                />
-                <input
-                    id="password-register"
-                    type="password"
-                    autoComplete="off"
-                    value={password}
-                    onChange={handleInputChange}
-                    placeholder="Password"
-                    required
-                />
-                <input
-                    id="email-register"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={handleInputChange}
-                    required
-                />
-                <label>
-                    Enable Double-Authentification
+        <div className="flex">
+            <section id="register-section">
+                <aside id="register-aside">
+                    <h2>Create your account</h2>
+                    <p>
+                        Your username must be unique, it will be displayed on
+                        the website.
+                        <br />
+                        You must provide a valid email address
+                        <br />
+                        And a strong password (min. 10 length characters)
+                    </p>
+                </aside>
+                <form id="register-form" autoComplete="off">
+                    <h3>Register</h3>
                     <input
-                        id="2fa-register"
-                        type="checkbox"
-                        defaultChecked={true}
-                        onClick={() => setDoubleAuth((prevState) => !prevState)}
+                        id="username-register"
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={handleInputChange}
+                        autoFocus
+                        required
                     />
-                </label>
-                <div>
                     <input
-                        id="submit-register"
-                        className="button"
-                        type="submit"
-                        value="Register"
-                        onClick={submitRegisterForm}
+                        id="password-register"
+                        type="password"
+                        autoComplete="off"
+                        value={password}
+                        onChange={handleInputChange}
+                        placeholder="Password"
+                        required
                     />
-                    <Link to="/">cancel</Link>
-                </div>
-            </form>
-        </section>
+                    <input
+                        id="email-register"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={handleInputChange}
+                        required
+                    />
+                    <label>
+                        Enable Double-Authentification
+                        <input
+                            id="2fa-register"
+                            type="checkbox"
+                            defaultChecked={true}
+                            onClick={() =>
+                                setDoubleAuth((prevState) => !prevState)
+                            }
+                        />
+                    </label>
+                    <div>
+                        <input
+                            id="submit-register"
+                            className="button"
+                            type="submit"
+                            value="Register"
+                            onClick={submitRegisterForm}
+                        />
+                        <Link to="/">cancel</Link>
+                    </div>
+                </form>
+            </section>
+        </div>
     );
 }

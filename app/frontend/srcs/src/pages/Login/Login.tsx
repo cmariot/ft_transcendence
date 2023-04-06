@@ -15,18 +15,20 @@ const Login = () => {
     }, [user]);
 
     return (
-        <section id="auth-content">
-            <article>
-                <h2>Welcome to ft_transcendence</h2>
-                <h3>Let's play pong !</h3>
-                <p>You must log in to access the website</p>
-            </article>
-            <aside id="login-pannel">
-                <Login42 />
-                <NoAccount />
-                <LoginLocal />
-            </aside>
-        </section>
+        <div className="flex">
+            <section id="auth-content">
+                <article>
+                    <h2>Welcome to ft_transcendence</h2>
+                    <h3>Let's play pong !</h3>
+                    <p>You must log in to access the website</p>
+                </article>
+                <aside id="login-pannel">
+                    <Login42 />
+                    <NoAccount />
+                    <LoginLocal />
+                </aside>
+            </section>
+        </div>
     );
 };
 export default Login;
