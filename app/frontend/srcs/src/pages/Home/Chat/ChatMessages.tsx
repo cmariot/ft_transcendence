@@ -91,7 +91,7 @@ const ChatMessages = () => {
                 });
                 if (watchResponse.status === 201) {
                     game.setMenu("Stream");
-                    navigate("/");
+                    navigate("/#game");
                 }
                 return;
             }

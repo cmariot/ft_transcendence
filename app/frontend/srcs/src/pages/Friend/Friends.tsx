@@ -272,7 +272,7 @@ export default function Friends() {
                     });
                     if (watchResponse.status === 201) {
                         game.setMenu("Stream");
-                        navigate("/");
+                        navigate("/#game");
                     }
                 } catch (error: any) {
                     menu.displayError(error.response.data.message);
