@@ -386,6 +386,7 @@ export class GameService {
     someoneDisconnect(match: GameInterface) {
         if (match.disconnection) {
             this.gameGateway.updateFrontMenu(match, "Disconnection");
+            this.gameGateway.emitEndGame(match.uuid);
             if (match.watchersSockets.length > 0) {
                 this.gameGateway.endStreamPlayerDisconnect(match);
             }
@@ -693,8 +694,19 @@ export class GameService {
         let [gameError, results] = await this.launchMatch(match);
 
         if (results === undefined) {
+            await this.gameRepository.remove(game);
+            games.delete(game.uuid);
+            await this.userService.setStatusIfNotOffline(
+                player1.uuid,
+                "online"
+            );
+            await this.userService.setStatusIfNotOffline(
+                player2.uuid,
+                "online"
+            );
             return;
         }
+
         if (gameError === false) {
             if (results.solo === true) {
                 this.gameGateway.updateFrontMenu(results, "Results");

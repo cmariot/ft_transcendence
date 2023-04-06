@@ -62,12 +62,9 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     }, [socket]);
 
     useEffect(() => {
-        async function removeFromGamesList(data: {
-            game_id: string;
-            player1: string;
-            player2: string;
-        }) {
+        async function removeFromGamesList(data: { game_id: string }) {
             let games = game.currentGames;
+            console.log("END GAME, DATA = ", data, "GAMES = ", games);
             let index = games.findIndex(
                 (element: any) => element.game_id === data.game_id
             );
@@ -77,10 +74,8 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             }
         }
 
-        socket.on(
-            "game.end",
-            (data: { game_id: string; player1: string; player2: string }) =>
-                removeFromGamesList(data)
+        socket.on("game.end", (data: { game_id: string }) =>
+            removeFromGamesList(data)
         );
         return () => {
             socket.off("game.end", removeFromGamesList);

@@ -51,7 +51,7 @@ export class AuthService {
             user_42.username
         );
         if (registered && registered.createdFrom !== CreatedFrom.OAUTH42) {
-            res.redirect(process.env.HOST + "/unavailable-username");
+            res.redirect(process.env.HOST + "unavailable-username");
             throw new HttpException(
                 "This username is already registered.",
                 226

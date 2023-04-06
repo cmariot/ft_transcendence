@@ -14,6 +14,7 @@ import ConfirmProfile from "../pages/Settings/ConfirmProfile";
 import ProtectedPage from "../utils/ProtectedPage";
 import ProtectedValidation from "../utils/ProtectedValidation";
 import ProtectedDoubleAuth from "../utils/ProtectedDoubleAuth";
+import { Error404 } from "../components/error/error404";
 
 export const router = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
                         path: "profile/:userprofile",
                         element: <UserProfile />,
                     },
+                    {
+                        path: "*",
+                        element: <Error404 />,
+                    },
                 ],
             },
             {
@@ -77,6 +82,10 @@ export const router = createBrowserRouter([
             {
                 path: "unavailable-username",
                 element: <UnavailableUsername42 />,
+            },
+            {
+                path: "*",
+                element: <Error404 />,
             },
         ],
     },

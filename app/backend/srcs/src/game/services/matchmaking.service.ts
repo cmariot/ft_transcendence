@@ -43,9 +43,8 @@ export class MatchmakingService {
                 if (foundGame) {
                     foundGame.disconnection = true;
                     games.set(game.uuid, foundGame);
-                    return;
+                    await this.gameRepository.remove(game);
                 }
-                //await this.gameRepository.remove(game);
             }
         }
         if (options.solo === true) {

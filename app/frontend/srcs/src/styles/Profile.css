@@ -105,13 +105,9 @@ li.match-results:nth-child(2) {
     max-height: 100%;
 }
 
-/* Élément | https://localhost:8443/profile */
-
 #profile > div:nth-child(1) {
     margin: 40px;
 }
-
-/* Élément | https://localhost:8443/profile */
 
 #game-stats {
     padding-block: 10px;
