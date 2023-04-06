@@ -17,6 +17,8 @@
 #login-pannel {
     border: 1px solid black;
     border-radius: 15px;
+    height: fit-content;
+    align-self: center;
 }
 
 #login-pannel div {
