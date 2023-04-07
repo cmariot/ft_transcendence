@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { UsersService } from "src/users/services/users.service";
 
 @WebSocketGateway(3001, {
-    cors: { origin: process.env.HOST || "http://localhost:8443" },
+    cors: { origin: process.env.HOST },
 })
 export class ChatGateway {
     constructor(private userService: UsersService) {}

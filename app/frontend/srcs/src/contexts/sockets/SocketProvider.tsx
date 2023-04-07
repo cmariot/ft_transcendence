@@ -3,7 +3,7 @@ import { Socket, io } from "socket.io-client";
 
 export type SocketContextType = Socket;
 
-const socket: Socket = io(process.env.HOST || "http://localhost:3000");
+const socket: Socket = io(process.env.VITE_HOST as any);
 
 export const SocketContext = createContext(socket);
 
