@@ -401,20 +401,20 @@ export class GameService {
     async movePaddleIA(match: GameInterface): Promise<GameInterface> {
         if (match.freeze2 === true) return match;
         if (
+            // move down
             this.getBallY(match) + match.ballHeigth / 2 <
             this.getPaddleY(match.player2Position, 2, match) -
                 match.paddle2Heigth / 2
         ) {
-            // down
             if (match.player2Position > 0) {
                 match.player2Position -= match.screenHeigth / 10;
             }
         } else if (
+            // move up
             this.getBallY(match) - match.ballHeigth / 2 >
             this.getPaddleY(match.player2Position, 2, match) +
                 match.paddle2Heigth / 2
         ) {
-            // up
             if (match.player2Position < match.screenHeigth) {
                 match.player2Position += match.screenHeigth / 10;
             }
@@ -671,8 +671,7 @@ export class GameService {
         if (player1.socketId.length === 0) {
             throw new UnauthorizedException("Invalid user sockets");
         }
-        this.gameGateway.joinRoom(player1.socketId[0], game.uuid);
-        //player1.socketId[0].join(game.uuid)
+        await this.gameGateway.joinRoom(player1.socketId[0], game.uuid);
         if (game.options.solo === false) {
             var player2 = await this.userService.getByID(game.guestID);
             if (!player2) {
@@ -682,10 +681,12 @@ export class GameService {
             if (player2.socketId.length === 0) {
                 throw new UnauthorizedException("Invalid user sockets");
             }
-            this.gameGateway.joinRoom(player1.socketId[0], game.uuid);
+            await this.gameGateway.joinRoom(player2.socketId[0], game.uuid);
         } else {
             var player2: UserEntity | null = new UserEntity();
-            player2.username = "gigachad";
+            if (player2 !== null) {
+                player2.username = "gigachad";
+            }
         }
         return [player1, player2];
     }
@@ -707,6 +708,7 @@ export class GameService {
                 player2.uuid,
                 "online"
             );
+            await this.gameGateway.deleteRoom(game.uuid);
             return;
         }
 
@@ -744,6 +746,7 @@ export class GameService {
             );
         }
         await this.gameGateway.emitEndGame(game.uuid);
+        await this.gameGateway.deleteRoom(game.uuid);
         await this.gameRepository.remove(game);
         games.delete(game.uuid);
     }

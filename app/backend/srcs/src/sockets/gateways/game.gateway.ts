@@ -37,18 +37,13 @@ export class GameGateway {
         countDown: number
     ) {
         this.server
-            .to(match.sockets)
+            .to(match.uuid)
             .emit("game.menu.change", { menu: menu, countDown: countDown });
     }
 
     // Send the game elements position
     async sendPos(pos: GameInterface) {
         this.server.to(pos.uuid).emit("game.pos.update", pos);
-        let match: GameInterface | undefined = games.get(pos.uuid);
-        if (!match) {
-            return;
-        }
-        this.server.to(match.watchersSockets).emit("game.pos.update", pos);
     }
 
     // Share the game uuid with the players
@@ -85,11 +80,18 @@ export class GameGateway {
         }
     }
 
+    // add a socket in the room
     async joinRoom(socketID: string, room: string) {
         let socket = this.server.sockets.sockets.get(socketID);
         if (socket) {
+            console.log(socketID, "join room: ", room);
             socket.join(room);
         }
+    }
+
+    // all the players and watchers leave the room
+    async deleteRoom(room: string) {
+        this.server.in(room).socketsLeave(room);
     }
 
     async emitEndGame(game_id: string) {
@@ -119,26 +121,5 @@ export class GameGateway {
 
     async sendAcceptedInvitation(socketID: string[]) {
         this.server.to(socketID).emit("game.start", {});
-    }
-
-    async sendCancel(socketId: string, status: string) {
-        //this.server.to(socketId).emit("gameStatus", {
-        //    status: "Cancel",
-        //});
-    }
-
-    async sendInvitation(socketId: string, hostID: string) {
-        //this.server.to(socketId).emit("gameInvitation", { host: hostID });
-    }
-
-    async sendEndGameStatus(
-        socketId: string,
-        status: string,
-        victory: boolean
-    ) {
-        //this.server.to(socketId).emit("EndGameStatus", {
-        //    status: status,
-        //    victory: victory,
-        //});
     }
 }

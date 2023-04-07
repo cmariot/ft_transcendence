@@ -19,6 +19,7 @@ export class MatchmakingService {
         private gameGateway: GameGateway
     ) {}
 
+    // Join the matchmaking queue
     async joinQueue(
         uuid: string,
         options: { power_up: boolean; solo: boolean }
