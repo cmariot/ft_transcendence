@@ -46,6 +46,8 @@
         rgba(16, 16, 16, 1) 100%
     );
     border: 3px solid #737373;
+    height: fit-content;
+    align-self: center;
 }
 
 #validation-form * {

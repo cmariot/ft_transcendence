@@ -41,9 +41,12 @@ export const Notifications = () => {
             {user.notifications.length > 0 ? (
                 <>
                     {user.notifications.map((item, index) => (
-                        <div className="notif" key={index}>
-                            <p className="notif-type">{item.type}</p>
-                            <p className="notif-message">{item.message}</p>
+                        <div className="notif notif-div" key={index}>
+                            <p className="notif-type">
+                                {item.type === "game invitation"
+                                    ? item.message + " wants to play with you."
+                                    : "notification type :" + item.type}
+                            </p>
                             <div>
                                 <button
                                     onClick={() =>
