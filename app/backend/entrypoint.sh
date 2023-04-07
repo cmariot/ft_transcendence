@@ -7,7 +7,7 @@ npm install
 npm run build
 
 # Run in development mode
-exec npm run start:dev
+# exec npm run start:dev
 
 # Run in production mode
-# exec npm run start:prod
+exec npm run start:prod

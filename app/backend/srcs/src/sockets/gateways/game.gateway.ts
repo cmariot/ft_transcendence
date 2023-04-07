@@ -6,7 +6,9 @@ import { games } from "src/game/services/game.service";
 import { Vector } from "vecti";
 
 @Injectable()
-@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
+@WebSocketGateway(3001, {
+    cors: { origin: process.env.HOST },
+})
 export class GameGateway {
     @WebSocketServer()
     server: Server;

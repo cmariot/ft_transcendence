@@ -2,7 +2,9 @@ import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
 import { UsersService } from "src/users/services/users.service";
 
-@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
+@WebSocketGateway(3001, {
+    cors: { origin: process.env.HOST || "http://localhost:8443" },
+})
 export class ChatGateway {
     constructor(private userService: UsersService) {}
 

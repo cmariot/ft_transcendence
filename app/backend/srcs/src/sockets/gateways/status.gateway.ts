@@ -13,7 +13,9 @@ import { games } from "src/game/services/game.service";
 import { MatchmakingService } from "src/game/services/matchmaking.service";
 
 @Injectable()
-@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
+@WebSocketGateway(3001, {
+    cors: { origin: process.env.HOST },
+})
 export class StatusGateway {
     constructor(
         private userService: UsersService,

@@ -4,7 +4,9 @@ import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { UserEntity } from "src/users/entity/user.entity";
 
 @Injectable()
-@WebSocketGateway(3001, { cors: { origin: "https://localhost:8443" } })
+@WebSocketGateway(3001, {
+    cors: { origin: process.env.HOST },
+})
 export class UserGateway {
     @WebSocketServer()
     server: Server;
