@@ -671,6 +671,8 @@ export class GameService {
         if (player1.socketId.length === 0) {
             throw new UnauthorizedException("Invalid user sockets");
         }
+        this.gameGateway.joinRoom(player1.socketId[0], game.uuid);
+        //player1.socketId[0].join(game.uuid)
         if (game.options.solo === false) {
             var player2 = await this.userService.getByID(game.guestID);
             if (!player2) {
@@ -680,6 +682,7 @@ export class GameService {
             if (player2.socketId.length === 0) {
                 throw new UnauthorizedException("Invalid user sockets");
             }
+            this.gameGateway.joinRoom(player1.socketId[0], game.uuid);
         } else {
             var player2: UserEntity | null = new UserEntity();
             player2.username = "gigachad";

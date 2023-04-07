@@ -43,7 +43,7 @@ export class GameGateway {
 
     // Send the game elements position
     async sendPos(pos: GameInterface) {
-        this.server.to(pos.sockets).emit("game.pos.update", pos);
+        this.server.to(pos.uuid).emit("game.pos.update", pos);
         let match: GameInterface | undefined = games.get(pos.uuid);
         if (!match) {
             return;
@@ -82,6 +82,13 @@ export class GameGateway {
             };
             this.server.to(match.player1Socket).emit("game.results", data);
             this.server.to(match.player2Socket).emit("game.results", data);
+        }
+    }
+
+    async joinRoom(socketID: string, room: string) {
+        let socket = this.server.sockets.sockets.get(socketID);
+        if (socket) {
+            socket.join(room);
         }
     }
 
