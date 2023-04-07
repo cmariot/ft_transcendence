@@ -293,6 +293,23 @@ export default function Friends() {
             });
     }
 
+    async function blockUser(username: string) {
+        await user.block(username);
+        if (chat.channel.length) {
+            await axios
+                .post("/api/chat/connect", {
+                    channelName: chat.channel,
+                })
+                .then(function (response: any) {
+                    chat.setMessages(response.data.messages);
+                })
+                .catch(function (error) {
+                    menu.displayError(error.response.data.message);
+                });
+        }
+        setUpdate((prevState) => !prevState);
+    }
+
     return (
         <div id="friends">
             {/* FriendsList */}
@@ -391,33 +408,7 @@ export default function Friends() {
                                     <button
                                         className="friend-menu-button"
                                         onClick={async () => {
-                                            await user.block(
-                                                friend["username"]
-                                            );
-                                            if (chat.channel.length) {
-                                                await axios
-                                                    .post("/api/chat/connect", {
-                                                        channelName:
-                                                            chat.channel,
-                                                    })
-                                                    .then(function (
-                                                        response: any
-                                                    ) {
-                                                        chat.setMessages(
-                                                            response.data
-                                                                .messages
-                                                        );
-                                                    })
-                                                    .catch(function (error) {
-                                                        menu.displayError(
-                                                            error.response.data
-                                                                .message
-                                                        );
-                                                    });
-                                            }
-                                            setUpdate(
-                                                (prevState) => !prevState
-                                            );
+                                            await blockUser(friend.username);
                                         }}
                                     >
                                         Block

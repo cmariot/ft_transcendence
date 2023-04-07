@@ -149,6 +149,7 @@ export default function ProtectedPage() {
                     user.setIsFirstLog(firstLog);
                     user.setClickOnLogin(true);
                     user.setClickOnLogout(false);
+                    game.setMenu("JoinGame");
                     game.setCurrentGames(gameResponse.data);
                     if (firstLog) {
                         return navigate("/welcome");

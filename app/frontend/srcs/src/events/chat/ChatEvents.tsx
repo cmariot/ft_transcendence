@@ -84,8 +84,8 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                 if (messageResponse.status === 201) {
                     chat.setMessages(messageResponse.data.messages);
                 }
-            } catch (error) {
-                console.log(error);
+            } catch (error: any) {
+                menu.displayError(error.response.data.message);
             }
         }
         socket.on("chat.message", updateMessages);

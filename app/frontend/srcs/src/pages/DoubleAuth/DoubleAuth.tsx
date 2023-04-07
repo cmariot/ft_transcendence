@@ -45,7 +45,7 @@ const DoubleAuth = () => {
                 navigate("/");
             })
             .catch(function (error) {
-                console.log(error);
+                menu.displayError(error.response.data.message);
             });
     };
 
