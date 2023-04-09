@@ -280,7 +280,7 @@ const UserProfile = () => {
         }
     }
     return (
-        <div>
+        <div className="main-app-div">
             <main id="profile">{displayProfileOrError()}</main>
             {gameHistory.length > 0 && (
                 <div id="stats">

@@ -65,7 +65,7 @@ const Profile = () => {
     }, [user, socket]);
 
     return (
-        <div id="div-profile">
+        <div id="div-profile" className="main-app-div">
             <main id="profile">
                 <div>
                     <h2>Your profile</h2>

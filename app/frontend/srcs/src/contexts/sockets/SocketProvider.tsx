@@ -3,8 +3,8 @@ import { Socket, io } from "socket.io-client";
 
 export type SocketContextType = Socket;
 
-const socket: Socket = io(process.env.VITE_HOST as any);
-
+const host = "https://mbp.local:8443";
+const socket: Socket = io(host);
 export const SocketContext = createContext(socket);
 
 type SocketProviderProps = { children: JSX.Element | JSX.Element[] };

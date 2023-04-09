@@ -311,12 +311,15 @@ export default function Friends() {
     }
 
     return (
-        <div id="friends">
+        <div id="friends" className="main-app-div">
             {/* FriendsList */}
             {
                 <ul id="friend-list">
-                    <h2>Your friends</h2>
-                    {/* AddFriend */}
+                    {user.friends.length === 0 ? (
+                        <h2>You have no friend yet.</h2>
+                    ) : (
+                        <h2>Your friends</h2>
+                    )}
                     <form
                         onSubmit={(event) => addFriend(event)}
                         autoComplete="off"
@@ -324,6 +327,7 @@ export default function Friends() {
                         <input
                             type="text"
                             value={username}
+                            placeholder="New friend username"
                             onChange={(event) =>
                                 setUsername(event.target.value)
                             }
