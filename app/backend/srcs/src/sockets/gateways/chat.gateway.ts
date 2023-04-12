@@ -80,7 +80,7 @@ export class ChatGateway {
 
     // When a channel is deleted
     deleted_channel(channel: string, username: string) {
-        this.server.emit("chat.deleted.channel", {
+        this.server.to("online_users").emit("chat.deleted.channel", {
             channel: channel,
         });
     }

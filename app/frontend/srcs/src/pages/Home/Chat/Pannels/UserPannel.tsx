@@ -22,7 +22,7 @@ const UserPannel = () => {
             });
     }
 
-    if (chat.isChannelOwner === true || chat.channelType === "private") {
+    if (chat.isChannelOwner === true || chat.channelType === "direct_message") {
         return (
             <>
                 <button onClick={leaveChannel}>

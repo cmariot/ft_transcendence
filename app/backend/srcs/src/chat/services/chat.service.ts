@@ -1320,7 +1320,7 @@ export class ChatService {
         if (muteOptions.duration > 0) {
             setTimeout(() => {
                 this.timeout(mutedUser, targetChannel, "mute");
-            }, muteOptions.duration * 1000);
+            }, /*muteOptions.duration */ 10 * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },

@@ -77,15 +77,20 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
     // When new message
     useEffect(() => {
         async function updateMessages() {
-            try {
-                const messageResponse = await axios.post("/api/chat/messages", {
-                    channelName: chat.channel,
-                });
-                if (messageResponse.status === 201) {
-                    chat.setMessages(messageResponse.data.messages);
+            if (chat.channel.length > 0) {
+                try {
+                    const messageResponse = await axios.post(
+                        "/api/chat/messages",
+                        {
+                            channelName: chat.channel,
+                        }
+                    );
+                    if (messageResponse.status === 201) {
+                        chat.setMessages(messageResponse.data.messages);
+                    }
+                } catch (error: any) {
+                    menu.displayError(error.response.data.message);
                 }
-            } catch (error: any) {
-                menu.displayError(error.response.data.message);
             }
         }
         socket.on("chat.message", updateMessages);
@@ -221,6 +226,16 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
     // When an user is unmute
     useEffect(() => {
         async function unmute(data: { channel: string; username: string }) {
+            console.log(
+                "DATA : ",
+                data,
+                "CHAT Channel : ",
+                chat.channel,
+                "admin/owner :",
+                chat.isChannelAdmin,
+                " / ",
+                chat.isChannelOwner
+            );
             if (chat.channel === data.channel) {
                 if (
                     chat.isChannelAdmin === true ||
@@ -237,10 +252,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                 }
             }
         }
-        socket.on(
-            "chat.user.unmute",
-            (data: { channel: string; username: string }) => unmute(data)
-        );
+        socket.on("chat.user.unmute", unmute);
         return () => {
             socket.off("chat.user.unmute", unmute);
         };
