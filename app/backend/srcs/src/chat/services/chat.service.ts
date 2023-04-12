@@ -860,7 +860,7 @@ export class ChatService {
                         bannedUser.socketId[0]
                     );
                 }
-            }, banOptions.duration * 1000);
+            }, /* banOptions.duration */ 10 * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
