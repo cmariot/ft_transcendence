@@ -852,13 +852,7 @@ export class ChatService {
             setTimeout(async () => {
                 let banUser = await this.userService.getByID(bannedUser.uuid);
                 if (banUser) {
-                    let target_list = await this.get_Admin_Owner(targetChannel);
-                    this.chatGateway.unban_user(
-                        banOptions.channelName,
-                        banUser.username,
-                        target_list,
-                        bannedUser.socketId[0]
-                    );
+                    await this.unban(banUser, targetChannel);
                 }
             }, /* banOptions.duration */ 10 * 1000);
         }
