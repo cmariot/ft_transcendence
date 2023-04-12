@@ -10,7 +10,9 @@ export default function ErrorPage() {
             <p>
                 <b>Error : {menu.errorMessage}</b>
             </p>
-            <button onClick={() => menu.closeError()}>close</button>
+            <button onClick={() => menu.closeError()} autoFocus>
+                close
+            </button>
         </div>
     );
 }

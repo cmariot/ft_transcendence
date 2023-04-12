@@ -763,8 +763,9 @@ export class GameService {
         }
         let match: GameInterface | undefined = games.get(game_id);
         if (!match) {
-            return;
+            throw new UnauthorizedException("Game not found.");
         }
+        await this.gameGateway.joinRoom(user.socketId[0], game_id);
         match.watchersSockets.push(user.socketId[0]);
         games.set(game_id, match);
         await this.gameGateway.sendGameID(match);

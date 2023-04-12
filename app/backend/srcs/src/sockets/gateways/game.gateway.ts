@@ -48,8 +48,7 @@ export class GameGateway {
 
     // Share the game uuid with the players
     async sendGameID(game: GameInterface) {
-        this.server.to(game.sockets).emit("game.name", game.uuid);
-        this.server.to(game.watchersSockets).emit("game.name", game.uuid);
+        this.server.to(game.uuid).emit("game.name", game.uuid);
         this.server.emit("game.start", {
             game_id: game.uuid,
             player1: game.player1Username,

@@ -39,7 +39,9 @@
     max-width: 50px;
     clip-path: circle();
     height: 50px;
-    margin: 20px;
+    background-color: #737373;
+    margin-block: 20px;
+    margin-inline: 0;
 }
 
 .friend-middle-div {
@@ -266,11 +268,6 @@
     justify-content: space-between;
     width: -webkit-fill-available;
     width: -moz-available;
-}
-
-.friend-profile-picture {
-    margin-block: 20px;
-    margin-inline: 0;
 }
 
 .friend-menu-button {
