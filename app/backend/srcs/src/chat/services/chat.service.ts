@@ -603,11 +603,16 @@ export class ChatService {
         if (!user) {
             throw new UnauthorizedException("Invalid user");
         }
+
         if (
             channel.channelType === ChannelType.PUBLIC ||
             channel.channelType === ChannelType.PROTECTED
         ) {
             if (channel.channelOwner === uuid) {
+                await this.chatGateway.leave_room(
+                    channel.channelName,
+                    user.socketId[0]
+                );
                 await this.chatRepository.delete({ uuid: channel.uuid });
                 this.chatGateway.deleted_channel(
                     channel.channelName,
@@ -618,6 +623,10 @@ export class ChatService {
                     (element) => element.uuid === uuid
                 );
                 if (index !== -1) {
+                    await this.chatGateway.leave_room(
+                        channel.channelName,
+                        user.socketId[0]
+                    );
                     channel.users.splice(index, 1);
                     await this.chatRepository.update(
                         { channelName: channelName },
@@ -646,12 +655,20 @@ export class ChatService {
                 }
             }
         } else if (channel.channelType === ChannelType.DIRECT_MESSAGE) {
+            await this.chatGateway.leave_room(
+                channel.channelName,
+                user.socketId[0]
+            );
             await this.chatRepository.delete({ uuid: channel.uuid });
             this.chatGateway.deleted_channel(
                 channel.channelName,
                 user.username
             );
         } else if (channel.channelType === ChannelType.PRIVATE) {
+            await this.chatGateway.leave_room(
+                channel.channelName,
+                user.socketId[0]
+            );
             if (channel.channelOwner === uuid) {
                 await this.chatRepository.delete({ uuid: channel.uuid });
                 this.chatGateway.deleted_channel(

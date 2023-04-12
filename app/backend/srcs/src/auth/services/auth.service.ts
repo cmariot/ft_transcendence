@@ -361,7 +361,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .redirect(process.env.HOST);
+                    .send(type);
             } else {
                 throw new UnauthorizedException(
                     "42 users doesn't need to validate their email :)"

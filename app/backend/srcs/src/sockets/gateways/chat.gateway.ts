@@ -62,6 +62,14 @@ export class ChatGateway {
         }
     }
 
+    async leave_room(room: string, socketID: string) {
+        let socket = this.server.sockets.sockets.get(socketID);
+        if (socket) {
+            let room_name: string = "chatroom_" + room;
+            socket.leave(room_name);
+        }
+    }
+
     // When a message is post
     send_message(channel: string, username: string, message: string) {
         this.server.to("chatroom_" + channel).emit("chat.message", {

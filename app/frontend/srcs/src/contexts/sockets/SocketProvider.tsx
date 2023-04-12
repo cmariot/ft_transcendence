@@ -3,7 +3,7 @@ import { Socket, io } from "socket.io-client";
 
 export type SocketContextType = Socket;
 
-const host = "https://mbp.local:8443";
+const host = "https://e2r5p16.clusters.42paris.fr:8443";
 const socket: Socket = io(host);
 export const SocketContext = createContext(socket);
 
