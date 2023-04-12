@@ -83,7 +83,6 @@ export class GameGateway {
     async joinRoom(socketID: string, room: string) {
         let socket = this.server.sockets.sockets.get(socketID);
         if (socket) {
-            console.log(socketID, "join room: ", room);
             socket.join(room);
         }
     }

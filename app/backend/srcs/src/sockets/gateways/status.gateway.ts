@@ -45,7 +45,8 @@ export class StatusGateway {
             }
         }
         await this.userService.login(user.uuid, new Array<string>(client.id));
-        this.sendStatus(data.username, "online");
+        client.join("online_users");
+        https: this.sendStatus(data.username, "online");
     }
 
     // Disconnect an user in the frontend
@@ -56,6 +57,10 @@ export class StatusGateway {
             }
         }
         await this.userService.logout(user.uuid);
+        let socket = this.server.sockets.sockets.get(clientID);
+        if (socket) {
+            socket.leave("online_users");
+        }
         this.sendStatus(user.username, "offline");
     }
 

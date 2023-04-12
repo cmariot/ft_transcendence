@@ -24,11 +24,10 @@ const DoubleAuth = () => {
                 code: code2fa,
             })
             .then(function (response) {
+                console.log("ici ");
                 navigate("/");
-                console.log("Response :", response);
             })
             .catch(function (error) {
-                console.log("Error :", error);
                 menu.displayError("Your code is not valide.");
                 setCode2fa("");
             });
@@ -76,7 +75,9 @@ const DoubleAuth = () => {
                         <input
                             type="submit"
                             className="button"
-                            onClick={(event) => submitValidate2faForm(event)}
+                            onClick={async (event) =>
+                                await submitValidate2faForm(event)
+                            }
                             value="Validate"
                         />
                         <button onClick={() => cancel2fa()}>cancel</button>

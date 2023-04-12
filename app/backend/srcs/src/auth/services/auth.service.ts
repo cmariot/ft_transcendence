@@ -339,7 +339,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .redirect(process.env.HOST + "/double-authentification");
+                    .redirect(process.env.HOST + "double-authentification");
             } else if (type === "authentification") {
                 res.clearCookie("authentification", {
                     maxAge: twelveHours,
@@ -361,7 +361,7 @@ export class AuthService {
                         sameSite: "none",
                         secure: true,
                     })
-                    .send(type);
+                    .redirect(process.env.HOST);
             } else {
                 throw new UnauthorizedException(
                     "42 users doesn't need to validate their email :)"

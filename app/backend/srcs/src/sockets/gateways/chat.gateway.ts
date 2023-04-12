@@ -13,8 +13,7 @@ export class ChatGateway {
 
     // Emit an event when a new channel is available
     newChannelAvailable(channel: string) {
-        console.log("Update channels list");
-        this.server.emit("chat.new.channel", {
+        this.server.to("online_users").emit("chat.new.channel", {
             channel: channel,
         });
     }
