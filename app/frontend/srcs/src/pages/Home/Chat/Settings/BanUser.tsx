@@ -37,7 +37,7 @@ const BanUser = () => {
                         banned.findIndex((ban) => ban === data.username) === -1
                     ) {
                         banned.push(data.username);
-                        chat.setmutedUsers(banned);
+                        chat.setbannedUsers(banned);
                     }
                 }
                 setUpdate((prevState) => !prevState);

@@ -24,9 +24,9 @@ const Results = () => {
             </div>
             <div>
                 <button onClick={() => game.setMenu("GameOptions")}>
-                    New game
+                    new game
                 </button>
-                <button onClick={() => game.setMenu("JoinGame")}>Exit</button>
+                <button onClick={() => game.setMenu("JoinGame")}>exit</button>
             </div>
         </div>
     );
