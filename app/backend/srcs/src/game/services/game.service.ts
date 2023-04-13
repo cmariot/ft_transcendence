@@ -314,6 +314,7 @@ export class GameService {
                     match.ballDirection = isHitPaddleFront.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitFront(match);
+                    match.ballSpeed *= 0.05;
                     break;
                 }
                 const isHitPaddleCorner = await this.hitPaddleCorner(match);
@@ -324,6 +325,7 @@ export class GameService {
                     match.ballDirection = isHitPaddleCorner.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitCorner(match);
+                    match.ballSpeed *= 0.05;
                     break;
                 }
                 if ((await this.hitPaddleHorizontal(match)) === true) {
@@ -336,7 +338,6 @@ export class GameService {
                     match.lose = true;
                     break;
                 }
-                1;
             }
         }
         return match;
@@ -597,7 +598,7 @@ export class GameService {
                 } else {
                     [score1, score2] = this.getScore(match);
                     match = await this.startBallDir(match);
-                    await this.sleep(1000);
+                    await this.sleep(3000);
                 }
             }
             if (this.someoneDisconnect(match)) {

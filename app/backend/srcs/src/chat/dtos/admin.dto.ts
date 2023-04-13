@@ -1,21 +1,14 @@
-import {
-    IsNotEmpty,
-    IsNumber,
-    IsNumberString,
-    IsPositive,
-    IsString,
-    IsAlphanumeric,
-} from "class-validator";
+import { IsNotEmpty, IsNumberString, IsString, Matches } from "class-validator";
 
 export class muteOptionsDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 
     @IsNumberString()
@@ -25,23 +18,23 @@ export class muteOptionsDTO {
 export class kickOptionsDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 }
 
 export class AddOptionsDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 }

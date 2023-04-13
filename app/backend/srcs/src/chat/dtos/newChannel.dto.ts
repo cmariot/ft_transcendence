@@ -1,81 +1,75 @@
 import {
-    IsAlphanumeric,
     IsEmpty,
     IsNotEmpty,
     IsString,
     MinLength,
-    isAlphanumeric,
+    Matches,
 } from "class-validator";
 
 export class ProtectedChannelDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelType: string;
 
     @IsString()
     @MinLength(10)
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelPassword: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 export class PrivateChannelDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelType: string;
 
     @IsString()
     @IsEmpty()
-    @IsAlphanumeric()
     channelPassword: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 
 export class PrivateMessageDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelType: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 
 export class PublicChannelDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelType: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }

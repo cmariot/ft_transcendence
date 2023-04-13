@@ -1,15 +1,10 @@
-import {
-    IsNotEmpty,
-    IsString,
-    MinLength,
-    IsAlphanumeric,
-} from "class-validator";
+import { IsNotEmpty, IsString, MinLength, Matches } from "class-validator";
 
 export class LoginDto {
     @IsNotEmpty()
     @IsString()
     @MinLength(3)
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 
     @IsNotEmpty()
