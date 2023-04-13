@@ -314,7 +314,8 @@ export class GameService {
                     match.ballDirection = isHitPaddleFront.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitFront(match);
-                    match.ballSpeed *= 0.05;
+                    match.ballSpeed += 0.25;
+                    console.log(match.ballSpeed);
                     break;
                 }
                 const isHitPaddleCorner = await this.hitPaddleCorner(match);
@@ -325,7 +326,8 @@ export class GameService {
                     match.ballDirection = isHitPaddleCorner.angle;
                     match.ballPosition =
                         await this.adjustBallPositionAfterHitCorner(match);
-                    match.ballSpeed *= 0.05;
+                    match.ballSpeed += 0.25;
+                    console.log(match.ballSpeed);
                     break;
                 }
                 if ((await this.hitPaddleHorizontal(match)) === true) {
@@ -353,20 +355,23 @@ export class GameService {
             match.screenWidth / 2,
             match.screenHeigth / 2
         );
-        if (getRandomBetween(0, 1) === 1) {
-            match.ballDirection = new Vector(1, 0);
-        } else {
-            match.ballDirection = new Vector(-1, 0);
-        }
-        const random = getRandomBetween(-45, 45);
-        if (random === 0) {
-            if (getRandomBetween(0, 1) === 0) {
-                match.ballDirection = match.ballDirection.rotateByDegrees(-20);
+        if (match.player1Score === 0 && match.player2Score === 0)
+        {
+            if (getRandomBetween(0, 1) === 1) {
+                match.ballDirection = new Vector(1, 0);
             } else {
-                match.ballDirection = match.ballDirection.rotateByDegrees(20);
+                match.ballDirection = new Vector(-1, 0);
             }
-        } else {
-            match.ballDirection = match.ballDirection.rotateByDegrees(random);
+            const random = getRandomBetween(-45, 45);
+            if (random === 0) {
+                if (getRandomBetween(0, 1) === 0) {
+                    match.ballDirection = match.ballDirection.rotateByDegrees(-20);
+                } else {
+                    match.ballDirection = match.ballDirection.rotateByDegrees(20);
+                }
+            } else {
+                match.ballDirection = match.ballDirection.rotateByDegrees(random);
+            }
         }
         return match;
     }
@@ -598,7 +603,7 @@ export class GameService {
                 } else {
                     [score1, score2] = this.getScore(match);
                     match = await this.startBallDir(match);
-                    await this.sleep(3000);
+                    await this.sleep(1000);
                 }
             }
             if (this.someoneDisconnect(match)) {
