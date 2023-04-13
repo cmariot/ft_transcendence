@@ -103,6 +103,7 @@ export class UsersController {
                     new FileTypeValidator({
                         fileType: /(jpg|jpeg|png|gif)$/,
                     }),
+                    // MineTypeValidator({ mimeTypes: ['image/jpeg', 'image/png'] }),
                 ],
             })
         )

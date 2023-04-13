@@ -854,7 +854,7 @@ export class ChatService {
                 if (banUser) {
                     await this.unban(banUser, targetChannel);
                 }
-            }, /* banOptions.duration */ 10 * 1000);
+            }, banOptions.duration * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },
@@ -1274,17 +1274,6 @@ export class ChatService {
         if (event === "unban") {
             users_list = await this.unban(mutedUser, targetChannel);
         }
-        //if (users_list !== null) {
-        //    let target_list = await this.get_Admin_Owner(targetChannel);
-        //    if (target_list) {
-        //        this.chatGateway.send_unmute_or_unban(
-        //            targetChannel.channelName,
-        //            users_list,
-        //            target_list,
-        //            event
-        //        );
-        //    }
-        //}
     }
 
     async mute(
@@ -1314,7 +1303,7 @@ export class ChatService {
         if (muteOptions.duration > 0) {
             setTimeout(() => {
                 this.timeout(mutedUser, targetChannel, "mute");
-            }, /*muteOptions.duration */ 10 * 1000);
+            }, muteOptions.duration * 1000);
         }
         await this.chatRepository.update(
             { uuid: targetChannel.uuid },

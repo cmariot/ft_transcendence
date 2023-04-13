@@ -297,16 +297,32 @@ export default function Friends() {
     async function blockUser(username: string) {
         await user.block(username);
         if (chat.channel.length) {
-            await axios
-                .post("/api/chat/connect", {
-                    channelName: chat.channel,
-                })
-                .then(function (response: any) {
-                    chat.setMessages(response.data.messages);
-                })
-                .catch(function (error) {
-                    menu.displayError(error.response.data.message);
-                });
+            if (chat.channelType === "direct_message") {
+                let channels = new Map<string, { channelType: string }>(
+                    chat.userPrivateChannels
+                );
+                if (channels.delete(chat.channel)) {
+                    chat.updateUserPrivateChannels(channels);
+                }
+                chat.setMessages([]);
+                chat.setChannel("");
+                chat.setChannelType("");
+                chat.setmutedUsers([]);
+                chat.setbannedUsers([]);
+                chat.closeMenu();
+                chat.setPage("YourChannels");
+            } else {
+                await axios
+                    .post("/api/chat/connect", {
+                        channelName: chat.channel,
+                    })
+                    .then(function (response: any) {
+                        chat.setMessages(response.data.messages);
+                    })
+                    .catch(function (error) {
+                        menu.displayError(error.response.data.message);
+                    });
+            }
         }
         setUpdate((prevState) => !prevState);
     }

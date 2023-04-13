@@ -4,7 +4,6 @@ import {
     IsNotEmpty,
     IsString,
     MinLength,
-    isAlphanumeric,
 } from "class-validator";
 
 export class ProtectedChannelDTO {
@@ -24,7 +23,6 @@ export class ProtectedChannelDTO {
     channelPassword: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 export class PrivateChannelDTO {
@@ -40,11 +38,9 @@ export class PrivateChannelDTO {
 
     @IsString()
     @IsEmpty()
-    @IsAlphanumeric()
     channelPassword: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 
@@ -56,11 +52,9 @@ export class PrivateMessageDTO {
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
     channelType: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }
 
@@ -76,6 +70,5 @@ export class PublicChannelDTO {
     channelType: string;
 
     @IsEmpty()
-    @IsAlphanumeric()
     channelOwner: string;
 }

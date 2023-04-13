@@ -6,7 +6,12 @@ const AppFooter = () => {
 
     return (
         <footer id="app-footer">
-            {user.status !== "" && <p>status : {user.status}</p>}
+            {user.status !== "" && (
+                <p>
+                    status :{" "}
+                    {user.status === "ingame" ? "in game" : user.status}
+                </p>
+            )}
         </footer>
     );
 };

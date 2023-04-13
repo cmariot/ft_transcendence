@@ -1,0 +1,4 @@
+- [ ] IsAlphaNumeric a remplacer, les logins 42 peuvent avoir des - _ chiffres ...
+- [ ] rediirect localhost sur poste 42 dans nginx + url a mettre dans le certificat ssl
+ index backend : app.use(json({ limit: "1mb" })); (express)
+- [ ] Historique parties/classement sur profil user : css a faire

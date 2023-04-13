@@ -52,16 +52,32 @@ const ChatMessages = () => {
 
     async function blockUser(username: string) {
         user.block(username);
-        await axios
-            .post("/api/chat/connect", {
-                channelName: chat.channel,
-            })
-            .then((response) => {
-                chat.setMessages(response.data.messages);
-            })
-            .catch((error) => {
-                console.log(error.data);
-            });
+        if (chat.channelType === "direct_message") {
+            let channels = new Map<string, { channelType: string }>(
+                chat.userPrivateChannels
+            );
+            if (channels.delete(chat.channel)) {
+                chat.updateUserPrivateChannels(channels);
+            }
+            chat.setMessages([]);
+            chat.setChannel("");
+            chat.setChannelType("");
+            chat.setmutedUsers([]);
+            chat.setbannedUsers([]);
+            chat.closeMenu();
+            chat.setPage("YourChannels");
+        } else {
+            await axios
+                .post("/api/chat/connect", {
+                    channelName: chat.channel,
+                })
+                .then((response) => {
+                    chat.setMessages(response.data.messages);
+                })
+                .catch((error) => {
+                    console.log(error.data);
+                });
+        }
     }
 
     async function profile(username: string) {
