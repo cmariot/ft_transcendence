@@ -1,20 +1,15 @@
-import {
-    IsBoolean,
-    IsNotEmpty,
-    IsString,
-    IsAlphanumeric,
-} from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, Matches } from "class-validator";
 
 export class channelDTO {
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 }
 
 export class usernameDTO {
     @IsString()
     @IsNotEmpty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 }
 
@@ -31,24 +26,24 @@ export class messageDTO {
 export class channelPasswordDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelPassword: string;
 }
 
 export class updateChannelDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelType: string;
 
     @IsNotEmpty()
@@ -56,17 +51,17 @@ export class updateChannelDTO {
     newChannelType: boolean;
 
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     newChannelPassword: string;
 }
 export class addAdminDTO {
     @IsNotEmpty()
     @IsString()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     channelName: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     newAdminUsername: string;
 }

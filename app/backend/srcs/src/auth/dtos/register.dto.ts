@@ -4,14 +4,14 @@ import {
     IsNotEmpty,
     IsString,
     MinLength,
-    IsAlphanumeric,
+    Matches,
 } from "class-validator";
 
 export class RegisterDto {
     @IsNotEmpty()
     @IsString()
     @MinLength(3)
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9_.!@#$%^&*À-ÿ-]+$/)
     username: string;
 
     @IsEmail()
