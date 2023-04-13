@@ -1,60 +1,81 @@
-import { IsEmpty, IsNotEmpty, IsString, MinLength } from "class-validator";
+import {
+    IsAlphanumeric,
+    IsEmpty,
+    IsNotEmpty,
+    IsString,
+    MinLength,
+    isAlphanumeric,
+} from "class-validator";
 
 export class ProtectedChannelDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  channelType: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelType: string;
 
-  @IsString()
-  @MinLength(10)
-  channelPassword: string;
+    @IsString()
+    @MinLength(10)
+    @IsAlphanumeric()
+    channelPassword: string;
 
-  @IsEmpty()
-  channelOwner: string;
+    @IsEmpty()
+    @IsAlphanumeric()
+    channelOwner: string;
 }
 export class PrivateChannelDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  channelType: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelType: string;
 
-  @IsString()
-  @IsEmpty()
-  channelPassword: string;
+    @IsString()
+    @IsEmpty()
+    @IsAlphanumeric()
+    channelPassword: string;
 
-  @IsEmpty()
-  channelOwner: string;
+    @IsEmpty()
+    @IsAlphanumeric()
+    channelOwner: string;
 }
 
 export class PrivateMessageDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  channelType: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelType: string;
 
-  @IsEmpty()
-  channelOwner: string;
+    @IsEmpty()
+    @IsAlphanumeric()
+    channelOwner: string;
 }
 
 export class PublicChannelDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  channelType: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelType: string;
 
-  @IsEmpty()
-  channelOwner: string;
+    @IsEmpty()
+    @IsAlphanumeric()
+    channelOwner: string;
 }

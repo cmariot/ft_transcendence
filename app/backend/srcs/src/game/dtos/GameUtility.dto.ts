@@ -1,8 +1,15 @@
-import { IsBoolean, IsNotEmpty, IsString, MinLength } from "class-validator";
+import {
+    IsBoolean,
+    IsNotEmpty,
+    IsString,
+    MinLength,
+    IsAlphanumeric,
+} from "class-validator";
 
 export class UsernameDto {
     @IsNotEmpty()
     @MinLength(3)
+    @IsAlphanumeric()
     @IsString()
     username: string;
 }

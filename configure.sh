@@ -62,7 +62,7 @@ create_backend()
 	echo -n "Please enter the EMAIL_PASS : "
 	read email_pass
 	echo "EMAIL_PASS=\"$email_pass\""						>> ./app/backend/.env
-	echo "HOST=\"https://$(hostname):$REVERSE_PROXY_PORT\"/"	>> ./app/backend/.env
+	echo "HOST=\"https://$(hostname):$REVERSE_PROXY_PORT/\""	>> ./app/backend/.env
 
 }
 

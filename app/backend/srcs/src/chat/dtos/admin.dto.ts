@@ -1,40 +1,47 @@
 import {
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsPositive,
-  IsString,
+    IsNotEmpty,
+    IsNumber,
+    IsNumberString,
+    IsPositive,
+    IsString,
+    IsAlphanumeric,
 } from "class-validator";
 
 export class muteOptionsDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  username: string;
+    @IsString()
+    @IsNotEmpty()
+    @IsAlphanumeric()
+    username: string;
 
-  @IsNumberString()
-  @IsNotEmpty()
-  duration: number;
+    @IsNumberString()
+    @IsNotEmpty()
+    duration: number;
 }
 export class kickOptionsDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  username: string;
+    @IsString()
+    @IsNotEmpty()
+    @IsAlphanumeric()
+    username: string;
 }
 
 export class AddOptionsDTO {
-  @IsNotEmpty()
-  @IsString()
-  channelName: string;
+    @IsNotEmpty()
+    @IsString()
+    @IsAlphanumeric()
+    channelName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  username: string;
+    @IsString()
+    @IsNotEmpty()
+    @IsAlphanumeric()
+    username: string;
 }
