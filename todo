@@ -1,2 +1,0 @@
-- [/ ] Quand on unblock un user, reccuperer la liste des channels (il a pu nous envoyer un message direct)
-- [ ] Quand on bloque quelqu'un dans une conv direct-message : quitter la conv
