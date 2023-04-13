@@ -7,6 +7,7 @@ import { GameContext } from "../../contexts/game/GameContext";
 import { ChatContext } from "../../contexts/chat/ChatContext";
 import { UserContext } from "../../contexts/user/UserContext";
 import { MenuContext } from "../../contexts/menu/MenuContext";
+import { arrayToMap } from "../../events/chat/functions/arrayToMap";
 
 export default function Friends() {
     const [username, setUsername] = useState("");
@@ -443,6 +444,32 @@ export default function Friends() {
                             <button
                                 onClick={async () => {
                                     await user.unblock(blocked["username"]);
+                                    const [channelsResponse] =
+                                        await Promise.all([
+                                            axios.get("/api/chat/channels"),
+                                        ]);
+
+                                    if (channelsResponse.status === 200) {
+                                        chat.updateUserChannels(
+                                            arrayToMap(
+                                                channelsResponse.data
+                                                    .userChannels
+                                            )
+                                        );
+                                        chat.updateUserPrivateChannels(
+                                            arrayToMap(
+                                                channelsResponse.data
+                                                    .userPrivateChannels
+                                            )
+                                        );
+                                        chat.updateAvailableChannels(
+                                            arrayToMap(
+                                                channelsResponse.data
+                                                    .availableChannels
+                                            )
+                                        );
+                                    }
+
                                     if (chat.channel.length) {
                                         await axios
                                             .post("/api/chat/connect", {
