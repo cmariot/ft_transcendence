@@ -303,7 +303,7 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
                         ) === -1
                     ) {
                         banned.push(data.username);
-                        chat.setmutedUsers(banned);
+                        chat.setbannedUsers(banned);
                     }
                 }
             }
