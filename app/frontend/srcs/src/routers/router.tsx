@@ -55,6 +55,10 @@ export const router = createBrowserRouter([
                         path: "profile/:userprofile",
                         element: <UserProfile />,
                     },
+                    {
+                        path: "*",
+                        element: <Error404 />,
+                    },
                 ],
             },
             {
@@ -78,10 +82,6 @@ export const router = createBrowserRouter([
             {
                 path: "unavailable-username",
                 element: <UnavailableUsername42 />,
-            },
-            {
-                path: "/*",
-                element: <Error404 />,
             },
         ],
     },
