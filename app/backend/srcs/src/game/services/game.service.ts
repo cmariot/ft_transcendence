@@ -78,39 +78,88 @@ export class GameService {
         );
     }
 
+    //async hitPaddleFront(
+    //match: GameInterface
+    //): Promise<{ hit: boolean; angle: Vector | null }> {
+    //const ballY = this.getBallY(match);
+    //const ballX = this.getBallX(match);
+    //for (let player = 1; player <= 2; player++) {
+    //var paddlePosition: number;
+    //var paddleX: number;
+    //var isHit: boolean;
+    //var paddleHeigth: number;
+    //if (player === 1) {
+    //paddlePosition = match.player1Position;
+    //paddleX = 0 + match.paddleOffset + match.paddleWidth;
+    //isHit = ballX <= paddleX + match.ballWidth * 0.5;
+    //paddleHeigth = match.paddle1Heigth;
+    //} else {
+    //paddlePosition = match.player2Position;
+    //paddleX =
+    //match.screenWidth - match.paddleOffset - match.paddleWidth;
+    //isHit = ballX >= paddleX - match.ballWidth * 0.5;
+    //paddleHeigth = match.paddle2Heigth;
+    //}
+    //const paddleY = this.getPaddleY(paddlePosition, player, match);
+    //if (
+    //isHit &&
+    //ballY <= paddleY + paddleHeigth / 2 &&
+    //ballY >= paddleY - paddleHeigth / 2
+    //) {
+    //let angle = new Vector(
+    //-match.ballDirection.x,
+    //match.ballDirection.y + (ballY - paddleY) / paddleY
+    //);
+    //return { hit: true, angle: angle };
+    //}
+    //}
+    //return { hit: false, angle: null };
+    //}
+
     async hitPaddleFront(
         match: GameInterface
     ): Promise<{ hit: boolean; angle: Vector | null }> {
         const ballY = this.getBallY(match);
         const ballX = this.getBallX(match);
+        const maxBounceAngle = (5 * Math.PI) / 12;
+
         for (let player = 1; player <= 2; player++) {
-            var paddlePosition: number;
-            var paddleX: number;
-            var isHit: boolean;
-            var paddleHeigth: number;
+            let paddlePosition: number;
+            let paddleX: number;
+            let isHit: boolean;
+            let paddleHeight: number;
             if (player === 1) {
                 paddlePosition = match.player1Position;
                 paddleX = 0 + match.paddleOffset + match.paddleWidth;
                 isHit = ballX <= paddleX + match.ballWidth * 0.5;
-                paddleHeigth = match.paddle1Heigth;
+                paddleHeight = match.paddle1Heigth;
             } else {
                 paddlePosition = match.player2Position;
                 paddleX =
                     match.screenWidth - match.paddleOffset - match.paddleWidth;
                 isHit = ballX >= paddleX - match.ballWidth * 0.5;
-                paddleHeigth = match.paddle2Heigth;
+                paddleHeight = match.paddle2Heigth;
             }
             const paddleY = this.getPaddleY(paddlePosition, player, match);
             if (
                 isHit &&
-                ballY <= paddleY + paddleHeigth / 2 &&
-                ballY >= paddleY - paddleHeigth / 2
+                ballY <= paddleY + paddleHeight / 2 &&
+                ballY >= paddleY - paddleHeight / 2
             ) {
-                let angle = new Vector(
-                    -match.ballDirection.x,
-                    match.ballDirection.y + (ballY - paddleY) / paddleY
-                );
-                return { hit: true, angle: angle };
+                const relativeIntersectY = paddleY - ballY;
+                const normalizedRelativeIntersectionY =
+                    relativeIntersectY / (paddleHeight / 2);
+                const bounceAngle =
+                    normalizedRelativeIntersectionY * maxBounceAngle;
+
+                let newDirectionX =
+                    player === 1
+                        ? Math.cos(bounceAngle)
+                        : -Math.cos(bounceAngle);
+                let newDirectionY = -Math.sin(bounceAngle);
+                let newBallDirection = new Vector(newDirectionX, newDirectionY);
+
+                return { hit: true, angle: newBallDirection };
             }
         }
         return { hit: false, angle: null };
@@ -294,55 +343,65 @@ export class GameService {
     }
 
     async moveBall(match: GameInterface): Promise<GameInterface> {
-        for (let i = 0; i < match.ballSpeed; i++) {
-            match.ballPosition = match.ballPosition.add(match.ballDirection);
+        if (match.start === false) {
+            for (let i = 0; i < match.ballSpeed; i++) {
+                match.ballPosition = match.ballPosition.add(
+                    match.ballDirection
+                );
 
-            if (match.power_up === true) {
-                match = await this.checkPowerUp(match);
-            }
+                if (match.power_up === true) {
+                    match = await this.checkPowerUp(match);
+                }
 
-            const outsideResponse = this.isBallOutsideScreen(match);
-            if (outsideResponse.outside === true) {
-                return outsideResponse.match;
-            }
-            if (match.lose === false) {
-                const isHitPaddleFront = await this.hitPaddleFront(match);
-                if (
-                    isHitPaddleFront.hit === true &&
-                    isHitPaddleFront.angle !== null
-                ) {
-                    match.ballDirection = isHitPaddleFront.angle;
-                    match.ballPosition =
-                        await this.adjustBallPositionAfterHitFront(match);
-                    match.ballSpeed += 0.25;
-                    console.log(match.ballSpeed);
-                    break;
+                const outsideResponse = this.isBallOutsideScreen(match);
+                if (outsideResponse.outside === true) {
+                    return outsideResponse.match;
                 }
-                const isHitPaddleCorner = await this.hitPaddleCorner(match);
-                if (
-                    isHitPaddleCorner.hit === true &&
-                    isHitPaddleCorner.angle !== null
-                ) {
-                    match.ballDirection = isHitPaddleCorner.angle;
-                    match.ballPosition =
-                        await this.adjustBallPositionAfterHitCorner(match);
-                    match.ballSpeed += 0.25;
-                    console.log(match.ballSpeed);
-                    break;
-                }
-                if ((await this.hitPaddleHorizontal(match)) === true) {
-                    match.ballDirection = new Vector(
-                        match.ballDirection.x,
-                        -match.ballDirection.y
-                    );
-                    match.ballPosition =
-                        await this.adjustBallPositionAfterHitHorizontal(match);
-                    match.lose = true;
-                    break;
+                if (match.lose === false) {
+                    const isHitPaddleFront = await this.hitPaddleFront(match);
+                    if (
+                        isHitPaddleFront.hit === true &&
+                        isHitPaddleFront.angle !== null
+                    ) {
+                        match.ballDirection = isHitPaddleFront.angle;
+                        match.ballPosition =
+                            await this.adjustBallPositionAfterHitFront(match);
+                        match.ballSpeed += 0.25;
+                        console.log(match.ballSpeed);
+                        break;
+                    }
+                    const isHitPaddleCorner = await this.hitPaddleCorner(match);
+                    if (
+                        isHitPaddleCorner.hit === true &&
+                        isHitPaddleCorner.angle !== null
+                    ) {
+                        match.ballDirection = isHitPaddleCorner.angle;
+                        match.ballPosition =
+                            await this.adjustBallPositionAfterHitCorner(match);
+                        match.ballSpeed += 0.25;
+                        console.log(match.ballSpeed);
+                        break;
+                    }
+                    if ((await this.hitPaddleHorizontal(match)) === true) {
+                        match.ballDirection = new Vector(
+                            match.ballDirection.x,
+                            -match.ballDirection.y
+                        );
+                        match.ballPosition =
+                            await this.adjustBallPositionAfterHitHorizontal(
+                                match
+                            );
+                        match.lose = true;
+                        break;
+                    }
                 }
             }
         }
         return match;
+    }
+
+    async start(match: GameInterface) {
+        match.start = false;
     }
 
     // engagement position
@@ -355,8 +414,11 @@ export class GameService {
             match.screenWidth / 2,
             match.screenHeigth / 2
         );
-        if (match.player1Score === 0 && match.player2Score === 0)
-        {
+        match.start = true;
+        setTimeout(() => {
+            this.start(match);
+        }, 3 * 1000);
+        if (match.player1Score === 0 && match.player2Score === 0) {
             if (getRandomBetween(0, 1) === 1) {
                 match.ballDirection = new Vector(1, 0);
             } else {
@@ -365,12 +427,15 @@ export class GameService {
             const random = getRandomBetween(-45, 45);
             if (random === 0) {
                 if (getRandomBetween(0, 1) === 0) {
-                    match.ballDirection = match.ballDirection.rotateByDegrees(-20);
+                    match.ballDirection =
+                        match.ballDirection.rotateByDegrees(-20);
                 } else {
-                    match.ballDirection = match.ballDirection.rotateByDegrees(20);
+                    match.ballDirection =
+                        match.ballDirection.rotateByDegrees(20);
                 }
             } else {
-                match.ballDirection = match.ballDirection.rotateByDegrees(random);
+                match.ballDirection =
+                    match.ballDirection.rotateByDegrees(random);
             }
         }
         return match;
@@ -610,6 +675,7 @@ export class GameService {
                 return [true, undefined];
             }
             games.set(match.uuid, match);
+            console.log("MATCH SETTING ", match);
             await this.sleep(20);
         }
         return [false, match];
@@ -659,6 +725,7 @@ export class GameService {
             player2_usePower: false,
             freeze1: false,
             freeze2: false,
+            start: true,
         };
         games.set(game.uuid, match);
         await this.gameGateway.sendGameID(match);

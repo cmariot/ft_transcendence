@@ -34,4 +34,5 @@ export interface GameInterface {
     player2_usePower: boolean;
     freeze1: boolean;
     freeze2: boolean;
+    start: boolean;
 }
