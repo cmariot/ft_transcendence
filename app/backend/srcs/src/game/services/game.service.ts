@@ -332,9 +332,13 @@ export class GameService {
                 match.ballHeigth
             ) {
                 if (match.ballDirection.x < 0) {
-                    match.power_up_player2 = match.power_up_list[i].type;
+                    if (match.power_up_player2.length === 0) {
+                        match.power_up_player2 = match.power_up_list[i].type;
+                    }
                 } else {
-                    match.power_up_player1 = match.power_up_list[i].type;
+                    if (match.power_up_player1.length === 0) {
+                        match.power_up_player1 = match.power_up_list[i].type;
+                    }
                 }
                 match.power_up_list.splice(i, 1);
             }
@@ -579,7 +583,7 @@ export class GameService {
     }
 
     async freeze(match: GameInterface, player: number): Promise<GameInterface> {
-        const one_second = 1000;
+        const two_second = 2000;
         if (player === 1) {
             match.freeze2 = true;
         } else {
@@ -591,7 +595,7 @@ export class GameService {
             } else {
                 match.freeze1 = false;
             }
-        }, one_second);
+        }, two_second);
         return match;
     }
 
@@ -675,7 +679,6 @@ export class GameService {
                 return [true, undefined];
             }
             games.set(match.uuid, match);
-            console.log("MATCH SETTING ", match);
             await this.sleep(20);
         }
         return [false, match];
