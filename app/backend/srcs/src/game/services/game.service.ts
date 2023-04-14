@@ -583,7 +583,7 @@ export class GameService {
     }
 
     async freeze(match: GameInterface, player: number): Promise<GameInterface> {
-        const two_second = 2000;
+        const two_second = 1000;
         if (player === 1) {
             match.freeze2 = true;
         } else {
