@@ -101,15 +101,21 @@ export class UsersController {
                 validators: [
                     new MaxFileSizeValidator({ maxSize: 10000000 }),
                     new FileTypeValidator({
-                        fileType: /(jpg|jpeg|png|gif)$/,
+                        fileType: ".(png|jpeg|jpg)",
                     }),
-                    // MineTypeValidator({ mimeTypes: ['image/jpeg', 'image/png'] }),
                 ],
             })
         )
         file: Express.Multer.File,
         @Req() req
     ) {
+        if (
+            file.mimetype !== "image/jpeg" &&
+            file.mimetype !== "image/png" &&
+            file.mimetype !== "image/jpg"
+        ) {
+            throw new UnauthorizedException("Wrong file type");
+        }
         return await this.userService.updateProfileImage(
             req.user.uuid,
             file.filename
