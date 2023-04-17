@@ -8,7 +8,7 @@ const SelectStream = () => {
     const game = useContext(GameContext);
     const socket = useContext(SocketContext);
 
-    const [update, setUpdate] = useState(false);
+    const [, setUpdate] = useState(false);
 
     async function cancel() {
         game.setMenu("JoinGame");
@@ -69,7 +69,6 @@ const SelectStream = () => {
 
     return (
         <div id="select-stream">
-            <button onClick={() => cancel()}>cancel</button>
             {game.currentGames.length ? (
                 <div>
                     {game.currentGames.map((match, index) => (
@@ -83,6 +82,7 @@ const SelectStream = () => {
                     <p>No stream available.</p>
                 </div>
             )}
+            <button onClick={() => cancel()}>cancel</button>
         </div>
     );
 };
