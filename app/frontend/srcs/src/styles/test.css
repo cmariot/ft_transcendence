@@ -16,12 +16,16 @@
     opacity: 0.7;
 }
 
-#ball {
+.ball {
     position: absolute;
     background: #a3a3a3;
     border: none;
     border-radius: 50%;
     opacity: 0.7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1e1e1e;
 }
 
 #player-names {

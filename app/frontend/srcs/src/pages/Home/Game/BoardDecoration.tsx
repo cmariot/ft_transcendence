@@ -77,19 +77,6 @@ const BoardDecoration = () => {
                     height: "100%",
                 }}
             />
-
-            <div>
-                {game.p1Power !== "" && (
-                    <p>
-                        Power {game.p1Name} : {game.p1Power}
-                    </p>
-                )}
-                {game.p2Power !== "" && (
-                    <p>
-                        Power {game.p2Name} : {game.p2Power}
-                    </p>
-                )}
-            </div>
         </div>
     );
 };

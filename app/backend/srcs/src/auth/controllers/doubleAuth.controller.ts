@@ -15,7 +15,7 @@ import { DoubleAuthGuard } from "../guards/doubleauth.guards";
 import { emailValidationCodeDto } from "../dtos/emailValidationCode.dto";
 import { UsersService } from "src/users/services/users.service";
 
-@Controller("second_auth")
+@Controller("secondauth")
 export class DoubleAuthController {
     constructor(
         private authService: AuthService,
@@ -44,8 +44,12 @@ export class DoubleAuthController {
             if (user.doubleAuthentificationCode.length != 6) {
                 throw new HttpException("Invalid Code.", HttpStatus.FORBIDDEN);
             }
-            this.authService.create_cookie(user, "authentification", req, res);
-            return "OK";
+            return await this.authService.create_cookie(
+                user,
+                "authentification",
+                req,
+                res
+            );
         }
         throw new HttpException("Validation failed.", HttpStatus.FORBIDDEN);
     }

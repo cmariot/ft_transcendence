@@ -341,27 +341,53 @@ export class AuthService {
                     })
                     .redirect(process.env.HOST + "double-authentification");
             } else if (type === "authentification") {
-                res.clearCookie("authentification", {
-                    maxAge: twelveHours,
-                    sameSite: "none",
-                    secure: true,
-                })
-                    .clearCookie("email_validation", {
-                        maxAge: twelveHours,
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .clearCookie("double_authentification", {
-                        maxAge: twelveHours,
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .cookie(type, cookie_value, {
-                        maxAge: twelveHours,
-                        sameSite: "none",
-                        secure: true,
-                    })
-                    .redirect(process.env.HOST);
+                if (user.twoFactorsAuth === true) {
+                    return res
+                        .clearCookie("authentification", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .clearCookie("email_validation", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .clearCookie("double_authentification", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .cookie(type, cookie_value, {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .send(process.env.HOST);
+                } else {
+                    return res
+                        .clearCookie("authentification", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .clearCookie("email_validation", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .clearCookie("double_authentification", {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .cookie(type, cookie_value, {
+                            maxAge: twelveHours,
+                            sameSite: "none",
+                            secure: true,
+                        })
+                        .redirect(process.env.HOST);
+                }
             } else {
                 throw new UnauthorizedException(
                     "42 users doesn't need to validate their email :)"

@@ -20,7 +20,7 @@ const DoubleAuth = () => {
     async function submitValidate2faForm(event: any) {
         event.preventDefault();
         await axios
-            .post("/api/second_auth", {
+            .post("/api/secondauth", {
                 code: code2fa,
             })
             .then(function (response) {
@@ -60,28 +60,30 @@ const DoubleAuth = () => {
                     <button onClick={() => resend2faCode()}>Resend code</button>
                 </aside>
 
-                <form id="validation-2fa-form" autoComplete="off">
-                    <h3>Enter the code you received by email</h3>
-                    <input
-                        type="text"
-                        id="double_auth_code"
-                        placeholder="Check your emails"
-                        onChange={(event) => handleValidate2faChange(event)}
-                        autoFocus
-                        required
-                    />
-                    <div id="form-2fa-choices">
+                <div id="div-2fa-form">
+                    <form id="validation-2fa-form" autoComplete="off">
+                        <h3>Enter the code you received by email</h3>
                         <input
-                            type="submit"
-                            className="button"
-                            onClick={async (event) =>
-                                await submitValidate2faForm(event)
-                            }
-                            value="Validate"
+                            type="text"
+                            id="double_auth_code"
+                            placeholder="Check your emails"
+                            onChange={(event) => handleValidate2faChange(event)}
+                            autoFocus
+                            required
                         />
-                        <button onClick={() => cancel2fa()}>cancel</button>
-                    </div>
-                </form>
+                        <div id="form-2fa-choices">
+                            <input
+                                type="submit"
+                                className="button"
+                                onClick={async (event) =>
+                                    await submitValidate2faForm(event)
+                                }
+                                value="Validate"
+                            />
+                            <button onClick={() => cancel2fa()}>cancel</button>
+                        </div>
+                    </form>
+                </div>
             </section>
         </div>
     );
