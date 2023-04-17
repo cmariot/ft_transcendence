@@ -278,13 +278,25 @@ export class MatchmakingService {
         for (let i = 0; i < game.length; i++) {
             if (game[i].status === "playing") {
                 let player1 = await this.userService.getByID(game[i].hostID);
-                let player2 = await this.userService.getByID(game[i].guestID);
-                if (player1 && player2) {
-                    currentGames.push({
-                        game_id: game[i].uuid,
-                        player1: player1.username,
-                        player2: player2.username,
-                    });
+                if (player1) {
+                    if (game[i].options.solo === true) {
+                        currentGames.push({
+                            game_id: game[i].uuid,
+                            player1: player1.username,
+                            player2: "gigachad",
+                        });
+                    } else {
+                        let player2 = await this.userService.getByID(
+                            game[i].guestID
+                        );
+                        if (player2) {
+                            currentGames.push({
+                                game_id: game[i].uuid,
+                                player1: player1.username,
+                                player2: player2.username,
+                            });
+                        }
+                    }
                 }
             }
         }

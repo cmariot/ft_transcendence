@@ -24,7 +24,6 @@ const DoubleAuth = () => {
                 code: code2fa,
             })
             .then(function (response) {
-                console.log("ici ");
                 navigate("/");
             })
             .catch(function (error) {

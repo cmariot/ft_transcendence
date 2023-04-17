@@ -56,6 +56,14 @@ export class GameGateway {
         });
     }
 
+    async newStreamAvailable(game: GameInterface) {
+        this.server.emit("game.stream.start", {
+            game_id: game.uuid,
+            player1: game.player1Username,
+            player2: game.player2Username,
+        });
+    }
+
     // Send the match results and their new leaderboard rank to the players
     emitGameResults(match: GameInterface) {
         if (match.player1Score > match.player2Score) {
@@ -84,6 +92,14 @@ export class GameGateway {
         let socket = this.server.sockets.sockets.get(socketID);
         if (socket) {
             socket.join(room);
+        }
+    }
+
+    // delete a socket in a room
+    async leaveRoom(socketID: string, room: string) {
+        let socket = this.server.sockets.sockets.get(socketID);
+        if (socket) {
+            socket.leave(room);
         }
     }
 

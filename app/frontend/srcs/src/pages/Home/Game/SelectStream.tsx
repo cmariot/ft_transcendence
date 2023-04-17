@@ -43,16 +43,15 @@ const SelectStream = () => {
             }
             setUpdate((p) => !p);
         }
-        socket.on("game.start", updateGamesList);
+        socket.on("game.stream.start", updateGamesList);
         return () => {
-            socket.off("game.start", updateGamesList);
+            socket.off("game.stream.start", updateGamesList);
         };
     }, [game, socket]);
 
     useEffect(() => {
         async function updateGamesList(data: { game_id: string }) {
             let games = game.currentGames;
-            console.log("END GAME, DATA = ", data, "GAMES = ", games);
             let index = games.findIndex(
                 (element) => element.game_id === data.game_id
             );

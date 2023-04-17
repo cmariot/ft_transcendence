@@ -18,7 +18,6 @@ const AppNavBar = () => {
     // Toggle navigation menu
     function toogleMenu(event: { preventDefault: () => void }) {
         event.preventDefault();
-        console.log("GAME = ", game);
         menu.toogle();
     }
 

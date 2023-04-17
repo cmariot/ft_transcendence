@@ -370,8 +370,7 @@ export class GameService {
                         match.ballDirection = isHitPaddleFront.angle;
                         match.ballPosition =
                             await this.adjustBallPositionAfterHitFront(match);
-                        match.ballSpeed += 0.25;
-                        console.log(match.ballSpeed);
+                        match.ballSpeed *= 1.05;
                         break;
                     }
                     const isHitPaddleCorner = await this.hitPaddleCorner(match);
@@ -382,8 +381,7 @@ export class GameService {
                         match.ballDirection = isHitPaddleCorner.angle;
                         match.ballPosition =
                             await this.adjustBallPositionAfterHitCorner(match);
-                        match.ballSpeed += 0.25;
-                        console.log(match.ballSpeed);
+                        match.ballSpeed *= 1.05;
                         break;
                     }
                     if ((await this.hitPaddleHorizontal(match)) === true) {
@@ -617,7 +615,6 @@ export class GameService {
             power_up = match.power_up_player2;
         }
         if (used === true && power_up) {
-            console.log("Player " + player + " used " + power_up);
             if (power_up === "speed") {
                 match = await this.increaseSpeed(match);
             } else if (power_up === "slow") {
@@ -651,6 +648,8 @@ export class GameService {
         if (match === undefined) return [false, undefined];
         await this.countDown(match);
         this.gameGateway.updateFrontMenu(match, "Game");
+        // new stream available
+        this.gameGateway.newStreamAvailable(match);
         var [score1, score2] = this.getScore(match);
         match = await this.startBallDir(match);
         while (true) {
@@ -852,6 +851,7 @@ export class GameService {
     async leaveStream(uuid: string, game_id: string) {
         const user = await this.userService.getByID(uuid);
         if (user && user.socketId.length > 0) {
+            await this.gameGateway.leaveRoom(user.socketId[0], game_id);
             let match: GameInterface | undefined = games.get(game_id);
             if (match) {
                 let index = match.watchersSockets.findIndex(

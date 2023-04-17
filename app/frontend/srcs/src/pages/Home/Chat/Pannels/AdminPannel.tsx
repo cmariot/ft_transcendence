@@ -4,8 +4,6 @@ import { ChatContext } from "../../../../contexts/chat/ChatContext";
 const AdminPannel = () => {
     const chat = useContext(ChatContext);
 
-    console.log(chat.channelType);
-
     if (chat.channelType === "private") {
         return (
             <>

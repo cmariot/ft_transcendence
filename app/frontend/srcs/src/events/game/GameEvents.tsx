@@ -52,12 +52,12 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             }
         }
         socket.on(
-            "game.start",
+            "game.stream.start",
             (data: { game_id: string; player1: string; player2: string }) =>
                 addToGamesList(data)
         );
         return () => {
-            socket.off("game.start", addToGamesList);
+            socket.off("game.stream.start", addToGamesList);
         };
     }, [socket]);
 

@@ -226,16 +226,6 @@ export const ChatEvents = ({ children }: ChatEventsProps) => {
     // When an user is unmute
     useEffect(() => {
         async function unmute(data: { channel: string; username: string }) {
-            console.log(
-                "DATA : ",
-                data,
-                "CHAT Channel : ",
-                chat.channel,
-                "admin/owner :",
-                chat.isChannelAdmin,
-                " / ",
-                chat.isChannelOwner
-            );
             if (chat.channel === data.channel) {
                 if (
                     chat.isChannelAdmin === true ||

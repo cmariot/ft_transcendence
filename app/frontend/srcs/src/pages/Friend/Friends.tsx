@@ -153,7 +153,6 @@ export default function Friends() {
                     return navigate("/");
                 } else {
                     try {
-                        console.log("CONNECT TO :", response.data.channelName);
                         const connectResponse = await axios.post(
                             "/api/chat/connect",
                             {
