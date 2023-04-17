@@ -83,7 +83,6 @@ a {
 
 #app-menu {
     position: fixed;
-    top: 70px;
     right: 0px;
     display: flex;
     flex-direction: row;
@@ -116,13 +115,36 @@ a {
     align-items: center;
     max-width: 100vw;
     border-block: 0.5px #a7a7a7 dotted;
-    animation: 0.7s slidein;
     flex-wrap: wrap;
     gap: 20px;
     padding-block: 20px;
 }
 
+.defaultMenuPos {
+    top: 0px;
+}
+
+.slidein {
+    top: 0px;
+    animation: 0.7s slidein;
+}
+
 @keyframes slidein {
+    from {
+        top: 70px;
+    }
+
+    to {
+        top: 0px;
+    }
+}
+
+.slideout {
+    top: 70px;
+    animation: 0.7s slideout;
+}
+
+@keyframes slideout {
     from {
         top: 0px;
     }

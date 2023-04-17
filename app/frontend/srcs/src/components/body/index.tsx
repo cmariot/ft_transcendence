@@ -11,7 +11,7 @@ export const Body = () => {
     return (
         <>
             <NavBar />
-            <div id="app-content">
+            <div id="app-content" className="main-app-div">
                 {menu.error ? <ErrorPage /> : <Outlet />}
             </div>
             <Footer />

@@ -30,7 +30,7 @@ export const Menu = () => {
     }, [user.isForcedLogout, menu]);
 
     return (
-        <div id="app-menu">
+        <div id="app-menu" className="defaultMenuPos">
             <div className="app-menu-div">
                 <img src={images.home} alt="logo" className="app-menu-icon" />
                 <Link to="/" onClick={() => menu.close()}>

@@ -18,6 +18,14 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
                 appContent.style.marginBlockStart = "90px";
             }
         }
+        let menu = document.getElementById("app-menu");
+        if (menu) {
+            if (display === false) {
+                menu.className = "slideout";
+            } else {
+                menu.className = "slidein";
+            }
+        }
     }
 
     function close() {
@@ -28,6 +36,10 @@ const MenuProvider = ({ children }: MenuProviderProps) => {
         let appContent = document.getElementById("app-content");
         if (appContent) {
             appContent.style.marginBlockStart = "90px";
+        }
+        let menu = document.getElementById("app-menu");
+        if (menu) {
+            menu.className = "slidein";
         }
     }
 

@@ -6,7 +6,7 @@ import "../../styles/Theme.css";
 
 const Settings = () => {
     return (
-        <div id="settings-div" className="main-app-div">
+        <div id="settings-div">
             <main id="main-settings">
                 <h2>Settings</h2>
                 <EditProfilePicture />
