@@ -64,7 +64,6 @@ export const GameEvents = ({ children }: GameEventsProps) => {
     useEffect(() => {
         async function removeFromGamesList(data: { game_id: string }) {
             let games = game.currentGames;
-            console.log("END GAME, DATA = ", data, "GAMES = ", games);
             let index = games.findIndex(
                 (element: any) => element.game_id === data.game_id
             );
@@ -129,6 +128,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             };
         }) {
             game.setStreamResults(data.results);
+            game.setGameID("");
             game.setMenu("StreamResults");
         }
         socket.on(

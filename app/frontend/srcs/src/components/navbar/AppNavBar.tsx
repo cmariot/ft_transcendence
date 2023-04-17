@@ -4,10 +4,12 @@ import { SocketContext } from "../../contexts/sockets/SocketProvider";
 import { MenuContext } from "../../contexts/menu/MenuContext";
 import { UserContext } from "../../contexts/user/UserContext";
 import { ImageContext } from "../../contexts/images/ImagesContext";
+import { GameContext } from "../../contexts/game/GameContext";
 
 const AppNavBar = () => {
     const menu = useContext(MenuContext);
     const user = useContext(UserContext);
+    const game = useContext(GameContext);
     const socket = useContext(SocketContext);
     const images = useContext(ImageContext);
 
@@ -16,6 +18,7 @@ const AppNavBar = () => {
     // Toggle navigation menu
     function toogleMenu(event: { preventDefault: () => void }) {
         event.preventDefault();
+        console.log("GAME = ", game);
         menu.toogle();
     }
 

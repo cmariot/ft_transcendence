@@ -49,7 +49,7 @@ export class GameGateway {
     // Share the game uuid with the players
     async sendGameID(game: GameInterface) {
         this.server.to(game.uuid).emit("game.name", game.uuid);
-        this.server.emit("game.start", {
+        this.server.to(game.uuid).emit("game.start", {
             game_id: game.uuid,
             player1: game.player1Username,
             player2: game.player2Username,
