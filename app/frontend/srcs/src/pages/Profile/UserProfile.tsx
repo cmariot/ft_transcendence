@@ -219,7 +219,7 @@ const UserProfile = () => {
                                 <button
                                     onClick={async () => {
                                         user.unblock(username);
-                                        if (chat.channel.length) {
+                                        if (chat.channel !== "") {
                                             await axios
                                                 .post("/api/chat/connect", {
                                                     channelName: chat.channel,
@@ -266,21 +266,25 @@ const UserProfile = () => {
                                             chat.closeMenu();
                                             chat.setPage("YourChannels");
                                         } else {
-                                            await axios
-                                                .post("/api/chat/connect", {
-                                                    channelName: chat.channel,
-                                                })
-                                                .then((response) => {
-                                                    chat.setMessages(
-                                                        response.data.messages
-                                                    );
-                                                })
-                                                .catch((error) => {
-                                                    menu.displayError(
-                                                        error.response.data
-                                                            .message
-                                                    );
-                                                });
+                                            if (chat.channel !== "") {
+                                                await axios
+                                                    .post("/api/chat/connect", {
+                                                        channelName:
+                                                            chat.channel,
+                                                    })
+                                                    .then((response) => {
+                                                        chat.setMessages(
+                                                            response.data
+                                                                .messages
+                                                        );
+                                                    })
+                                                    .catch((error) => {
+                                                        menu.displayError(
+                                                            error.response.data
+                                                                .message
+                                                        );
+                                                    });
+                                            }
                                         }
                                         setBlocked(true);
                                     }}
@@ -301,43 +305,46 @@ const UserProfile = () => {
     }
     return (
         <div className="main-app-div">
-            <main id="profile">{displayProfileOrError()}</main>
-            {gameHistory.length > 0 && (
-                <div id="stats">
-                    <div>
-                        <p>Leaderboard rank : {rank}</p>
-                        <p>
-                            Game played : {winRatio.defeat + winRatio.victory}
-                        </p>
-                        <p>
-                            Game win : {winRatio.victory} {winPercentage()}
-                        </p>
-                        <p>
-                            Game lose : {winRatio.defeat} {losePercentage()}
-                        </p>
+            <main id="profile">
+                {displayProfileOrError()}
+                {gameHistory.length > 0 && (
+                    <div id="stats">
+                        <div>
+                            <p>Leaderboard rank : {rank}</p>
+                            <p>
+                                Game played :{" "}
+                                {winRatio.defeat + winRatio.victory}
+                            </p>
+                            <p>
+                                Game win : {winRatio.victory} {winPercentage()}
+                            </p>
+                            <p>
+                                Game lose : {winRatio.defeat} {losePercentage()}
+                            </p>
+                        </div>
+                        <div>
+                            <ul id="games-list">
+                                <h2>Game history</h2>
+                                {gameHistory.map((game: any, index: number) => (
+                                    <li className="match-results" key={index}>
+                                        <div className="winner">
+                                            <p>{game.winner}</p>
+                                            <p>{game.winner_score}</p>
+                                        </div>
+                                        <div className="vs">
+                                            <p>vs</p>
+                                        </div>
+                                        <div className="winner">
+                                            <p>{game.loser}</p>
+                                            <p>{game.loser_score}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-                    <div>
-                        <ul id="games-list">
-                            <h2>Game history</h2>
-                            {gameHistory.map((game: any, index: number) => (
-                                <li className="match-results" key={index}>
-                                    <div className="winner">
-                                        <p>{game.winner}</p>
-                                        <p>{game.winner_score}</p>
-                                    </div>
-                                    <div className="vs">
-                                        <p>vs</p>
-                                    </div>
-                                    <div className="winner">
-                                        <p>{game.loser}</p>
-                                        <p>{game.loser_score}</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )}
+                )}
+            </main>
         </div>
     );
 };

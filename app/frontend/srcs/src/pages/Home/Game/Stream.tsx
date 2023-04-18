@@ -68,10 +68,12 @@ const Stream = () => {
                 <div className="score">
                     <h2>{game.p1Name}</h2>
                     <h3>{game.p1Score}</h3>
+                    {game.p1Power !== "" && <p>Power : {game.p1Power}</p>}
                 </div>
                 <div className="score">
                     <h2>{game.p2Name}</h2>
                     <h3>{game.p2Score}</h3>
+                    {game.p2Power !== "" && <p>Power : {game.p2Power}</p>}
                 </div>
             </div>
             <BoardDecoration />
@@ -97,7 +99,7 @@ const Stream = () => {
                 }}
             />
             <div
-                id="ball"
+                className="ball"
                 style={{
                     height: `${(game.ballHeigth / game.screenHeigth) * 100}%`,
                     width: `${(game.ballWidth / game.screenWidth) * 100}%`,
@@ -120,7 +122,7 @@ const Stream = () => {
             {game.powerUps.map((power_up, index) => (
                 <div
                     key={index}
-                    id="ball"
+                    className="ball"
                     style={{
                         height: `${
                             (game.ballHeigth / game.screenHeigth) * 100

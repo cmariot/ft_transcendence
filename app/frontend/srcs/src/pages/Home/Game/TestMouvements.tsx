@@ -17,6 +17,7 @@ const TestMouvements = () => {
                 event.preventDefault();
                 socket.emit("down", { gameID: game.gameID });
             } else if (event.key === " ") {
+                event.preventDefault();
                 socket.emit("powerUp", { gameID: game.gameID });
             }
         }
