@@ -88,7 +88,7 @@ export class GameController {
     async leaveStream(@Req() req, @Body() gameId: GameIdDto) {
         return await this.gameService.leaveStream(
             req.user.uuid,
-            gameId.game_id1
+            gameId.new_game_id
         );
     }
 }
