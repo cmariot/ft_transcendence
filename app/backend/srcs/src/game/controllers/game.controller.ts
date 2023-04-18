@@ -70,9 +70,15 @@ export class GameController {
     @Post("watch")
     @UseGuards(isLogged)
     async watchGame(@Req() req, @Body() gameId: GameIdDto) {
+        if (gameId.prev_game_id.length === 0) {
+            await this.gameService.leaveStream(
+                req.user.uuid,
+                gameId.prev_game_id
+            );
+        }
         return await this.gameService.watchStream(
             req.user.uuid,
-            gameId.game_id
+            gameId.new_game_id
         );
     }
 
@@ -82,7 +88,7 @@ export class GameController {
     async leaveStream(@Req() req, @Body() gameId: GameIdDto) {
         return await this.gameService.leaveStream(
             req.user.uuid,
-            gameId.game_id
+            gameId.game_id1
         );
     }
 }

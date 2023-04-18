@@ -15,10 +15,11 @@ export class UsernameDto {
 }
 
 export class GameIdDto {
-    @IsNotEmpty()
-    @MinLength(3)
     @IsString()
-    game_id: string;
+    prev_game_id: string;
+
+    @IsString()
+    new_game_id: string;
 }
 export class gameOptionsDTO {
     @IsNotEmpty()
