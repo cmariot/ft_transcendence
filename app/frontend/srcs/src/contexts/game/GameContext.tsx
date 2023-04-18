@@ -68,4 +68,6 @@ export const GameContext = createContext({
     setP1Power: (newValue: string) => {},
     p2Power: "",
     setP2Power: (newValue: string) => {},
+    currentStreamGameID: "",
+    setCurrentStreamGameID: (newValue: string) => {},
 });

@@ -525,8 +525,14 @@ export class GameService {
     async increaseSpeed(match: GameInterface): Promise<GameInterface> {
         const three_seconds = 3000;
         match.ballSpeed *= 2;
+        var [p1score, p2score] = [match.player1Score, match.player2Score];
         setTimeout(async () => {
-            match.ballSpeed /= 2;
+            if (
+                p1score === match.player1Score &&
+                p2score === match.player2Score
+            ) {
+                match.ballSpeed /= 2;
+            }
         }, three_seconds);
         return match;
     }
@@ -534,8 +540,14 @@ export class GameService {
     async decreaseSpeed(match: GameInterface): Promise<GameInterface> {
         const three_seconds = 3000;
         match.ballSpeed /= 3;
+        var [p1score, p2score] = [match.player1Score, match.player2Score];
         setTimeout(async () => {
-            match.ballSpeed *= 3;
+            if (
+                p1score === match.player1Score &&
+                p2score === match.player2Score
+            ) {
+                match.ballSpeed *= 3;
+            }
         }, three_seconds);
         return match;
     }
@@ -581,7 +593,7 @@ export class GameService {
     }
 
     async freeze(match: GameInterface, player: number): Promise<GameInterface> {
-        const two_second = 1000;
+        const one_second = 1000;
         if (player === 1) {
             match.freeze2 = true;
         } else {
@@ -593,7 +605,7 @@ export class GameService {
             } else {
                 match.freeze1 = false;
             }
-        }, two_second);
+        }, one_second);
         return match;
     }
 

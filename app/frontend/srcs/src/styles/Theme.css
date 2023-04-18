@@ -1,10 +1,10 @@
-button,
+t button,
 input,
 optgroup,
 select,
 textarea {
     font-family: menlo;
-    font-size: normal;
+    font-size: medium;
     background-color: #a3a3a3;
     border: 1px solid #737373;
     border-radius: 5px;

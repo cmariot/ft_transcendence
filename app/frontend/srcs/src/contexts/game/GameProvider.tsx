@@ -42,6 +42,7 @@ const GameProvider = ({ children }: GameProviderProps) => {
     >([]);
     const [p1Power, setP1Power] = useState<string>("");
     const [p2Power, setP2Power] = useState<string>("");
+    const [currentStreamGameID, setCurrentStreamGameID] = useState<string>("");
 
     const value = {
         menu,
@@ -90,6 +91,8 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setP1Power,
         p2Power,
         setP2Power,
+        currentStreamGameID,
+        setCurrentStreamGameID,
     };
 
     return (

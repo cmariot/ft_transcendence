@@ -27,4 +27,5 @@ export type GameContextType = {
     power_ups: Array<{ type: string; position: { x: number; y: number } }>;
     p1Power: "";
     p2Power: "";
+    currentStreamGameId: "";
 };

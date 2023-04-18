@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { isLogged } from "src/auth/guards/authentification.guards";
 import {
     GameIdDto,
+    SimpleGameIdDto,
     UsernameDto,
     gameOptionsDTO,
 } from "../dtos/GameUtility.dto";
@@ -85,10 +86,10 @@ export class GameController {
     // Leave a stream
     @Post("leaveStream")
     @UseGuards(isLogged)
-    async leaveStream(@Req() req, @Body() gameId: GameIdDto) {
+    async leaveStream(@Req() req, @Body() gameId: SimpleGameIdDto) {
         return await this.gameService.leaveStream(
             req.user.uuid,
-            gameId.new_game_id
+            gameId.game_id
         );
     }
 }

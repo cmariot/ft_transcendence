@@ -103,9 +103,11 @@ const ChatMessages = () => {
                 currentGames[i].player2 === username
             ) {
                 const watchResponse = await axios.post("/api/game/watch", {
-                    game_id: currentGames[i].game_id,
+                    prev_game_id: game.currentStreamGameID,
+                    new_game_id: currentGames[i].game_id,
                 });
                 if (watchResponse.status === 201) {
+                    game.setCurrentStreamGameID(currentGames[i].game_id);
                     game.setMenu("Stream");
                     navigate("/#game");
                 }

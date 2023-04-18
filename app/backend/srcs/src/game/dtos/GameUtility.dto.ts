@@ -21,6 +21,11 @@ export class GameIdDto {
     @IsString()
     new_game_id: string;
 }
+export class SimpleGameIdDto {
+    @IsString()
+    game_id: string;
+}
+
 export class gameOptionsDTO {
     @IsNotEmpty()
     @IsBoolean()

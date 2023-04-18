@@ -20,9 +20,11 @@ const SelectStream = () => {
         player2: string;
     }) {
         const watchResponse = await axios.post("/api/game/watch", {
-            game_id: match.game_id,
+            prev_game_id: game.currentStreamGameID,
+            new_game_id: match.game_id,
         });
         if (watchResponse.status === 201) {
+            game.setCurrentStreamGameID(match.game_id);
             game.setMenu("Stream");
         }
     }
