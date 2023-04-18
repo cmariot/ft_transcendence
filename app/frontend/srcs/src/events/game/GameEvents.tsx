@@ -128,6 +128,7 @@ export const GameEvents = ({ children }: GameEventsProps) => {
             };
         }) {
             game.setStreamResults(data.results);
+            game.setCurrentStreamGameID("");
             game.setGameID("");
             game.setMenu("StreamResults");
         }
