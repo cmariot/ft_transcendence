@@ -341,7 +341,7 @@ export class AuthService {
                     })
                     .redirect(process.env.HOST + "double-authentification");
             } else if (type === "authentification") {
-                if (user.twoFactorsAuth === true) {
+                if (user.twoFactorsAuth === true && user.firstLog === false) {
                     return res
                         .clearCookie("authentification", {
                             maxAge: twelveHours,
