@@ -79,6 +79,7 @@ const Profile = () => {
                     <h3>{user.username}</h3>
 
                     <button
+                        id="edit-profile-button"
                         onClick={(event: any) => {
                             event.preventDefault();
                             navigate("/settings");

@@ -9,6 +9,14 @@
     width: -moz-available;
 }
 
+#friend-parent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #friend-list {
     list-style-type: none;
     margin: 0;

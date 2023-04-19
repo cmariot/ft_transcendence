@@ -7,6 +7,10 @@
     align-items: center;
 }
 
+#edit-profile-button {
+    text-align: center;
+}
+
 #profile {
     display: flex;
     flex-direction: row;
@@ -116,4 +120,6 @@ li.match-results:nth-child(2) {
     border-radius: 15px;
     margin-top: 20px;
     border: 3px #737373 solid;
+    width: max-content;
+    padding-inline: 20px;
 }
