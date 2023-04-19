@@ -1,101 +1,157 @@
 #!/bin/bash
 
-export BACKEND_PORT="3000"
-export NODE_ENV="developpment"
+# Couleurs pour le terminal
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # Pas de couleur
 
-export FRONTEND_PORT="4000"
+print_section() {
+    echo -e "${YELLOW}==>${NC} ${BLUE}$1${NC}"
+}
 
-export PGADMIN_PORT="5000"
-export PGADMIN_CONFIG_SERVER_MODE="False"
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
 
-export DATABASE_PORT="5432"
-export DATABASE_CONTAINER="database"
+print_red() {
+    echo -e "${RED}[START]${NC} $1"
+}
 
-export REVERSE_PROXY_PORT="8443"
+
+set_env_variables() {
+    export BACKEND_PORT="3000"
+    export FRONTEND_PORT="4000"
+    export PGADMIN_PORT="5000"
+    export DATABASE_PORT="5432"
+    export REVERSE_PROXY_PORT="8443"
+    export DATABASE_CONTAINER="database"
+    export NODE_ENV="development"
+    export PGADMIN_CONFIG_SERVER_MODE="False"
+}
+
+destroy_env() {
+    print_red "Destroying environment files..."
+
+    local directories=(
+        "app/database"
+        "app/backend"
+        "app/frontend"
+        "app/pgadmin"
+    )
+
+    for dir in "${directories[@]}"; do
+        local env_file="${dir}/.env"
+        if [ -f "${env_file}" ]; then
+            echo "Removing ${env_file}"
+            rm -f "${env_file}"
+        fi
+    done
+
+    print_success "Previous environment files destroyed."
+}
+
+create_directory() {
+    local dir=$1
+    mkdir -p "${dir}"
+}
+
+generate_password() {
+  local length=${1:-25} # longueur du mot de passe, défaut de 25 caractères
+  local password=$(head /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9' | head -c ${length}) # génère une chaîne aléatoire de caractères alphanumériques de longueur spécifiée
+  echo "${password}"
+}
+
+read_input() {
+	local prompt=$1
+	local variable_name=$2
+	local file=$3
+	local is_secret=$4
+
+	echo -n "$prompt : "
+	if [ "$is_secret" = "true" ]; then
+		read -s variable_value
+		echo
+	else
+		read variable_value
+	fi
+	echo "$variable_name=$variable_value" >> "$file"
+}
+
+
 
 create_database()
 {
-	echo "Database initialization : "
-	mkdir -p app/database
-	echo -n "Please enter the POSTGRES_USER : "
-	read database_user
-	echo -n "Please enter the POSTGRES_PASSWORD : "
-	read database_password
-	echo -n "Please enter the POSTGRES_DB : "
-	read database_db
-	echo "POSTGRES_USER=\"$database_user\""					>  ./app/database/.env
-	echo "POSTGRES_PASSWORD=\"$database_password\""			>> ./app/database/.env
-	echo "POSTGRES_DB=\"$database_db\""						>> ./app/database/.env
+	print_section "Database initialization : "
+	create_directory ./app/database
+	local env_file=./app/database/.env
+	
+	read_input "Please enter the POSTGRES_USER" "POSTGRES_USER" "${env_file}" false
+    read_input "Please enter the POSTGRES_PASSWORD" "POSTGRES_PASSWORD" "${env_file}" true
+    read_input "Please enter the POSTGRES_DB" "POSTGRES_DB" "${env_file}" false
+
+	source "${env_file}"
 }
 
 create_backend()
 {
-	echo "NODE_ENV=\"${NODE_ENV}\""							>  ./app/backend/.env
-	echo "DB_USER=\"$database_user\""						>> ./app/backend/.env
-	echo "DB_PASS=\"$database_password\""					>> ./app/backend/.env
-	echo "DB_SCHEMA=\"$database_db\""						>> ./app/backend/.env
-	echo "DB_HOST=\"${DATABASE_CONTAINER}\""				>> ./app/backend/.env
-	echo "DB_PORT=\"${DATABASE_PORT}\""						>> ./app/backend/.env
-	echo "BACKEND_PORT=\"${BACKEND_PORT}\""					>> ./app/backend/.env
-	echo "NODE_OPTIONS=\"${NODE_OPTIONS}\""					>> ./app/backend/.env
-	echo "JWT_SECRET=\"$database_password\""				>> ./app/backend/.env
-	echo "TZ=\"Europe/Paris\""								>> ./app/backend/.env
+    local env_file=./app/backend/.env
 
-	echo -n "Please enter the UID_42_SECRET : "
-	read uid_42_secret
-	echo "UID_42_SECRET=\"$uid_42_secret\""					>> ./app/backend/.env
-	echo -n "Please enter the PASSWORD_SECRET_42 : "
-	read password_secret_42
-	echo "PASSWORD_SECRET_42=\"$password_secret_42\""		>> ./app/backend/.env
-	echo -n "Please enter the REDIRECT_URL : "
-	read redirect_secret_42
-	echo "CALLBACK_URL=\"$redirect_secret_42\""				>> ./app/backend/.env
-	echo -n "Please enter the EMAIL_HOST : "
-	read email_host
-	echo "EMAIL_HOST=\"$email_host\""						>> ./app/backend/.env
-	echo -n "Please enter the EMAIL_PORT : "
-	read email_port
-	echo "EMAIL_PORT=\"$email_port\""						>> ./app/backend/.env
-	echo -n "Please enter the EMAIL_ADDR : "
-	read email_addr
-	echo "EMAIL_ADDR=\"$email_addr\""						>> ./app/backend/.env
-	echo -n "Please enter the EMAIL_PASS : "
-	read email_pass
-	echo "EMAIL_PASS=\"$email_pass\""						>> ./app/backend/.env
-	echo "HOST=\"https://$(hostname):$REVERSE_PROXY_PORT/\""	>> ./app/backend/.env
-
+    read_input "Please enter the UID_42_SECRET" "UID_42_SECRET" "${env_file}" true
+    read_input "Please enter the PASSWORD_SECRET_42" "PASSWORD_SECRET_42" "${env_file}" true
+    read_input "Please enter the REDIRECT_URL" "CALLBACK_URL" "${env_file}" false
+    read_input "Please enter the EMAIL_HOST" "EMAIL_HOST" "${env_file}" false
+    read_input "Please enter the EMAIL_PORT" "EMAIL_PORT" "${env_file}" false
+    read_input "Please enter the EMAIL_ADDR" "EMAIL_ADDR" "${env_file}" false
+    read_input "Please enter the EMAIL_PASS" "EMAIL_PASS" "${env_file}" true
+    
+	jwt_password=$(generate_password 25)
+	echo "DB_USER=${POSTGRES_USER}" 							>> "${env_file}"
+    echo "DB_PASS=${POSTGRES_PASSWORD}" 						>> "${env_file}"
+    echo "DB_SCHEMA=${POSTGRES_DB}" 							>> "${env_file}" 
+    echo "JWT_SECRET=\"$jwt_password\"" 						>> "${env_file}"
+    echo "HOST=\"https://$(hostname):$REVERSE_PROXY_PORT/\"" 	>> "${env_file}"
+    echo "NODE_ENV=\"${NODE_ENV}\"" 							>> "${env_file}"
+    echo "DB_HOST=\"${DATABASE_CONTAINER}\"" 					>> "${env_file}"
+    echo "DB_PORT=\"${DATABASE_PORT}\"" 						>> "${env_file}"
+    echo "BACKEND_PORT=\"${BACKEND_PORT}\"" 					>> "${env_file}"
+	echo "TZ=\"Europe/Paris\"" 									>> "${env_file}"
 }
+
 
 create_frontend()
 {
-	echo "PORT=\"${FRONTEND_PORT}\""						> ./app/frontend/.env
-	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
-	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""		>> ./app/frontend/.env
-	echo "GENERATE_SOURCEMAP=false"							>> ./app/frontend/.env
-	echo "VITE_SOCKETHOST=\"https://$(hostname):$REVERSE_PROXY_PORT\""	>> ./app/frontend/.env
+    local socket_host=https://$(hostname):$REVERSE_PROXY_PORT
+
+	echo "PORT=\"${FRONTEND_PORT}\""							> ./app/frontend/.env
+	echo "TZ=\"Europe/Paris\""									>> ./app/frontend/.env
+	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""			>> ./app/frontend/.env
+	echo "GENERATE_SOURCEMAP=false"								>> ./app/frontend/.env
+	echo "VITE_SOCKETHOST=\"$socket_host\""						>> ./app/frontend/.env
 }
 
 create_pgadmin()
 {
-	echo "PGAdmin initialization : "
-	mkdir -p ./app/pgadmin
-	echo -n "Please enter the PGADMIN_EMAIL : "
-	read pgadmin_email
-	echo -n "Please enter the PGADMIN_PASSWORD : "
-	read pgadmin_password
-	echo "PGADMIN_DEFAULT_EMAIL=\"$pgadmin_email\""						>  ./app/pgadmin/.env
-	echo "PGADMIN_DEFAULT_PASSWORD=\"$pgadmin_password\""				>> ./app/pgadmin/.env
+    print_section "PGAdmin initialization : "
+    create_directory "./app/pgadmin"
+    local env_file=./app/pgadmin/.env
+    
+    read_input "Please enter the PGADMIN_EMAIL" "PGADMIN_DEFAULT_EMAIL" "${env_file}" false
+    read_input "Please enter the PGADMIN_PASSWORD" "PGADMIN_DEFAULT_PASSWORD" "${env_file}" true
+
 	echo "PGADMIN_CONFIG_SERVER_MODE=\"${PGADMIN_CONFIG_SERVER_MODE}\""	>> ./app/pgadmin/.env
 	echo "PGADMIN_LISTEN_PORT=\"${PGADMIN_PORT}\""						>> ./app/pgadmin/.env
 }
 
 main()
 {
-	echo "Initialization"
+	print_section "Initialization"
+	set_env_variables
+	destroy_env
 	create_database
 	create_backend
 	create_frontend
 	create_pgadmin
 }
-
 main
