@@ -32,6 +32,7 @@
         "passport-42": "^1.2.6",
         "passport-jwt": "^4.0.1",
         "pg": "^8.9.0",
+        "preview-email": "^3.0.10",
         "typeorm": "^0.3.11",
         "vecti": "^2.1.40"
     },
