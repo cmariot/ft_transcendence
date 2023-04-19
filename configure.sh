@@ -61,7 +61,7 @@ read_input() {
 	else
 		read variable_value
 	fi
-	echo "$variable_name=$variable_value" >> "$file"
+	echo "$variable_name=\"$variable_value\"" >> "$file"
 }
 
 print_section() {
