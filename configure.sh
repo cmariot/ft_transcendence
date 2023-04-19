@@ -1,25 +1,5 @@
 #!/bin/bash
 
-# Couleurs pour le terminal
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # Pas de couleur
-
-print_section() {
-    echo -e "${YELLOW}==>${NC} ${BLUE}$1${NC}"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_red() {
-    echo -e "${RED}[START]${NC} $1"
-}
-
-
 set_env_variables() {
     export BACKEND_PORT="3000"
     export FRONTEND_PORT="4000"
@@ -29,10 +9,15 @@ set_env_variables() {
     export DATABASE_CONTAINER="database"
     export NODE_ENV="development"
     export PGADMIN_CONFIG_SERVER_MODE="False"
+
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m' 
 }
 
 destroy_env() {
-    print_red "Destroying environment files..."
+    print_yellow "Removing environment files ..."
 
     local directories=(
         "app/database"
@@ -79,7 +64,17 @@ read_input() {
 	echo "$variable_name=$variable_value" >> "$file"
 }
 
+print_section() {
+    echo -e "${YELLOW}==>${NC} ${BLUE}$1${NC}"
+}
 
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_yellow() {
+    echo -e "${YELLOW}[START]${NC} $1"
+}
 
 create_database()
 {
@@ -119,7 +114,6 @@ create_backend()
 	echo "TZ=\"Europe/Paris\"" 									>> "${env_file}"
 }
 
-
 create_frontend()
 {
     local socket_host=https://$(hostname):$REVERSE_PROXY_PORT
@@ -154,4 +148,5 @@ main()
 	create_frontend
 	create_pgadmin
 }
+
 main
