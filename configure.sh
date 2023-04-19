@@ -23,9 +23,9 @@ create_database()
 	read database_password
 	echo -n "Please enter the POSTGRES_DB : "
 	read database_db
-	echo "POSTGRES_USER=\"$database_user\""			>  ./app/database/.env
-	echo "POSTGRES_PASSWORD=\"$database_password\""	>> ./app/database/.env
-	echo "POSTGRES_DB=\"$database_db\""				>> ./app/database/.env
+	echo "POSTGRES_USER=\"$database_user\""					>  ./app/database/.env
+	echo "POSTGRES_PASSWORD=\"$database_password\""			>> ./app/database/.env
+	echo "POSTGRES_DB=\"$database_db\""						>> ./app/database/.env
 }
 
 create_backend()
@@ -72,7 +72,7 @@ create_frontend()
 	echo "TZ=\"Europe/Paris\""								>> ./app/frontend/.env
 	echo "WDS_SOCKET_PORT=\"${REVERSE_PROXY_PORT}\""		>> ./app/frontend/.env
 	echo "GENERATE_SOURCEMAP=false"							>> ./app/frontend/.env
-	echo "SOCKETHOST=\"$(hostname):$REVERSE_PROXY_PORT\""	>> ./app/frontend/.env
+	echo "VITE_SOCKETHOST=\"https://$(hostname):$REVERSE_PROXY_PORT\""	>> ./app/frontend/.env
 }
 
 create_pgadmin()
