@@ -7,10 +7,6 @@
     align-items: center;
 }
 
-#edit-profile-button {
-    text-align: center;
-}
-
 #profile {
     display: flex;
     flex-direction: row;
@@ -88,7 +84,6 @@ li.match-results:nth-child(2) {
 }
 
 .match-results {
-    /* justify-content: center; */
     justify-content: space-around;
     width: 100%;
 }
@@ -110,16 +105,21 @@ li.match-results:nth-child(2) {
 }
 
 #profile > div:nth-child(1) {
-    margin: 40px;
+    height: 100%;
+    overflow: auto;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-inline: 40px;
+    justify-content: flex-start;
 }
 
 #game-stats {
-    padding-block: 10px;
+    padding-inline: 10px;
     background-color: #a3a3a3;
     color: #1e1e1e;
     border-radius: 15px;
-    margin-top: 20px;
+    margin-block: 20px;
     border: 3px #737373 solid;
-    width: max-content;
-    padding-inline: 20px;
 }
