@@ -103,7 +103,6 @@ export class MatchmakingService {
                 return;
             }
         }
-        throw new UnauthorizedException("Game not found");
     }
 
     leaveStream(user: UserEntity) {
