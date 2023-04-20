@@ -191,6 +191,12 @@ html {
     align-items: center;
 }
 
+#app-content > div:nth-child(2) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #add-friend {
     background: rgb(16, 16, 16);
     background: -moz-linear-gradient(

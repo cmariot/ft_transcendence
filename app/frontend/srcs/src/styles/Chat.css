@@ -262,8 +262,8 @@
 #chat {
     align-self: center;
     justify-self: center;
-    height: 99%;
-    width: 100%;
+    height: 98%;
+    width: 500px;
     max-width: 500px;
 }
 

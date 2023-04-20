@@ -13,7 +13,7 @@
     gap: 10%;
     justify-content: center;
     align-items: center;
-    height: 98%;
+    height: fit-content;
     max-height: 100%;
     width: fit-content;
     border-radius: 15px;
@@ -41,6 +41,8 @@
     );
     border: 3px solid #737373;
     margin: auto;
+    padding: 20px;
+    height: 80%;
 }
 
 #profile-user-picture {
@@ -122,4 +124,14 @@ li.match-results:nth-child(2) {
     border-radius: 15px;
     margin-block: 20px;
     border: 3px #737373 solid;
+}
+#profile > div:nth-child(1) {
+    height: fit-content;
+    overflow: auto;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-inline: 40px;
+    justify-content: flex-start;
 }
