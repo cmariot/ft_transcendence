@@ -87,9 +87,6 @@ const ChatMessages = () => {
     async function invitePlay(username: string) {
         await axios
             .post("/api/game/invitation/send", { username: username })
-            .then((response) => {
-                console.log(response);
-            })
             .catch((error) => {
                 console.log(error);
             });

@@ -287,9 +287,6 @@ export default function Friends() {
     async function invitePlay(username: string) {
         await axios
             .post("/api/game/invitation/send", { username: username })
-            .then((response) => {
-                console.log(response);
-            })
             .catch((error) => {
                 menu.displayError(error.response.data.message);
             });
