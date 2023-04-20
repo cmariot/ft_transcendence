@@ -7,7 +7,7 @@ FROM node:19-alpine3.16
 RUN apk -U upgrade
 
 # Update npm (new minor version available)
-RUN npm install -g npm@9.6.4
+RUN npm install -g npm@9.6.5
 
 # Create the backend directory
 WORKDIR /srcs

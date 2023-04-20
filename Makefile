@@ -11,19 +11,19 @@
 # **************************************************************************** #
 
 up:
-	docker compose up --build
+	docker-compose up --build
 
 configure:
 	./configure.sh
 
 build:
-	docker compose build
+	docker-compose build
 
 launch:
-	docker compose up
+	docker-compose up
 
 detach:
-	docker compose up --detach --build
+	docker-compose up --detach --build
 
 clean: stop
 	docker system prune -a --force
@@ -34,40 +34,40 @@ fclean: stop
 re: fclean up
 
 sh_backend:
-	docker compose exec backend sh
+	docker-compose exec backend sh
 
 log_backend:
-	docker compose logs --follow backend
+	docker-compose logs --follow backend
 
 top_backend:
 	docker top backend
 
 sh_database:
-	docker compose exec database sh
+	docker-compose exec database sh
 
 log_database:
-	docker compose logs --follow database
+	docker-compose logs --follow database
 
 top_database:
 	docker top database
 
 sh_frontend:
-	docker compose exec frontend sh
+	docker-compose exec frontend sh
 
 log_frontend:
-	docker compose logs --follow frontend
+	docker-compose logs --follow frontend
 
 top_frontend:
 	docker top frontend
 
 sh_reverse_proxy:
-	docker compose exec reverse_proxy sh
+	docker-compose exec reverse_proxy sh
 
 sh_pgadmin:
-	docker compose exec pgadmin sh
+	docker-compose exec pgadmin sh
 
 ps:
-	docker compose ps
+	docker-compose ps
 
 list:
 	@printf "CONTAINERS LIST :\n"
@@ -80,19 +80,19 @@ list:
 	@docker network ls
 
 image:
-	docker compose images
+	docker-compose images
 
 pause:
-	docker compose pause
+	docker-compose pause
 
 unpause:
-	docker compose unpause
+	docker-compose unpause
 
 start:
-	docker compose start
+	docker-compose start
 
 stop:
-	docker compose stop
+	docker-compose stop
 
 restart:
-	docker compose restart
+	docker-compose restart

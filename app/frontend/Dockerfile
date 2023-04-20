@@ -12,7 +12,7 @@
 #RUN apk -U upgrade
 #
 ## Install new minor version of npm
-#RUN npm install -g npm@9.6.4
+#RUN npm install -g npm@9.6.5
 #
 ## Create the frontend directory
 #WORKDIR /development
@@ -40,7 +40,7 @@ FROM node:19-alpine3.16 AS production
 RUN apk -U upgrade
 
 # Install new minor version of npm
-RUN npm install -g npm@9.6.4
+RUN npm install -g npm@9.6.5
 
 # Create the frontend directory
 WORKDIR /production
