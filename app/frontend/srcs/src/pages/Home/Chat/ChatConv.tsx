@@ -14,7 +14,7 @@ const ChatConv = () => {
         if (chatMessages) {
             chatMessages.scrollTo(0, chatMessages.scrollHeight);
         }
-    });
+    }, [chat.messages.length, document]);
 
     return (
         <menu id="chat-conversation" className="chat-menu">
